@@ -31,9 +31,9 @@ pnpm-lock.yaml
 .env.development.local
 .env.test.local
 .env.production.local
-.env.production
+# .env.production
 # .env
-.env.development
+# .env.development
 
 # vercel
 .vercel

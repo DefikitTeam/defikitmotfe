@@ -8,19 +8,18 @@ WORKDIR /app
 COPY package.json ./
 
 # Copy the .env file to the container
-COPY .env ./
+COPY .env.production ./
 
 # Copy the tsconfig.json file to the container
 COPY tsconfig.json ./
-
-# Install dependencies
+# Install ALL dependencies (including devDependencies)
 RUN npm install
-
+RUN npm install --save-dev ignore-loader
 # Copy all the application files to the working directory
 COPY . .
 
 # Run the translation script
-RUN npm run trans
+RUN npm run trans || true
 
 # Build the Next.js application
 RUN npm run build

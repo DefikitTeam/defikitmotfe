@@ -1,6 +1,18 @@
 import { IPoolList } from '../stores/pool/type';
 import { ITokenList } from '../stores/token/type';
 
+export interface IGetAllDataResponse<T> {
+    items: T[];
+    meta: IMeta;
+}
+export interface IMeta {
+    totalItems: number;
+    itemCount: number;
+    itemsPerPage: number;
+    totalPages: number;
+    currentPage: number;
+}
+
 export interface IPoolDetail {
     id: string;
     owner: string;
@@ -51,5 +63,29 @@ export interface IResponseProfileData {
     };
 }
 
+export interface IGenerateDataAiAgentResponse {
+    nameAgent?: string;
+    clientsAgent?: string[];
+    plugins?: string[];
+    modelProvider?: string;
+    settings?: any;
+    system?: string;
+    bio?: string;
+    lore?: string[];
+    messageExamples?: string[];
+    postExamples?: string[];
+    adjectives?: string[];
+    people?: string[];
+    topics?: string[];
+    style?: any;
+}
 export interface IPool
     extends Omit<IPoolList, 'tgeTimestamp' | 'buyTransactions'> {}
+
+export interface IGetAllInviteListReferResponse {
+    totalRecords: number;
+    totalPage: number;
+    currentPage: number;
+    perPage: number;
+    data: any[];
+}

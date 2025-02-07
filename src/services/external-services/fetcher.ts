@@ -4,7 +4,55 @@ import {
 } from '@/src/common/constant/constance';
 import { instance } from './axios';
 import { ApiResponse } from '../response.type';
+import serviceAuth from './backend-server/auth';
+import store from '@/src/stores';
+import { signOutTelegram, signOutWallet } from '@/src/stores/auth/slice';
 type Obj = { [key: string]: any };
+
+instance.interceptors.request.use(
+    (config) => {
+        const accessToken = serviceAuth.getAccessTokenStorage();
+        if (
+            !!accessToken &&
+            config.headers &&
+            !config.headers['Authorization']
+        ) {
+            config.headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+instance.interceptors.response.use(
+    (response) => {
+        const { status, data } = response;
+        if (status === 200 || status === 201) {
+            return data;
+        }
+        return Promise.reject(data);
+    },
+    async (error: any) => {
+        const prevRequest = error?.config;
+        // if (error?.response?.status === 401) {
+        //     if (prevRequest.url.includes('refresh-token')) {
+        //         store?.dispatch(signOutTelegram());
+        //         store?.dispatch(signOutWallet());
+        //         return false;
+        //     }
+        //     const newAccessToken = await serviceAuth.getRefreshToken();
+        //     if (!newAccessToken) {
+        //         return false;
+        //     }
+        //     prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        //     return instance(prevRequest);
+        // }
+        return Promise.reject(error);
+    }
+);
+
 export async function CallApi(
     url: string,
     query: any | null,
@@ -29,16 +77,30 @@ export const querySubGraph = (
     const endpoint = ENDPOINT_GRAPHQL_WITH_CHAIN[chainId];
     return CallApi(endpoint, query, 'POST');
 };
-export function get<T, R = ApiResponse<T>>(
-    route: string,
-    params?: Obj
-): Promise<R> {
+
+function get<T, R = ApiResponse<T>>(route: string, params?: Obj): Promise<R> {
     return instance.get(route, { params });
 }
 
 function post<T, R = ApiResponse<T>>(route: string, payload?: Obj): Promise<R> {
     return instance.post(route, payload);
 }
+
+function put<T, R = ApiResponse<T>>(route: string, payload?: Obj): Promise<R> {
+    return instance.put(route, payload);
+}
+
+function patch<T, R = ApiResponse<T>>(
+    route: string,
+    payload?: Obj
+): Promise<R> {
+    return instance.patch(route, payload);
+}
+
+function del<T, R = ApiResponse<T>>(route: string): Promise<R> {
+    return instance.delete(route);
+}
+
 function upload<T, R = ApiResponse<T>>(
     router: string,
     payload: Obj
@@ -62,4 +124,4 @@ function upload<T, R = ApiResponse<T>>(
     }
     return instance.post(router, formData);
 }
-export { post, upload };
+export { del, get, patch, post, put, upload };

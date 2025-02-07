@@ -103,7 +103,7 @@ export const rewardSlice = createSlice({
             })
             .addCase(getTopUserRewardByPool.fulfilled, (state, action) => {
                 state.statusGetUserTopRewardByPool = EActionStatus.Succeeded;
-                state.dataTopUserRewardByPool = action.payload.userInPools;
+                state.dataTopUserRewardByPool = action.payload?.userInPools;
             })
             .addCase(getTopUserRewardByPool.rejected, (state, action) => {
                 state.statusGetUserTopRewardByPool = EActionStatus.Failed;

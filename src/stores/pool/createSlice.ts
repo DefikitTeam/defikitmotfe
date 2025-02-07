@@ -4,7 +4,12 @@ import { ICreatePoolLaunch } from './type';
 
 const initialState: ICreatePoolLaunch = {
     token: '',
-    fixedCapETH: '2',
+    name: '',
+    symbol: '',
+    decimal: '18',
+    totalSupply: '1000000000',
+    bondBuyFirst: '0',
+    fixedCapETH: '',
     websiteLink: '',
     telegramLink: '',
     twitterLink: '',
@@ -20,7 +25,77 @@ const initialState: ICreatePoolLaunch = {
     endTime: 0,
     maxDurationSell: 604800,
     minDurationSell: 12,
-    metadata: ''
+    metadata: '',
+    aiAgent: {
+        nameAgent: '',
+        clientsAgent: ['twitter'],
+        plugins: [],
+        modelProvider: 'google',
+        settings: {
+            secrets: {},
+            voice: {
+                model: 'en_US-hfc_female-medium'
+            }
+        },
+        system: '',
+        bio: '',
+        lore: [],
+        messageExamples: [
+            // {
+            //     user: {
+            //         user: 'user',
+            //         content: {
+            //             text: "Hey Elon, what's the latest update on Neuralink?"
+            //         }
+            //     },
+            //     agent: {
+            //         user: 'elon musk',
+            //         content: {
+            //             text: "Elon Musk: \"We're making great progress on the development of Neuralink's brain-machine interface technology. Stay tuned for some exciting announcements soon! #Neuralink #BrainComputerInterface"
+            //         }
+            //     }
+            // }
+        ],
+        postExamples: [],
+        adjectives: [],
+        people: [],
+        topics: [],
+        style: {
+            all: [
+                'write short, impactful posts',
+                'focus on motivating and inspiring the audience',
+                'use plain, clear language—no jargon',
+                'be confident, but humble',
+                'be warm and engaging—connect with people',
+                'focus on collaboration and shared goals',
+                'avoid cynicism or negativity; stay optimistic'
+                // 'be based in reality, but encourage bold thinking',
+                // 'engage others to think and act, not just consume',
+                // "be inclusive and accessible, no matter the audience's expertise",
+                // 'always tie ideas back to action and purpose'
+            ],
+            chat: [
+                'be approachable and friendly',
+                'focus on solving problems and providing value',
+                'stay constructive and positive in tone',
+                'encourage collaboration and teamwork'
+                // 'don’t shy away from big ideas, but keep the audience in mind',
+                // 'be inspiring without being arrogant',
+                // 'share knowledge generously and clearly'
+            ],
+            post: [
+                'always leave the reader with a call to action or thought-provoking idea',
+                'be concise and sharp—every word should have impact',
+                'write posts that inspire action, not just admiration',
+                'connect blockchain ideas to real-world scenarios or personal stories',
+                'focus on building community and a shared vision'
+                // 'don’t overly self-promote; instead, promote the mission and the possibilities',
+                // 'be relatable—use sports metaphors or analogies when appropriate',
+                // 'stay humble, but celebrate achievements when appropriate'
+            ]
+        }
+    }
+    // aiAgent: {}
 };
 
 export const poolLaunchSlice = createSlice({
@@ -49,14 +124,32 @@ export const poolLaunchSlice = createSlice({
             state.maxDurationSell = action.payload.maxDurationSell;
             state.minDurationSell = action.payload.minDurationSell;
             state.metadata = action.payload.metadata;
+            state.name = action.payload.name;
+            state.symbol = action.payload.symbol;
+            state.decimal = action.payload.decimal;
+            state.totalSupply = action.payload.totalSupply;
+            state.bondBuyFirst = action.payload.bondBuyFirst;
+
+            if (action.payload.aiAgent) {
+                state.aiAgent = {
+                    ...state.aiAgent,
+                    ...action.payload.aiAgent
+                };
+            }
         },
         resetCreatePoolLaunchData: () => {
             return initialState;
+        },
+        resetAiAgent: (state) => {
+            state.aiAgent = initialState.aiAgent;
         }
     }
 });
 
-export const { resetCreatePoolLaunchData, updateCreatePoolLaunchInformation } =
-    poolLaunchSlice.actions;
+export const {
+    resetCreatePoolLaunchData,
+    updateCreatePoolLaunchInformation,
+    resetAiAgent
+} = poolLaunchSlice.actions;
 
 export default poolLaunchSlice.reducer;

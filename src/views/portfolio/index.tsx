@@ -1,23 +1,34 @@
 /* eslint-disable */
 'use client';
+import { chains } from '@/src/common/constant/constance';
 import BoxArea from '@/src/components/common/box-area';
 import Loader from '@/src/components/loader';
+import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { usePortfolio } from '@/src/stores/profile/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { Col, notification, Row } from 'antd';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { useAccount } from 'wagmi';
+import { useDispatch } from 'react-redux';
+import { useAccount, useSwitchChain } from 'wagmi';
 import SellToken from './sell-token';
 import Statistical from './statistical';
 import YourFriend from './your-friend';
+import { useInviteListReferPortfolio } from '@/src/stores/invite-code/hook';
+import ListRefer from './list-refer';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import { useAuthLogin } from '@/src/stores/auth/hook';
+import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
+import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 
 const Portfolio = () => {
     const { isMobile } = useWindowSize();
     const t = useTranslations();
     const { address, chainId } = useAccount();
+
     const [
         { portfolio },
         fetchPortfolio,
@@ -32,14 +43,56 @@ const Portfolio = () => {
         totalInvestedETH,
         status
     } = portfolio;
+
+    const [
+        { inviteListRefer },
+        fetchInviteListRefer,
+        setOpenModalInviteListReferAction
+    ] = useInviteListReferPortfolio();
+
     const params = useParams();
     const addressParams = params?.walletAddress as string;
     const isAddressDifferent = addressParams && addressParams !== address;
     let walletAddress;
+    const pathname = usePathname();
+    const dispatch = useDispatch();
+    const currentPath = pathname?.split('/');
+    const { switchChain } = useSwitchChain();
+    const { authState, setOpenModalInviteBlocker } = useAuthLogin();
+
+    const getCurrentChainUrl = (): IChainInfor | undefined => {
+        return chains.find(
+            (item) =>
+                item.name.replace(/\s+/g, '').toLowerCase() === currentPath?.[2]
+        );
+    };
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
+
+    useEffect(() => {
+        const chainInfo = getCurrentChainUrl();
+        if (chainInfo) {
+            dispatch(setChainData(chainInfo));
+            switchChain({ chainId: chainInfo.chainId });
+            // router.push(`${currentPath?.join('/')}?refId=${refId}`);
+        }
+    }, [currentPath?.[2]]);
+
+    // useEffect(() => {
+    //     const refCodeExisted = localStorage.getItem(REFCODE_INFO_STORAGE_KEY);
+    //     if (!refCodeExisted) {
+    //         setOpenModalInviteBlocker(true);
+    //     }
+    // }, []);
+
+    const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    useEffect(() => {
+        if (!refCodeExisted) {
+            setOpenModalInviteBlocker(true);
+        }
+    }, [refCodeExisted]);
 
     useEffect(() => {
         if (!(address as `0x${string}`) || !chainId) {
@@ -51,6 +104,7 @@ const Portfolio = () => {
             });
             return;
         }
+
         if (addressParams) {
             walletAddress = addressParams;
         } else {
@@ -64,6 +118,13 @@ const Portfolio = () => {
             fetchYourListFriendAction({
                 wallet: walletAddress as `0x${string}`
             });
+
+            if (!isAddressDifferent) {
+                fetchInviteListRefer({
+                    page: inviteListRefer.page,
+                    limit: inviteListRefer.limit
+                });
+            }
         }
     }, [address, addressParams, walletAddress, chainId, fetchPortfolio]);
 
@@ -103,7 +164,7 @@ const Portfolio = () => {
                                 <SellToken />
                             </Col>
                         )}
-                        <Col
+                        {/* <Col
                             span={8}
                             xs={24}
                             sm={8}
@@ -112,10 +173,23 @@ const Portfolio = () => {
                             xl={8}
                         >
                             <YourFriend />
+                        </Col> */}
+
+                        <Col
+                            span={8}
+                            xs={24}
+                            sm={8}
+                            lg={8}
+                            md={8}
+                            xl={8}
+                        >
+                            <ListRefer />
                         </Col>
                     </Row>
                 </div>
             </div>
+
+            <ModalInviteBlocker/>
         </BoxArea>
     );
 };

@@ -22,6 +22,7 @@ import {
     Col,
     Form,
     Input,
+    notification,
     Progress,
     Row,
     Slider,
@@ -31,10 +32,12 @@ import {
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/src/stores';
 const { Text, Title } = Typography;
 
 const PoolPurchaseSummary = () => {
@@ -42,11 +45,11 @@ const PoolPurchaseSummary = () => {
     const [{ poolStateDetail }, fetchPoolDetail, fetchPoolDetailBackground] =
         usePoolDetail();
     const { pool, analystData, priceNative, status } = poolStateDetail;
-    const { chainId, address } = useAccount();
+    const { chainId, address, isConnected } = useAccount();
     // const { address, isConnected } = useAccount();
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
-    const { chainData } = useCurrentChainInformation();
+    const chainData = useSelector((state: RootState) => state.chainData);
     const [data, setData] = useBuyPoolInformation();
     const [maxBondCurrentValue, setMaxBondCurrentValue] = useState('0');
     const [bondAvailableCurrent, setBondAvailableCurrent] =
@@ -56,7 +59,9 @@ const PoolPurchaseSummary = () => {
     const [isStart, setIsStart] = useState(false);
     const [maxRepeatPurchase, setMaxRepeatPurchase] = useState('0');
     const [maxAmountETH, setMaxAmountETH] = useState(0);
-    const multiCallerContract = getContract(chainId || ChainId.BARTIO);
+    const multiCallerContract = getContract(
+        chainData.chainData.chainId || ChainId.BARTIO
+    );
 
     const [balanceOfUser, setBalanceOfUser] = useState('0');
     const [sliderPercent, setSliderPercent] = useState<number>(0);
@@ -66,6 +71,7 @@ const PoolPurchaseSummary = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [raisedEth, setRaisedEth] = useState('0');
+    const [showInitial, setShowInitial] = useState('0');
 
     const [buyAmountBtn, setBuyAmountBtn] = useState('');
     const [isTradeBex, setIsTradeBex] = useState<boolean>(false);
@@ -138,25 +144,37 @@ const PoolPurchaseSummary = () => {
         setMaxAmountETH(0);
     };
 
-    const handleChangeSlider = (newValue: number | number[]) => {
-        const buyVolume = newValue as number;
-        const now = new Date();
-        setData({
-            ...data,
-            numberBatch: buyVolume
-        });
-        setBondAmountValue(buyVolume.toString());
-        if (buyVolume > 0 && pool) {
-            if (parseInt(pool.startTime) * 1000 > now.valueOf()) {
-                setDisableBtnBuy(true);
-            } else {
-                setDisableBtnBuy(false);
+    const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+    const handleChangeSlider = useCallback(
+        (newValue: number | number[]) => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
             }
+
+            const buyVolume = newValue as number;
             setSliderPercent(buyVolume);
-        } else {
-            clearForm();
-        }
-    };
+
+            debounceTimeoutRef.current = setTimeout(() => {
+                const now = new Date();
+                setData({
+                    ...data,
+                    numberBatch: buyVolume
+                });
+                setBondAmountValue(buyVolume.toString());
+
+                if (buyVolume > 0 && pool) {
+                    if (parseInt(pool.startTime) * 1000 > now.valueOf()) {
+                        setDisableBtnBuy(true);
+                    } else {
+                        setDisableBtnBuy(false);
+                    }
+                } else {
+                    clearForm();
+                }
+            }, 300); // 300ms debounce delay
+        },
+        [pool, setData, clearForm]
+    );
 
     const [endTime, setEndTime] = useState({
         days: 0,
@@ -170,12 +188,12 @@ const PoolPurchaseSummary = () => {
             getPoolInformation();
             getUserPoolInfo(pool.id);
         }
-    }, [pool.id, chainData.chainId, status, pool.soldBatch]);
+    }, [pool.id, chainData.chainData.chainId, status, pool.soldBatch, address]);
 
     const getUserPoolInfo = async (poolAddress: string) => {
         if (address) {
             const userPoolInfo = await servicePool.getUserPool({
-                chainId: chainData.chainId,
+                chainId: chainData.chainData.chainId,
                 poolAddress: poolAddress,
                 userAddress: address
             });
@@ -217,7 +235,7 @@ const PoolPurchaseSummary = () => {
                 ? `0`
                 : marketCap.isLessThanOrEqualTo(0.001)
                   ? `<0.001`
-                  : `${marketCap.toFixed(3)} ${chainData.currency} - $${currencyFormatter(
+                  : `${marketCap.toFixed(3)} ${chainData.chainData.currency} - $${currencyFormatter(
                         marketCap.times(priceNative)
                     )}`;
             setRaisedEth(raisedShow);
@@ -230,9 +248,28 @@ const PoolPurchaseSummary = () => {
     };
 
     const handleOpenActivities = () => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         setOpenModalActiviti(true);
     };
     const handleOpenSlippage = () => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
         setOpenModalSettingSlippage(true);
     };
     const handleKeyPress = (event: any) => {
@@ -246,13 +283,28 @@ const PoolPurchaseSummary = () => {
         contractAddAndAbi: multiCallerContract,
         poolAddress: pool?.id as string,
         value: Number(bondAmountValue) >= 100 ? 100 : Number(bondAmountValue),
-        chainId: chainId as number
+        chainId: chainData.chainData.chainId as number
     });
-
     const estimateBuyValue = dataReader ? dataReader[2] : undefined;
     const maxBondCurrent = dataReader ? dataReader[4] : undefined;
 
     const estimateBuyValueReal = estimateBuyValue?.result;
+
+    const kien: number = 1;
+
+    const {
+        dataReader: dataReader2,
+        isFetchingDataReader: isFetchingDataReader2,
+        reFetchDataReader: reFetchDataReader2
+    } = useReader({
+        contractAddAndAbi: multiCallerContract,
+        poolAddress: pool?.id as string,
+        value: kien,
+        chainId: chainData.chainData.chainId as number
+    });
+
+    const estimateBuyValue2 = dataReader2 ? dataReader2[2] : undefined;
+    const estimateBuyValueReal2 = estimateBuyValue2?.result;
 
     useEffect(() => {
         // if(Number(new BigNumber(maxBondCurrent?.result).toString())=== Number(pool?.totalBatch)){
@@ -263,22 +315,35 @@ const PoolPurchaseSummary = () => {
     }, [pool?.soldBatch, pool?.batchAvailable, endTime.seconds]);
 
     useEffect(() => {
+        // if(Number(new BigNumber(maxBondCurrent?.result).toString())=== Number(pool?.totalBatch)){
+        //     return;
+        // }
+
+        reFetchDataReader2();
+    }, [pool?.soldBatch, pool?.batchAvailable, endTime.seconds]);
+
+    useEffect(() => {
         const intervalId = setInterval(() => {
             fetchPoolDetailBackground({
                 page: poolStateDetail.pageTransaction,
                 limit: poolStateDetail.limitTransaction,
                 poolAddress: poolAddress,
-                chainId: chainData.chainId as number
+                chainId: chainData.chainData.chainId as number
             });
         }, 4000);
         return () => clearInterval(intervalId);
     }, [chainId, poolAddress]);
 
     useEffect(() => {
-        setBondAvailableCurrent(
-            (Number(maxBondCurrentValue) - Number(bondSold)).toString()
-        );
-        setMaxSlider(Number(maxBondCurrentValue) - Number(bondSold));
+        const availableBonds = Number(maxBondCurrentValue) - Number(bondSold);
+
+        const validBonds =
+            isNaN(availableBonds) || availableBonds < 0
+                ? '0'
+                : availableBonds.toString();
+
+        setBondAvailableCurrent(validBonds);
+        setMaxSlider(Number(validBonds));
     }, [maxBondCurrentValue, bondSold]);
 
     useEffect(() => {
@@ -306,14 +371,13 @@ const PoolPurchaseSummary = () => {
                         maxAmountETH: Number(ethToBuy)
                     });
                     setBuyAmountBtn(
-                        `${parseFloat(maxRepeatPurchase) * value} ${pool?.symbol} ~ ${new BigNumber(estimateBuyRes).toFixed(6)} ${chainData.currency}`
+                        `${parseFloat(maxRepeatPurchase) * value} ${pool?.symbol} ~ ${new BigNumber(estimateBuyRes).toFixed(6)} ${chainData.chainData.currency}`
                     );
                 }
             }
         } catch (error) {
             console.log('==== call estimate error: ', error);
         }
-
         setIsLoading(false);
     }, [
         isFetchingDataReader,
@@ -321,6 +385,25 @@ const PoolPurchaseSummary = () => {
         sliderPercent,
         slippageState.slippage
     ]);
+
+    useEffect(() => {
+        const value: number = 1;
+        try {
+            if (value) {
+                if (isFetchingDataReader2 === false && estimateBuyValueReal2) {
+                    const estimateBuyRes2 = divToDecimal(
+                        estimateBuyValueReal2?.toString()
+                    );
+
+                    setShowInitial(
+                        `${new BigNumber(estimateBuyRes2).toFixed(6)}`
+                    );
+                }
+            }
+        } catch (error) {
+            console.log('==== call estimate error: ', error);
+        }
+    }, [isFetchingDataReader2, estimateBuyValueReal2]);
 
     useEffect(() => {
         try {
@@ -408,7 +491,8 @@ const PoolPurchaseSummary = () => {
                     >
                         <div className="mb-0 pl-4">
                             <span className="!font-forza text-base">
-                                {t('RAISED')} {`${chainData.currency}`}
+                                {t('RAISED')}{' '}
+                                {`${chainData.chainData.currency}`}
                             </span>
                             <Input
                                 size="large"
@@ -535,8 +619,14 @@ const PoolPurchaseSummary = () => {
                         className=" mb-0 py-3 "
                     >
                         <div className="flex justify-between text-nowrap">
-                            <div className="font-forza text-base ">
-                                {t('AMOUNT_PER_BOND')}
+                            <div className="flex justify-between">
+                                <div className="font-forza text-base ">
+                                    {t('AMOUNT_PER_BOND')}
+                                </div>
+
+                                <div className="font-forza text-base ">
+                                    {t('ESTIMATE_INITIAL')}
+                                </div>
                             </div>
 
                             <div className="flex cursor-pointer justify-end">
@@ -553,7 +643,7 @@ const PoolPurchaseSummary = () => {
                         <Input
                             size="large"
                             disabled={true}
-                            value={maxRepeatPurchase}
+                            value={`${maxRepeatPurchase} ${pool?.symbol} ~ ${showInitial} ${chainData.chainData.currency}`}
                             className="!font-forza text-base"
                             style={{
                                 backgroundColor: '#CCCCCC',
@@ -617,7 +707,7 @@ const PoolPurchaseSummary = () => {
                         lg={24}
                         md={24}
                         xxl={24}
-                        className="mt-4"
+                        className="ml-1 mr-1 mt-4"
                     >
                         <Slider
                             // tooltip={{ open: true }}
@@ -665,7 +755,8 @@ const PoolPurchaseSummary = () => {
                     >
                         <div className="mb-0">
                             <span className="!font-forza text-base">
-                                {t('MAX_AMOUNT')} {`${chainData.currency}`}
+                                {t('MAX_AMOUNT')}{' '}
+                                {`${chainData.chainData.currency}`}
                             </span>
 
                             <Input

@@ -1,21 +1,22 @@
 /* eslint-disable */
 import {
-    REGEX_DISCORD,
-    REGEX_TELEGRAM,
-    REGEX_TWITTER,
-    REGEX_WEBSITE
+    ChainId,
+    DEX_BY_CHAIN,
+    HARD_CAP_INITIAL_BY_CHAIN
 } from '@/src/common/constant/constance';
 import {
     ACCEPT_AVATAR_TYPES,
     AccountFileType,
     MAX_AVATAR_FILE_SIZE
 } from '@/src/common/constant/pool';
+import { base64ToFile } from '@/src/common/lib/utils';
 import {
     getDateTimeInFormat,
     nextDayFrom,
     nextMinuteFrom
 } from '@/src/common/utils/utils';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import serviceAiGenerate from '@/src/services/external-services/backend-server/ai-generate';
+import { RootState } from '@/src/stores';
 import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hook';
 import { useListTokenOwner } from '@/src/stores/token/hook';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
@@ -42,11 +43,12 @@ import dayjs from 'dayjs';
 import { useTranslations } from 'next-intl';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useSelector } from 'react-redux';
 import { IPoolCreatForm } from '.';
+import SocialMedia from './social_media';
 import AdvanceConfiguration from './advance-configuration';
-import serviceAiGenerate from '@/src/services/external-services/backend-server/ai-generate';
-import { base64ToFile } from '@/src/common/lib/utils';
+import AdditionalAgent from './additional-agent';
+import { useAccount } from 'wagmi';
 
 const getBase64 = (file: RcFile): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -59,25 +61,32 @@ const getBase64 = (file: RcFile): Promise<string> =>
 interface PoolInforProps {
     form: FormInstance<IPoolCreatForm>;
     getFileAvatar: (a: { file: string | Blob | RcFile; flag: boolean }) => void;
+    getFileAiAgentAvatar: (a: {
+        file: string | Blob | RcFile;
+        flag: boolean;
+    }) => void;
 }
 
 const { Text } = Typography;
-const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
+const PoolInformation = ({
+    form,
+    getFileAvatar,
+    getFileAiAgentAvatar
+}: PoolInforProps) => {
     const { TextArea } = Input;
     const t = useTranslations();
-    const { chainData } = useCurrentChainInformation();
+
     const startTime = getDateTimeInFormat(nextMinuteFrom(new Date(), 30));
     const endTime = getDateTimeInFormat(
         nextDayFrom(nextMinuteFrom(new Date(), 30), 2)
     );
     const [defaultStartTime, setDefaultStartTime] = useState(startTime);
     const [defaultEndTime, setDefaultEndTime] = useState(endTime);
-    const [isStartTime, setIsStartTime] = useState(false);
 
     const [image, setImage] = useState<string>('');
     const [loadingImage, setLoadingImage] = useState(false);
     const [loadingDescription, setLoadingDescription] = useState(false);
-
+    const [checkStartInit, setCheckStartInit] = useState(false);
     const [checkFileData, setCheckFileData] = useState<{
         fileList: UploadFile[];
         errorWrongFileType?: boolean;
@@ -91,7 +100,9 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
     });
 
     const { settingTokenState } = useListTokenOwner();
-
+    const chainData = useSelector(
+        (state: RootState) => state.chainData.chainData
+    );
     const [data, setData] = useCreatePoolLaunchInformation();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -122,16 +133,31 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
     };
 
     useEffect(() => {
-        if (!isStartTime) {
-            setIsStartTime(true);
-            setData({
-                ...data,
+        const startDate = new Date(startTime).valueOf() / 1000;
+        const endDate = new Date(endTime).valueOf() / 1000;
 
-                startTime: new Date(startTime).valueOf() / 1000,
-                endTime: new Date(endTime).valueOf() / 1000
-            });
-        }
-    }, [isStartTime]);
+        setData({
+            ...data,
+            startTime: startDate,
+            endTime: endDate
+        });
+    }, [data.name]);
+
+    useEffect(() => {
+        setData({
+            ...data,
+            fixedCapETH:
+                HARD_CAP_INITIAL_BY_CHAIN[
+                    chainData.chainId as keyof typeof HARD_CAP_INITIAL_BY_CHAIN
+                ].toString()
+        });
+        form.setFieldValue(
+            'fixedCapETH',
+            HARD_CAP_INITIAL_BY_CHAIN[
+                chainData.chainId as keyof typeof HARD_CAP_INITIAL_BY_CHAIN
+            ].toString()
+        );
+    }, [chainData.chainId]);
 
     const onChange = (
         event:
@@ -139,10 +165,9 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
             | React.ChangeEvent<HTMLTextAreaElement>
     ) => {
         const { name, value } = event.target;
-
         setData({
             ...data,
-            [name]: value.trim()
+            [name]: value
         });
     };
 
@@ -230,13 +255,23 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
             getFileAvatar({ file: '', flag: false });
         }
     }, [JSON.stringify(fileList)]);
+
     const handleKeyPress = (event: any) => {
         const pattern = /^[0-9.]*$/;
         if (!pattern.test(event.key)) {
             event.preventDefault();
         }
     };
+
+    const handleKeyPressName = (event: any) => {
+        const pattern = /^[a-zA-Z\s]*$/;
+        if (!pattern.test(event.key)) {
+            event.preventDefault();
+        }
+    };
+
     const handleCancel = () => setPreviewOpen(false);
+
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as RcFile);
@@ -270,6 +305,8 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
         const now = dayjs();
         return current && current < now.startOf('day');
     };
+
+    const { isConnected, address } = useAccount();
 
     const range = (start: number, end: number) => {
         const result = [];
@@ -334,6 +371,16 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
     };
 
     const handleImageClick = async (image: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         const newFile: UploadFile = {
             uid: `rc-upload-${new Date().getTime()}`,
             type: 'image/jpeg',
@@ -376,6 +423,16 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
     };
 
     const generateDescription = async (tokenName: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         try {
             setLoadingDescription(true);
             const promptDescription = `I am creating a blockchain token, give me a short description for this token of about 30 words. The name of the token is ${tokenName}`;
@@ -387,7 +444,6 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                 description: match ? match[1] : data.description
             });
         } catch (error) {
-            console.log(error);
             notification.error({
                 message: 'Error when generate description',
                 description: 'Please try again after 30 seconds',
@@ -417,6 +473,16 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
     };
 
     const generatePromptGenerateImage = async (name: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         const prompt = `Analyze the token name ${name} and create a complete, unique image prompt for a blockchain token inspired by this name. The image prompt should describe the token's visual essence (e.g., themes of nature, strength, energy) based on the meaning or symbolism of ${name}. Specify colors, textures, and symbolic elements that capture the essence of ${name}. Each element should relate clearly to the theme or characteristics implied by the name, making the token visually distinct and memorable. Focus on conveying the design in a futuristic, high-tech style with detailed descriptions that leave no placeholders. The image prompt should be in a single line.`;
 
         try {
@@ -436,6 +502,39 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
         }
     };
 
+    const [validateInput, setValidateInput] = useState({
+        totalSupply: {
+            error: false,
+            helperText: ''
+        }
+    });
+    const handleValueChange = (value: any, name: any) => {
+        let validateTotalSupply = false;
+        let validateTotalSupplyHelperText = '';
+
+        if (value !== undefined && parseInt(value) > 0) {
+            validateTotalSupply = false;
+            validateTotalSupplyHelperText = '';
+
+            setData({
+                ...data,
+                [name]: value.trim()
+            });
+        } else if (value === undefined || parseInt(value) <= 0) {
+            validateTotalSupply = true;
+            validateTotalSupplyHelperText = t(
+                'PLEASE_INPUT_YOUR_TOKEN_TOTAL_SUPPLY'
+            );
+        }
+        setValidateInput({
+            ...validateInput,
+            totalSupply: {
+                error: validateTotalSupply,
+                helperText: validateTotalSupplyHelperText
+            }
+        });
+    };
+
     return (
         <div className="">
             <Row gutter={[8, 10]}>
@@ -446,49 +545,33 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                     md={24}
                     xxl={24}
                 >
-                    <div className="mb-0">
-                        <span className="!font-forza text-base">
-                            {t('POOL_NAME')}
-                        </span>
-
+                    <Form.Item
+                        name="name"
+                        label={
+                            <span className="!font-forza text-base ">
+                                {t('NAME')}
+                            </span>
+                        }
+                        required
+                        rules={[
+                            {
+                                required: true,
+                                message: t('PLEASE_INPUT_YOUR_TOKEN_NAME')
+                            }
+                        ]}
+                        className="mb-1 !font-forza text-base"
+                        initialValue={data.name}
+                    >
                         <Input
-                            size="large"
-                            disabled={true}
-                            className="!font-forza text-base"
-                            style={{
-                                color: '#999999',
-                                width: '100%',
-                                backgroundColor: '#CCCCCC'
-                            }}
                             name="name"
-                            value={settingTokenState.choicedToken?.name}
-                        />
-                    </div>
-                </Col>
-                <Col
-                    xs={24}
-                    sm={24}
-                    lg={24}
-                    md={24}
-                    xxl={24}
-                >
-                    <div className="mb-0">
-                        <span className="!font-forza text-base">
-                            {t('POOL_SYMBOL')}
-                        </span>
-                        <Input
                             size="large"
-                            disabled={true}
-                            name="symbol"
+                            value={data.name}
+                            placeholder={t('TOKEN_NAME')}
+                            onChange={onChange}
                             className="!font-forza text-base"
-                            style={{
-                                color: '#999999',
-                                width: '100%',
-                                backgroundColor: '#CCCCCC'
-                            }}
-                            value={settingTokenState.choicedToken?.symbol}
+                            onKeyPress={handleKeyPressName}
                         />
-                    </div>
+                    </Form.Item>
                 </Col>
                 <Col
                     xs={24}
@@ -497,53 +580,134 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                     md={24}
                     xxl={24}
                 >
-                    <div className="relative flex items-center gap-2">
-                        <TextArea
-                            rows={4}
+                    <Form.Item
+                        name="symbol"
+                        label={
+                            <span className="!font-forza text-base ">
+                                {t('SYMBOL')}
+                            </span>
+                        }
+                        required
+                        rules={[
+                            {
+                                required: true,
+                                message: t('PLEASE_INPUT_YOUR_TOKEN_SYMBOL')
+                            }
+                        ]}
+                        className="mb-0"
+                        initialValue={data.symbol}
+                    >
+                        <Input
+                            name="symbol"
+                            value={data.symbol}
                             size="large"
                             onChange={onChange}
-                            value={data.description}
-                            name="description"
+                            placeholder={t('SYMBOL')}
+                            onKeyPress={handleKeyPressName}
                             className="!font-forza text-base"
                         />
-                        {loadingDescription ? (
-                            <Spin className="absolute bottom-2 right-2" />
-                        ) : (
-                            settingTokenState.choicedToken?.name && (
-                                <Button
-                                    type="primary"
-                                    size="small"
-                                    className="absolute bottom-2 right-2 cursor-pointer"
-                                    onClick={() =>
-                                        generateDescription(
-                                            settingTokenState.choicedToken?.name
-                                        )
-                                    }
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="16"
-                                        height="16"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="lucide lucide-wand-sparkles"
-                                    >
-                                        <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" />
-                                        <path d="m14 7 3 3" />
-                                        <path d="M5 6v4" />
-                                        <path d="M19 14v4" />
-                                        <path d="M10 2v2" />
-                                        <path d="M7 8H3" />
-                                        <path d="M21 16h-4" />
-                                        <path d="M11 3H9" />
-                                    </svg>
-                                </Button>
-                            )
+                    </Form.Item>
+                </Col>
+
+                {/* <Col
+                    xs={24}
+                    sm={24}
+                    lg={24}
+                    md={24}
+                    xxl={24}
+                >
+                    <div className="mb-1 flex flex-col gap-1">
+                        <span className="!font-forza text-base">
+                            <Text className="text-lg text-red-500">* </Text>
+                            {t('TOTAL_SUPPLY')}
+                        </span>
+
+                        <CurrencyInput
+                            name="totalSupply"
+                            placeholder={t('TOTAL_SUPPLY')}
+                            defaultValue={data.totalSupply}
+                            decimalsLimit={2}
+                            // value={data.totalSupply}
+                            onValueChange={(value, name) =>
+                                handleValueChange(value, name)
+                            }
+                            groupSeparator=","
+                            decimalSeparator="."
+                            className="!font-forza text-base focus:border-[#1677FF] focus:outline-none"
+                            style={{
+                                width: '100%',
+                                padding: '5px 12px',
+                                height: '40px',
+                                border: 'solid 1px #ccc',
+                                borderRadius: '5px'
+                            }}
+                        />
+                        {validateInput.totalSupply.error === true && (
+                            <Text className="text-red-500">
+                                {validateInput.totalSupply.helperText}
+                            </Text>
                         )}
+                    </div>
+                </Col> */}
+
+                <Col
+                    xs={24}
+                    sm={24}
+                    lg={24}
+                    md={24}
+                    xxl={24}
+                >
+                    <div className="mb-1 flex flex-col gap-1">
+                        <span className="!font-forza text-base">
+                            {/* <Text className="text-lg text-red-500">* </Text> */}
+                            {t('DESCRIPTION')}
+                        </span>
+                        <div className="relative flex items-center gap-2">
+                            <TextArea
+                                rows={4}
+                                size="large"
+                                onChange={onChange}
+                                value={data.description}
+                                name="description"
+                                className="!font-forza text-base"
+                            />
+                            {loadingDescription ? (
+                                <Spin className="absolute bottom-2 right-2" />
+                            ) : (
+                                data.name && (
+                                    <Button
+                                        type="primary"
+                                        size="small"
+                                        className="absolute bottom-2 right-2 cursor-pointer"
+                                        onClick={() =>
+                                            generateDescription(data.name)
+                                        }
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="lucide lucide-wand-sparkles"
+                                        >
+                                            <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" />
+                                            <path d="m14 7 3 3" />
+                                            <path d="M5 6v4" />
+                                            <path d="M19 14v4" />
+                                            <path d="M10 2v2" />
+                                            <path d="M7 8H3" />
+                                            <path d="M21 16h-4" />
+                                            <path d="M11 3H9" />
+                                        </svg>
+                                    </Button>
+                                )
+                            )}
+                        </div>
                     </div>
                 </Col>
                 <Col
@@ -587,77 +751,76 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                                 />
                             ) : null}
 
-                            {!loadingImage &&
-                                settingTokenState.choicedToken?.name && (
-                                    <>
-                                        <Button
-                                            className="bg-[#297fd6] !font-forza text-sm text-white"
-                                            onClick={showModal}
-                                        >
-                                            {t('GENERATE_IMAGE')}
-                                        </Button>
+                            {!loadingImage && data.name && (
+                                <>
+                                    <Button
+                                        className="bg-[#297fd6] !font-forza text-sm text-white"
+                                        onClick={showModal}
+                                    >
+                                        {t('GENERATE_IMAGE')}
+                                    </Button>
 
-                                        <Modal
-                                            title="Generate Image"
-                                            centered
-                                            width={1000}
-                                            open={isModalOpen}
-                                            onOk={handleOk}
-                                            onCancel={handleCancelModal}
-                                        >
-                                            <div className="relative flex items-center gap-2">
-                                                <TextArea
-                                                    rows={8}
-                                                    onChange={
-                                                        onChangePromptGenerateImage
+                                    <Modal
+                                        title="Generate Image"
+                                        centered
+                                        width={1000}
+                                        open={isModalOpen}
+                                        onOk={handleOk}
+                                        onCancel={handleCancelModal}
+                                    >
+                                        <div className="relative flex items-center gap-2">
+                                            <TextArea
+                                                rows={8}
+                                                onChange={
+                                                    onChangePromptGenerateImage
+                                                }
+                                                value={promptGenerateImage}
+                                                name="promptGenerateImage"
+                                                className="!font-forza text-base"
+                                                placeholder="Please enter the prompt for generating image"
+                                            />
+                                            {loadingPromptGenerateImage ? (
+                                                <Spin className="absolute bottom-2 right-2" />
+                                            ) : (
+                                                <Button
+                                                    type="primary"
+                                                    size="small"
+                                                    className="absolute bottom-2 right-2 cursor-pointer"
+                                                    onClick={() =>
+                                                        generatePromptGenerateImage(
+                                                            settingTokenState
+                                                                .choicedToken
+                                                                ?.name
+                                                        )
                                                     }
-                                                    value={promptGenerateImage}
-                                                    name="promptGenerateImage"
-                                                    className="!font-forza text-base"
-                                                    placeholder="Please enter the prompt for generating image"
-                                                />
-                                                {loadingPromptGenerateImage ? (
-                                                    <Spin className="absolute bottom-2 right-2" />
-                                                ) : (
-                                                    <Button
-                                                        type="primary"
-                                                        size="small"
-                                                        className="absolute bottom-2 right-2 cursor-pointer"
-                                                        onClick={() =>
-                                                            generatePromptGenerateImage(
-                                                                settingTokenState
-                                                                    .choicedToken
-                                                                    ?.name
-                                                            )
-                                                        }
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="16"
+                                                        height="16"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className="lucide lucide-wand-sparkles"
                                                     >
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            width="16"
-                                                            height="16"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="2"
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            className="lucide lucide-wand-sparkles"
-                                                        >
-                                                            <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" />
-                                                            <path d="m14 7 3 3" />
-                                                            <path d="M5 6v4" />
-                                                            <path d="M19 14v4" />
-                                                            <path d="M10 2v2" />
-                                                            <path d="M7 8H3" />
-                                                            <path d="M21 16h-4" />
-                                                            <path d="M11 3H9" />
-                                                        </svg>
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        </Modal>
-                                    </>
-                                )}
+                                                        <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" />
+                                                        <path d="m14 7 3 3" />
+                                                        <path d="M5 6v4" />
+                                                        <path d="M19 14v4" />
+                                                        <path d="M10 2v2" />
+                                                        <path d="M7 8H3" />
+                                                        <path d="M21 16h-4" />
+                                                        <path d="M11 3H9" />
+                                                    </svg>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </Modal>
+                                </>
+                            )}
                         </div>
                         <Modal
                             open={previewOpen}
@@ -693,6 +856,7 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                         </div>
                     </div>
                 </Col>
+
                 <Col
                     xs={24}
                     sm={24}
@@ -701,126 +865,18 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                     xxl={24}
                 >
                     <Form.Item
-                        name="websiteLink"
+                        name="socialMedia"
                         label={
                             <span className="!font-forza text-base">
-                                {t('POOL_WEBSITE')}
+                                {t('SOCIAL_MEDIA')}
                             </span>
                         }
                         className="mb-0"
-                        rules={[
-                            {
-                                pattern: REGEX_WEBSITE,
-                                message: t('INVALID_LINK_ERROR_MESSAGE')
-                            }
-                        ]}
-                        initialValue={data.websiteLink}
                     >
-                        <Input
-                            size="large"
-                            className="!font-forza text-base"
-                            placeholder="Ex: https://mot.com/"
-                            onChange={onChange}
-                            name="websiteLink"
-                        />
+                        <SocialMedia form={form} />
                     </Form.Item>
                 </Col>
-                <Col
-                    xs={24}
-                    sm={24}
-                    lg={24}
-                    md={24}
-                    xxl={24}
-                >
-                    <Form.Item
-                        name="discordLink"
-                        label={
-                            <span className="!font-forza text-base">
-                                {t('POOL_DICORD')}
-                            </span>
-                        }
-                        className="mb-0"
-                        rules={[
-                            {
-                                pattern: REGEX_DISCORD,
-                                message: t('INVALID_LINK_ERROR_MESSAGE')
-                            }
-                        ]}
-                        initialValue={data.discordLink}
-                    >
-                        <Input
-                            size="large"
-                            className="!font-forza text-base"
-                            placeholder="Ex: https://discord.com/abc123"
-                            onChange={onChange}
-                            name="discordLink"
-                        />
-                    </Form.Item>
-                </Col>
-                <Col
-                    xs={24}
-                    sm={24}
-                    lg={24}
-                    md={24}
-                    xxl={24}
-                >
-                    <Form.Item
-                        name="twitterLink"
-                        label={
-                            <span className="!font-forza text-base">
-                                {t('POOL_TWITTER')}
-                            </span>
-                        }
-                        className="mb-0 "
-                        rules={[
-                            {
-                                pattern: REGEX_TWITTER,
-                                message: t('INVALID_LINK_ERROR_MESSAGE')
-                            }
-                        ]}
-                        initialValue={data.twitterLink}
-                    >
-                        <Input
-                            className="!font-forza text-base"
-                            size="large"
-                            placeholder="Ex: https://twitter.com/username"
-                            onChange={onChange}
-                            name="twitterLink"
-                        />
-                    </Form.Item>
-                </Col>
-                <Col
-                    xs={24}
-                    sm={24}
-                    lg={24}
-                    md={24}
-                    xxl={24}
-                >
-                    <Form.Item
-                        name="telegramLink"
-                        label={
-                            <span className="!font-forza text-base">
-                                {t('POOL_TELEGRAM')}
-                            </span>
-                        }
-                        className="mb-0"
-                        rules={[
-                            {
-                                pattern: REGEX_TELEGRAM,
-                                message: t('INVALID_LINK_ERROR_MESSAGE')
-                            }
-                        ]}
-                        initialValue={data.telegramLink}
-                    >
-                        <Input
-                            size="large"
-                            className="!font-forza text-base"
-                            name="telegramLink"
-                            placeholder="Ex: https://t.me/joinchat"
-                            onChange={onChange}
-                        />
-                    </Form.Item>
-                </Col>
+
                 <Col
                     xs={24}
                     sm={24}
@@ -837,7 +893,9 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                                 {' ('}
                                 {chainData.currency}
                                 {' )'}
-                                <Tooltip title={t('HARDCAP_HELP')}>
+                                <Tooltip
+                                    title={`${t('PREFIX_HARDCAP_HELP')} ${DEX_BY_CHAIN[chainData.chainId as keyof typeof DEX_BY_CHAIN]} ${t('SUFFIX_HARDCAP_HELP')}`}
+                                >
                                     <QuestionCircleOutlined
                                         style={{ marginLeft: '8px' }}
                                     />
@@ -847,11 +905,61 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                         rules={[
                             {
                                 validator: async (_, value) => {
-                                    if (Number(value) < 0.5) {
-                                        return Promise.reject(
-                                            new Error(t('INVALID_MIN_VALUE'))
-                                        );
+                                    // if (
+                                    //     Number(chainData.chainId) ===
+                                    //         Number(ChainId.BASE_SEPOLIA) &&
+                                    //     Number(value) < 0.1
+                                    // ) {
+                                    //     return Promise.reject(
+                                    //         new Error('Min value is 0.1')
+                                    //     );
+                                    // } else {
+                                    //     if (Number(value) < 0.5) {
+                                    //         return Promise.reject(
+                                    //             new Error(
+                                    //                 t('INVALID_MIN_VALUE')
+                                    //             )
+                                    //         );
+                                    //     }
+                                    // }
+                                    // Kiểm tra điều kiện theo chain
+                                    const numValue = Number(value);
+                                    if (
+                                        Number(chainData.chainId) ===
+                                        Number(ChainId.BASE_SEPOLIA)
+                                    ) {
+                                        if (numValue < 0.1) {
+                                            return Promise.reject(
+                                                new Error('Min value is 0.1')
+                                            );
+                                        }
+                                    } else if (
+                                        Number(chainData.chainId) ===
+                                        Number(ChainId.IOTA)
+                                    ) {
+                                        if (numValue < 10000) {
+                                            return Promise.reject(
+                                                new Error('Min value is 10000')
+                                            );
+                                        }
+                                    } else if (
+                                        Number(chainData.chainId) ===
+                                        Number(ChainId.BERACHAIN_MAINNET)
+                                    ) {
+                                        if (numValue < 1000) {
+                                            new Error('Min value is 1000');
+                                        }
+                                    } else {
+                                        if (numValue < 0.5) {
+                                            return Promise.reject(
+                                                new Error(
+                                                    t('INVALID_MIN_VALUE')
+                                                )
+                                            );
+                                        }
                                     }
+
+                                    return Promise.resolve();
                                 }
                             },
                             {
@@ -919,6 +1027,23 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                                 pattern: /^\d+(\.\d+)?$/,
                                 message: t('INVALID_NUMBER_FORMAT')
                             }
+                            // {
+                            //     validator: async (_, value) => {
+                            //         if (value && Number(value) < 0.01) {
+                            //             return Promise.reject(
+                            //                 new Error(
+                            //                     t(
+                            //                         'MINTING_RELEASE_TIME_MIN_ERROR',
+                            //                         {
+                            //                             min: '0.6' // 0.01 * 60 minutes
+                            //                         }
+                            //                     )
+                            //                 )
+                            //             );
+                            //         }
+                            //         return Promise.resolve();
+                            //     }
+                            // }
                         ]}
                         className="mb-0"
                         initialValue={data.minDurationSell}
@@ -929,6 +1054,83 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                             name="minDurationSell"
                             onChange={onChange}
                             onKeyPress={handleKeyPress}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col
+                    xs={24}
+                    sm={24}
+                    lg={24}
+                    md={24}
+                    xxl={24}
+                >
+                    <Form.Item
+                        name="bondBuyFirst"
+                        // required
+                        label={
+                            <span className="!font-forza text-base">
+                                {t('CREATOR_BUY_BOND')}
+                                <Tooltip
+                                    title={
+                                        <>
+                                            {t('BUY_BOND_FIRST_TOOLTIP_LINE1')}
+                                            <br />
+                                            {t('BUY_BOND_FIRST_TOOLTIP_LINE2')}
+                                        </>
+                                    }
+                                >
+                                    <QuestionCircleOutlined
+                                        style={{ marginLeft: '8px' }}
+                                    />
+                                </Tooltip>
+                            </span>
+                        }
+                        rules={[
+                            // {
+                            //     required: true,
+                            //     message: t('FIELD_REQUIRED_ERROR_MESSAGE')
+                            // },
+                            {
+                                pattern: /^\d+(\.\d+)?$/,
+                                message: t('INVALID_NUMBER_FORMAT')
+                            },
+                            {
+                                validator: async (_, value) => {
+                                    const numValue = Number(value);
+                                    if (numValue > data.totalBatch) {
+                                        return Promise.reject(
+                                            new Error(
+                                                t(
+                                                    'VALUE_MUST_BE_LESS_THAN_OR_EQUAL_TO_TOTAL_BATCH'
+                                                )
+                                            )
+                                        );
+                                    }
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}
+                        className="mb-0"
+                        initialValue={data.bondBuyFirst}
+                    >
+                        <Input
+                            className="!font-forza text-base"
+                            size="large"
+                            name="bondBuyFirst"
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                // Chỉ cho phép nhập số
+                                if (!/^\d*$/.test(value)) {
+                                    return;
+                                }
+                                // Kiểm tra giá trị số
+                                const numValue = Number(value);
+                                if (numValue <= data.totalBatch) {
+                                    onChange(e);
+                                }
+                            }}
+                            onKeyPress={handleKeyPress}
+                            maxLength={String(data.totalBatch).length}
                         />
                     </Form.Item>
                 </Col>
@@ -997,6 +1199,36 @@ const PoolInformation = ({ form, getFileAvatar }: PoolInforProps) => {
                             allowClear={false}
                         />
                     </div>
+                </Col>
+
+                <Col
+                    xs={24}
+                    sm={24}
+                    lg={24}
+                    md={24}
+                    xxl={24}
+                >
+                    <Form.Item
+                        name="addtionAgent"
+                        label={
+                            <span className="!font-forza text-base">
+                                {t('AI_AGENT')}
+                                <Tooltip title={t('AI_AGENT_TOOLTIP')}>
+                                    <QuestionCircleOutlined
+                                        style={{
+                                            marginLeft: '8px'
+                                        }}
+                                    />
+                                </Tooltip>
+                            </span>
+                        }
+                        className="mb-0"
+                    >
+                        <AdditionalAgent
+                            form={form}
+                            getFileAiAgentAvatar={getFileAiAgentAvatar}
+                        />
+                    </Form.Item>
                 </Col>
             </Row>
         </div>

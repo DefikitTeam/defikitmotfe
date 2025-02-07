@@ -5,6 +5,7 @@ import Loader from '@/src/components/loader';
 import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
+import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import {
     useActivities,
@@ -17,6 +18,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 
 const SaveButtonBuy = ({
@@ -34,7 +36,7 @@ const SaveButtonBuy = ({
 }) => {
     const [data, , resetData] = useBuyPoolInformation();
     const [statusLoading, setStatusLoading] = useState(EActionStatus.Idle);
-    const { address, chainId } = useAccount();
+    const { address, chainId, isConnected } = useAccount();
     const [isLoadingBuyToken, setIsLoadingBuyToken] = useState<boolean>(false);
     const { authState } = useAuthLogin();
     const t = useTranslations();
@@ -47,13 +49,19 @@ const SaveButtonBuy = ({
     const convertMaxAmountToETH = new BigNumber(data?.maxAmountETH)
         .div(1e18)
         .toString();
-    const [{ poolStateDetail }, fetchPoolDetail, fetchPoolDetailBackground] =
-        usePoolDetail();
+    const [
+        { poolStateDetail },
+        fetchPoolDetail,
+        fetchPoolDetailBackground,
+        fetchHolderDistribution
+    ] = usePoolDetail();
     const { status, pool } = poolStateDetail;
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
-    const { chainData } = useCurrentChainInformation();
+    const chainData = useSelector((state: RootState) => state.chainData);
+
     const { useBuyPoolMulti } = useMultiCaller();
+    const [hasNotified, setHasNotified] = useState<boolean>(false);
     const currentHostName = useCurrentHostNameInformation();
 
     useEffect(() => {
@@ -81,7 +89,7 @@ const SaveButtonBuy = ({
     }, [useBuyPoolMulti.isLoadingAgreedBuyToken]);
 
     useEffect(() => {
-        if (useBuyPoolMulti.isConfirmed) {
+        if (useBuyPoolMulti.isConfirmed && !hasNotified) {
             setIsLoadingBuyToken(false);
             clearForm && clearForm();
             notification.success({
@@ -90,15 +98,25 @@ const SaveButtonBuy = ({
                 duration: 1.2,
                 showProgress: true
             });
+            setHasNotified(true);
 
             setTimeout(() => {
                 fetchPoolDetailBackground({
                     page: poolStateDetail.pageTransaction,
                     limit: poolStateDetail.limitTransaction,
                     poolAddress: poolAddress,
-                    chainId: chainData.chainId as number
+                    chainId: chainData.chainData.chainId as number
+                });
+                fetchHolderDistribution({
+                    page: poolStateDetail.pageHolderDistribution,
+                    limit: poolStateDetail.limitHolderDistribution,
+                    poolAddress: poolAddress,
+                    chainId: chainData.chainData.chainId as number
                 });
             }, 10000);
+        }
+        if (!useBuyPoolMulti.isConfirmed) {
+            setHasNotified(false);
         }
     }, [useBuyPoolMulti.isConfirmed, status]);
     useEffect(() => {
@@ -154,13 +172,31 @@ const SaveButtonBuy = ({
         }
     };
 
-    const handleButtonBuyPoolOrTradeKodiak = () => {
+    const handleButtonBuyPoolOrTrade = () => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         if (isTradeBex) {
-            window.open(
-                t('LINK_TRADE_ON_KADIAK') + `${poolAddress}`,
-                '_blank',
-                'noopener,noreferrer'
-            );
+            if (Number(pool?.startTime) < 1736496722) {
+                window.open(
+                    t('LINK_TRADE_ON_KADIAK') + `${poolAddress}`,
+                    '_blank',
+                    'noopener,noreferrer'
+                );
+            } else {
+                window.open(
+                    t('LINK_TRADE_ON_BEX') + `${poolAddress}`,
+                    '_blank',
+                    'noopener,noreferrer'
+                );
+            }
         } else {
             handleBuyPool();
         }
@@ -194,10 +230,14 @@ const SaveButtonBuy = ({
                         wordWrap: 'break-word'
                     }}
                     size="large"
-                    onClick={handleButtonBuyPoolOrTradeKodiak}
+                    onClick={handleButtonBuyPoolOrTrade}
                     disabled={disableBtnBuy === true && isTradeBex === false}
                 >
-                    {isTradeBex ? 'Trade on Kodiak' : `Buy ${text}`}
+                    {isTradeBex
+                        ? Number(pool.startTime) < 1736496722
+                            ? 'Trade on Kodiak'
+                            : 'Trade on Bex'
+                        : `Buy ${text}`}
                 </Button>
             </div>
         </Spin>

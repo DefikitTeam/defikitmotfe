@@ -1,21 +1,25 @@
 /* eslint-disable */
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { RootState } from '@/src/stores';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { Transaction } from '@/src/stores/pool/type';
 import { ExportOutlined } from '@ant-design/icons';
-import { Table, Typography } from 'antd';
+import { notification, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Moment from 'react-moment';
+import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
 const { Title } = Typography;
 const TransactionList = () => {
     const t = useTranslations();
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
+    const chainData = useSelector((state: RootState) => state.chainData);
     const [
         { poolStateDetail },
         ,
@@ -28,16 +32,42 @@ const TransactionList = () => {
 
     const { transactions } = poolStateDetail;
     const router = useRouter();
-    const { chainData } = useCurrentChainInformation();
     const handleOpenResentTx = (address: string, type: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         // TODO: need change REACT_APP_TEST_SEPOLIA_EXPLORER_URL follow environment, network
         if (address) {
             window.open(
-                chainData.explorerUrl + `/${type}/` + address,
+                chainData.chainData.explorerUrl + `/${type}/` + address,
                 '_blank',
                 'noopener,noreferrer'
             );
         }
+    };
+    const { isConnected, address } = useAccount();
+
+    const handleClickAddress = (address: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+        router.push(
+            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
+        );
     };
 
     const columns: ColumnsType<Transaction> = [
@@ -74,7 +104,7 @@ const TransactionList = () => {
             align: 'center'
         },
         {
-            title: `${t('TOTAL')} ${chainData.currency}`,
+            title: `${t('TOTAL')} ${chainData.chainData.currency}`,
             dataIndex: 'eth',
             width: '5%',
             className: '!font-forza',
@@ -92,10 +122,7 @@ const TransactionList = () => {
             render: (_, record) => (
                 <span
                     className="cursor-pointer text-blue-400"
-                    // onClick={() => handleOpenResentTx(record.sender, 'address')}
-                    onClick={() =>
-                        router.push(`/profile/address/${record.sender}`)
-                    }
+                    onClick={() => handleClickAddress(record.sender || '')}
                 >
                     {shortWalletAddress(record.sender || '')}
                 </span>
@@ -139,10 +166,14 @@ const TransactionList = () => {
                 page: poolStateDetail.pageTransaction,
                 limit: poolStateDetail.limitTransaction,
                 poolAddress: poolAddress,
-                chainId: chainData.chainId as number
+                chainId: chainData.chainData.chainId as number
             });
         }
-    }, [poolAddress, chainData.chainId, poolStateDetail.pageTransaction]);
+    }, [
+        poolAddress,
+        chainData.chainData.chainId,
+        poolStateDetail.pageTransaction
+    ]);
 
     const handlePageTransactionChange = (pageTransactionChange: number) => {
         setPageTransactionAction(pageTransactionChange);

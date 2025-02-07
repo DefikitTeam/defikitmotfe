@@ -4,6 +4,7 @@ import {
     loginWallet,
     resetStatusLoginTele,
     resetStatusLoginWallet,
+    setOpenModalInviteBlocker,
     signOutTelegram,
     signOutWallet
 } from './slice';
@@ -22,6 +23,9 @@ type AuthLoginType = {
     resetStatusLoginWalletAction: () => void;
     // eslint-disable-next-line
     resetStatusLoginTeleAction: () => void;
+
+    // eslint-disable-next-line
+    setOpenModalInviteBlocker: (isOpenModalInviteBlocker: boolean) => void;
 };
 
 export const useAuthLogin = (): AuthLoginType => {
@@ -50,12 +54,19 @@ export const useAuthLogin = (): AuthLoginType => {
         dispatch(resetStatusLoginTele());
     }, [dispatch]);
 
+    const setOpenModalInviteBlockerAction = useCallback(
+        (isOpenModalInviteBlocker: boolean) => {
+            dispatch(setOpenModalInviteBlocker({ isOpenModalInviteBlocker }));
+        },
+        [dispatch]
+    );
     return {
         authState,
         loginAction,
         logoutWalletAction,
         logoutTelegramAction,
         resetStatusLoginWalletAction,
-        resetStatusLoginTeleAction
+        resetStatusLoginTeleAction,
+        setOpenModalInviteBlocker: setOpenModalInviteBlockerAction
     };
 };

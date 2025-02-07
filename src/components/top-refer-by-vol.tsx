@@ -1,0 +1,127 @@
+import { notification, Typography } from 'antd';
+import { Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
+import { shortWalletAddress } from '../common/utils/utils';
+import { RootState } from '../stores';
+import { useTopRefByVol } from '../stores/top-ref-by-vol/hook';
+import { EActionStatus } from '../stores/type';
+import { useTranslations } from 'next-intl';
+const { Text } = Typography;
+
+const TopReferByVol = () => {
+    const router = useRouter();
+    const { address, isConnected } = useAccount();
+    const t = useTranslations();
+    const {
+        topRefByVolState,
+        getAllTopRefByVolAction,
+        resetStatusGetAllTopRefByVolAction
+    } = useTopRefByVol();
+    const chainData = useSelector((state: RootState) => state.chainData);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            getAllTopRefByVolAction({
+                chainId: chainData.chainData.chainId.toString()
+            });
+        }, 5000);
+        return () => clearInterval(intervalId);
+    }, [chainData.chainData.chainId, address]);
+
+    useEffect(() => {
+        if (
+            topRefByVolState.status === EActionStatus.Succeeded &&
+            topRefByVolState.topRefByVols
+        ) {
+            resetStatusGetAllTopRefByVolAction();
+        }
+    }, [topRefByVolState.status]);
+
+    const handleClickTopRefByVol = (id: string) => {
+        if (isConnected && address) {
+            router.push(
+                `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
+            );
+        } else {
+            notification.error({
+                message: 'Error',
+                description: t('PLEASE_CONNECT_WALLET'),
+                duration: 2,
+                showProgress: true
+            });
+            return;
+        }
+    };
+
+    return (
+        <div className={``}>
+            {topRefByVolState.topRefByVols &&
+                topRefByVolState.topRefByVols.length > 0 && (
+                    <div className="relative mb-8 mt-2 flex justify-center overflow-y-auto overflow-x-hidden">
+                        <div className="w-full max-w-xl ">
+                            <div className="mb-4 animate-king-title text-center">
+                                <Text className="animate-king-text !font-forza !text-2xl !font-extrabold tracking-wider text-yellow-500">
+                                    Top Referrals by Volume
+                                </Text>
+                            </div>
+                            <div
+                                className={`max-h-[266px] animate-fadeIn overflow-y-auto rounded-lg bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 p-6 shadow-lg`}
+                            >
+                                <ul>
+                                    {topRefByVolState.topRefByVols &&
+                                        topRefByVolState.topRefByVols.length >
+                                            0 &&
+                                        topRefByVolState.topRefByVols.map(
+                                            (item, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="mb-4 flex animate-fadeInUp cursor-pointer items-center justify-between rounded-lg bg-white bg-opacity-20 p-4 backdrop-blur-lg backdrop-filter
+                                                hover:bg-white hover:bg-opacity-20 hover:bg-opacity-30 hover:backdrop-blur-lg hover:backdrop-filter
+                                            "
+                                                    onClick={() =>
+                                                        handleClickTopRefByVol(
+                                                            item.id
+                                                        )
+                                                    }
+                                                >
+                                                    <div className="flex items-center">
+                                                        <span className="mr-3 font-bold text-white">
+                                                            {index + 1}
+                                                        </span>
+                                                        <Star className="mr-3 h-6 w-6 animate-spin text-yellow-300" />
+                                                        <span
+                                                            className="cursor-pointer !font-forza text-white hover:text-blue-600"
+                                                            onClick={() =>
+                                                                handleClickTopRefByVol(
+                                                                    item.id
+                                                                )
+                                                            }
+                                                        >
+                                                            {shortWalletAddress(
+                                                                item.id || ''
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                    <span className="!font-forza text-white">
+                                                        {item.volumeInETH}{' '}
+                                                        {
+                                                            chainData.chainData
+                                                                .currency
+                                                        }
+                                                    </span>
+                                                </li>
+                                            )
+                                        )}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                )}
+        </div>
+    );
+};
+
+export default TopReferByVol;

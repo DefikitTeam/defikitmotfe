@@ -1,14 +1,20 @@
 /* eslint-disable */
 
 import { CloseCircleFilled, SearchOutlined } from '@ant-design/icons';
-import { Button, Input } from 'antd';
+import { Button, Input, notification } from 'antd';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
+import { useAccount } from 'wagmi';
 
 interface SearchProps {
     placeholder?: string;
     fullWidth?: boolean;
     onChange: (query: string) => void;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     className?: string;
+    onClear?: () => void;
+    value?: string;
 }
 const SearchComponent = (props: SearchProps) => {
     const [query, setQuery] = useState('');
@@ -17,10 +23,24 @@ const SearchComponent = (props: SearchProps) => {
         setQuery(event.target.value);
         props.onChange(event.target.value);
     };
+    const router = useRouter();
+    const t = useTranslations();
 
+    const { isConnected, address } = useAccount();
     const handleOnClearSearch = () => {
-        setQuery('');
-        props.onChange('');
+        if (isConnected && address) {
+            setQuery('');
+            props.onChange('');
+            props.onClear?.();
+        } else {
+            notification.error({
+                message: 'Error',
+                description: t('PLEASE_CONNECT_WALLET'),
+                duration: 2,
+                showProgress: true
+            });
+            return;
+        }
     };
 
     return (
@@ -29,12 +49,13 @@ const SearchComponent = (props: SearchProps) => {
             placeholder={props.placeholder}
             type="text"
             width={props.fullWidth ? '100%' : 'auto'}
-            value={query}
+            value={props.value || query}
             onChange={(event) => handleOnChange(event)}
             // allowClear
+            onKeyDown={props.onKeyDown}
             prefix={<SearchOutlined />}
             suffix={
-                query && (
+                (props.value || query) && (
                     <Button
                         icon={
                             // <CloseCircleOutlined

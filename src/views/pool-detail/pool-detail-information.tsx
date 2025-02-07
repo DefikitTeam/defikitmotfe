@@ -14,6 +14,8 @@ import { useTranslations } from 'next-intl';
 
 import ModalDetailVesting from './modal-detail-vesting';
 import { CollapseProps } from 'antd/lib';
+import { DEX_BY_CHAIN } from '@/src/common/constant/constance';
+import { useAccount } from 'wagmi';
 
 const PoolDetailInformation = () => {
     const t = useTranslations();
@@ -28,7 +30,19 @@ const PoolDetailInformation = () => {
     const handleClickOpenViewDetail = () => {
         setOpenModalVesting(true);
     };
+    const { isConnected, address } = useAccount();
+
     const handleCopy = (tokenAddress: string | undefined) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
                 notification.success({
@@ -70,7 +84,7 @@ const PoolDetailInformation = () => {
                             {formatCurrency(
                                 pool
                                     ? `${new BigNumber(pool?.tokenForSale)
-                                        //   .div(10 ** parseInt(pool?.decimals))
+                                          .div(10 ** parseInt(pool?.decimals))
                                           .toFixed(0)} ${pool.symbol}`
                                     : '0'
                             )}
@@ -83,7 +97,7 @@ const PoolDetailInformation = () => {
                             {formatCurrency(
                                 pool
                                     ? `${new BigNumber(pool?.tokenForLiquidity)
-                                        //   .div(10 ** parseInt(pool?.decimals))
+                                          .div(10 ** parseInt(pool?.decimals))
                                           .toFixed(0)} ${pool.symbol}`
                                     : '0'
                             )}
@@ -95,7 +109,7 @@ const PoolDetailInformation = () => {
                             {formatCurrency(
                                 pool
                                     ? `${new BigNumber(pool?.tokenForAirdrop)
-                                        //   .div(10 ** parseInt(pool?.decimals))
+                                          .div(10 ** parseInt(pool?.decimals))
                                           .toFixed(0)} ${pool.symbol}`
                                     : '0'
                             )}
@@ -107,7 +121,7 @@ const PoolDetailInformation = () => {
                             {formatCurrency(
                                 pool
                                     ? `${new BigNumber(pool?.tokenForFarm)
-                                        //   .div(10 ** parseInt(pool?.decimals))
+                                          .div(10 ** parseInt(pool?.decimals))
                                           .toFixed(0)} ${pool.symbol}`
                                     : '0'
                             )}
@@ -178,7 +192,13 @@ const PoolDetailInformation = () => {
 
                     <div className="flex justify-between">
                         <div className="  ">{t('LISTING_ON')}:</div>
-                        <div className="  ">UniswapV2</div>
+                        <div className="  ">
+                            {
+                                DEX_BY_CHAIN[
+                                    chainData.chainId as keyof typeof DEX_BY_CHAIN
+                                ]
+                            }
+                        </div>
                     </div>
 
                     <div className="flex justify-between">

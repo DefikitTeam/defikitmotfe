@@ -28,20 +28,19 @@ const WorkspaceLayout = (props: IWorkspaceLayout) => {
         router.push(`/${chainData.name.replace(/\s+/g, '').toLowerCase()}`);
     }, [chainData]);
 
+    if (currentPath && currentPath.length < 2) {
+        handleNavigation();
+        return null;
+    }
+
     return (
-        <>
-            {currentPath && currentPath.length < 2 ? (
-                handleNavigation()
-            ) : (
-                <Layout className="min-h-screen">
-                    <Header />
-                    <Layout className="mt-12">
-                        <Content {...props} />
-                    </Layout>
-                    <Footer />
-                </Layout>
-            )}
-        </>
+        <Layout className="min-h-screen">
+            <Header />
+            <Layout className="mt-12">
+                <Content {...props} />
+            </Layout>
+            <Footer />
+        </Layout>
     );
 };
 export default WorkspaceLayout;

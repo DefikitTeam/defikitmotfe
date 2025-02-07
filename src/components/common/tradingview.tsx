@@ -12,6 +12,7 @@ import BigNumber from 'bignumber.js';
 import { createChart, HistogramData, TickMarkType } from 'lightweight-charts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
+import { useAccount } from 'wagmi';
 
 interface Props {
     height?: string | number;
@@ -38,6 +39,13 @@ const TradingViewChart = (props: Props) => {
     const [priceColor, setPriceColor] = useState<string>('#089981');
     const chartContainerRef = useRef<HTMLDivElement | null>(null);
     const [timeframe, setTimeframe] = useState('minute');
+    const { isConnected, address } = useAccount();
+
+    const handleClickTimeframe = (timeframe: string) => {
+        if (isConnected && address) {
+            setTimeframe(timeframe);
+        }
+    };
 
     useEffect(() => {
         if (chartContainerRef.current) {
@@ -173,6 +181,10 @@ const TradingViewChart = (props: Props) => {
             // });
 
             const customFormatNumber = (number: number) => {
+                if (number === undefined || number === null) {
+                    return '';
+                }
+
                 let [integerPart, decimalPart] = number.toString().split('.');
 
                 if (!decimalPart) {
@@ -286,7 +298,7 @@ const TradingViewChart = (props: Props) => {
                         if (data) {
                             let arrayData: any[] = [];
                             if (timeframe === 'minute') {
-                                arrayData = data.data.poolMinuteDatas.map(
+                                arrayData = data?.data?.poolMinuteDatas.map(
                                     (item: PoolDataMinuteChart) => ({
                                         time: Number(item.minuteStartUnix),
                                         low: Number(
@@ -307,7 +319,7 @@ const TradingViewChart = (props: Props) => {
                                     })
                                 );
                             } else if (timeframe === 'fiveMinute') {
-                                arrayData = data.data.pool5MinuteDatas.map(
+                                arrayData = data?.data?.pool5MinuteDatas.map(
                                     (item: PoolDataMinuteChart) => ({
                                         time: Number(item.minuteStartUnix),
                                         low: Number(
@@ -328,7 +340,7 @@ const TradingViewChart = (props: Props) => {
                                     })
                                 );
                             } else if (timeframe === 'hour') {
-                                arrayData = data.data.poolHourDatas.map(
+                                arrayData = data?.data?.poolHourDatas.map(
                                     (item: PoolDataHourChart) => ({
                                         time: Number(item.hourStartUnix),
                                         low: Number(
@@ -349,7 +361,7 @@ const TradingViewChart = (props: Props) => {
                                     })
                                 );
                             } else if (timeframe === 'day') {
-                                arrayData = data.data.poolDayDatas.map(
+                                arrayData = data?.data?.poolDayDatas.map(
                                     (item: PoolDataDayChart) => ({
                                         time: Number(item.dayStartUnix),
                                         low: Number(
@@ -588,7 +600,8 @@ const TradingViewChart = (props: Props) => {
                             size="large"
                             style={{ width: '100%' }}
                             className={`cursor-pointer border-none text-[#423b3a] hover:bg-[#F0F3FA] hover:font-forza hover:font-bold hover:text-black ${timeframe === 'minute' ? 'bg-[#F0F3FA] font-forza font-bold !text-black' : ''}`}
-                            onClick={() => setTimeframe('minute')}
+                            // onClick={() => setTimeframe('minute')}
+                            onClick={() => handleClickTimeframe('minute')}
                         >
                             1M
                         </Button>
@@ -601,7 +614,8 @@ const TradingViewChart = (props: Props) => {
                             size="large"
                             style={{ width: '100%' }}
                             className={`cursor-pointer border-none text-[#423b3a] hover:bg-[#F0F3FA] hover:font-forza hover:font-bold hover:text-black ${timeframe === 'fiveMinute' ? 'bg-[#F0F3FA] font-forza font-bold !text-black' : ''}`}
-                            onClick={() => setTimeframe('fiveMinute')}
+                            // onClick={() => setTimeframe('fiveMinute')}
+                            onClick={() => handleClickTimeframe('fiveMinute')}
                         >
                             5M
                         </Button>
@@ -614,7 +628,8 @@ const TradingViewChart = (props: Props) => {
                             size="large"
                             style={{ width: '100%' }}
                             className={`cursor-pointer border-none text-[#423b3a] hover:bg-[#F0F3FA] hover:font-forza hover:font-bold hover:text-black ${timeframe === 'hour' ? 'bg-[#F0F3FA] font-forza font-bold !text-black' : ''}`}
-                            onClick={() => setTimeframe('hour')}
+                            // onClick={() => setTimeframe('hour')}
+                            onClick={() => handleClickTimeframe('hour')}
                         >
                             1H
                         </Button>
@@ -627,7 +642,8 @@ const TradingViewChart = (props: Props) => {
                             size="large"
                             style={{ width: '100%' }}
                             className={`cursor-pointer border-none text-[#423b3a] hover:bg-[#F0F3FA] hover:font-forza hover:font-bold hover:text-black ${timeframe === 'day' ? 'bg-[#F0F3FA] font-forza font-bold !text-black' : ''}`}
-                            onClick={() => setTimeframe('day')}
+                            // onClick={() => setTimeframe('day')}
+                            onClick={() => handleClickTimeframe('day')}
                         >
                             1D
                         </Button>

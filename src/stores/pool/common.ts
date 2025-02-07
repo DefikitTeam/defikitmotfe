@@ -19,6 +19,7 @@ export async function updateMetaDataWorker(
     try {
         const response: IResponseMetadata | IResponseMetadata =
             await axios.get(metadataLink);
+
         if ('body' in response.data) {
             const { body } = response.data;
             // @ts-ignore
@@ -61,10 +62,9 @@ export async function updateAnalystDataWorker(
     try {
         // get Price
         const decimalsToken = Number(pool.decimals);
-        const tokenPerBatch = new BigNumber(pool.tokenPerBatch)
-        // .div(
-        //     10 ** decimalsToken
-        // );
+        const tokenPerBatch = new BigNumber(pool.tokenPerBatch).div(
+            10 ** decimalsToken
+        );
         const tokenPerBondFloorMath = tokenPerBatch.isLessThan(1)
             ? tokenPerBatch.toFixed(6)
             : tokenPerBatch.toFixed(0);
@@ -202,19 +202,19 @@ export async function reCalculatePool(
                 [pool.id]: analystDataPool
             };
         }
-        if (!metaDataExtraInfo[pool.id]) {
-            const metaDataLink = pool.metadata;
-            const metaDataPool = await updateMetaDataWorker(
-                pool.id,
-                metaDataLink
-            );
-            if (metaDataPool) {
-                metaDataExtraInfo = {
-                    ...metaDataExtraInfo,
-                    [pool.id]: metaDataPool
-                };
-            }
-        }
+        // if (!metaDataExtraInfo[pool.id]) {
+        //     const metaDataLink = pool.metadata;
+        //     const metaDataPool = await updateMetaDataWorker(
+        //         pool.id,
+        //         metaDataLink
+        //     );
+        //     if (metaDataPool) {
+        //         metaDataExtraInfo = {
+        //             ...metaDataExtraInfo,
+        //             [pool.id]: metaDataPool
+        //         };
+        //     }
+        // }
     }
     return {
         metaDataExtraInfo,

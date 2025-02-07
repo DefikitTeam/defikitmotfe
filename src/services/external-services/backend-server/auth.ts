@@ -1,25 +1,39 @@
 /* eslint-disable */
-import { NEXT_PUBLIC_API_ENDPOINT } from '@/src/common/web3/constants/env';
+import {
+    NEXT_PUBLIC_API_ENDPOINT,
+    NEXT_PUBLIC_API_ENDPOINT_PROD,
+    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD
+} from '@/src/common/web3/constants/env';
+import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
 import {
     IDataUserLoginResponse,
     ILoginRequest,
+    ILoginResponse,
     ILoginTeleResponse,
     ILoginWalletResponse
 } from '@/src/stores/auth/type';
 import { Cookies } from 'react-cookie';
 import { post } from '../fetcher';
+import { IRefCode } from '@/src/stores/pool/type';
 const cookies = new Cookies();
 const USER_INFO_STORAGE_KEY = 'usr_if';
 const USER_WALLET_STORAGE_KEY = 'usr_wallet_if';
 const USER_TELE_STORAGE_KEY = 'usr_tele_if';
+const currentHostName = useCurrentHostNameInformation();
+const isProd =
+    currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
+export const REFCODE_INFO_STORAGE_KEY = 'refCode';
+const USER_TOKEN_STORAGE_KEY = 'usr_tk';
+
+const USER_REFRESH_TOKEN_STORAGE_KEY = 'usr_refresh_token';
 
 const serviceAuth = {
     loginWallet: async (payload: ILoginRequest) => {
         const response = await post<any>(
-            `${NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
+            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
             payload
         );
-        return response.data;
+        return response;
     },
     storeUserInfo: (user: IDataUserLoginResponse | null) => {
         if (user) {
@@ -59,6 +73,69 @@ const serviceAuth = {
     getUserTeleStorage: (): ILoginTeleResponse | null => {
         const teleInfo = cookies.get(USER_TELE_STORAGE_KEY);
         return teleInfo ? teleInfo : null;
+    },
+
+    storeAccessToken: (token: string | null) => {
+        if (token) {
+            cookies.set(USER_TOKEN_STORAGE_KEY, JSON.stringify(token), {
+                path: '/'
+            });
+            return;
+        }
+        cookies.remove(USER_TOKEN_STORAGE_KEY, { path: '/' });
+    },
+
+    storeRefreshToken: (token: string | null) => {
+        if (token) {
+            cookies.set(USER_REFRESH_TOKEN_STORAGE_KEY, JSON.stringify(token), {
+                path: '/'
+            });
+            return;
+        }
+        cookies.remove(USER_REFRESH_TOKEN_STORAGE_KEY, { path: '/' });
+    },
+    getAccessTokenStorage: (): string | null => {
+        const tokenString = cookies.get(USER_TOKEN_STORAGE_KEY);
+        return tokenString ? tokenString : null;
+    },
+
+    getRefreshToken: async () => {
+        const refreshToken = cookies.get(USER_REFRESH_TOKEN_STORAGE_KEY);
+        const response = await post<{
+            accessToken: string;
+        }>('/refresh-access-token', { refreshToken: refreshToken });
+        const accessToken = response.data;
+        if (accessToken) {
+            cookies.set(USER_TOKEN_STORAGE_KEY, JSON.stringify(accessToken), {
+                path: '/'
+            });
+        }
+        return accessToken;
+    },
+
+    getRefCode: (): IRefCode | null => {
+        if (typeof window !== 'undefined') {
+            const refer = localStorage.getItem(REFCODE_INFO_STORAGE_KEY);
+
+            return refer ? (JSON.parse(refer) as IRefCode) : null;
+        }
+        return null;
+    },
+    storeRefCode: (refCode: IRefCode) => {
+        if (typeof window !== 'undefined') {
+            const existingRefCode = localStorage.getItem(
+                REFCODE_INFO_STORAGE_KEY
+            );
+
+            if (!existingRefCode) {
+                localStorage.setItem(
+                    REFCODE_INFO_STORAGE_KEY,
+                    JSON.stringify(refCode)
+                );
+            } else {
+                console.log('refCode đã tồn tại:', existingRefCode);
+            }
+        }
     }
 };
 

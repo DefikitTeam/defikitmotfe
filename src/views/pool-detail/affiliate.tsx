@@ -29,10 +29,13 @@ const Affiliate = () => {
                 id: poolAddress,
                 chainId: chainData.chainId as number
             });
-            getTopUserRewardByPoolAction({
-                pool: poolAddress,
-                chainId: chainData.chainId as number
-            });
+            const intervalId = setInterval(() => {
+                getTopUserRewardByPoolAction({
+                    pool: poolAddress,
+                    chainId: chainData.chainId as number
+                });
+            }, 10000);
+            return () => clearInterval(intervalId);
         }
     }, [poolAddress, chainData.chainId]);
 

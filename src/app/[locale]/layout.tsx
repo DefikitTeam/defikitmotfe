@@ -6,6 +6,7 @@ import './globals.css';
 
 import WorkspaceLayout from '@/src/components/workspace-layout';
 import GlobalProvider from '@/src/global-provider';
+import ErudaInit from '@/src/components/eruda-int';
 
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 
@@ -92,8 +93,8 @@ export default async function RootLayout({
             lang={locale}
             className="scroll-smooth"
         >
-           
             <body className={roboto.className}>
+                {/* <ErudaInit /> */}
                 <script src="https://telegram.org/js/telegram-web-app.js"></script>
                 <noscript>
                     You need to enable JavaScript to run this app.
@@ -102,6 +103,7 @@ export default async function RootLayout({
                     locale={locale}
                     messages={messages}
                 >
+                    {/* <div>demo</div> */}
                     <WorkspaceLayout>{children}</WorkspaceLayout>
                 </GlobalProvider>
             </body>

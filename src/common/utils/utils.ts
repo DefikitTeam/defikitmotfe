@@ -20,7 +20,8 @@ const images = [
 export const randomDefaultPoolImage = () => {
     // const randomIndex = Math.floor(Math.random() * images.length);
     // return images[randomIndex];
-    return 'https://s2.coinmarketcap.com/static/img/coins/64x64/8978.png';
+    // return 'https://s2.coinmarketcap.com/static/img/coins/64x64/8978.png';
+    return '/images/default-item-pool.jpg';
 };
 export const formatCurrency = (value: string | number) => {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');

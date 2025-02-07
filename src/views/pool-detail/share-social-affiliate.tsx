@@ -11,6 +11,7 @@ import {
     TwitterIcon,
     TwitterShareButton
 } from 'react-share';
+import { useAccount } from 'wagmi';
 
 const ShareSocialAffiliate = () => {
     const t = useTranslations();
@@ -49,7 +50,18 @@ const ShareSocialAffiliate = () => {
         }
     }, [authState.userInfo?.refId]);
 
+    const { isConnected, address } = useAccount();
     const handleCopy = (tokenAddress: string | undefined) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
                 notification.success({
@@ -63,6 +75,16 @@ const ShareSocialAffiliate = () => {
     };
 
     const handleShare = async () => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         if (navigator.share) {
             try {
                 await navigator.share({
@@ -70,7 +92,6 @@ const ShareSocialAffiliate = () => {
                     // text: 'Check out this awesome website!',
                     url: affiliate
                 });
-                console.log('Share successful');
             } catch (error) {
                 console.log('Sharing failed', error);
             }
@@ -102,6 +123,7 @@ const ShareSocialAffiliate = () => {
                         </Tooltip>
                     </div>
                 </Col>
+
                 <Col
                     xs={24}
                     sm={24}
@@ -159,7 +181,7 @@ const ShareSocialAffiliate = () => {
                                 <svg
                                     stroke="currentColor"
                                     fill="currentColor"
-                                    stroke-width="0"
+                                    strokeWidth="0"
                                     viewBox="0 0 512 512"
                                     height="29"
                                     width="29"
@@ -170,33 +192,33 @@ const ShareSocialAffiliate = () => {
                                         cy="256"
                                         r="48"
                                         fill="none"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="30"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="30"
                                     ></circle>
                                     <circle
                                         cx="384"
                                         cy="112"
                                         r="48"
                                         fill="none"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="30"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="30"
                                     ></circle>
                                     <circle
                                         cx="384"
                                         cy="400"
                                         r="48"
                                         fill="none"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="30"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="30"
                                     ></circle>
                                     <path
                                         fill="none"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="30"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="30"
                                         d="M169.83 279.53l172.34 96.94m0-240.94l-172.34 96.94"
                                     ></path>
                                 </svg>

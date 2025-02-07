@@ -4,10 +4,11 @@ import { useSlippage } from '@/src/stores/pool/hook';
 import { Button, Input, Modal, Typography, notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useAccount } from 'wagmi';
 const { Text } = Typography;
 const ModalSetMaxSlippage = ({ type }: { type: string }) => {
     const t = useTranslations();
-
+    const { address, isConnected } = useAccount();
     const { isMobile } = useWindowSize();
     const {
         setOpenModalSettingSlippage,
@@ -44,20 +45,30 @@ const ModalSetMaxSlippage = ({ type }: { type: string }) => {
     };
 
     const handleClick = () => {
-        if (type === 'buy') {
-            setSlippage(amountSlippage);
-            setOpenModalSettingSlippage(false);
-        } else {
-            setSellSlippage(amountSellSlippage);
-            setOpenModalSellSettingSlippage(false);
-        }
+        if (isConnected && address) {
+            if (type === 'buy') {
+                setSlippage(amountSlippage);
+                setOpenModalSettingSlippage(false);
+            } else {
+                setSellSlippage(amountSellSlippage);
+                setOpenModalSellSettingSlippage(false);
+            }
 
-        notification.success({
-            message: t('CHANGE_SLIPPAGE_SUCCESSFULLY'),
-            placement: 'topRight',
-            showProgress: true,
-            duration: 1
-        });
+            notification.success({
+                message: t('CHANGE_SLIPPAGE_SUCCESSFULLY'),
+                placement: 'topRight',
+                showProgress: true,
+                duration: 1
+            });
+        } else {
+            notification.error({
+                message: 'Error',
+                description: t('PLEASE_CONNECT_WALLET'),
+                duration: 2,
+                showProgress: true
+            });
+            return;
+        }
     };
 
     return (

@@ -5,10 +5,13 @@ import { ContractStruct } from '../common/wagmi/launch-pad-interface';
 
 export interface UseReaderParam {
     contractAddAndAbi: ContractStruct;
-    poolAddress: string;
+    poolAddress?: string;
     userAddress?: string;
     chainId: number;
     value?: number;
+    amountOut?: number;
+    reserveIn?: number | bigint;
+    reserveOut?: number | bigint;
 }
 export interface UseReaderReturn {
     dataReader: any;
@@ -21,7 +24,10 @@ export function useReader({
     poolAddress,
     userAddress,
     chainId,
-    value
+    value,
+    amountOut,
+    reserveIn,
+    reserveOut
 }: UseReaderParam): any {
     const readInfo: { contract: ContractStruct; func: ContractFunction[] } = {
         contract: contractAddAndAbi,
@@ -49,6 +55,10 @@ export function useReader({
             {
                 functionName: 'pendingReferrerReward',
                 args: [poolAddress, userAddress]
+            },
+            {
+                functionName: 'getAmountIn',
+                args: [amountOut, reserveIn, reserveOut]
             }
         ]
     };

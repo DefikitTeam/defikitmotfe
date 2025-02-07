@@ -13,8 +13,8 @@ const serviceChart = {
                       pool: "${poolAddress}"
                     }
                   ) {
-                    id
-                    price
+                id
+                price
                 volumeETH
                 minuteStartUnix
                 priceLowest

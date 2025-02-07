@@ -42,7 +42,9 @@ export const getProfile = createAsyncThunk<
         const portfolio =
             await servicePortfolio.getProfileDAtaFromSubgraph(params);
 
-        const priceNative = await servicePriceNative.getPriceNative();
+        const priceNative = await servicePriceNative.getPriceNative(
+            chainId.toString()
+        );
         return {
             // status: EActionStatus.Success,
             createdTokens: portfolio.user.createdTokens,

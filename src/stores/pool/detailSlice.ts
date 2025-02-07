@@ -42,6 +42,14 @@ const initialState: IDetailPoolState = {
         twitter: '',
         discord: ''
     },
+    socialScoreInfo: {
+        post: 0,
+        react: 0,
+        comment: 0,
+        share: 0,
+        view: 0
+    },
+    openModalSocialScore: false,
     analystData: {
         apy: '',
         raisedETH: '',
@@ -72,21 +80,29 @@ export const getDetailPoolBackground = createAsyncThunk<
         const { chainId, poolAddress, userAddress } = params;
         const poolDetail = await servicePool.getDetailPoolInfo(params);
         const poolDetailData = await poolDetail.json();
-        const priceNative = await servicePriceNative.getPriceNative();
-        const [transactionListResponse, analystDataExtraInfor, discussionLink] =
-            await Promise.all([
-                servicePool.getTransaction(
-                    Number(params.page),
-                    Number(params.limit),
-                    poolDetailData.data.pool.id,
-                    params.chainId
-                ),
-                updateAnalystDataWorker(
-                    poolDetailData.data.pool,
-                    Number(priceNative.price)
-                ),
-                servicePool.getDiscussionLink(chainId.toString(), poolAddress)
-            ]);
+        const priceNative = await servicePriceNative.getPriceNative(
+            chainId.toString()
+        );
+        const [
+            transactionListResponse,
+            analystDataExtraInfor,
+            discussionLink,
+            socialScoreInfo
+        ] = await Promise.all([
+            servicePool.getTransaction(
+                Number(params.page),
+                Number(params.limit),
+                poolDetailData.data.pool.id,
+                params.chainId
+            ),
+            updateAnalystDataWorker(
+                poolDetailData.data.pool,
+                Number(priceNative.price)
+            ),
+            servicePool.getDiscussionLink(chainId.toString(), poolAddress),
+            servicePool.getSocialScoreInfo(chainId.toString(), poolAddress)
+        ]);
+
         const transactionList = await transactionListResponse.json();
 
         return {
@@ -94,7 +110,8 @@ export const getDetailPoolBackground = createAsyncThunk<
             transactions: transactionList.data.transactions,
             analystData: analystDataExtraInfor,
             priceNative: priceNative.price,
-            linkDiscussionTelegram: discussionLink.discussionId
+            linkDiscussionTelegram: discussionLink.discussionId,
+            socialScoreInfo: socialScoreInfo.data
         } as unknown as IDetailPoolBackgroundResponseData;
     } catch (error) {
         const err = error as AxiosError;
@@ -117,13 +134,16 @@ export const getPoolDetail = createAsyncThunk<
         const { chainId, poolAddress, userAddress } = params;
         const poolDetail = await servicePool.getDetailPoolInfo(params);
         const poolDetailData = await poolDetail.json();
-        const priceNative = await servicePriceNative.getPriceNative();
+        const priceNative = await servicePriceNative.getPriceNative(
+            chainId.toString()
+        );
 
         const [
             metaDataExtraInfor,
             transactionListResponse,
             analystDataExtraInfor,
-            discussionLink
+            discussionLink,
+            socialScoreInfo
         ] = await Promise.all([
             updateMetaDataWorker(
                 poolDetailData.data.pool.id,
@@ -139,17 +159,29 @@ export const getPoolDetail = createAsyncThunk<
                 poolDetailData.data.pool,
                 Number(priceNative.price)
             ),
-            servicePool.getDiscussionLink(chainId.toString(), poolAddress)
+            servicePool.getDiscussionLink(chainId.toString(), poolAddress),
+            servicePool.getSocialScoreInfo(chainId.toString(), poolAddress)
         ]);
+
         const transactionList = await transactionListResponse.json();
-        console.log('-------------analystDataExtraInfor-------', analystDataExtraInfor)
+        const kien: any = {
+            pool: poolDetailData.data.pool,
+            metaDataInfo: metaDataExtraInfor,
+            transactions: transactionList.data.transactions,
+            analystData: analystDataExtraInfor,
+            priceNative: priceNative.price,
+            linkDiscussionTelegram: discussionLink.discussionId,
+            socialScoreInfo: socialScoreInfo.data
+        };
+
         return {
             pool: poolDetailData.data.pool,
             metaDataInfo: metaDataExtraInfor,
             transactions: transactionList.data.transactions,
             analystData: analystDataExtraInfor,
             priceNative: priceNative.price,
-            linkDiscussionTelegram: discussionLink.discussionId
+            linkDiscussionTelegram: discussionLink.discussionId,
+            socialScoreInfo: socialScoreInfo.data
         } as unknown as IDetailPoolResponseData;
     } catch (error) {
         const err = error as AxiosError;
@@ -226,6 +258,15 @@ export const poolDetailSlice = createSlice({
         ) => {
             state.pageHolderDistribution =
                 action.payload.isPageHolderDistribution;
+        },
+        setOpenModalSocialScore: (
+            state,
+            action: PayloadAction<{ isOpenModalSocialScore: boolean }>
+        ) => {
+            state.openModalSocialScore = action.payload.isOpenModalSocialScore;
+        },
+        resetPoolDetail: () => {
+            return initialState;
         }
     },
     extraReducers: (builder) => {
@@ -246,6 +287,7 @@ export const poolDetailSlice = createSlice({
                 state.totalTransaction = action.payload.totalTransaction;
                 state.totalHolderDistribution = action.payload.totalHolder;
                 state.totalTopReward = action.payload.totalReferrer;
+                state.socialScoreInfo = action.payload.socialScoreInfo;
             }
         );
         builder
@@ -267,6 +309,7 @@ export const poolDetailSlice = createSlice({
                     state.analystData = action.payload.analystData.analystData;
                     state.priceNative = action.payload.priceNative;
                     state.totalTransaction = action.payload.transactions.length;
+                    state.socialScoreInfo = action.payload.socialScoreInfo;
                 }
             );
         builder
@@ -289,6 +332,10 @@ export const poolDetailSlice = createSlice({
     }
 });
 
-export const { setPageHolderDistribution, setPageTransaction } =
-    poolDetailSlice.actions;
+export const {
+    setPageHolderDistribution,
+    setPageTransaction,
+    setOpenModalSocialScore,
+    resetPoolDetail
+} = poolDetailSlice.actions;
 export default poolDetailSlice.reducer;

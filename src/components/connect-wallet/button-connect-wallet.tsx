@@ -14,9 +14,10 @@ import ConnectButtonWagmi from './connect-button-wagmi';
 import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
 import {
     NEXT_PUBLIC_DOMAIN_BARTIO_STG,
-    NEXT_PUBLIC_DOMAIN_BASE_PROD,
+    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD,
     NEXT_PUBLIC_DOMAIN_MULTIPLE_STG
 } from '@/src/common/web3/constants/env';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 const { Text } = Typography;
 const ButtonConnectWallet = () => {
     const t = useTranslations();
@@ -35,9 +36,7 @@ const ButtonConnectWallet = () => {
         resetStatusLoginWalletAction
     } = useAuthLogin();
 
-
-
-     const currentHostName = useCurrentHostNameInformation();
+    const currentHostName = useCurrentHostNameInformation();
     let botName = '';
     switch (currentHostName.url) {
         case NEXT_PUBLIC_DOMAIN_BARTIO_STG:
@@ -46,22 +45,20 @@ const ButtonConnectWallet = () => {
         case NEXT_PUBLIC_DOMAIN_MULTIPLE_STG:
             botName = 'MotherOfTokensDevBot';
             break;
-        case NEXT_PUBLIC_DOMAIN_BASE_PROD:
+        case NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD:
             botName = 'MotherOfTokensBot';
             break;
     }
 
-
-
-
     const handleLoginWithTelegram = async (user: any) => {
-        // console.log('telegram user: ', user);
         if (user) {
+            const refCode = localStorage.getItem(REFCODE_INFO_STORAGE_KEY);
             const bodyAuthTele: ILoginRequest = {
                 tele: {
-                    botName:botName,
+                    botName: botName,
                     auth: user
-                }
+                },
+                referralCode: refCode ? refCode : ''
             };
             try {
                 // console.log('========before request auth tele: ', bodyAuthTele);
@@ -71,8 +68,6 @@ const ButtonConnectWallet = () => {
             }
         }
     };
-
-   
 
     useEffect(() => {
         if (!(address as `0x${string}`)) {

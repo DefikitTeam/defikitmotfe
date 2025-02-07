@@ -9,6 +9,9 @@ export interface IAuthState {
     userInfo: IDataUserLoginResponse | null;
     userTele: ILoginTeleResponse | null;
     userWallet: ILoginWalletResponse | null;
+    accessToken: string | null;
+    refreshToken: string | null;
+    openModalInviteBlocker: boolean;
 }
 
 export interface IAccount {
@@ -33,12 +36,15 @@ export interface ILoginRequest {
         signature: string | null;
         refId: string | null;
     };
+    referralCode: string;
 }
 
 export interface ILoginResponse {
     user?: IDataUserLoginResponse | null;
     tele?: ILoginTeleResponse | null;
     wallet?: ILoginWalletResponse | null;
+    accessToken: string | null;
+    refreshToken: string | null;
 }
 
 export interface IDataUserLoginResponse {

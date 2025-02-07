@@ -24,12 +24,65 @@ const Footer = () => {
             return;
         }
     };
+    const handleClickCreateLaunch = () => {
+        if (isConnected && address) {
+            router.push(
+                `/${chainData.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
+            );
+        } else {
+            notification.error({
+                message: 'Error',
+                description: t('PLEASE_CONNECT_WALLET'),
+                duration: 2,
+                showProgress: true
+            });
+            return;
+        }
+    };
+    // const handleClickFaucet = () => {
+    //     if (isConnected && address) {
+    //         router.push(
+    //             `/${chainData.name.replace(/\s+/g, '').toLowerCase()}/faucet`
+    //         );
+    //     } else {
+    //         notification.error({
+    //             message: 'Error',
+    //             description: t('PLEASE_CONNECT_WALLET'),
+    //             duration: 2,
+    //             showProgress: true
+    //         });
+    //         return;
+    //     }
+    // };
+    // const handleClickAgents = () => {
+    //     if (!isConnected) {
+    //         notification.error({
+    //             message: 'Error',
+    //             description: t('PLEASE_CONNECT_WALLET'),
+    //             duration: 2,
+    //             showProgress: true
+    //         });
+    //         return;
+    //     }
+    // };
+    const handleClickCommunity = () => {
+        if (!isConnected) {
+            notification.error({
+                message: 'Error',
+                description: t('PLEASE_CONNECT_WALLET'),
+                duration: 2,
+                showProgress: true
+            });
+            return;
+        }
+    };
+
     return (
         <div>
             <div className="h-20 bg-white"></div>
             <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
                 <div
-                    className={` mx-auto grid h-full max-w-lg cursor-pointer ${chainData.onFaucet ? 'grid-cols-5' : 'grid-cols-4'} font-medium`}
+                    className={` mx-auto grid h-full max-w-lg cursor-pointer ${chainData.onFaucet ? 'grid-cols-4' : 'grid-cols-3'} font-medium`}
                 >
                     <div
                         className="group inline-flex flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
@@ -55,11 +108,7 @@ const Footer = () => {
 
                     <div
                         className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                        onClick={() =>
-                            router.push(
-                                `/${chainData.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
-                            )
-                        }
+                        onClick={handleClickCreateLaunch}
                     >
                         <svg
                             className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
@@ -102,14 +151,11 @@ const Footer = () => {
 
                     <div
                         className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                        onClick={() =>
-                            router.push(
-                                `/${chainData.name.replace(/\s+/g, '').toLowerCase()}/community`
-                            )
-                        }
+                        onClick={handleClickCommunity}
                     >
                         <a
-                            href={'https://discord.com/invite/NSXFPfUZ6N'}
+                            // href={'https://discord.com/invite/jQCFDYMrU9'}
+                            href="https://linktr.ee/rocket.launch"
                             target="_blank"
                             className={`group inline-flex flex-col items-center justify-center border-gray-200 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800`}
                         >
@@ -132,14 +178,10 @@ const Footer = () => {
                         </a>
                     </div>
 
-                    {chainData.onFaucet && (
+                    {/* {chainData.onFaucet && (
                         <div
                             className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                            onClick={() =>
-                                router.push(
-                                    `/${chainData.name.replace(/\s+/g, '').toLowerCase()}/faucet`
-                                )
-                            }
+                            onClick={handleClickFaucet}
                         >
                             <svg
                                 viewBox="0 0 512 512"
@@ -179,7 +221,7 @@ const Footer = () => {
                                 Faucet
                             </span>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
         </div>

@@ -5,10 +5,12 @@ import { formatCurrency } from '@/src/common/utils/utils';
 import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import { useReader } from '@/src/hooks/useReader';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { RootState } from '@/src/stores';
 import { usePoolDetail, useReward } from '@/src/stores/pool/hook';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 
 const PoolInfoReward = () => {
@@ -21,15 +23,15 @@ const PoolInfoReward = () => {
     const [{ poolStateDetail }] = usePoolDetail();
     const [rewardOfMe, setRewardOfMe] = useState<string>('0');
     const { pool: poolDetail } = poolStateDetail;
-    const { chainData } = useCurrentChainInformation();
+    const chainData = useSelector((state: RootState) => state.chainData);
     const multiCallerContract = getContract(
-        chainData.chainId || ChainId.BARTIO
+        chainData.chainData.chainId || ChainId.BARTIO
     );
     const { dataReader, isFetchingDataReader } = useReader({
         contractAddAndAbi: multiCallerContract,
         poolAddress: poolDetail?.id as string,
         userAddress: address as `0x${string}`,
-        chainId: chainData.chainId as number
+        chainId: chainData.chainData.chainId as number
     });
     const estimateYourReward = dataReader ? dataReader[5] : undefined;
 
@@ -45,7 +47,7 @@ const PoolInfoReward = () => {
                         console.error('Reward value is NaN');
                     }
                 } else {
-                    console.error('Reward value is undefined or null');
+                    // console.error('Reward value is undefined or null');
                 }
             }
         } catch (error) {

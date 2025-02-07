@@ -16,6 +16,7 @@ import {
     updateBuyPoolInformation
 } from './buyPoolSlice';
 import {
+    resetAiAgent,
     resetCreatePoolLaunchData,
     updateCreatePoolLaunchInformation
 } from './createSlice';
@@ -24,12 +25,15 @@ import {
     getHolderDistribution,
     getPoolDetail,
     getTransactions,
+    resetPoolDetail,
+    setOpenModalSocialScore,
     setPageHolderDistribution,
     setPageTransaction
 } from './detailSlice';
 import {
     getAllPoolBackgroundByType,
     getAllPoolByType,
+    getPoolMetadata,
     setFilter,
     setOrderByDirectionFilter,
     setOrderByFilter,
@@ -66,6 +70,7 @@ import {
     IGetDetailHolderDistributionParams,
     IGetDetailPoolBackgroundParams,
     IGetDetailPoolParams,
+    IGetMetadataPoolParams,
     IGetPoolInfoRewardParams,
     IGetTransactionByPoolAndSenderParams,
     IGetUserTopRewardByPoolParams,
@@ -93,7 +98,12 @@ export function usePoolDetail(): [
     // eslint-disable-next-line
     setPageHolderDistributionAction: (isPageHolderDistribution: number) => void,
     // eslint-disable-next-line
-    (data: IGetAllTransactionsParams) => void
+    (data: IGetAllTransactionsParams) => void,
+
+    // eslint-disable-next-line
+    setOpenModalSocialScore: (isOpenModalSocialScore: boolean) => void,
+    // eslint-disable-next-line
+    resetPoolDetailAction: () => void
 ] {
     const dispatch = useAppDispatch();
 
@@ -140,6 +150,16 @@ export function usePoolDetail(): [
         [dispatch]
     );
 
+    const setOpenModalSocialScoreAction = useCallback(
+        (isOpenModalSocialScore: boolean) => {
+            dispatch(setOpenModalSocialScore({ isOpenModalSocialScore }));
+        },
+        [dispatch]
+    );
+
+    const resetPoolDetailAction = useCallback(() => {
+        dispatch(resetPoolDetail());
+    }, [dispatch]);
     return [
         {
             poolStateDetail
@@ -149,7 +169,9 @@ export function usePoolDetail(): [
         fetchHolderDistribution,
         setPageTransactionAction,
         setPageHolderDistributionAction,
-        fetchTransactions
+        fetchTransactions,
+        setOpenModalSocialScoreAction,
+        resetPoolDetailAction
     ];
 }
 
@@ -160,8 +182,12 @@ type ListPooltype = {
     getListPoolBackgroundAction: (data: IGetAllPoolBackgroundQuery) => void;
 
     updateCalculatePoolAction: (data: IUpdateCalculatePoolParams) => void;
+    getMetadataPoolVisibleAction: (data: IGetMetadataPoolParams) => void;
 
     setFilterAction: (data: PoolStatus) => void;
+
+    setOrderByDirectionAction: (data: PoolStatusSortFilter) => void;
+    setOrderByAction: (data: PoolStatusSortOrderBy) => void;
 };
 
 export const useListPool = (): ListPooltype => {
@@ -188,9 +214,31 @@ export const useListPool = (): ListPooltype => {
         },
         [dispatch]
     );
+
+    const getMetadataPoolVisibleAction = useCallback(
+        (data: IGetMetadataPoolParams) => {
+            dispatch(getPoolMetadata(data));
+        },
+        [dispatch]
+    );
+
     const setFilterAction = useCallback(
         (data: PoolStatus) => {
             dispatch(setFilter(data));
+        },
+        [dispatch]
+    );
+
+    const setOrderByDirectionAction = useCallback(
+        (data: PoolStatusSortFilter) => {
+            dispatch(setOrderByDirectionFilter(data));
+        },
+        [dispatch]
+    );
+
+    const setOrderByAction = useCallback(
+        (data: PoolStatusSortOrderBy) => {
+            dispatch(setOrderByFilter(data));
         },
         [dispatch]
     );
@@ -200,7 +248,10 @@ export const useListPool = (): ListPooltype => {
         getListPoolAction,
         getListPoolBackgroundAction,
         updateCalculatePoolAction,
-        setFilterAction
+        getMetadataPoolVisibleAction,
+        setFilterAction,
+        setOrderByDirectionAction,
+        setOrderByAction
     };
 };
 
@@ -352,6 +403,7 @@ export const useVesting = (): VestingType => {
 export function useCreatePoolLaunchInformation(): [
     ICreatePoolLaunch,
     (data: ICreatePoolLaunch) => void,
+    () => void,
     () => void
 ] {
     const dispatch = useAppDispatch();
@@ -366,8 +418,16 @@ export function useCreatePoolLaunchInformation(): [
     const resetData = useCallback(() => {
         dispatch(resetCreatePoolLaunchData());
     }, [dispatch]);
+    const resetDataAiAgentAction = useCallback(() => {
+        dispatch(resetAiAgent());
+    }, [dispatch]);
 
-    return [data, setCreatePoolLaiunchInformation, resetData];
+    return [
+        data,
+        setCreatePoolLaiunchInformation,
+        resetData,
+        resetDataAiAgentAction
+    ];
 }
 
 type passDataType = {

@@ -24,6 +24,7 @@ export function usePortfolio(): [
     (data: IGetPortfolioParams) => void,
     setIdCurrentChoosedTokenSell: (id: string) => void,
     (data: IGetYourFriendListParams) => void,
+
     setOpenModalYourFriendListAction: (
         isOpenModalYourFriendList: boolean
     ) => void

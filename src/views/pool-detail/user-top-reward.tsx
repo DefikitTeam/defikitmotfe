@@ -2,6 +2,7 @@
 import { formatCurrency, shortWalletAddress } from '@/src/common/utils/utils';
 import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { RootState } from '@/src/stores';
 import { usePoolDetail, useReward } from '@/src/stores/pool/hook';
 import {
     IUserTopRewardByPool,
@@ -12,23 +13,27 @@ import { Button, Modal, notification, Tooltip } from 'antd';
 import Table, { ColumnsType } from 'antd/es/table';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 
 const UserTopReward = () => {
     const t = useTranslations();
     const { isMobile } = useWindowSize();
-    const { address, chain, chainId } = useAccount();
+    const { address, chain, chainId, isConnected } = useAccount();
     const [{ poolStateDetail }] = usePoolDetail();
+    const router = useRouter();
+    const chainData = useSelector((state: RootState) => state.chainData);
 
     const { pool } = poolStateDetail;
     const { rewardState } = useReward();
-    const { chainData } = useCurrentChainInformation();
+    // const { chainData } = useCurrentChainInformation();
     const { dataTopUserRewardByPool } = rewardState;
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
     const userTopRewardByPoolTransformed: IUserTopRewardByPoolTransformed[] =
-        dataTopUserRewardByPool.map((item: IUserTopRewardByPool) => {
+        dataTopUserRewardByPool?.map((item: IUserTopRewardByPool) => {
             let rewardItem: IUserTopRewardByPoolTransformed = {
                 address: '',
                 bond: '',
@@ -48,6 +53,16 @@ const UserTopReward = () => {
             return rewardItem;
         });
     const handleCopy = (tokenAddress: string | undefined) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
                 notification.success({
@@ -58,6 +73,22 @@ const UserTopReward = () => {
                 });
             });
         }
+    };
+
+    const handleClickAddress = (addressUser: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+        router.push(
+            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`
+        );
     };
 
     const columns: ColumnsType<IUserTopRewardByPoolTransformed> = [
@@ -79,7 +110,10 @@ const UserTopReward = () => {
                             onClick={() => handleCopy(pool?.owner)}
                         />
                     </Tooltip>
-                    <span className="text-blue-400">
+                    <span
+                        className="text-blue-400"
+                        onClick={() => handleClickAddress(record.address)}
+                    >
                         {isMobile
                             ? shortWalletAddress(record ? record.address : '')
                             : record.address}
@@ -104,9 +138,22 @@ const UserTopReward = () => {
             render: (_, record) => <div>{formatCurrency(record.reward)}</div>
         }
     ];
-    const limitedData = userTopRewardByPoolTransformed.slice(0, 5);
-    const hasMore = userTopRewardByPoolTransformed.length > 5;
+    const limitedData = userTopRewardByPoolTransformed?.slice(0, 5);
+    const hasMore = userTopRewardByPoolTransformed?.length > 5;
 
+    const handleSetModalVisible = (isVisible: boolean) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+        setIsModalVisible(isVisible);
+    };
     return (
         <div className="h-full w-full bg-white pt-2">
             <div className="!font-forza text-base font-bold">
@@ -125,7 +172,7 @@ const UserTopReward = () => {
             {hasMore && (
                 <div className="mt-4">
                     <Button
-                        onClick={() => setIsModalVisible(true)}
+                        onClick={() => handleSetModalVisible(true)}
                         className="!font-forza "
                     >
                         {t('VIEW_ALL')}

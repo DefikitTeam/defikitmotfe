@@ -7,10 +7,10 @@ import {
 } from '@/src/common/constant/constance';
 import { TOKEN_STATUS } from '@/src/common/constant/token';
 import { divToDecimal } from '@/src/common/utils/utils';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import { useReader } from '@/src/hooks/useReader';
 import servicePool from '@/src/services/external-services/backend-server/pool';
 import { IPool } from '@/src/services/response.type';
+import { RootState } from '@/src/stores';
 import {
     usePortfolio,
     useSellTokenInformation
@@ -30,10 +30,11 @@ import {
 import { useForm } from 'antd/lib/form/Form';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import SaveButtonSell from './save-button-sell';
-import { useSearchParams } from 'next/navigation';
 export interface ISellForm {}
 const { Text } = Typography;
 const SellToken = () => {
@@ -71,9 +72,10 @@ const SellToken = () => {
         useState<KeyValueObj>();
     const [balanceOfUser, setBalanceOfUser] = useState('0');
     const { address, chainId } = useAccount();
-    const multiCallerContract = getContract(chainId || ChainId.BARTIO);
-
-    const { chainData } = useCurrentChainInformation();
+    const chainData = useSelector((state: RootState) => state.chainData);
+    const multiCallerContract = getContract(
+        chainData.chainData.chainId || ChainId.BARTIO
+    );
 
     const clearForm = () => {
         setDisableBtnSell(true);
@@ -171,7 +173,7 @@ const SellToken = () => {
     const getUserPoolInfo = async (poolAddress: string) => {
         if (address) {
             const userPoolInfo = await servicePool.getUserPool({
-                chainId: chainData.chainId,
+                chainId: chainData.chainData.chainId,
                 poolAddress: poolAddress,
                 userAddress: address
             });
@@ -334,7 +336,7 @@ const SellToken = () => {
                         maxAmountETH: Number(estimateSellRes)
                     });
                     setSellAmountBtn(
-                        `${parseFloat(maxRepeatPurchase) * value} ${selectedToken?.symbol} ~ ${new BigNumber(estimateSellRes).toFixed(6)} ${chainData.currency}`
+                        `${parseFloat(maxRepeatPurchase) * value} ${selectedToken?.symbol} ~ ${new BigNumber(estimateSellRes).toFixed(6)} ${chainData.chainData.currency}`
                     );
                 }
             }
@@ -499,7 +501,8 @@ const SellToken = () => {
                     >
                         <div className="mb-0">
                             <span className="!font-forza text-base">
-                                {t('MAX_AMOUNT')} {`${chainData.currency}`}
+                                {t('MAX_AMOUNT')}{' '}
+                                {`${chainData.chainData.currency}`}
                             </span>
                             <Input
                                 size="large"

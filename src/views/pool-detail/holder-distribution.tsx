@@ -1,9 +1,13 @@
 import { shortWalletAddress } from '@/src/common/utils/utils';
+import { RootState } from '@/src/stores';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { IHolderDistribution } from '@/src/stores/pool/type';
-import { Table } from 'antd';
+import { notification, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
 
 const HolderDistribution = () => {
     const t = useTranslations();
@@ -12,6 +16,26 @@ const HolderDistribution = () => {
         usePoolDetail();
 
     const { holderDistribution, pool } = poolStateDetail;
+    const chainData = useSelector((state: RootState) => state.chainData);
+    const router = useRouter();
+
+    const { isConnected, address } = useAccount();
+
+    const handleClickHolder = (addressUser: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+        router.push(
+            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`
+        );
+    };
     const columns: ColumnsType<IHolderDistribution> = [
         {
             title: t('HOLDER_DISTRIBUTION'),
@@ -20,7 +44,10 @@ const HolderDistribution = () => {
             className: '!font-forza',
             align: 'center',
             render: (_, record) => (
-                <span className="text-black">
+                <span
+                    className="cursor-pointer text-black"
+                    onClick={() => handleClickHolder(record.user)}
+                >
                     {shortWalletAddress(record.user || '')}
                 </span>
             )

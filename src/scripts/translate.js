@@ -2,23 +2,38 @@ const axios = require('axios')
 const fs = require('fs')
 
 const googleSheetTranslate =
-    'https://script.google.com/macros/s/AKfycbyQxF-bz-iyQ7sNsL-GjheYFxdPMZqXOKVY-sPtd7YKuMX7zNmRXdHsx8Jl3ekIRZ0keg/exec'
-
+'https://script.google.com/macros/s/AKfycbyQj_4JyhcztB-QZlCZtE6Yss7aQrtOH-5EDRxlz8lg0Ko_JcA3mCYxpFEzrXlorMUOTQ/exec'
 async function pullTranslate() {
-    const res = await axios.get(googleSheetTranslate)
+    try {
+        const res = await axios.get(googleSheetTranslate)
 
-    const dataRes = res.data
-    const localesTitle = []
-    
-    dataRes?.map((obj) => localesTitle.push(Object.keys(obj)[0]))
+        if (!res.data) {
+            throw new Error('Không nhận được dữ liệu từ Google Sheet')
+        }
 
-    let dataLocales = {}
+        const dataRes = Array.isArray(res.data) ? res.data : [res.data]
+        const localesTitle = []
 
-    dataRes.forEach((obj) => {
-        dataLocales = Object.assign(dataLocales, obj)
-    })
+        dataRes.forEach((obj) => {
+            if (obj && typeof obj === 'object') {
+                localesTitle.push(Object.keys(obj)[0])
+            }
+        })
 
-    localesTitle.forEach((locale) => createFile(locale, dataLocales[locale]))
+        let dataLocales = {}
+
+        dataRes.forEach((obj) => {
+            dataLocales = Object.assign(dataLocales, obj)
+        })
+
+        localesTitle.forEach((locale) => createFile(locale, dataLocales[locale]))
+    } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu:', error.message)
+        if (error.response) {
+            console.error('Status:', error.response.status)
+            console.error('Data:', error.response.data)
+        }
+    }
 }
 
 function createFile(name, content) {

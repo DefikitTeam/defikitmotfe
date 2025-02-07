@@ -1,12 +1,15 @@
 /* eslint-disable */
-import { markCreatePoolSlider } from '@/src/common/constant/constance';
+import {
+    KeyValueObj,
+    markCreatePoolSlider
+} from '@/src/common/constant/constance';
 import { formatCurrency } from '@/src/common/utils/utils';
 import {
     useCreatePoolLaunchInformation,
     usePassData
 } from '@/src/stores/pool/hook';
 import { useListTokenOwner } from '@/src/stores/token/hook';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { ConsoleSqlOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
     Col,
     Collapse,
@@ -23,6 +26,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { IPoolCreatForm } from '.';
+import { useEffect } from 'react';
 
 const { Option } = Select;
 interface PoolInforProps {
@@ -57,9 +61,92 @@ const AdvanceConfiguration = ({ form }: PoolInforProps) => {
     } = useListTokenOwner();
     const [data, setData, resetData] = useCreatePoolLaunchInformation();
 
-    const onChange = (key: string | string[]) => {
-        console.log(key);
-    };
+    const onChange = (key: string | string[]) => {};
+
+    useEffect(() => {
+        if (!data.totalSupply || !data.symbol) return;
+        let totalSupply = '0';
+        if (data.totalSupply) {
+            totalSupply = new BigNumber(data.totalSupply)
+                // .times(10 ** Number(data.decimal))
+                .toFixed(0);
+
+            const totalSupplyBigNumber = new BigNumber(totalSupply);
+            const listBonding: KeyValueObj[] = [
+                70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80
+            ].map((item: number) => {
+                return {
+                    value: `${item} % - ${formatCurrency(totalSupplyBigNumber.times(item).div(100).integerValue(BigNumber.ROUND_UP).toString())} ${data.symbol}`,
+                    key: totalSupplyBigNumber
+                        .times(item)
+                        .div(100)
+                        .integerValue(BigNumber.ROUND_UP)
+                        .toString()
+                };
+            });
+            setListDataBonding(listBonding);
+            setValueForBonding(listBonding[0]);
+            const listAirdrop: KeyValueObj = {
+                value: `5 % - ${formatCurrency(totalSupplyBigNumber.times(5).div(100).integerValue(BigNumber.ROUND_DOWN).toString())} ${data.symbol}`,
+                key: totalSupplyBigNumber
+                    .times(5)
+                    .div(100)
+                    .integerValue(BigNumber.ROUND_DOWN)
+                    .toString()
+            };
+
+            setValueForAirdrop(listAirdrop);
+
+            const listFarming: KeyValueObj[] = [0, 1, 2, 3, 4, 5].map(
+                (item: number) => {
+                    return {
+                        value: `${item} % - ${formatCurrency(totalSupplyBigNumber.times(item).div(100).integerValue(BigNumber.ROUND_DOWN).toString())} ${data.symbol}`,
+                        key: totalSupplyBigNumber
+                            .times(item)
+                            .div(100)
+                            .integerValue(BigNumber.ROUND_DOWN)
+                            .toString()
+                    };
+                }
+            );
+            setListDataFarming(listFarming);
+            setValueForFarming(listFarming[listFarming.length - 1]);
+        }
+        if (totalSupply) {
+            const totalSupplyBn = new BigNumber(totalSupply);
+            const tokenForSale = totalSupplyBn
+                .times(0.7)
+                .integerValue(BigNumber.ROUND_UP)
+                .toFixed(0);
+            const tokenForFarm = totalSupplyBn
+                .times(0.05)
+                .integerValue(BigNumber.ROUND_DOWN)
+                .toFixed(0);
+            const tokenForAirdrop = totalSupplyBn
+                .times(0.05)
+                .integerValue(BigNumber.ROUND_DOWN)
+                .toFixed(0);
+            const tokenForAddLP = totalSupplyBn
+                .minus(tokenForFarm)
+                .minus(tokenForSale)
+                .minus(tokenForAirdrop)
+                .toFixed(0);
+
+            // @ts-ignore
+            const updatedData = {
+                ...data,
+                tokenForAirdrop: tokenForAirdrop,
+                tokenForFarm: tokenForFarm,
+                tokenToMint: tokenForSale,
+                tokenForAddLP: tokenForAddLP
+            };
+            setData(updatedData);
+            setValueForAddLP({
+                value: `20% - ${formatCurrency(tokenForAddLP)} ${data && data.symbol}`,
+                key: data.tokenForAddLP
+            });
+        }
+    }, [data.symbol, data.totalSupply]);
 
     const onChangebBond = (newValue: number) => {
         setData({
@@ -73,11 +160,10 @@ const AdvanceConfiguration = ({ form }: PoolInforProps) => {
             const myJSONString = JSON.stringify(value);
             const kien = JSON.parse(myJSONString);
 
-            const tokenCurrentChoiced = settingTokenState.choicedToken;
+            if (data.totalSupply === undefined) return;
 
-            if (tokenCurrentChoiced === undefined) return;
             const totalSupply = new BigNumber(
-                new BigNumber(tokenCurrentChoiced?.totalSupply)
+                new BigNumber(data.totalSupply)
                     // .div(10 ** Number(tokenCurrentChoiced?.decimals))
                     .toFixed(0)
             );
@@ -130,7 +216,7 @@ const AdvanceConfiguration = ({ form }: PoolInforProps) => {
                 .times(100);
 
             setValueForAddLP({
-                value: `${liquidityPercent.toFixed(0)}% - ${formatCurrency(tokenForLiquidity.integerValue(BigNumber.ROUND_UP).toString())} ${tokenCurrentChoiced.symbol}`,
+                value: `${liquidityPercent.toFixed(0)}% - ${formatCurrency(tokenForLiquidity.integerValue(BigNumber.ROUND_UP).toString())} ${data.symbol}`,
                 key: tokenForLiquidity.toFixed(0)
             });
             const newData = {

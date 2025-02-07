@@ -7,6 +7,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import useWindowSize from '../hooks/useWindowSize';
 import { useAuthLogin } from '../stores/auth/hook';
+import useCurrentHostNameInformation from '../hooks/useCurrentHostName';
+import {
+    NEXT_PUBLIC_DOMAIN_BARTIO_STG,
+    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD,
+    NEXT_PUBLIC_DOMAIN_MULTIPLE_STG
+} from '../common/web3/constants/env';
 const { Text } = Typography;
 const TelegramInfo = ({ name }: { name: string }) => {
     const t = useTranslations();
@@ -16,6 +22,20 @@ const TelegramInfo = ({ name }: { name: string }) => {
         logoutTelegramAction();
     };
 
+    const currentHostName = useCurrentHostNameInformation();
+    let botName = '';
+    switch (currentHostName.url) {
+        case NEXT_PUBLIC_DOMAIN_BARTIO_STG:
+            botName = 'MotherOfTokensStgBot';
+            break;
+        case NEXT_PUBLIC_DOMAIN_MULTIPLE_STG:
+            botName = 'MotherOfTokensDevBot';
+            break;
+        case NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD:
+            botName = 'MotherOfTokensBot';
+            break;
+    }
+
     const items: MenuProps['items'] = [
         {
             key: '0',
@@ -23,7 +43,7 @@ const TelegramInfo = ({ name }: { name: string }) => {
                 <Link
                     className="py-[5px] font-forza  text-sm  leading-[22px]"
                     rel="noopener noreferrer"
-                    href="https://t.me/MotherOfTokensStgBot"
+                    href={`https://t.me/${botName}`}
                     target="_blank"
                 >
                     {t('CHAT_BOT')}

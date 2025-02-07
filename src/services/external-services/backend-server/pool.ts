@@ -1,7 +1,14 @@
 /* eslint-disable */
 import { ChainId } from '@/src/common/constant/constance';
+import { logger } from '@/src/common/utils/logger';
 import {
-    ICreateLaunchPoolParams,
+    NEXT_PUBLIC_API_ENDPOINT,
+    NEXT_PUBLIC_API_ENDPOINT_PROD,
+    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD
+} from '@/src/common/web3/constants/env';
+import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
+import { updateMetaDataWorker } from '@/src/stores/pool/common';
+import {
     IGetAllPoolBackgroundQuery,
     IGetAllPoolQuery,
     IGetDetailHolderDistributionParams,
@@ -12,12 +19,15 @@ import {
     IGetUserTopRewardByPoolParams,
     IReferralPool
 } from '@/src/stores/pool/type';
+import axios from 'axios';
+import BigNumber from 'bignumber.js';
 import { querySubGraph } from '../fetcher';
 import { getQueryByStatus } from './query';
-import axios from 'axios';
-import { NEXT_PUBLIC_API_ENDPOINT } from '@/src/common/web3/constants/env';
-import BigNumber from 'bignumber.js';
 export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
+const currentHostName = useCurrentHostNameInformation();
+const isProd =
+    currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
+
 const servicePool = {
     getDetailPoolInfo: ({ poolAddress, chainId }: IGetDetailPoolParams) => {
         const query = {
@@ -129,6 +139,16 @@ const servicePool = {
         return querySubGraph(payload, chainId);
     },
 
+    getPoolMetadata: async (poolId: string, metadataLink: string) => {
+        try {
+            const response = await updateMetaDataWorker(poolId, metadataLink);
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     getTransactionByPoolAndSender: ({
         poolAddress,
         chainId,
@@ -226,10 +246,19 @@ const servicePool = {
 
     storeReferId: (refer: IReferralPool | null) => {
         if (refer) {
-            localStorage.setItem(
-                REFERRAL_CODE_INFO_STORAGE_KEY,
-                JSON.stringify(refer)
-            );
+            if (typeof window !== 'undefined') {
+                const existingRefId = localStorage.getItem(
+                    REFERRAL_CODE_INFO_STORAGE_KEY
+                );
+                if (!existingRefId) {
+                    localStorage.setItem(
+                        REFERRAL_CODE_INFO_STORAGE_KEY,
+                        JSON.stringify(refer)
+                    );
+                } else {
+                    console.log('RefId existed: ', existingRefId);
+                }
+            }
         }
     },
 
@@ -241,20 +270,23 @@ const servicePool = {
         }
         return null;
     },
+
     createLaunchPool: async (
         name: string,
         symbol: string,
         decimals: string,
         totalSupply: string,
         address: string,
-        chainId: string
+        chainId: string,
+        dataAgent?: any
     ) => {
         let res;
 
         const totalSupplyFormatted = new BigNumber(totalSupply)
             .div(10 ** parseInt(decimals))
             .toFixed(0);
-        const data = {
+
+        const data: any = {
             name,
             symbol,
             decimals,
@@ -262,9 +294,13 @@ const servicePool = {
             address
         };
 
+        if (dataAgent !== undefined) {
+            data.dataAgent = dataAgent;
+        }
+
         try {
             res = await axios.post(
-                `${NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t`,
+                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t`,
                 data
             );
         } catch (error) {
@@ -280,10 +316,29 @@ const servicePool = {
 
         try {
             res = await axios.get(
-                `${NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${address}/discussion`
+                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${address}/discussion`
             );
         } catch (error) {
-            console.log('======= get discussion link to server error: ', error);
+            logger.error(
+                `======= get discussion link to server error: ${error}`
+            );
+        }
+        if (res && res.status === 200) {
+            return res.data;
+        }
+        return '';
+    },
+    getSocialScoreInfo: async (chainId: string, address: string) => {
+        let res;
+        try {
+            res = await axios.get(
+                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${address}/social-score`
+            );
+        } catch (error) {
+            console.log(
+                '======= get social score info to server error: ',
+                error
+            );
         }
         if (res && res.status === 200) {
             return res.data;
@@ -314,6 +369,24 @@ const servicePool = {
             `
         };
         return querySubGraph(query, chainId);
+    },
+    getListFocusPools: async (chainId: string) => {
+        let res;
+
+        try {
+            res = await axios.get(
+                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/focus-pools`
+            );
+        } catch (error) {
+            // console.log(
+            //     '======= get list focus pools to server error: ',
+            //     error
+            // );
+        }
+        if (res && res.status === 200) {
+            return res.data;
+        }
+        return [];
     }
 };
 

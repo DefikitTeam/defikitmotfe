@@ -3,7 +3,7 @@ import {
     currencyFormatter,
     randomDefaultPoolImage
 } from '@/src/common/utils/utils';
-
+import Image from 'next/image';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { IAnalystData, IMetaData, IPoolList } from '@/src/stores/pool/type';
 import { Typography } from 'antd';
@@ -147,6 +147,20 @@ ${isMobile ? `${props.className}` : `${props.className}`}
                         isMobile ? 'h-20 w-20' : 'h-20 w-20'
                     }`}
                 />
+
+                {/* <Image
+                    src={
+                        !finalImageUrl
+                            ? randomDefaultPoolImage()
+                            : finalImageUrl
+                    }
+                    alt={`${poolItem.name} - ${poolItem.symbol}`}
+                    className={`rounded-lg border ${isMobile ? 'h-20 w-20' : 'h-20 w-20'}`}
+                    width={80}
+                    height={80}
+                    loading="lazy"
+                /> */}
+
                 <div className="ml-2 flex w-80 flex-col text-left !font-forza">
                     <Text className="!font-forza">
                         <span className="!font-forza text-lg font-bold">
@@ -159,7 +173,7 @@ ${isMobile ? `${props.className}` : `${props.className}`}
                         Raised/HC:{' '}
                         <span className="text-lg text-blue-800">
                             {raisedShow}/{hardCapShow} ({chainData.currency},{' '}
-                            {bondingCurve.toFixed(2)} %)
+                            {bondingCurve.toFixed(2)} % )
                         </span>
                     </Text>
                     <Text

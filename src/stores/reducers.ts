@@ -15,6 +15,11 @@ import passDataSlice from '@/src/stores/pool/passDataSlice';
 import authReducer from '@/src/stores/auth/slice';
 import rewardReducer from '@/src/stores/pool/rewardSlice';
 import chainDataReducer from '@/src/stores/Chain/chainDataSlice';
+import notificationReducer from '@/src/stores/notification/slice';
+import topRefByVolReducer from '@/src/stores/top-ref-by-vol/slice';
+// import checkInviteCodeReducer from '@/src/stores/invite-code/check-invite-slice';
+import inviteListReferReducer from '@/src/stores/invite-code/list-refer-slice';
+import getInviteCodeReducer from '@/src/stores/invite-code/get-invite-code';
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -32,7 +37,12 @@ const rootReducer = combineReducers({
     tokenSell: tokenSellReducer,
     passData: passDataSlice,
     reward: rewardReducer,
-    chainData: chainDataReducer
+    chainData: chainDataReducer,
+    notification: notificationReducer,
+    topRefByVol: topRefByVolReducer,
+    // checkInviteCode: checkInviteCodeReducer,
+    inviteListRefer: inviteListReferReducer,
+    getInviteCode: getInviteCodeReducer
 });
 
 export default rootReducer;

@@ -1,6 +1,5 @@
 /* eslint-disable */
 import {
-    ChainId,
     PoolStatus,
     PoolStatusSortFilter,
     PoolStatusSortOrderBy
@@ -16,12 +15,12 @@ import {
     IAnalystData,
     IGetAllPoolBackgroundQuery,
     IGetAllPoolQuery,
-    IGetAllPoolQueryByAddress,
+    IGetMetadataPoolParams,
     IMetaData,
     IPoolListBackgroundResponse,
-    IPoolListByAddressResponse,
     IPoolListResponse,
     IPoolState,
+    IPriceNativeRequest,
     IResponsePriceNative,
     IUpdateCalculatePoolParams,
     IUpdateCalculatePoolResponse
@@ -29,12 +28,14 @@ import {
 
 const initialState: IPoolState = {
     status: EActionStatus.Idle,
+    statusGetPoolListBackground: EActionStatus.Idle,
     poolList: [],
+    focusPools: [],
     errorCode: '',
     errorMessage: '',
     filter: PoolStatus.ACTIVE,
-    // orderBy: PoolStatusSortOrderBy.LATEST_TIMESTAMP_BUY,
-    // orderByDirection: PoolStatusSortFilter.DESC,
+    orderBy: PoolStatusSortOrderBy.LATEST_TIMESTAMP_BUY,
+    orderByDirection: PoolStatusSortFilter.DESC,
     metadata: {},
     analystData: {},
     priceNative: 0
@@ -48,20 +49,52 @@ export const getAllPoolByType = createAsyncThunk<
     }
 >('pool/getAllPoolByType', async (params, { rejectWithValue }) => {
     try {
+        const { chainId } = params;
         const data = await servicePool.getAllPoolByType(params);
         const listPool = await data.json();
-        const priceNative = await servicePriceNative.getPriceNative();
-        const extraData = await reCalculatePool(
-            listPool.data.pools,
-            priceNative.price,
-            params.metaDataFromStore
+        const priceNative = await servicePriceNative.getPriceNative(
+            chainId.toString()
+        );
+        const [extraData, dataFocusPools] = await Promise.all([
+            reCalculatePool(
+                listPool.data.pools,
+                priceNative.price,
+                params.metaDataFromStore
+            ),
+            servicePool.getListFocusPools(params.chainId!.toString())
+        ]);
+        const focusPoolAddresses = dataFocusPools.data.map(
+            (item: any) => item.address
         );
         return {
             priceNative: priceNative.price,
             poolList: listPool.data.pools,
             analystData: extraData.analystDataExtraInfo,
-            metadata: extraData.metaDataExtraInfo
+            // metadata: extraData.metaDataExtraInfo,
+            // metadata: {},
+            focusPools: focusPoolAddresses
         };
+    } catch (error) {
+        const err = error as AxiosError;
+        const responseData: any = err.response?.data;
+        return rejectWithValue({
+            errorMessage: responseData?.message,
+            errorCode: responseData?.code
+        });
+    }
+});
+
+export const getPoolMetadata = createAsyncThunk<
+    { id: string; metadata: any },
+    IGetMetadataPoolParams,
+    {
+        rejectValue: FetchError;
+    }
+>('pool/getPoolMetadata', async (params, { rejectWithValue }) => {
+    try {
+        const { id, metadataLink } = params;
+        const metadata = await servicePool.getPoolMetadata(id, metadataLink);
+        return { id, metadata };
     } catch (error) {
         const err = error as AxiosError;
         const responseData: any = err.response?.data;
@@ -80,10 +113,18 @@ export const getAllPoolBackgroundByType = createAsyncThunk<
     }
 >('pool/getAllPoolBackgroundByType', async (params, { rejectWithValue }) => {
     try {
-        const data = await servicePool.getAllPoolByType(params);
+        const [data, dataFocusPools] = await Promise.all([
+            servicePool.getAllPoolByType(params),
+            servicePool.getListFocusPools(params.chainId!.toString())
+        ]);
         const listPool = await data.json();
+
+        const focusPoolAddresses = dataFocusPools.data.map(
+            (item: any) => item.address
+        );
         return {
-            poolList: listPool.data.pools
+            poolList: listPool.data.pools,
+            focusPools: focusPoolAddresses
         };
     } catch (error) {
         const err = error as AxiosError;
@@ -198,13 +239,16 @@ export const setOrderByFilter = createAsyncThunk<
 
 export const fetchPriceNative = createAsyncThunk<
     IResponsePriceNative,
-    void,
+    IPriceNativeRequest,
     {
         rejectValue: FetchError;
     }
->('pool/fetchPriceNative', async (_, { rejectWithValue }) => {
+>('pool/fetchPriceNative', async (params, { rejectWithValue }) => {
     try {
-        const response = await servicePriceNative.getPriceNative();
+        const { chainId } = params;
+        const response = await servicePriceNative.getPriceNative(
+            chainId.toString()
+        );
 
         return {
             price: new BigNumber(response.price).toNumber()
@@ -257,16 +301,22 @@ export const poolListSlice = createSlice({
             .addCase(getAllPoolByType.pending, (state) => {
                 state.status = EActionStatus.Pending;
             })
+            // .addCase(getAllPoolBackgroundByType.pending, (state) => {
+            //     state.statusGetPoolListBackground = EActionStatus.Pending;
+            // })
             .addCase(getAllPoolByType.fulfilled, (state, action) => {
                 state.status = EActionStatus.Succeeded;
                 state.priceNative = action.payload.priceNative;
                 state.poolList = action.payload.poolList;
                 state.analystData = action.payload.analystData;
-                state.metadata = action.payload.metadata;
+                // state.metadata = action.payload.metadata;
+                state.focusPools = action.payload.focusPools;
             })
             .addCase(getAllPoolBackgroundByType.fulfilled, (state, action) => {
                 state.poolList = action.payload.poolList;
                 state.status = EActionStatus.Succeeded;
+                state.focusPools = action.payload.focusPools;
+                state.statusGetPoolListBackground = EActionStatus.Succeeded;
             })
             .addCase(updateCalculatePool.fulfilled, (state, action) => {
                 state.analystData = action.payload.analystData;
@@ -276,16 +326,27 @@ export const poolListSlice = createSlice({
                 state.status = EActionStatus.Failed;
                 state.errorCode = action.payload?.errorCode || '';
                 state.errorMessage = action.payload?.errorMessage || '';
+            })
+            .addCase(setOrderByDirectionFilter.fulfilled, (state, action) => {
+                state.status = EActionStatus.Succeeded;
+                state.orderByDirection = action.payload.filterOrderByDirection;
+            })
+            .addCase(setOrderByFilter.fulfilled, (state, action) => {
+                state.status = EActionStatus.Succeeded;
+                state.orderBy = action.payload.filterOrderBy;
+            })
+            .addCase(getPoolMetadata.fulfilled, (state, action) => {
+                const { id, metadata } = action.payload;
+                state.metadata = {
+                    ...state.metadata,
+                    [id]: metadata.metadata
+                };
+            })
+            .addCase(getPoolMetadata.rejected, (state, action) => {
+                state.status = EActionStatus.Failed;
+                state.errorCode = action.payload?.errorCode || '';
+                state.errorMessage = action.payload?.errorMessage || '';
             });
-        // .addCase(setOrderByDirectionFilter.fulfilled, (state, action) => {
-        //     state.status = EActionStatus.Succeeded;
-        //     state.orderByDirection = action.payload.filterOrderByDirection;
-        // })
-        // .addCase(setOrderByFilter.fulfilled, (state, action) => {
-        //     state.status = EActionStatus.Succeeded;
-        //     console.log('action.payload.filterOrderBy------',action.payload.filterOrderBy )
-        //     state.orderBy = action.payload.filterOrderBy;
-        // });
     }
 });
 

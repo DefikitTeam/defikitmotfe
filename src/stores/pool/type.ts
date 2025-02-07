@@ -20,6 +20,12 @@ export interface ITransaction {
     isBuy: boolean;
 }
 
+export interface IResponseCreateAiAgent {
+    id: string;
+    message: string;
+    name: string;
+}
+
 export interface IAnalystData {
     apy: string;
     raisedETH: string;
@@ -120,6 +126,14 @@ export interface IGetAllTransactionsParams extends IGetAllQuery {
     poolAddress: string;
     chainId: number;
 }
+
+export interface ISocialScoreInfo {
+    post: number;
+    react: number;
+    comment: number;
+    share: number;
+    view: number;
+}
 export interface IDetailPoolState {
     status: EActionStatus;
     pageTransaction: number;
@@ -128,6 +142,8 @@ export interface IDetailPoolState {
     pool: IPoolDetail | undefined;
     error: FetchError | undefined;
     metaDataInfo: IMetaData;
+    socialScoreInfo: ISocialScoreInfo;
+    openModalSocialScore: boolean;
     transactions: Transaction[];
     // latestTimeUpdate: number;
     priceNative: number;
@@ -153,6 +169,7 @@ export interface IHolderDistribution {
 export interface IDetailPoolResponseData {
     pool: IPoolDetail | undefined;
     metaDataInfo: { id: string; metadata: IMetaData };
+    socialScoreInfo: ISocialScoreInfo;
     latestTimeUpdate: number;
     priceNative: number;
     analystData: { id: string; analystData: IAnalystData };
@@ -169,14 +186,17 @@ export interface IDetailPoolBackgroundResponseData {
     transactions: Transaction[];
     pool: IPoolDetail | undefined;
     linkDiscussionTelegram: string;
+    socialScoreInfo: ISocialScoreInfo;
 }
 
 export interface IPoolState extends FetchError {
     status: EActionStatus;
+    statusGetPoolListBackground: EActionStatus;
     poolList: IPoolList[];
+    focusPools: string[];
     filter: PoolStatus;
-    // orderBy: PoolStatusSortOrderBy;
-    // orderByDirection: PoolStatusSortFilter;
+    orderBy: PoolStatusSortOrderBy;
+    orderByDirection: PoolStatusSortFilter;
     metadata: { [key: string]: { id: string; metadata?: IMetaData } };
     analystData: { [key: string]: { id: string; analystData?: IAnalystData } };
     priceNative: number;
@@ -184,13 +204,15 @@ export interface IPoolState extends FetchError {
 
 export interface IPoolListResponse {
     poolList: IPoolList[];
+    focusPools: string[];
     priceNative: number;
-    metadata: { [key: string]: { id: string; metadata?: IMetaData } };
+    // metadata: { [key: string]: { id: string; metadata?: IMetaData } };
     analystData: { [key: string]: { id: string; analystData?: IAnalystData } };
 }
 
 export interface IPoolListBackgroundResponse {
     poolList: IPoolList[];
+    focusPools: string[];
 }
 
 export interface IPoolListByAddressResponse {
@@ -248,19 +270,27 @@ export interface ITractionHome {
 
 export interface IGetAllPoolQuery {
     statusPool: PoolStatus;
+    orderByDirection: PoolStatusSortFilter;
+    orderBy: PoolStatusSortOrderBy;
     query: string;
     owner?: string;
-    chainId?: number;
+    chainId: number;
     metaDataFromStore: { [key: string]: { id: string; metadata?: IMetaData } };
 }
 
 export interface IGetAllPoolBackgroundQuery {
     statusPool: PoolStatus;
+    orderByDirection: PoolStatusSortFilter;
+    orderBy: PoolStatusSortOrderBy;
     query: string;
     chainId?: number;
     owner?: string;
 }
 
+export interface IGetMetadataPoolParams {
+    id: string;
+    metadataLink: string;
+}
 export interface IGetAllPoolQueryByAddress {
     poolAddress: string;
     chainId?: number;
@@ -270,6 +300,9 @@ export interface IResponsePriceNative {
     price: number;
 }
 
+export interface IPriceNativeRequest {
+    chainId: string;
+}
 export interface IBuyPool {
     poolAddress: string;
     numberBatch: number;
@@ -320,8 +353,51 @@ export interface IVestingState extends FetchError {
     openModalVesting: boolean;
 }
 
+export interface IMessageExample {
+    user: {
+        user: string;
+        content: {
+            text: string;
+        };
+    };
+    agent: {
+        user: string;
+        content: {
+            text: string;
+        };
+    };
+}
+
+export interface IStyleAiAgentCommunity {
+    chat?: string[];
+    post?: string[];
+    all?: string[];
+}
+
+export interface ICreateAiAgent {
+    nameAgent?: string;
+    clientsAgent?: string[];
+    plugins?: string[];
+    modelProvider?: string;
+    settings?: any;
+    system?: string;
+    bio?: string;
+    lore?: string[];
+    messageExamples?: IMessageExample[];
+    postExamples?: string[];
+    adjectives?: string[];
+    people?: string[];
+    topics?: string[];
+    style?: IStyleAiAgentCommunity;
+}
 export interface ICreatePoolLaunch {
-    token: string;
+    token?: string;
+    name: string;
+    symbol: string;
+    decimal: string;
+    totalSupply: string;
+    bondBuyFirst?: string;
+    aiAgent?: ICreateAiAgent;
     description: string;
     websiteLink: string;
     telegramLink: string;
@@ -356,6 +432,9 @@ export interface IReferralPool {
     // walletAddress: string;
 }
 
+export interface IRefCode {
+    refCode: string;
+}
 export interface IRewardPoolState {
     statusGetPoolInfoReward: EActionStatus;
     statusGetUserTopRewardByPool: EActionStatus;

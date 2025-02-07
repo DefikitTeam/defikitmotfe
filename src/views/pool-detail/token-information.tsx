@@ -5,13 +5,26 @@ import { CopyOutlined } from '@ant-design/icons';
 import { Tooltip, notification } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
+import { useAccount } from 'wagmi';
 
 const TokenInformation = () => {
     const t = useTranslations();
     const { isMobile } = useWindowSize();
     const [{ poolStateDetail }] = usePoolDetail();
     const { pool } = poolStateDetail;
+    const { isConnected, address } = useAccount();
+
     const handleCopy = (tokenAddress: string | undefined) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
                 notification.success({
@@ -42,8 +55,10 @@ const TokenInformation = () => {
                             />
                         </Tooltip>
                         {isMobile
-                            ? shortWalletAddress(pool ? pool.id : '')
-                            : pool?.id}
+                            ? shortWalletAddress(
+                                  pool ? pool.id.toLowerCase() : ''
+                              )
+                            : pool?.id.toLowerCase()}
                     </div>
                 </div>
                 <div className="flex justify-between">
@@ -64,7 +79,7 @@ const TokenInformation = () => {
                         {formatCurrency(
                             pool
                                 ? new BigNumber(pool.totalSupplyToken)
-                                    //   .times(10 ** parseInt(pool.decimals))
+                                      .div(10 ** parseInt(pool.decimals))
                                       .toFixed(0)
                                 : '0'
                         )}

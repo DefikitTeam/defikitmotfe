@@ -5,10 +5,11 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useAccount } from 'wagmi';
 import ModalYourFriend from './modal-your-friend';
+import { notification } from 'antd';
 
 const YourFriend = () => {
     const t = useTranslations();
-    const { address } = useAccount();
+    const { address, isConnected } = useAccount();
     const params = useParams();
     const addressParams = params?.walletAddress as string;
     const isAddressDifferent = addressParams && addressParams !== address;
@@ -21,7 +22,17 @@ const YourFriend = () => {
         setOpenModalYourFriendListAction
     ] = usePortfolio();
     const { yourFriendList, openModalYourFriendList } = portfolio;
+
     const handleClickViewYourFriend = () => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
         setOpenModalYourFriendListAction(true);
     };
     return (

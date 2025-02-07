@@ -49,7 +49,7 @@ module.exports = {
         },
         slideInFromRight: {
           '0%': {
-            transform: 'translateX(100%)',
+            transform: 'translateX(-100%)',
             opacity: '0',
           },
           '100%': {
@@ -73,6 +73,48 @@ module.exports = {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
         },
+        kingTitle: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.1)', opacity: '0.8' },
+        },
+        kingPool: {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(234, 179, 8, 0.8)' },
+          '50%': { boxShadow: '0 0 40px rgba(234, 179, 8, 0.4)' },
+        },
+        kingText: {
+          '0%, 100%': { color: '#F59E0B' },
+          '50%': { color: '#FCD34D' },
+        },
+        // ping: {
+        //   '0%, 100%': { transform: 'scale(1)' },
+        //   '50%': { transform: 'scale(0.8)' }
+        // }
+        swing: {
+          '0%': { transform: 'rotate(0deg)' },
+          '25%': { transform: 'rotate(15deg)' },
+          '50%': { transform: 'rotate(0deg)' },
+          '75%': { transform: 'rotate(-15deg)' },
+          '100%': { transform: 'rotate(0deg)' },
+        },
+
+
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideInDown: {
+          '0%': { transform: 'translateY(-50px)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        fadeInUp: {
+          '0%': { transform: 'translateY(50px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        spin: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+
 
       },
       animation: {
@@ -84,6 +126,15 @@ module.exports = {
         bubbleUp: 'bubbleUp 1s linear infinite',
         moveDiagonally: 'moveDiagonally 2s ease-in-out infinite',
         fadeIn: 'fadeIn 1.5s ease-out forwards',
+        'king-title': 'kingTitle 2s infinite',
+        'king-pool': 'kingPool 3s infinite',
+        'king-text': 'kingText 1.5s infinite',
+        'ping': 'ping 2s ease-in-out infinite',
+        swing: 'swing 0.6s ease-in-out infinite',
+        fadeIn: 'fadeIn 1s ease-in-out',
+        slideInDown: 'slideInDown 1s ease-in-out',
+        fadeInUp: 'fadeInUp 1s ease-in-out',
+        spin: 'spin 2s linear infinite',
       },
       colors: {
         primary: '#297FD6',

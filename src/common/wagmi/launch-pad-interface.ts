@@ -1,10 +1,13 @@
+import { config } from '@/src/components/connect-wallet/wagmi';
+import { getGasPrice } from '@wagmi/core';
 import { message } from 'antd';
 import { JointContent } from 'antd/lib/message/interface';
+import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Abi, BaseError, ContractFunctionRevertedError } from 'viem';
 import { UseWriteContractReturnType } from 'wagmi';
 import { ChainId, PLATFORM_FEE } from '../constant/constance';
-import BigNumber from 'bignumber.js';
+
 export interface ContractStruct {
     address: `0x${string}`;
     abi: Abi;
@@ -55,6 +58,22 @@ export class LaunchPadInterface {
             }
 
             if (numberBatch && poolAddress) {
+                const chainId = Number(this._contractStruct.chainId);
+
+                if (isNaN(chainId)) {
+                    throw new Error('Invalid chainId');
+                }
+
+                const parameters = { chainId: chainId };
+
+                const gasPrice = await getGasPrice(config, parameters);
+
+                if (!gasPrice) {
+                    throw new Error('Failed to fetch gas price');
+                }
+
+                const adjustedGasPrice = (gasPrice * BigInt(13)) / BigInt(10);
+
                 await watcher.writeContractAsync({
                     ...this._contractStruct,
                     functionName: 'buy',
@@ -64,6 +83,7 @@ export class LaunchPadInterface {
                         ethers.parseEther(maxAmountETH),
                         referrer
                     ],
+                    gasPrice: adjustedGasPrice,
                     value: ethers.parseEther(maxAmountETH)
                 });
             }
@@ -146,7 +166,6 @@ export class LaunchPadInterface {
             ) {
                 throw new Error('Invalid params when create launch pool ');
             }
-            console.log('comin here');
 
             await watcher.writeContractAsync({
                 ...this._contractStruct,
@@ -175,6 +194,134 @@ export class LaunchPadInterface {
             });
         } catch (error) {
             this.handleErrors(error);
+        }
+    }
+
+    async launchPool(
+        watcher: UseWriteContractReturnType,
+        params: {
+            // token
+            name: string;
+            symbol: string;
+            decimals: string | number;
+            totalSupply: string | bigint;
+            //active pool
+            fixedCapETH: string | number;
+            tokenForAirdrop: string | number;
+            tokenForFarm: string | number;
+            tokenForSale: string | number;
+            tokenForAddLP: string | number;
+            // batch purchase
+            tokenPerPurchase: string | number;
+            maxRepeatPurchase: string | number;
+            // limit time
+            startTime: string | number;
+            minDurationSell: string | number;
+            maxDurationSell: string | number;
+            // metadata
+            metadata: string | number;
+            // buy
+            numberBatch?: string | number;
+            maxAmountETH?: string;
+            referrer?: string;
+        }
+    ) {
+        try {
+            const {
+                name,
+                symbol,
+                decimals,
+                totalSupply,
+                fixedCapETH,
+                tokenForAirdrop,
+                tokenForFarm,
+                tokenForSale,
+                tokenForAddLP,
+                tokenPerPurchase,
+                maxRepeatPurchase,
+                startTime,
+                minDurationSell,
+                maxDurationSell,
+                metadata,
+                numberBatch,
+                maxAmountETH,
+                referrer
+            } = params;
+
+            const validations: Record<string, any> = {
+                name,
+                symbol,
+                decimals,
+                totalSupply,
+                fixedCapETH,
+                tokenForAirdrop,
+                tokenForFarm,
+                tokenForSale,
+                tokenForAddLP,
+                tokenPerPurchase,
+                maxRepeatPurchase,
+                startTime,
+                minDurationSell,
+                maxDurationSell,
+                metadata,
+                numberBatch,
+                maxAmountETH,
+                referrer
+            };
+
+            for (const [key, value] of Object.entries(validations)) {
+                if (value === undefined || value === null) {
+                    const friendlyFieldName = key
+                        .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+                        .toLowerCase() // Convert to lowercase
+                        .replace(/^\w/, (c) => c.toUpperCase()); // Capitalize first letter
+                    throw new Error(
+                        `Please provide all required information: ${friendlyFieldName} is missing`
+                    );
+                }
+            }
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'launchPool',
+                args: [
+                    {
+                        name,
+                        symbol,
+                        decimals,
+                        totalSupply,
+                        fixedCapETH,
+                        tokenForAirdrop,
+                        tokenForFarm,
+                        tokenForSale,
+                        tokenForAddLP,
+                        tokenPerPurchase,
+                        maxRepeatPurchase,
+                        startTime,
+                        minDurationSell,
+                        maxDurationSell,
+                        metadata,
+                        numberBatch,
+                        maxAmountETH,
+                        referrer
+                    }
+                ],
+                // value: BigInt(
+                //     new BigNumber(PLATFORM_FEE[this._contractStruct.chainId] + Number(new BigNumber(maxAmountETH).toFixed(0)))
+                //         .times(1e18)
+                //         .toFixed(0)
+                // )
+                value: BigInt(
+                    new BigNumber(maxAmountETH!)
+                        .plus(
+                            new BigNumber(
+                                PLATFORM_FEE[this._contractStruct.chainId]
+                            ).times(1e18)
+                        )
+                        .toFixed(0)
+                )
+            });
+        } catch (err) {
+            this.handleErrors(err);
         }
     }
 

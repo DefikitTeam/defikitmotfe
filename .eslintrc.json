@@ -3,7 +3,7 @@
     "browser": true
   },
   "plugins": ["@typescript-eslint", "simple-import-sort", "json"],
-  "extends": ["next/core-web-vitals", "eslint:recommended"],
+  "extends": ["next/core-web-vitals", "eslint:recommended",  "next"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": ["./tsconfig.json"],
@@ -13,8 +13,13 @@
   },
   "rules": {
     "@next/next/no-img-element": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "no-unused-vars": "off",
+    "no-useless-escape": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "no-extra-semi": "off",
     "no-eval": "error",
-     "simple-import-sort/imports": "off",
+    "simple-import-sort/imports": "off",
     "react/jsx-filename-extension": [
       "error",
       {

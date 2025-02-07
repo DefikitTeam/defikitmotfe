@@ -1,6 +1,10 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { chains } from '@/src/common/constant/constance';
-import { NEXT_PUBLIC_DOMAIN_BARTIO_STG } from '@/src/common/web3/constants/env';
+import {
+    NEXT_PUBLIC_DOMAIN_BARTIO_STG,
+    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD,
+    NEXT_PUBLIC_DOMAIN_MULTIPLE_STG
+} from '@/src/common/web3/constants/env';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface IChainInfor {
     chainId: number;
@@ -16,14 +20,21 @@ interface ChainDataState {
 }
 
 const getInitialChainData = () => {
-    const isStaging =
-        typeof window !== 'undefined' &&
-        window.location.hostname === NEXT_PUBLIC_DOMAIN_BARTIO_STG;
-    return isStaging ? chains[1] : chains[0];
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    const chainMappings: Record<string, IChainInfor> = {
+        [`${NEXT_PUBLIC_DOMAIN_BARTIO_STG}`]: chains[1],
+        [`${NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD}`]: chains[7],
+        [`${NEXT_PUBLIC_DOMAIN_MULTIPLE_STG}`]: chains[1]
+    };
+
+    return chainMappings[window.location.hostname];
 };
 
 const initialState: ChainDataState = {
-    chainData: getInitialChainData()
+    chainData: getInitialChainData()!
 };
 
 const chainDataSlice = createSlice({

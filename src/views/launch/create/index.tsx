@@ -1,8 +1,12 @@
 /* eslint-disable */
 'use client';
-import { NEXT_PUBLIC_API_ENDPOINT } from '@/src/common/web3/constants/env';
+import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
+import {
+    NEXT_PUBLIC_API_ENDPOINT,
+    NEXT_PUBLIC_API_ENDPOINT_PROD,
+    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD
+} from '@/src/common/web3/constants/env';
 import BoxArea from '@/src/components/common/box-area';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import serviceUpload from '@/src/services/external-services/backend-server/upload';
@@ -10,32 +14,44 @@ import {
     useCreatePoolLaunchInformation,
     usePassData
 } from '@/src/stores/pool/hook';
+
+import { ADDRESS_NULL } from '@/src/common/constant/common';
+import { ChainId } from '@/src/common/constant/constance';
+import { TOKEN_STATUS } from '@/src/common/constant/token';
+import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
+import { useReader } from '@/src/hooks/useReader';
+import servicePool from '@/src/services/external-services/backend-server/pool';
+import { RootState } from '@/src/stores';
+import { useAuthLogin } from '@/src/stores/auth/hook';
 import { useListTokenOwner } from '@/src/stores/token/hook';
 import { Col, Form, notification, Row, Typography } from 'antd';
 import { RcFile } from 'antd/es/upload';
-import { useForm } from 'antd/lib/form/Form';
 import { AxiosError } from 'axios';
 import BigNumber from 'bignumber.js';
-import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
-import CreateToken from './create-token';
 import PoolInformation from './pool-information';
 import SaveCreatePoolButton from './save-button';
-import { TOKEN_STATUS } from '@/src/common/constant/token';
-import servicePool from '@/src/services/external-services/backend-server/pool';
-
-const { Title } = Typography;
-
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
+import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 export interface IPoolCreatForm {}
+const { Title } = Typography;
+const currentHostName = useCurrentHostNameInformation();
+const isProd =
+    currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
 
 const CreateLaunch = () => {
     const { isMobile } = useWindowSize();
+    const { chainId, address } = useAccount();
     const t = useTranslations();
-    const [form] = useForm<IPoolCreatForm>();
+    // const [form] = useForm<IPoolCreatForm>();
+    const [form] = Form.useForm();
     const [isLoadingCreateLaunch, setIsLoadingCreateLaunch] = useState(false);
-
+    const [maxAmountETHResult, setMaxAmountETHResult] = useState<string>('0');
     const { resetPassData } = usePassData();
     const {
         setOpenModdalCreateToken,
@@ -43,16 +59,26 @@ const CreateLaunch = () => {
         settingTokenState,
         setCurrentChoicedToken
     } = useListTokenOwner();
+
     const [avatarInfo, setAvatarInfo] = useState<{
         file: string | Blob | RcFile | File;
         flag: boolean;
     }>();
+
+    const [avatarAiGentInfo, setAvatarAiAgentInfo] = useState<{
+        file: string | Blob | RcFile | File;
+        flag: boolean;
+    }>();
+
     const router = useRouter();
 
-    const { address, addresses } = useAccount();
-    const { chainData } = useCurrentChainInformation();
+    const chainData = useSelector((state: RootState) => state.chainData);
     const [data, , resetData] = useCreatePoolLaunchInformation();
-    const { useCreateLaunchPool } = useMultiCaller();
+    const { useLaunchPool } = useMultiCaller();
+    const multiCallerContract = getContract(
+        chainData.chainData.chainId || ChainId.BARTIO
+    );
+    const [signatureMetadata, setSignatureMetadata] = useState<string>('');
 
     const getFileAvatar = (value: {
         file: string | Blob | RcFile | File;
@@ -61,8 +87,31 @@ const CreateLaunch = () => {
         setAvatarInfo(value);
     };
 
+    const getFileAiAgentAvatar = (value: {
+        file: string | Blob | RcFile | File;
+        flag: boolean;
+    }) => {
+        setAvatarAiAgentInfo(value);
+    };
+
+    const { authState, setOpenModalInviteBlocker } = useAuthLogin();
+    // useEffect(() => {
+    //     const refCodeExisted = localStorage.getItem(REFCODE_INFO_STORAGE_KEY);
+    //     if (!refCodeExisted) {
+    //         setOpenModalInviteBlocker(true);
+    //     }
+    // }, []);
+
+    const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+
     useEffect(() => {
-        if (useCreateLaunchPool.isLoadingInitCreateLaunchPool) {
+        if (!refCodeExisted) {
+            setOpenModalInviteBlocker(true);
+        }
+    }, [refCodeExisted]);
+
+    useEffect(() => {
+        if (useLaunchPool.isLoadingInitLaunchPool) {
             notification.info({
                 message: 'Pool in Progress',
                 description: 'Please wait while your pool is being processed',
@@ -70,10 +119,10 @@ const CreateLaunch = () => {
                 showProgress: true
             });
         }
-    }, [useCreateLaunchPool.isLoadingInitCreateLaunchPool]);
+    }, [useLaunchPool.isLoadingInitLaunchPool]);
 
     useEffect(() => {
-        if (useCreateLaunchPool.isLoadingAgreedCreateLaunchPool) {
+        if (useLaunchPool.isLoadingAgreedLaunchPool) {
             setIsLoadingCreateLaunch(true);
             notification.info({
                 message: 'Active pool is processing',
@@ -82,43 +131,72 @@ const CreateLaunch = () => {
                 showProgress: true
             });
         }
-    }, [useCreateLaunchPool.isLoadingAgreedCreateLaunchPool]);
+    }, [useLaunchPool.isLoadingAgreedLaunchPool]);
 
     useEffect(() => {
-        if (useCreateLaunchPool.isConfirmed) {
-            setIsLoadingCreateLaunch(false);
-            notification.success({
-                message: 'Active pool successfully!',
-                duration: 1.2,
-                showProgress: true
-            });
-            resetData();
-            resetPassData();
-            setCurrentChoicedToken({
-                id: '',
-                owner: '',
-                name: '',
-                symbol: '',
-                decimals: '',
-                totalSupply: '',
-                status: ''
-            });
+        if (useLaunchPool.isConfirmed) {
+            const handleConfirmed = async () => {
+                const { hash, receipt } = useLaunchPool.data;
+                const poolAddress = receipt?.logs[0]?.address;
 
-            setTimeout(() => {
-                getListTokenByOwner({
-                    ownerAddress: address as `0x${string}`,
-                    chainId: chainData.chainId as number,
-                    status: TOKEN_STATUS.INACTIVE
-                });
-            }, 2000);
-            setTimeout(() => {
-                router.push('/');
-            }, 1000);
+                setIsLoadingCreateLaunch(false);
+
+                try {
+                    const totalSupplyBefore = new BigNumber(data.totalSupply)
+                        .times(new BigNumber(10).pow(data.decimal))
+                        .toFixed(0);
+                    await Promise.all([
+                        await servicePool.createLaunchPool(
+                            data.name.trim(),
+                            data.symbol.trim(),
+                            data.decimal,
+                            totalSupplyBefore,
+                            poolAddress as `0x${string}`,
+                            chainData.chainData.chainId.toString(),
+                            data.aiAgent
+                        ),
+                        await serviceUpload.updateMetadata(
+                            chainData.chainData.chainId.toString(),
+                            poolAddress as `0x${string}`,
+                            signatureMetadata
+                        )
+                    ]);
+                    resetData();
+                    resetPassData();
+                    setSignatureMetadata('');
+                    notification.success({
+                        message: 'Active pool successfully!',
+                        duration: 3,
+                        showProgress: true
+                    });
+
+                    setTimeout(() => {
+                        getListTokenByOwner({
+                            ownerAddress: address as `0x${string}`,
+                            chainId: chainData.chainData.chainId as number,
+                            status: TOKEN_STATUS.INACTIVE
+                        });
+                    }, 1000);
+
+                    setTimeout(() => {
+                        router.push('/');
+                    }, 1000);
+                } catch (error) {
+                    console.error('Error creating launch pool:', error);
+                    notification.error({
+                        message: 'Failed to create launch pool',
+                        duration: 3,
+                        showProgress: true
+                    });
+                }
+            };
+
+            handleConfirmed();
         }
-    }, [useCreateLaunchPool.isConfirmed]);
+    }, [useLaunchPool.isConfirmed]);
 
     useEffect(() => {
-        if (useCreateLaunchPool.isError) {
+        if (useLaunchPool.isError) {
             setIsLoadingCreateLaunch(false);
             notification.error({
                 message: 'Transaction Failed',
@@ -126,22 +204,83 @@ const CreateLaunch = () => {
                 showProgress: true
             });
         }
-    }, [useCreateLaunchPool.isError]);
+    }, [useLaunchPool.isError]);
+
+    const { dataReader, isFetchingDataReader, reFetchDataReader } = useReader({
+        contractAddAndAbi: multiCallerContract,
+        poolAddress: undefined,
+        userAddress: undefined,
+        chainId: chainId as number,
+        value: undefined,
+        amountOut: Number(data.bondBuyFirst),
+        reserveIn: Number(
+            new BigNumber(data.fixedCapETH)
+                .times(10 ** Number(data.decimal))
+                .toFixed(0)
+        ),
+        reserveOut: Number(
+            new BigNumber(
+                new BigNumber(data.tokenToMint)
+                    .times(10 ** Number(data.decimal))
+                    .toFixed(0)
+            )
+                .div(
+                    new BigNumber(data.tokenToMint)
+                        .times(10 ** Number(data.decimal))
+                        .div(data.totalBatch)
+                        .toFixed(0)
+                )
+                .times(2)
+                .toFixed(0)
+        )
+    });
+
+    const maxAmountETH = dataReader ? dataReader[6] : undefined;
+
+    useEffect(() => {
+        if (isFetchingDataReader === false && maxAmountETH) {
+            const maxAmountETHFromReader = maxAmountETH?.result;
+            if (maxAmountETHFromReader) {
+                const maxAmountETHConverted = new BigNumber(
+                    maxAmountETHFromReader
+                ).toString();
+                setMaxAmountETHResult(maxAmountETHConverted);
+            }
+        }
+    }, [isFetchingDataReader, maxAmountETH]);
+
     const onFinish = async () => {
         let urlAvatar: string = '';
+        let urlAiGentAvatar: string = '';
         setIsLoadingCreateLaunch(true);
         try {
             if (avatarInfo?.flag) {
-                const res = await serviceUpload.getPresignedUrlAvatar(
-                    avatarInfo?.file as File,
-                    data.token,
-                    chainData.chainId.toString()
-                );
+                const res =
+                    await serviceUpload.getPresignedUrlAvatarWithoutAddress(
+                        avatarInfo?.file as File,
+                        chainData.chainData.chainId.toString()
+                    );
                 urlAvatar = res;
+            }
+            if (avatarAiGentInfo?.flag) {
+                const res =
+                    await serviceUpload.getPresignedUrlAvatarWithoutAddress(
+                        avatarAiGentInfo?.file as File,
+                        chainData.chainData.chainId.toString()
+                    );
+                urlAiGentAvatar = res;
+            }
+
+            let signature: string = '';
+            if (urlAvatar) {
+                const matches = urlAvatar.match(/\/t\/([^/]+)/);
+                signature = matches ? matches[1] : '';
+                setSignatureMetadata(signature);
             }
             const metadata = {
                 image: urlAvatar,
-                description: data.description,
+                imageAiAgent: urlAiGentAvatar,
+                description: data.description.trim(),
                 website:
                     data.websiteLink && !data.websiteLink.startsWith('https://')
                         ? `https://${data.websiteLink}`
@@ -160,18 +299,18 @@ const CreateLaunch = () => {
                         ? `https://${data.discordLink}`
                         : data.discordLink
             };
+
             const metadataPayload = JSON.stringify(metadata);
-            const resData = await serviceUpload.uploadMetadataToServer(
-                metadataPayload,
-                chainData.chainId.toString(),
-                data.token
-            );
+            const resData =
+                await serviceUpload.uploadMetadataToServerWithoutAddress(
+                    metadataPayload,
+                    chainData.chainData.chainId.toString(),
+                    signature
+                );
             let metaDataLink: string = '';
             if (resData && resData.status === 'success') {
-                metaDataLink = `${NEXT_PUBLIC_API_ENDPOINT}/c/${chainData.chainId}/t/${data.token}/metadata`;
+                metaDataLink = `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainData.chainData.chainId}/t/${signature}/metadata`;
             }
-
-            // call sc to active pool
             const maxDurationSell =
                 new Date(data.endTime).valueOf() -
                 new Date(data.startTime).valueOf();
@@ -187,56 +326,88 @@ const CreateLaunch = () => {
                 setIsLoadingCreateLaunch(false);
                 return;
             }
-            await servicePool.createLaunchPool(
-                settingTokenState.choicedToken.name,
-                settingTokenState.choicedToken.symbol,
-                settingTokenState.choicedToken.decimals,
-                settingTokenState.choicedToken.totalSupply,
 
-                settingTokenState.choicedToken.id,
-                chainData.chainId.toString()
-            );
-            await useCreateLaunchPool.actionAsync({
-                token: data.token,
-                fixedCapETH: new BigNumber(data.fixedCapETH)
-                    .times(1e18)
-                    .toFixed(0),
-                tokenForAirdrop: new BigNumber(data.tokenForAirdrop)
-                    // .times(
-                    //     10 ** Number(settingTokenState.choicedToken.decimals)
-                    // )
-                    .toFixed(0),
-                tokenForFarm: new BigNumber(data.tokenForFarm)
-                    // .times(
-                    //     10 ** Number(settingTokenState.choicedToken.decimals)
-                    // )
-                    .toFixed(0),
-                tokenForSale: new BigNumber(data.tokenToMint)
-                    // .times(
-                    //     10 ** Number(settingTokenState.choicedToken.decimals)
-                    // )
-                    .toFixed(0),
-                tokenForAddLP: new BigNumber(data.tokenForAddLP)
-                    // .times(
-                    //     10 ** Number(settingTokenState.choicedToken.decimals)
-                    // )
-                    .toFixed(0),
-                tokenPerPurchase: new BigNumber(data.tokenToMint)
-                    // .times(
-                    //     10 ** Number(settingTokenState.choicedToken.decimals)
-                    // )
-                    .div(data.totalBatch)
-                    .toFixed(0),
-                maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
-                    // .times(
-                    //     10 ** Number(settingTokenState.choicedToken.decimals)
-                    // )
-                    .toFixed(0),
-                startTime: data.startTime,
-                minDurationSell: data.minDurationSell * 3600,
-                maxDurationSell: maxDurationSell,
-                metadata: metaDataLink
-            });
+            if (Number(data.bondBuyFirst) > 0) {
+                await useLaunchPool.actionAsync({
+                    name: data.name.trim(),
+                    symbol: data.symbol.trim(),
+                    decimals: data.decimal,
+                    totalSupply: new BigNumber(data.totalSupply)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    fixedCapETH: new BigNumber(data.fixedCapETH)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenForAirdrop: new BigNumber(data.tokenForAirdrop)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenForFarm: new BigNumber(data.tokenForFarm)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenForSale: new BigNumber(data.tokenToMint)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenForAddLP: new BigNumber(data.tokenForAddLP)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenPerPurchase: new BigNumber(data.tokenToMint)
+                        .times(10 ** Number(data.decimal))
+                        .div(data.totalBatch)
+                        .toFixed(0),
+                    maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    startTime: data.startTime,
+                    minDurationSell: data.minDurationSell * 3600,
+                    maxDurationSell: maxDurationSell,
+                    metadata: metaDataLink,
+                    numberBatch: data.bondBuyFirst,
+                    maxAmountETH: maxAmountETHResult,
+                    referrer: authState.userInfo?.referrer
+                        ? authState.userInfo?.referrer
+                        : ADDRESS_NULL
+                });
+            } else {
+                await useLaunchPool.actionAsync({
+                    name: data.name.trim(),
+                    symbol: data.symbol.trim(),
+                    decimals: data.decimal,
+                    totalSupply: new BigNumber(data.totalSupply)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    fixedCapETH: new BigNumber(data.fixedCapETH)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenForAirdrop: new BigNumber(data.tokenForAirdrop)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenForFarm: new BigNumber(data.tokenForFarm)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenForSale: new BigNumber(data.tokenToMint)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenForAddLP: new BigNumber(data.tokenForAddLP)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    tokenPerPurchase: new BigNumber(data.tokenToMint)
+                        .times(10 ** Number(data.decimal))
+                        .div(data.totalBatch)
+                        .toFixed(0),
+                    maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
+                        .times(10 ** Number(data.decimal))
+                        .toFixed(0),
+                    startTime: data.startTime,
+                    minDurationSell: data.minDurationSell * 3600,
+                    maxDurationSell: maxDurationSell,
+                    metadata: metaDataLink,
+                    numberBatch: '0',
+                    maxAmountETH: '0',
+                    referrer: authState.userInfo?.referrer
+                        ? authState.userInfo?.referrer
+                        : ADDRESS_NULL
+                });
+            }
         } catch (error) {
             if (error instanceof AxiosError) {
                 notification.error({
@@ -275,7 +446,7 @@ const CreateLaunch = () => {
                         </Title>
                     </Col>
 
-                    <Col
+                    {/* <Col
                         xs={24}
                         sm={24}
                         lg={24}
@@ -283,7 +454,7 @@ const CreateLaunch = () => {
                         xxl={24}
                     >
                         <CreateToken />
-                    </Col>
+                    </Col> */}
                 </Row>
                 <Col
                     xs={24}
@@ -300,19 +471,22 @@ const CreateLaunch = () => {
                         <PoolInformation
                             form={form}
                             getFileAvatar={getFileAvatar}
+                            getFileAiAgentAvatar={getFileAiAgentAvatar}
                         />
+
                         <SaveCreatePoolButton
                             isLoading={isLoadingCreateLaunch}
                             disiabled={
                                 isLoadingCreateLaunch ||
                                 !address ||
-                                data.token === '' ||
                                 !avatarInfo?.flag
                             }
                         />
                     </Form>
                 </Col>
             </div>
+
+            <ModalInviteBlocker />
         </BoxArea>
     );
 };

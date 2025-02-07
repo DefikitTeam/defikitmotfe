@@ -1,15 +1,16 @@
-import {
-    useAccount,
-    useWaitForTransactionReceipt,
-    useWriteContract
-} from 'wagmi';
+import { useSelector } from 'react-redux';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { getContract } from '../common/blockchain/evm/contracts/utils/getContract';
 import { ChainId } from '../common/constant/constance';
 import MultiCaller from '../common/wagmi/MultiCaller';
+import { RootState } from '../stores';
 
 export function useMultiCaller() {
-    const { chainId } = useAccount();
-    const multiCallerContract = getContract(chainId || ChainId.BARTIO);
+    // const { chainId } = useAccount();
+    const chainData = useSelector((state: RootState) => state.chainData);
+    const multiCallerContract = getContract(
+        chainData.chainData.chainId || ChainId.BARTIO
+    );
 
     // multi caller
     const multiCaller = new MultiCaller(multiCallerContract);
@@ -28,6 +29,10 @@ export function useMultiCaller() {
     const createLaunchPoolWatcher = useWriteContract();
     const creeateLaunchPoolListener = useWaitForTransactionReceipt({
         hash: createLaunchPoolWatcher.data
+    });
+    const LaunchPoolWatcher = useWriteContract();
+    const LaunchPoolListener = useWaitForTransactionReceipt({
+        hash: LaunchPoolWatcher.data
     });
 
     const claimTokenWatcher = useWriteContract();
@@ -105,6 +110,44 @@ export function useMultiCaller() {
             isError:
                 creeateLaunchPoolListener.isError ||
                 createLaunchPoolWatcher.isError
+        },
+        useLaunchPool: {
+            actionAsync: (params: {
+                // token
+                name: string;
+                symbol: string;
+                decimals: string | number;
+                totalSupply: string | bigint;
+                //active pool
+                fixedCapETH: string | number;
+                tokenForAirdrop: string | number;
+                tokenForFarm: string | number;
+                tokenForSale: string | number;
+                tokenForAddLP: string | number;
+                // batch purchase
+                tokenPerPurchase: string | number;
+                maxRepeatPurchase: string | number;
+                // limit time
+                startTime: string | number;
+                minDurationSell: string | number;
+                maxDurationSell: string | number;
+                // metadata
+                metadata: string | number;
+                // buy
+                numberBatch?: string | number;
+                maxAmountETH?: string;
+                referrer?: string;
+            }) => {
+                return multiCaller.launchPool(LaunchPoolWatcher, params);
+            },
+            isConfirmed: LaunchPoolListener.isSuccess,
+            isLoadingAgreedLaunchPool: LaunchPoolListener.isLoading,
+            isLoadingInitLaunchPool: LaunchPoolWatcher.isPending,
+            isError: LaunchPoolListener.isError || LaunchPoolWatcher.isError,
+            data: {
+                hash: LaunchPoolWatcher.data,
+                receipt: LaunchPoolListener.data
+            }
         },
         useClaimToken: {
             actionAsync: (params: { poolAddress: string }) => {

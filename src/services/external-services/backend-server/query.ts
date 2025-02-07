@@ -42,6 +42,7 @@ export interface IParams {
 }
 
 function getQueryPools(params: IParams) {
+    const isContractAddress = /^0x[a-fA-F0-9]{40}$/.test(params.query);
     let query;
     let currentEpoch = Math.round(Date.now() / 1000).toFixed(0);
     switch (params.status) {
@@ -51,8 +52,8 @@ function getQueryPools(params: IParams) {
                     {owner: "${params?.owner?.toLocaleLowerCase()}"},
                     {or: [
                       {name_contains_nocase: "${params.query}"},
-                      {symbol_contains_nocase: "${params.query}"},
-                      {tokenAddress_contains_nocase:"${params.query}"}
+                      
+                      ${isContractAddress ? `{tokenAddress_contains_nocase:"${params.query.toLowerCase()}"}` : ''}
                     ]}
                   ]
                   }
@@ -69,8 +70,7 @@ function getQueryPools(params: IParams) {
                   {startTime_lte: "${currentEpoch}"},
                   {or: [
                     {name_contains_nocase: "${params.query}"},
-                    {symbol_contains_nocase: "${params.query}"},
-                    {tokenAddress_contains_nocase:"${params.query}"}
+                     ${isContractAddress ? `{tokenAddress_contains_nocase:"${params.query.toLowerCase()}"}` : ''}
                   ]}
                 ]
                 }
@@ -86,11 +86,22 @@ function getQueryPools(params: IParams) {
                   {startTime_gt: "${currentEpoch}"},  
                   {or: [
                     {name_contains_nocase: "${params.query}"},
-                    {symbol_contains_nocase: "${params.query}"},
-                    {tokenAddress_contains_nocase:"${params.query}"}
+                    ${isContractAddress ? `{tokenAddress_contains_nocase:"${params.query.toLowerCase()}"}` : ''}
                     ]}
                   ]}
                 orderBy: startTime,
+                orderDirection: desc
+              )`;
+            break;
+        case PoolStatus.All_POOL:
+            query = `pools(where: {
+                and: [
+                  {or: [
+                    {name_contains_nocase: "${params.query}"},
+                    ${isContractAddress ? `{tokenAddress_contains_nocase:"${params.query.toLowerCase()}"}` : ''}
+                    ]}
+                  ]}
+                orderBy: latestTimestampBuy,
                 orderDirection: desc
               )`;
             break;
@@ -100,8 +111,7 @@ function getQueryPools(params: IParams) {
                   {status: "${params.status}"},
                   {or: [
                     {name_contains_nocase: "${params.query}"},
-                    {symbol_contains_nocase: "${params.query}"},
-                    {tokenAddress_contains_nocase:"${params.query}"}
+                    ${isContractAddress ? `{tokenAddress_contains_nocase:"${params.query.toLowerCase()}"}` : ''}
                   ]}
                 ]
                 }

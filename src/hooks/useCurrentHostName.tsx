@@ -1,5 +1,5 @@
 /* eslint-disable */
-'use client'
+'use client';
 import { hostNames } from '../common/constant/constance';
 export interface IHostNameInfo {
     name: string;

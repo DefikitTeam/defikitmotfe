@@ -1,24 +1,27 @@
 /* eslint-disable */
 import { TOKEN_STATUS } from '@/src/common/constant/token';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import { IPool } from '@/src/services/response.type';
 import { IAnalystData, InvestPool } from '@/src/stores/pool/type';
 import { usePortfolio } from '@/src/stores/profile/hook';
 import { Button, notification, Spin } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import  Table  from 'antd/lib/table';
+import Table from 'antd/lib/table';
 import BigNumber from 'bignumber.js';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 import { formatCurrency, shortWalletAddress } from '@/src/common/utils/utils';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
+import useWindowSize from '@/src/hooks/useWindowSize';
+import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
+import { RootState } from '@/src/stores';
+import { useGetInviteCode } from '@/src/stores/invite-code/hook';
 import { useListPool } from '@/src/stores/pool/hook';
+import { useParams, useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import Investpool from './Investpool';
-import { useParams, useSearchParams } from 'next/navigation';
-import useWindowSize from '@/src/hooks/useWindowSize';
+import ModalListCurrentCode from './modal-list-current-code';
 
 export interface IAssetList {
     index: number;
@@ -38,10 +41,11 @@ const Statistical = () => {
     const t = useTranslations();
     const [isLoadingClaimTokenOrSell, setIsLoadingClaimTokenOrSell] =
         useState(false);
-    const { address, chainId } = useAccount();
-    const { chainData } = useCurrentChainInformation();
+    const { address, chainId, isConnected } = useAccount();
+    const router = useRouter();
     const [{ portfolio }, fetchPortfolio, setIdCurrentChoosedTokenSell] =
         usePortfolio();
+    const chainData = useSelector((state: RootState) => state.chainData);
     const { poolStateList } = useListPool();
     const { isMobile } = useWindowSize();
     const { totalInvestedETH } = portfolio;
@@ -51,8 +55,15 @@ const Statistical = () => {
     const params = useParams();
     const addressParams = params?.walletAddress as string;
     const isAddressDifferent = addressParams && addressParams !== address;
-    // const isAddressDifferent = addressParams && addressParams !== address;
-    // const isAddressDifferent = addressParams && addressParams !== address;
+    const [
+        { inviteCode },
+        fetchGetInviteCode,
+        resetGetInviteCode,
+        setIsOpenModalGetListCurrentCodeAction
+    ] = useGetInviteCode();
+
+    const { data, status, isOpenModalGetListCurrentCode } = inviteCode;
+
     useEffect(() => {
         if (
             (address as `0x${string}`) &&
@@ -74,8 +85,18 @@ const Statistical = () => {
     useEffect(() => {
         if (!(address as `0x${string}`) || !chainId || !addressParams) {
             setLoadingTableAsset(false);
+            resetGetInviteCode();
         }
     }, [address, addressParams]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (address) {
+                fetchGetInviteCode();
+            }
+        }, 3000);
+        return () => clearInterval(intervalId);
+    }, [chainData.chainData.chainId, address]);
 
     const funcGenerateTableAsset = (
         innerClaimMap: Map<string, InvestPool>,
@@ -114,7 +135,12 @@ const Statistical = () => {
                 }
                 return undefined;
             })
-            .filter((item) => item !== undefined) as IAssetList[];
+            .filter(
+                (item) =>
+                    item !== undefined &&
+                    parseFloat(item.bondAmount.replace(/,/g, '')) > 0
+            ) as IAssetList[];
+
         return listAsset;
     };
     const listAsset: IAssetList[] = funcGenerateTableAsset(
@@ -163,6 +189,16 @@ const Statistical = () => {
         poolAddress: string,
         pendingClaimAmount: string
     ) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         if (parseFloat(pendingClaimAmount) > 0) {
             // case claim token
             if (!(chainId && address)) {
@@ -181,6 +217,20 @@ const Statistical = () => {
         }
     };
 
+    const handleClickAddress = (addressPool: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+        router.push(
+            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${addressPool}`
+        );
+    };
     const baseColumns: ColumnsType<IAssetList> = [
         {
             title: t('SYMBOL/NAME'),
@@ -190,12 +240,12 @@ const Statistical = () => {
             className: '!font-forza ',
             align: 'left',
             render: (_, record) => (
-                <Link
-                    className=""
-                    href={`/pool/address/${record.id}`}
+                <span
+                    className="cursor-pointer text-blue-400"
+                    onClick={() => handleClickAddress(record.id.toLowerCase())}
                 >
                     {record.symbolAndName}
-                </Link>
+                </span>
             )
         },
         {
@@ -315,6 +365,37 @@ const Statistical = () => {
         setLoadingTableAsset(isLoading);
     };
 
+    const handleGenerateCode = async () => {
+        try {
+            const data = await serviceInviteCode.generateInviteCode();
+            if (data) {
+                notification.success({
+                    message: 'Success',
+                    // @ts-ignore
+                    description: data.message,
+                    duration: 3,
+                    showProgress: true
+                });
+
+                // @ts-ignore
+                await fetchGetInviteCode();
+            }
+        } catch (error) {
+            console.log('error line 405---', error);
+            notification.error({
+                message: 'Error',
+                description:
+                    'Please try again because your balance is less than $500',
+                duration: 3,
+                showProgress: true
+            });
+        }
+    };
+
+    const handleClickViewCurrentCode = () => {
+        setIsOpenModalGetListCurrentCodeAction(true);
+    };
+
     return (
         <div className="h-full w-full">
             {(address as `0x${string}`) &&
@@ -334,7 +415,7 @@ const Statistical = () => {
                 <p className="!font-forza text-base text-black">
                     {t('TOTAL_INVESTED')}:{' '}
                     {new BigNumber(totalInvestedETH).div(1e18).toFixed(10)}{' '}
-                    {chainData.currency}
+                    {chainData.chainData.currency}
                 </p>
 
                 <p className="!font-forza text-base text-black">
@@ -343,7 +424,39 @@ const Statistical = () => {
                         ? shortWalletAddress(addressParams ? addressParams : '')
                         : addressParams}
                 </p>
+
+                {address && !isAddressDifferent && (
+                    <div className="mt-2 !font-forza text-base text-black">
+                        <p>
+                            {t('CURRENT_CODE_INVITE')}
+                            {'('}
+                            {data?.length || 0}
+                            {') '}
+
+                            {data && data.length > 0 && (
+                                <span
+                                    className="cursor-pointer rounded-2xl border-2 border-black bg-[#3B82F4] px-2 py-1 text-white transition-colors duration-300 hover:bg-black hover:text-white"
+                                    onClick={handleClickViewCurrentCode}
+                                >
+                                    {t('VIEW')}{' '}
+                                </span>
+                            )}
+                        </p>
+                        <p className="text-gray-600">
+                            Can you have a refer code for another person?
+                            Minimum $500.
+                        </p>
+                        <button
+                            onClick={handleGenerateCode}
+                            className="mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                        >
+                            Click
+                        </button>
+                    </div>
+                )}
+                <ModalListCurrentCode />
             </div>
+
             <div className="mb-2 mt-2 !font-forza text-lg font-bold">
                 {t('ASSET')}
             </div>

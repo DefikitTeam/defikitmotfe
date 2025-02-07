@@ -23,7 +23,10 @@ const initialState: IAuthState = {
     userInfo: serviceAuth.getUserInfoStorage(),
     userTele: serviceAuth.getUserTeleStorage(),
     userWallet: serviceAuth.getUserWalletStorage(),
-    signature: ''
+    signature: '',
+    accessToken: serviceAuth.getAccessTokenStorage(),
+    refreshToken: '',
+    openModalInviteBlocker: false
 };
 
 export const loginWallet = createAsyncThunk<
@@ -34,9 +37,11 @@ export const loginWallet = createAsyncThunk<
     }
 >('auth/loginWallet', async (loginData, { rejectWithValue }) => {
     try {
+        // @ts-ignore
         const loginResponse: ILoginResponse =
             await serviceAuth.loginWallet(loginData);
-        const { user, tele, wallet } = loginResponse;
+
+        const { user, tele, wallet, accessToken, refreshToken } = loginResponse;
         if (!serviceAuth.getUserInfoStorage()) {
             serviceAuth.storeUserInfo(user as IDataUserLoginResponse);
         }
@@ -46,6 +51,14 @@ export const loginWallet = createAsyncThunk<
         if (!serviceAuth.getUserWalletStorage()) {
             serviceAuth.storeUserWallet(wallet as ILoginWalletResponse);
         }
+        if (!serviceAuth.getAccessTokenStorage()) {
+            serviceAuth.storeAccessToken(accessToken);
+        }
+
+        serviceAuth.storeRefreshToken(refreshToken);
+
+        // save refreshToken in here
+
         return loginResponse;
     } catch (error) {
         const err = error as AxiosError;
@@ -68,11 +81,18 @@ const authSlice = createSlice({
             state.statusLoginTele = EActionStatus.Idle;
             if (!state.userWallet) {
                 state.userInfo = null;
+                state.accessToken = null;
+                serviceAuth.storeAccessToken(null);
             }
+
             state.userTele = null;
             serviceAuth.storeUserTele(null);
+
             if (!serviceAuth.getUserWalletStorage()) {
                 serviceAuth.storeUserInfo(null);
+            }
+            if (!serviceAuth.getAccessTokenStorage()) {
+                serviceAuth.storeAccessToken(null);
             }
         },
         signOutWallet: (state: IAuthState) => {
@@ -82,6 +102,8 @@ const authSlice = createSlice({
 
             if (!state.userTele) {
                 state.userInfo = null;
+                state.accessToken = null;
+                serviceAuth.storeAccessToken(null);
             }
             state.userWallet = null;
             state.signature = '';
@@ -89,6 +111,9 @@ const authSlice = createSlice({
             serviceAuth.storeUserWallet(null);
             if (!serviceAuth.getUserTeleStorage()) {
                 serviceAuth.storeUserInfo(null);
+            }
+            if (!serviceAuth.getAccessTokenStorage()) {
+                serviceAuth.storeAccessToken(null);
             }
         },
         resetStatusLoginTele: (state: IAuthState) => {
@@ -102,6 +127,14 @@ const authSlice = createSlice({
             action: PayloadAction<ISignature>
         ) => {
             state.signature = action.payload.signature;
+        },
+
+        setOpenModalInviteBlocker: (
+            state,
+            action: PayloadAction<{ isOpenModalInviteBlocker: boolean }>
+        ) => {
+            state.openModalInviteBlocker =
+                action.payload.isOpenModalInviteBlocker;
         }
     },
     extraReducers: (builder) => {
@@ -122,6 +155,12 @@ const authSlice = createSlice({
                     state.userWallet = action.payload?.wallet;
                     state.statusLoginWallet = EActionStatus.Succeeded;
                 }
+                if (action.payload.accessToken) {
+                    state.accessToken = action.payload.accessToken;
+                }
+                if (action.payload.refreshToken) {
+                    state.refreshToken = action.payload.refreshToken;
+                }
             }
         );
         builder.addCase(loginWallet.rejected, (state: IAuthState, action) => {
@@ -137,7 +176,8 @@ export const {
     signOutWallet,
     resetStatusLoginTele,
     resetStatusLoginWallet,
-    updateSignature
+    updateSignature,
+    setOpenModalInviteBlocker
 } = authSlice.actions;
 
 export default authSlice.reducer;
