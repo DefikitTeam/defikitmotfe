@@ -1,0 +1,320 @@
+/* eslint-disable */
+import { ChainId } from '@/src/common/constant/constance';
+import {
+    ICreateLaunchPoolParams,
+    IGetAllPoolBackgroundQuery,
+    IGetAllPoolQuery,
+    IGetDetailHolderDistributionParams,
+    IGetDetailPoolParams,
+    IGetPoolInfoRewardParams,
+    IGetTransactionByPoolAndSenderParams,
+    IGetUserPoolParams,
+    IGetUserTopRewardByPoolParams,
+    IReferralPool
+} from '@/src/stores/pool/type';
+import { querySubGraph } from '../fetcher';
+import { getQueryByStatus } from './query';
+import axios from 'axios';
+import { NEXT_PUBLIC_API_ENDPOINT } from '@/src/common/web3/constants/env';
+import BigNumber from 'bignumber.js';
+export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
+const servicePool = {
+    getDetailPoolInfo: ({ poolAddress, chainId }: IGetDetailPoolParams) => {
+        const query = {
+            query: `
+                {
+                    pool(id: "${poolAddress}") {
+                        id
+                        owner
+                        name
+                        symbol
+                        decimals
+                        metadata
+                        startTime
+                        endTime
+                        minDurationSell
+                        totalSupplyToken
+                        tokenForAirdrop
+                        tokenForFarm
+                        tokenForSale
+                        tokenForLiquidity
+                        capInETH
+                        totalBatch
+                        tokenPerBatch
+                        batchAvailable
+                        raisedInETH
+                        soldBatch
+                        feeForLiquidity
+                        latestTimestampBuy
+                        latestBuyTransactionHash
+                        totalTransaction
+                        status
+                        changePrice24h
+                        buyTransactions {
+                            eth
+                            blockNumber
+                        }
+                        tgeTimestamp
+                        reserveETH
+                        reserveToken
+                    }
+                }
+            `
+        };
+        return querySubGraph(query, chainId);
+    },
+    // getUserPool: ({
+    //     poolAddress,
+    //     userAddress,
+    //     chainId
+    // }: IGetDetailPoolParams) => {
+    //     const query = {
+    //         query: `{
+    //                 userInPools(where: {user: "${userAddress}, pool: "${poolAddress}"}) {
+    //                     id
+    //                     pool
+    //                     user
+    //                     batch
+    //                     ethBought
+    //                     batchClaimed
+    //                 }
+    //             }`
+    //     };
+    //     return querySubGraph(query, chainId);
+    // },
+    getTransaction: async (
+        page: number,
+        limit: number,
+        poolAddress: string | undefined,
+        chainId: ChainId = ChainId.BASE_SEPOLIA
+    ) => {
+        const skip = (page - 1) * limit;
+        const query = {
+            query: `
+      {
+        transactions(
+          
+          where: {pool: "${poolAddress}",}
+          orderBy: timestamp
+          orderDirection: desc
+        ) {
+          id
+          pool
+          sender
+          blockNumber
+          timestamp
+          batch
+          eth
+          isBuy
+        }
+      }
+      `
+        };
+        return querySubGraph(query, chainId);
+    },
+
+    getAllPoolByType: ({
+        chainId,
+        statusPool,
+        query,
+        owner
+    }: IGetAllPoolQuery | IGetAllPoolBackgroundQuery) => {
+        const payload = {
+            query: getQueryByStatus({
+                status: statusPool,
+                query: query,
+                owner: owner
+            })
+        };
+        return querySubGraph(payload, chainId);
+    },
+
+    getTransactionByPoolAndSender: ({
+        poolAddress,
+        chainId,
+        senderAddress
+    }: IGetTransactionByPoolAndSenderParams) => {
+        const query = {
+            query: `
+                query getTransactionByPoolAndSender {
+                transactions(where: {pool: "${poolAddress}", sender: "${senderAddress}"}, orderBy: timestamp, orderDirection: desc) {
+                    id
+                    pool
+                    sender
+                    blockNumber
+                    timestamp
+                    batch
+                    eth
+                    isBuy
+                }
+            }
+            `
+        };
+
+        return querySubGraph(query, chainId);
+    },
+    getUserPool: ({
+        chainId,
+        poolAddress,
+        userAddress
+    }: IGetUserPoolParams) => {
+        const query = {
+            query: `{
+        userInPools(
+          where: {user: "${userAddress}", pool: "${poolAddress}"}
+        ) {
+          id
+          pool
+          user
+          batch
+          ethBought
+          batchClaimed
+        }
+      }`
+        };
+        return querySubGraph(query, chainId);
+    },
+
+    getPoolInfoReward: ({ id, chainId }: IGetPoolInfoRewardParams) => {
+        const query = {
+            query: `
+             query getPool {
+  pool(id: "${id}") {
+    id
+    tokenAddress
+    owner
+    name
+    tokenForAirdrop
+    totalReferrerBond
+    tokenRewardReferrerPerBond
+  }
+}
+
+
+            
+            `
+        };
+        return querySubGraph(query, chainId);
+    },
+
+    getUserTopRewardByPool: ({
+        pool,
+        chainId
+    }: IGetUserTopRewardByPoolParams) => {
+        const query = {
+            query: `    
+               query getUserByPool {
+  userInPools(
+    orderBy: referrerBond
+    orderDirection: desc
+    where: {pool: "${pool}", referrerBond_gt: 0}
+  ) {
+    id
+    pool
+    user
+    batch
+    ethBought
+    batchClaimed
+    referrerBond
+  }
+}
+
+                        `
+        };
+        return querySubGraph(query, chainId);
+    },
+
+    storeReferId: (refer: IReferralPool | null) => {
+        if (refer) {
+            localStorage.setItem(
+                REFERRAL_CODE_INFO_STORAGE_KEY,
+                JSON.stringify(refer)
+            );
+        }
+    },
+
+    getReferId: (): IReferralPool | null => {
+        if (typeof window !== 'undefined') {
+            const refer = localStorage.getItem(REFERRAL_CODE_INFO_STORAGE_KEY);
+
+            return refer ? (JSON.parse(refer) as IReferralPool) : null;
+        }
+        return null;
+    },
+    createLaunchPool: async (
+        name: string,
+        symbol: string,
+        decimals: string,
+        totalSupply: string,
+        address: string,
+        chainId: string
+    ) => {
+        let res;
+
+        const totalSupplyFormatted = new BigNumber(totalSupply)
+            .div(10 ** parseInt(decimals))
+            .toFixed(0);
+        const data = {
+            name,
+            symbol,
+            decimals,
+            totalSupply: totalSupplyFormatted,
+            address
+        };
+
+        try {
+            res = await axios.post(
+                `${NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t`,
+                data
+            );
+        } catch (error) {
+            console.log('======= create launch pool to server error: ', error);
+        }
+        if (res && res.status === 200) {
+            return res.data;
+        }
+        return '';
+    },
+    getDiscussionLink: async (chainId: string, address: string) => {
+        let res;
+
+        try {
+            res = await axios.get(
+                `${NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${address}/discussion`
+            );
+        } catch (error) {
+            console.log('======= get discussion link to server error: ', error);
+        }
+        if (res && res.status === 200) {
+            return res.data;
+        }
+        return '';
+    },
+    getHolderDistribution: ({
+        poolAddress,
+        chainId
+    }: IGetDetailHolderDistributionParams) => {
+        const query = {
+            query: `
+                  {
+  holders(
+    orderBy: batch
+    orderDirection: desc
+    where: { pool: "${poolAddress}", batch_gt: 0 }
+  ) {
+    pool
+    user
+    batch
+    isPool
+    isCreator
+  }
+        }
+
+
+            `
+        };
+        return querySubGraph(query, chainId);
+    }
+};
+
+export default servicePool;

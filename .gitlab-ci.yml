@@ -1,0 +1,81 @@
+variables:
+  GIT_STRATEGY: clone
+  ENV_GIT_REPO: https://gitlab-ci-token:${CI_PERSONAL_ACCESS_TOKEN}@gitlab.com/thichchocbia/defikitargocd.git
+  ENV_WORKDIR: defikitargocd
+  ENV_IMAGE_TAG_KEY: .image.tag
+
+stages:
+  - pre-build
+  - build-image
+  - deploy
+
+.build-image:
+  stage: build-image
+  script:
+    - export TAG=$(echo $CI_COMMIT_REF_NAME | sed 's/\//-/g')-$CI_COMMIT_SHORT_SHA-$(date +%s)
+    - docker build --pull -t $CI_REGISTRY_IMAGE:$TAG .
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE:$TAG
+    - echo $TAG > image.tag
+  artifacts:
+    paths:
+      - image.tag
+  tags:
+    - defikit
+
+.deploy:
+  stage: deploy
+  script:
+    - export TAG=$(cat image.tag)
+    - git clone ${ENV_GIT_REPO} || echo "repo already exit"
+    - cd ${ENV_WORKDIR}
+    - pwd
+    - yq e -i ''${ENV_IMAGE_TAG_KEY}' |= "'$TAG'"' ''${ENV_CFG_VALUESFILE}''
+    - git add . && git commit -m "update image" && git push origin main
+  tags:
+    - defikit
+
+cleanup-docker:
+  stage: pre-build
+  script:
+    - docker system prune -a --volumes -f
+  only:
+    refs:
+      - master
+      - merge_requests
+      - base
+  tags:
+    - defikit
+build:
+  extends: .build-image
+  only:
+    refs:
+      - dev
+      - dev_berachain
+      - master
+      - merge_requests
+
+deploy-dev:
+  variables:
+    ENV_CFG_VALUESFILE: mot/stg/fe/values.yaml
+  extends: .deploy
+  only:
+    refs:
+      - dev
+
+deploy-dev-berachain:
+  variables:
+    ENV_CFG_VALUESFILE: mot/stg/berachain/values.yaml
+  extends: .deploy
+  only:
+    refs:
+      - dev_berachain
+
+deploy-prod:
+  variables:
+    ENV_CFG_VALUESFILE: mot/prod/fe/values.yaml
+  extends: .deploy
+  only:
+    refs:
+      - master
+  when: manual

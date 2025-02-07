@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary: 81, 81, 229;
+}
+
+@font-face {
+    font-family: 'Forza';
+    src:
+        url(../../access/font/Forza-Medium.woff) format('woff'),
+        url(../../access/font/Forza-Medium.woff2) format('woff2'),
+        url(../../access/font/Forza-Medium.ttf) format('truetype'),
+        url(../../access/font/Forza-Bold.woff2) format('woff2'),
+        url(../../access/font/Forza-Bold.woff) format('woff');
+    font-weight: normal;
+    font-style: normal;
+    /* other formats include: 'woff2', 'truetype, 'opentype',
+                            'embedded-opentype', and 'svg' */
+}
+body {
+    font-family: 'Forza';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+        monospace;
+}
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    height: 100%;
+    /* background-color: rgb(27 29 40 / 1); */
+}
+
+.text-lg-important {
+    font-size: 1.125rem !important;
+}
+
+.ant-form-item-label {
+    padding-bottom: 0px !important;
+}
+
+.ant-form-item-explain-error {
+    font-family: Forza !important;
+}
+.ant-input-group-addon {
+    padding: 0 !important;
+}
