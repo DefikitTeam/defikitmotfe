@@ -67,6 +67,7 @@ export const getContract = (chainId: number): ContractStruct => {
             address = isProd
                 ? NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS_PROD ?? ''
                 : NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS ?? '';
+            break;
         default:
             address = isProd
                 ? NEXT_PUBLIC_BASE_CONTRACT_ADDRESS_PROD ?? ''

@@ -82,7 +82,7 @@ const Footer = () => {
             <div className="h-20 bg-white"></div>
             <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
                 <div
-                    className={` mx-auto grid h-full max-w-lg cursor-pointer ${chainData.onFaucet ? 'grid-cols-4' : 'grid-cols-3'} font-medium`}
+                    className={` mx-auto grid h-full max-w-lg cursor-pointer grid-cols-4 font-medium`}
                 >
                     <div
                         className="group inline-flex flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
