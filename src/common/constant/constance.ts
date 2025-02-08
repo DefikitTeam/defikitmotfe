@@ -209,7 +209,7 @@ export const ENDPOINT_GRAPHQL_WITH_CHAIN = {
     [ChainId.BASE_SEPOLIA]: configs.subgraph.baseSepolia.uri,
     [ChainId.ARTELA]: configs.subgraph.artela.uri,
     [ChainId.BARTIO]: configs.subgraph.bartio.uri,
-    [ChainId.BERACHAIN_MAINNET]: configs.subgraph.bartio.uri,
+    [ChainId.BERACHAIN_MAINNET]: configs.subgraph.berachain.uri,
     [ChainId.POLYGON_AMOY]: configs.subgraph.polygonAmoy.uri,
     [ChainId.UNICHAIN_SEPOLIA]: configs.subgraph.unichainSepolia.uri,
     [ChainId.IOTA]: configs.subgraph.iota.uri

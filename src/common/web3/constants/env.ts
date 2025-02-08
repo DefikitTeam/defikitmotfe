@@ -73,6 +73,9 @@ export const getConfigs = (hostname: string) => {
     return {
         subgraph: {
             bartio: {
+                uri: `${apiEndpoint}/subgraph/bartio`
+            },
+            berachain: {
                 uri: `${apiEndpoint}/subgraph/berachain`
             },
             baseSepolia: {
