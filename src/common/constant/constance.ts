@@ -229,7 +229,7 @@ export const PLATFORM_FEE = {
     [ChainId.ARTELA]: 0.005,
     [ChainId.BASE_SEPOLIA]: 0.005,
     [ChainId.BARTIO]: 0.0001,
-    [ChainId.BERACHAIN_MAINNET]: 10,
+    [ChainId.BERACHAIN_MAINNET]: 0.1,
     [ChainId.UNICHAIN_SEPOLIA]: 0.005,
     [ChainId.IOTA]: 0.05
 };
