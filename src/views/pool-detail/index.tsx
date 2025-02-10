@@ -189,17 +189,17 @@ const PoolDetail = () => {
         if (!pool) return;
 
         const currentTime = new Date();
-        if (parseInt(pool.startTime) * 1000 > currentTime.getTime()) {
-            if (!showAlert) {
-                notification.warning({
-                    message: t('POOL_NOT_STARTED_YET'),
-                    placement: 'top',
-                    duration: 1.5,
-                    showProgress: true
-                });
-                setShowAlert(true);
-            }
-        }
+        // if (parseInt(pool.startTime) * 1000 > currentTime.getTime()) {
+        //     if (!showAlert) {
+        //         notification.warning({
+        //             message: t('POOL_NOT_STARTED_YET'),
+        //             placement: 'top',
+        //             duration: 1.5,
+        //             showProgress: true
+        //         });
+        //         setShowAlert(true);
+        //     }
+        // }
     }, [status, showAlert]);
 
     useEffect(() => {
@@ -220,18 +220,18 @@ const PoolDetail = () => {
         }
 
         const currentTime = new Date();
-        if (
-            parseInt(pool.startTime) * 1000 > currentTime.getTime() &&
-            !showAlert
-        ) {
-            notification.warning({
-                message: t('POOL_NOT_STARTED_YET'),
-                placement: 'top',
-                duration: 1.5,
-                showProgress: true
-            });
-            setShowAlert(true);
-        }
+        // if (
+        //     parseInt(pool.startTime) * 1000 > currentTime.getTime() &&
+        //     !showAlert
+        // ) {
+        //     notification.warning({
+        //         message: t('POOL_NOT_STARTED_YET'),
+        //         placement: 'top',
+        //         duration: 1.5,
+        //         showProgress: true
+        //     });
+        //     setShowAlert(true);
+        // }
     }, [status, showAlert, pool, metaDataInfo, t]);
 
     useEffect(() => {

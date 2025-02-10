@@ -18,7 +18,7 @@ const servicePortfolio = {
     }: IGetPortfolioParams) => {
         const response: IResponseProfileData = await request(
             ENDPOINT_GRAPHQL_WITH_CHAIN[chainId] ||
-            ENDPOINT_GRAPHQL_WITH_CHAIN[ChainId.BARTIO],
+                ENDPOINT_GRAPHQL_WITH_CHAIN[ChainId.BARTIO],
             gql`
                 query getProfileData {
                     user(id: "${wallet.toLowerCase()}") {

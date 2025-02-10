@@ -189,7 +189,7 @@ const Portfolio = () => {
                 </div>
             </div>
 
-            <ModalInviteBlocker/>
+            <ModalInviteBlocker />
         </BoxArea>
     );
 };
