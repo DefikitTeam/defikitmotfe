@@ -15,13 +15,14 @@ import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
 import { RootState } from '@/src/stores';
-import { useGetInviteCode } from '@/src/stores/invite-code/hook';
 import { useListPool } from '@/src/stores/pool/hook';
 import { useParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
+import CurrentCodeInvite from './current-vote-invite';
 import Investpool from './Investpool';
 import ModalListCurrentCode from './modal-list-current-code';
+import ListRefer from './list-refer';
 
 export interface IAssetList {
     index: number;
@@ -55,14 +56,6 @@ const Statistical = () => {
     const params = useParams();
     const addressParams = params?.walletAddress as string;
     const isAddressDifferent = addressParams && addressParams !== address;
-    const [
-        { inviteCode },
-        fetchGetInviteCode,
-        resetGetInviteCode,
-        setIsOpenModalGetListCurrentCodeAction
-    ] = useGetInviteCode();
-
-    const { data, status, isOpenModalGetListCurrentCode } = inviteCode;
 
     useEffect(() => {
         if (
@@ -85,18 +78,9 @@ const Statistical = () => {
     useEffect(() => {
         if (!(address as `0x${string}`) || !chainId || !addressParams) {
             setLoadingTableAsset(false);
-            resetGetInviteCode();
+            // resetGetInviteCode();
         }
     }, [address, addressParams]);
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            if (address) {
-                fetchGetInviteCode();
-            }
-        }, 3000);
-        return () => clearInterval(intervalId);
-    }, [chainData.chainData.chainId, address]);
 
     const funcGenerateTableAsset = (
         innerClaimMap: Map<string, InvestPool>,
@@ -392,10 +376,6 @@ const Statistical = () => {
         }
     };
 
-    const handleClickViewCurrentCode = () => {
-        setIsOpenModalGetListCurrentCodeAction(true);
-    };
-
     return (
         <div className="h-full w-full">
             {(address as `0x${string}`) &&
@@ -425,36 +405,14 @@ const Statistical = () => {
                         : addressParams}
                 </p>
 
-                {address && !isAddressDifferent && (
-                    <div className="mt-2 !font-forza text-base text-black">
-                        <p>
-                            {t('CURRENT_CODE_INVITE')}
-                            {'('}
-                            {data?.length || 0}
-                            {') '}
-
-                            {data && data.length > 0 && (
-                                <span
-                                    className="cursor-pointer rounded-2xl border-2 border-black bg-[#3B82F4] px-2 py-1 text-white transition-colors duration-300 hover:bg-black hover:text-white"
-                                    onClick={handleClickViewCurrentCode}
-                                >
-                                    {t('VIEW')}{' '}
-                                </span>
-                            )}
-                        </p>
-                        <p className="text-gray-600">
-                            Can you have a refer code for another person?
-                            Minimum $500.
-                        </p>
-                        <button
-                            onClick={handleGenerateCode}
-                            className="mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                        >
-                            Click
-                        </button>
-                    </div>
-                )}
                 <ModalListCurrentCode />
+            </div>
+
+            <div className="mt-2 !font-forza text-lg font-bold">
+                {t('CURRENT_CODE_INVITE')}
+            </div>
+            <div className="mb-2 mt-2">
+                <CurrentCodeInvite />
             </div>
 
             <div className="mb-2 mt-2 !font-forza text-lg font-bold">
@@ -473,6 +431,14 @@ const Statistical = () => {
                     scroll={{ x: 300 }}
                 />
             </Spin>
+
+            <div className="mt-3 !font-forza text-lg font-bold">
+                {t('INVITE_LIST_REFER')}
+            </div>
+
+            <div className="mb-2 mt-2">
+                <ListRefer />
+            </div>
         </div>
     );
 };

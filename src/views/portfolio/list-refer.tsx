@@ -1,12 +1,13 @@
 /* eslint-disable */
+import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useInviteListReferPortfolio } from '@/src/stores/invite-code/hook';
-import { notification } from 'antd';
+import { IInviteReferItem } from '@/src/stores/invite-code/type';
+import { notification, Table } from 'antd';
+import { ColumnsType } from 'antd/es/table';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { useAccount } from 'wagmi';
-import ModalListReferPortfolio from './modal-list-refer-portfolio';
 import { useEffect } from 'react';
-
+import { useAccount } from 'wagmi';
 const ListRefer = () => {
     const t = useTranslations();
     const { address, isConnected, chainId } = useAccount();
@@ -43,26 +44,46 @@ const ListRefer = () => {
         setOpenModalInviteListReferAction(true);
     };
 
+    const columns: ColumnsType<IInviteReferItem> = [
+        {
+            title: t('INVITED_WALLET'),
+            dataIndex: ['UserRef', 'connectedWallet'],
+            width: '5%',
+            className: '!font-forza',
+            align: 'center',
+            render: (_, record) => (
+                <span className="text-black">
+                    {shortWalletAddress(record.UserRef.connectedWallet || '')}
+                </span>
+            )
+        },
+        {
+            title: t('CODE_REFER'),
+            dataIndex: 'code',
+            width: '5%',
+            className: '!font-forza',
+            align: 'center',
+            render: (_, record) => (
+                <span className="text-black">{record.code || ''}</span>
+            )
+        }
+    ];
+
     return (
         <div className="h-full w-full">
-            <div className="">
-                <p className="!font-forza text-base font-bold text-black">
-                    {t('INVITE_LIST_REFER')}
-                    {'('}
-                    {data?.length || 0}
-                    {') '}
-                    {address && (
-                        <span
-                            className="cursor-pointer rounded-2xl border-2 border-black bg-white px-2 py-1 text-black transition-colors duration-300 hover:bg-black hover:text-white"
-                            onClick={handleClickViewListRefer}
-                        >
-                            {t('VIEW')}{' '}
-                        </span>
-                    )}
-                </p>
-            </div>
+            {/* <ModalListReferPortfolio /> */}
 
-            <ModalListReferPortfolio />
+            <Table
+                rowKey="wallet"
+                dataSource={data}
+                // @ts-ignore
+                columns={columns}
+                className="!font-forza"
+                pagination={{ pageSize: 10 }}
+                scroll={{ x: 200, y: 300 }}
+                bordered
+                sortDirections={['descend']}
+            />
         </div>
     );
 };

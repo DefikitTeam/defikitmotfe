@@ -148,7 +148,8 @@ const Portfolio = () => {
                             md={isAddressDifferent ? 24 : 16}
                             xl={isAddressDifferent ? 24 : 16}
                         >
-                            <div className="max-h-[80vh] overflow-y-auto overflow-x-hidden px-2">
+                            {/* <div className="max-h-[80vh] overflow-y-auto overflow-x-hidden px-2"> */}
+                            <div className=" overflow-y-auto overflow-x-hidden px-2">
                                 <Statistical />
                             </div>
                         </Col>
@@ -175,7 +176,7 @@ const Portfolio = () => {
                             <YourFriend />
                         </Col> */}
 
-                        <Col
+                        {/* <Col
                             span={8}
                             xs={24}
                             sm={8}
@@ -184,7 +185,7 @@ const Portfolio = () => {
                             xl={8}
                         >
                             <ListRefer />
-                        </Col>
+                        </Col> */}
                     </Row>
                 </div>
             </div>

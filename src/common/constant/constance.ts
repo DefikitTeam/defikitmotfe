@@ -4865,3 +4865,25 @@ export const REGEX_TELEGRAM =
     /^(https?:\/\/)?(www\.)?(t\.me|telegram\.me)\/(\+?[a-zA-Z0-9_-]+|joinchat\/[a-zA-Z0-9_-]+|[a-zA-Z0-9_]+)$/;
 export const REGEX_ISNUMBER = /^-?\d+(\.\d+)?$/;
 export const REGEX_WALLET_ADDRESS = /^0x[\dA-Fa-f]{40}$/;
+
+export enum CodeReferStatus {
+    ACTIVE = 'ACTIVE',
+    INACTIVE = 'INACTIVE'
+}
+
+export enum CodeReferStatusID {
+    ACTIVE = 1,
+    INACTIVE = 2
+}
+
+export const CodeReferStatusColor: {
+    [key in CodeReferStatus]: string;
+} = {
+    [CodeReferStatus.ACTIVE]: 'green',
+    [CodeReferStatus.INACTIVE]: 'red'
+};
+
+export const statusBadgeColor = {
+    ACTIVE: 'green',
+    INACTIVE: 'red'
+};
