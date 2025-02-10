@@ -46,7 +46,7 @@ const ButtonConnectWallet = () => {
             botName = 'MotherOfTokensDevBot';
             break;
         case NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD:
-            botName = 'MotherOfTokensBot';
+            botName = 'motheroftokens_bot';
             break;
     }
 
