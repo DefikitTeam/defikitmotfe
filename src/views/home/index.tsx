@@ -74,7 +74,7 @@ const KingOfTheHill = ({
 
     return (
         <div
-            className={`relative mb-8 mt-2 flex justify-center overflow-y-auto overflow-x-hidden`}
+            className={`relative mb-8 mt-4 flex justify-center overflow-y-auto overflow-x-hidden`}
         >
             <div className="w-full max-w-xl">
                 <div className="mb-4 animate-king-title text-center">
@@ -84,7 +84,7 @@ const KingOfTheHill = ({
                 </div>
 
                 <div
-                    className="pool-item max-h-[266px] animate-king-pool rounded-lg border-2 border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 p-1"
+                    className="pool-item max-h-[290px] animate-king-pool rounded-lg border-2 border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 p-1"
                     // data-pool-id={pool.id}
                 >
                     <div

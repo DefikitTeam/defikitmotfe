@@ -68,7 +68,7 @@ const TopReferByVol = () => {
                                 </Text>
                             </div>
                             <div
-                                className={`max-h-[266px] animate-fadeIn overflow-y-auto rounded-lg bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 p-6 shadow-lg`}
+                                className={`max-h-[290px] animate-fadeIn overflow-y-auto rounded-lg bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 p-6 shadow-lg`}
                             >
                                 <ul>
                                     {topRefByVolState.topRefByVols &&
