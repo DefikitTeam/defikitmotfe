@@ -137,7 +137,12 @@ const NotificationButton = () => {
                         } overflow-auto rounded-lg bg-white p-4 shadow-lg`}
                     >
                         <div className="relative">
-                            <h4 className="font-bold">{t('NOTIFICATION')}</h4>
+                            <h4 className="font-bold">
+                                {t('NOTIFICATION')}
+                                {' ('}
+                                {notificationState.notifications.length}
+                                {')'}
+                            </h4>
                             <ul className="space-y-2">
                                 {notificationState.notifications &&
                                     notificationState.notifications.length >
@@ -164,17 +169,21 @@ const NotificationButton = () => {
                                         )
                                     )}
                             </ul>
-                            <button
-                                onClick={markAllAsRead}
-                                className={`mt-4 w-full rounded bg-blue-500 py-2 text-center text-white transition ${notificationState?.notifications?.length > 0 ? 'cursor-pointer hover:bg-blue-400' : ''}`}
-                                disabled={
-                                    !notificationState?.notifications ||
-                                    notificationState?.notifications?.length ===
-                                        0
-                                }
-                            >
-                                {t('MARK_ALL_AS_READ')}
-                            </button>
+                            {notificationState.notifications &&
+                                notificationState?.notifications?.length >
+                                    0 && (
+                                    <button
+                                        onClick={markAllAsRead}
+                                        className={`mt-4 w-full rounded bg-blue-500 py-2 text-center text-white transition ${notificationState?.notifications?.length > 0 ? 'cursor-pointer hover:bg-blue-400' : ''}`}
+                                        disabled={
+                                            !notificationState?.notifications ||
+                                            notificationState?.notifications
+                                                ?.length === 0
+                                        }
+                                    >
+                                        {t('MARK_ALL_AS_READ')}
+                                    </button>
+                                )}
                         </div>
                     </div>
                 </div>

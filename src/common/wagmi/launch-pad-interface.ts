@@ -280,6 +280,8 @@ export class LaunchPadInterface {
                     );
                 }
             }
+
+            console.log('validations------', validations);
             await watcher.writeContractAsync({
                 ...this._contractStruct,
                 functionName: 'launchPool',

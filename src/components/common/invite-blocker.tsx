@@ -7,6 +7,10 @@ import { useAuthLogin } from '@/src/stores/auth/hook';
 import { Button, Input, Modal, Spin, Typography, notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
+import ConnectButtonWagmi from '../connect-wallet/connect-button-wagmi';
+import { useNotification } from '@/src/hooks/use-notification';
+import { EActionStatus } from '@/src/stores/type';
+import { useDisconnect } from 'wagmi';
 
 const { Text, Link } = Typography;
 const ModalInviteBlocker = () => {
@@ -16,12 +20,78 @@ const ModalInviteBlocker = () => {
     const inputRef = useRef<any>(null);
     const [inviteCode, setInviteCode] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
-    const { authState, setOpenModalInviteBlocker } = useAuthLogin();
+    const {
+        authState,
+        setOpenModalInviteBlocker,
+        resetStatusLoginWalletAction,
+        logoutWalletAction,
+        logoutTelegramAction,
+        resetStatusLoginTeleAction
+    } = useAuthLogin();
+    const { openNotification, contextHolder } = useNotification();
+    const { disconnect } = useDisconnect();
     useEffect(() => {
         if (authState.openModalInviteBlocker) {
             inputRef.current?.focus();
         }
     }, [authState.openModalInviteBlocker]);
+
+    useEffect(() => {
+        // eslint-disable-next-line
+        (async () => {
+            if (
+                authState.statusLoginWallet === EActionStatus.Succeeded &&
+                authState.userWallet
+            ) {
+                // await openNotification({
+                //     message: t('LOGIN_WALLET_SUCCESSFULLY'),
+                //     placement: 'topRight',
+                //     type: 'success'
+                // });
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                setOpenModalInviteBlocker(false);
+                resetStatusLoginWalletAction();
+            }
+
+            if (authState.statusLoginWallet === EActionStatus.Failed) {
+                if (authState.errorMessage) {
+                    await openNotification({
+                        message: authState.errorMessage,
+                        placement: 'topRight',
+                        type: 'error'
+                    });
+                }
+                disconnect();
+                logoutWalletAction();
+                // logoutAction();
+            }
+
+            // if (authState.statusLoginTele === EActionStatus.Failed) {
+            //     if (authState.errorMessage) {
+            //         await openNotification({
+            //             message: authState.errorMessage,
+            //             placement: 'topRight',
+            //             type: 'error'
+            //         });
+            //     }
+            //     logoutTelegramAction();
+            // }
+            // if (
+            //     authState.statusLoginTele == EActionStatus.Succeeded &&
+            //     authState.userTele
+            // ) {
+            //     await openNotification({
+            //         message: t('LOGIN_TELE_SUCCESSFULLY'),
+            //         placement: 'topRight',
+            //         type: 'success'
+            //     });
+
+            //     await new Promise((resolve) => setTimeout(resolve, 1000));
+            //     resetStatusLoginTeleAction();
+            // }
+        })();
+        // eslint-disable-next-line
+    }, [authState.statusLoginWallet]);
 
     const handleClickInviteCode = async () => {
         setLoading(true);
@@ -78,7 +148,7 @@ const ModalInviteBlocker = () => {
         <div>
             <Modal
                 title={
-                    <span className="!font-forza text-base font-bold">
+                    <span className="flex items-center justify-center !font-forza text-2xl font-bold">
                         {t('INVITE_BLOCKER')}
                     </span>
                 }
@@ -121,6 +191,15 @@ const ModalInviteBlocker = () => {
                         )}
                         {t('APPLY')}
                     </Button>
+                    <div className="flex flex-col items-center justify-center gap-2 ">
+                        <Text className="!font-forza text-2xl">{t('OR')}</Text>
+                        <Text className="!font-forza text-base">
+                            {t('OR_LOGIN_WITH_WALLET')}
+                        </Text>
+
+                        {contextHolder}
+                        <ConnectButtonWagmi />
+                    </div>
 
                     <div className="mt-4 flex justify-center gap-4">
                         <Link

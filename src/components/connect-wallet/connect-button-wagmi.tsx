@@ -383,8 +383,7 @@ const ConnectButtonWagmi = () => {
                     <ConnectButton />
                 )}
             </Spin>
-
-            <NotificationButton />
+            {authState.userInfo && <NotificationButton />}
         </div>
     );
 };

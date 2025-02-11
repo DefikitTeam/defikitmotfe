@@ -80,15 +80,12 @@ const Portfolio = () => {
         }
     }, [currentPath?.[2]]);
 
-    // useEffect(() => {
-    //     const refCodeExisted = localStorage.getItem(REFCODE_INFO_STORAGE_KEY);
-    //     if (!refCodeExisted) {
-    //         setOpenModalInviteBlocker(true);
-    //     }
-    // }, []);
-
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
     useEffect(() => {
+        if (!refCodeExisted && authState.userInfo) {
+            setOpenModalInviteBlocker(false);
+            return;
+        }
         if (!refCodeExisted) {
             setOpenModalInviteBlocker(true);
         }

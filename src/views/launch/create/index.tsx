@@ -95,16 +95,15 @@ const CreateLaunch = () => {
     };
 
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
-    // useEffect(() => {
-    //     const refCodeExisted = localStorage.getItem(REFCODE_INFO_STORAGE_KEY);
-    //     if (!refCodeExisted) {
-    //         setOpenModalInviteBlocker(true);
-    //     }
-    // }, []);
 
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
+        if (!refCodeExisted && authState.userInfo) {
+            setOpenModalInviteBlocker(false);
+            return;
+        }
+
         if (!refCodeExisted) {
             setOpenModalInviteBlocker(true);
         }
@@ -368,6 +367,7 @@ const CreateLaunch = () => {
                         : ADDRESS_NULL
                 });
             } else {
+                console.log('data line 371-----', data);
                 await useLaunchPool.actionAsync({
                     name: data.name.trim(),
                     symbol: data.symbol.trim(),
