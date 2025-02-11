@@ -74,6 +74,8 @@ export class LaunchPadInterface {
 
                 const adjustedGasPrice = (gasPrice * BigInt(13)) / BigInt(10);
 
+                console.log('params line 77------', params);
+
                 await watcher.writeContractAsync({
                     ...this._contractStruct,
                     functionName: 'buy',

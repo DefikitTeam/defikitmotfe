@@ -49,6 +49,7 @@ const SaveButtonBuy = ({
     const convertMaxAmountToETH = new BigNumber(data?.maxAmountETH)
         .div(1e18)
         .toString();
+    console.log('data line 52----', data);
     const [
         { poolStateDetail },
         fetchPoolDetail,

@@ -407,13 +407,16 @@ const Statistical = () => {
 
                 <ModalListCurrentCode />
             </div>
-
-            <div className="mt-2 !font-forza text-lg font-bold">
-                {t('CURRENT_CODE_INVITE')}
-            </div>
-            <div className="mb-2 mt-2">
-                <CurrentCodeInvite />
-            </div>
+            {address && !isAddressDifferent && (
+                <>
+                    <div className="mt-2 !font-forza text-lg font-bold">
+                        {t('CURRENT_CODE_INVITE')}
+                    </div>
+                    <div className="mb-2 mt-2">
+                        <CurrentCodeInvite />
+                    </div>
+                </>
+            )}
 
             <div className="mb-2 mt-2 !font-forza text-lg font-bold">
                 {t('ASSET')}
@@ -432,13 +435,17 @@ const Statistical = () => {
                 />
             </Spin>
 
-            <div className="mt-3 !font-forza text-lg font-bold">
-                {t('INVITE_LIST_REFER')}
-            </div>
+            {address && !isAddressDifferent && (
+                <>
+                    <div className="mt-3 !font-forza text-lg font-bold">
+                        {t('INVITE_LIST_REFER')}
+                    </div>
 
-            <div className="mb-2 mt-2">
-                <ListRefer />
-            </div>
+                    <div className="mb-2 mt-2">
+                        <ListRefer />
+                    </div>
+                </>
+            )}
         </div>
     );
 };
