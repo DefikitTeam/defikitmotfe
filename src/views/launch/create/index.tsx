@@ -136,7 +136,7 @@ const CreateLaunch = () => {
         if (useLaunchPool.isConfirmed) {
             const handleConfirmed = async () => {
                 const { hash, receipt } = useLaunchPool.data;
-                const poolAddress = receipt?.logs[0]?.address;
+                const poolAddress = receipt?.logs[0]?.address!;
 
                 setIsLoadingCreateLaunch(false);
 
@@ -169,17 +169,19 @@ const CreateLaunch = () => {
                         showProgress: true
                     });
 
-                    setTimeout(() => {
-                        getListTokenByOwner({
-                            ownerAddress: address as `0x${string}`,
-                            chainId: chainData.chainData.chainId as number,
-                            status: TOKEN_STATUS.INACTIVE
-                        });
-                    }, 1000);
+                    // setTimeout(() => {
+                    //     getListTokenByOwner({
+                    //         ownerAddress: address as `0x${string}`,
+                    //         chainId: chainData.chainData.chainId as number,
+                    //         status: TOKEN_STATUS.INACTIVE
+                    //     });
+                    // }, 1000);
 
                     setTimeout(() => {
-                        router.push('/');
-                    }, 1000);
+                        router.push(
+                            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolAddress.toLowerCase()}`
+                        );
+                    }, 500);
                 } catch (error) {
                     console.error('Error creating launch pool:', error);
                     notification.error({
