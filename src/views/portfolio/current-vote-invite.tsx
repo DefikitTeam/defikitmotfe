@@ -1,20 +1,21 @@
-import { RootState } from '@/src/stores';
-import { useGetInviteCode } from '@/src/stores/invite-code/hook';
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useAccount } from 'wagmi';
-import { useParams, useRouter } from 'next/navigation';
-import { Badge, notification, Table, Tooltip } from 'antd';
-import { useTranslations } from 'next-intl';
-import { ColumnsType } from 'antd/es/table';
-import { IGetInviteCodeResponseItem } from '@/src/stores/invite-code/type';
-import { CopyOutlined } from '@ant-design/icons';
-import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
 import {
     CodeReferStatus,
-    CodeReferStatusColor,
     statusBadgeColor
 } from '@/src/common/constant/constance';
+import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
+import { RootState } from '@/src/stores';
+import { useGetInviteCode } from '@/src/stores/invite-code/hook';
+import { IGetInviteCodeResponseItem } from '@/src/stores/invite-code/type';
+import { CopyOutlined } from '@ant-design/icons';
+import { Badge, notification, Table, Tooltip } from 'antd';
+import { ColumnsType } from 'antd/es/table';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useAccount } from 'wagmi';
+
+
 const CurrentCodeInvite = () => {
     const [
         { inviteCode },
@@ -127,12 +128,10 @@ const CurrentCodeInvite = () => {
                 // @ts-ignore
                 await fetchGetInviteCode();
             }
-        } catch (error) {
-            console.log('error line 405---', error);
+        } catch (error: any) {
             notification.error({
                 message: 'Error',
-                description:
-                    'Please try again because your balance is less than $500',
+                description: error.response.data.message,
                 duration: 3,
                 showProgress: true
             });
@@ -141,21 +140,17 @@ const CurrentCodeInvite = () => {
 
     return (
         <div className="h-full w-full">
-            {address && !isAddressDifferent && (
-                <div className="mt-2 !font-forza text-base text-black">
-                    <p className="text-gray-600">
-                        Can you have a refer code for another person? Minimum
-                        $50.
-                    </p>
-                    <button
-                        onClick={handleGenerateCode}
-                        className="mb-3 mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                    >
-                        Generate Code Invite
-                    </button>
-                </div>
-            )}
-
+            <div className="mt-2 !font-forza text-base text-black">
+                <p className="text-gray-600">
+                    Can you have a refer code for another person? Minimum $50.
+                </p>
+                <button
+                    onClick={handleGenerateCode}
+                    className="mb-3 mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                >
+                    Generate Code Invite
+                </button>
+            </div>
             <Table
                 rowKey="wallet"
                 dataSource={data}

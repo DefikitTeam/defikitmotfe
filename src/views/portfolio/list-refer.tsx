@@ -79,7 +79,7 @@ const ListRefer = () => {
                 // @ts-ignore
                 columns={columns}
                 className="!font-forza"
-                pagination={{ pageSize: 10 }}
+                pagination={{ pageSize: 3 }}
                 scroll={{ x: 200, y: 300 }}
                 bordered
                 sortDirections={['descend']}
