@@ -101,7 +101,11 @@ const CurrentCodeInvite = () => {
                             ] || 'gray'
                         }
                         className="text-black"
-                        text={record.status || ''}
+                        text={
+                            record.status === CodeReferStatus.ACTIVE
+                                ? 'Active'
+                                : 'Used'
+                        }
                     />
                 );
             }
@@ -141,11 +145,11 @@ const CurrentCodeInvite = () => {
                 <div className="mt-2 !font-forza text-base text-black">
                     <p className="text-gray-600">
                         Can you have a refer code for another person? Minimum
-                        $500.
+                        $50.
                     </p>
                     <button
                         onClick={handleGenerateCode}
-                        className="mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                        className="mb-3 mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
                     >
                         Generate Code Invite
                     </button>
@@ -158,7 +162,7 @@ const CurrentCodeInvite = () => {
                 // @ts-ignore
                 columns={columns}
                 className="!font-forza"
-                pagination={{ pageSize: 10 }}
+                pagination={{ pageSize: 3 }}
                 scroll={{ x: 200, y: 300 }}
                 bordered
                 sortDirections={['descend']}

@@ -5,6 +5,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { EActionStatus, FetchError } from '../type';
 import { IGetInviteCodeResponse, IGetInviteCodeState } from './type';
+import { CodeReferStatus } from '@/src/common/constant/constance';
 
 const initialState: IGetInviteCodeState = {
     status: EActionStatus.Idle,
@@ -26,10 +27,26 @@ export const getInviteCode = createAsyncThunk<
         if (!data) {
             throw new Error('No data from call get invite code ');
         }
-        const formatData = {
-            data: data
+
+        const sortedData = data.data.sort((a, b) => {
+            if (
+                a.status === CodeReferStatus.ACTIVE &&
+                b.status === CodeReferStatus.INACTIVE
+            )
+                return -1;
+            if (
+                a.status === CodeReferStatus.INACTIVE &&
+                b.status === CodeReferStatus.ACTIVE
+            )
+                return 1;
+            return 0;
+        });
+
+        const formatedData = {
+            data: sortedData
         };
-        return formatData;
+
+        return { data: formatedData };
     } catch (error) {
         const err = error as AxiosError;
         const responseData: any = err.response?.data;
