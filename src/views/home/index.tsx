@@ -36,7 +36,7 @@ import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAccount, useSwitchChain } from 'wagmi';
+import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import ItemPool from './item-pool';
 import InviteBlocker from '@/src/components/common/invite-blocker';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -132,6 +132,7 @@ const HomePage = () => {
         isConnected,
         isDisconnected
     } = useAccount();
+    const { disconnect } = useDisconnect();
 
     const {
         analystData,
@@ -240,6 +241,7 @@ const HomePage = () => {
     }, [visiblePools, allPool, getMetadataPoolVisibleAction]);
 
     useEffect(() => {
+        // localStorage.removeItem("wagmi.store");
         getListPoolAction({
             statusPool: filter,
             orderByDirection: orderByDirection,
@@ -252,6 +254,11 @@ const HomePage = () => {
 
         setPoolState(filter);
     }, []);
+
+    // useEffect(() => {
+    //     localStorage.removeItem('wagmi.store');
+    //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
+    // }, []);
 
     useEffect(() => {
         const chainInfo = getCurrentChainUrl();

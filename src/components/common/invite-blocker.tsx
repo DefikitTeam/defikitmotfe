@@ -12,6 +12,10 @@ import { useNotification } from '@/src/hooks/use-notification';
 import { EActionStatus } from '@/src/stores/type';
 import { useDisconnect } from 'wagmi';
 
+import { useSelector } from 'react-redux';
+import { RootState } from '@/src/stores';
+import { useRouter } from 'next/navigation';
+
 const { Text, Link } = Typography;
 const ModalInviteBlocker = () => {
     const t = useTranslations();
@@ -30,6 +34,13 @@ const ModalInviteBlocker = () => {
     } = useAuthLogin();
     const { openNotification, contextHolder } = useNotification();
     const { disconnect } = useDisconnect();
+    const router = useRouter();
+    const chainData = useSelector((state: RootState) => state.chainData);
+    useEffect(() => {
+        localStorage.removeItem('wagmi.store');
+        localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
+    }, []);
+
     useEffect(() => {
         if (authState.openModalInviteBlocker) {
             inputRef.current?.focus();
@@ -49,6 +60,9 @@ const ModalInviteBlocker = () => {
                 //     type: 'success'
                 // });
                 await new Promise((resolve) => setTimeout(resolve, 1000));
+                router.push(
+                    `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}`
+                );
                 setOpenModalInviteBlocker(false);
                 resetStatusLoginWalletAction();
             }

@@ -11,13 +11,14 @@ import servicePool from '@/src/services/external-services/backend-server/pool';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { ILoginRequest } from '@/src/stores/auth/type';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+// import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Col, Row, Spin } from 'antd';
 import { useEffect } from 'react';
 import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
 import ModalSelectChain from '../ui/ModalSelectChain';
 import NotificationButton from '../notification/notification-button';
 import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const ConnectButtonWagmi = () => {
     const { address, isConnected, isConnecting } = useAccount();
@@ -40,7 +41,7 @@ const ConnectButtonWagmi = () => {
     const { disconnect } = useDisconnect();
     const { isMobile } = useWindowSize();
     const currentHostname = useCurrentHostNameInformation();
-
+    console.log('currentHostname line 44-----', currentHostname);
     useEffect(() => {
         const handleSignMessage = async () => {
             if ((address as `0x${string}`) && !authState.userWallet) {
