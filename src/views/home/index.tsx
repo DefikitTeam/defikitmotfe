@@ -261,6 +261,11 @@ const HomePage = () => {
     // }, []);
 
     useEffect(() => {
+        localStorage.removeItem('wagmi.store');
+        localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
+    }, []);
+
+    useEffect(() => {
         const chainInfo = getCurrentChainUrl();
         if (chainInfo) {
             dispatch(setChainData(chainInfo));
