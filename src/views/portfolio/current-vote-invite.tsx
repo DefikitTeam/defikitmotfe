@@ -15,7 +15,6 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 
-
 const CurrentCodeInvite = () => {
     const [
         { inviteCode },
@@ -142,7 +141,8 @@ const CurrentCodeInvite = () => {
         <div className="h-full w-full">
             <div className="mt-2 !font-forza text-base text-black">
                 <p className="text-gray-600">
-                    Can you have a refer code for another person? Minimum $50.
+                    To create a referral code for another person, you must have
+                    a minimum balance of $50.
                 </p>
                 <button
                     onClick={handleGenerateCode}
@@ -157,7 +157,7 @@ const CurrentCodeInvite = () => {
                 // @ts-ignore
                 columns={columns}
                 className="!font-forza"
-                pagination={{ pageSize: 3 }}
+                pagination={{ pageSize: 10 }}
                 scroll={{ x: 200, y: 300 }}
                 bordered
                 sortDirections={['descend']}
