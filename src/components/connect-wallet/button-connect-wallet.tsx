@@ -137,7 +137,7 @@ const ButtonConnectWallet = () => {
             className={`flex w-full items-center justify-between  ${isMobile ? 'text-sm' : 'text-base'}`}
         >
             {contextHolder}
-            <ConnectButtonWagmi />
+            {!authState.openModalInviteBlocker && <ConnectButtonWagmi />}
             {!authState.userTele ? (
                 <TelegramLoginButton
                     botName={botName}

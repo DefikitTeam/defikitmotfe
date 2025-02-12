@@ -15,6 +15,8 @@ const GlobalConnectWalletProvider: FC<ProvidersProps> = ({ children }) => {
         (state: RootState) => state.chainData.chainData
     );
 
+    // console.log('chainData line 18----', chainData)
+
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>

@@ -1,13 +1,5 @@
 /* eslint-disable */
-import {
-    KeyValueObj,
-    socialMediaOptions
-} from '@/src/common/constant/constance';
-import {
-    ACCEPT_AVATAR_TYPES,
-    AccountFileType,
-    MAX_AVATAR_FILE_SIZE
-} from '@/src/common/constant/pool';
+
 import { base64ToFile } from '@/src/common/lib/utils';
 import { mapMessageExamples } from '@/src/common/utils/map-example-message';
 import MessageReplyByAgent from '@/src/components/common/message-reply-by-agent';
@@ -42,6 +34,13 @@ import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/int
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { IPoolCreatForm } from '.';
+import {
+    ACCEPT_AVATAR_TYPES,
+    AccountFileType,
+    KeyValueObj,
+    MAX_AVATAR_FILE_SIZE,
+    socialMediaOptions
+} from '@/src/common/constant/constance';
 interface PoolInforProps {
     form: FormInstance<IPoolCreatForm>;
     getFileAiAgentAvatar: (a: {

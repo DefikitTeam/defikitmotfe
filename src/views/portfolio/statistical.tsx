@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { TOKEN_STATUS } from '@/src/common/constant/token';
+
 import { IPool } from '@/src/services/response.type';
 import { IAnalystData, InvestPool } from '@/src/stores/pool/type';
 import { usePortfolio } from '@/src/stores/profile/hook';
@@ -23,6 +23,7 @@ import CurrentCodeInvite from './current-vote-invite';
 import Investpool from './Investpool';
 import ModalListCurrentCode from './modal-list-current-code';
 import ListRefer from './list-refer';
+import { TOKEN_STATUS } from '@/src/common/constant/constance';
 
 export interface IAssetList {
     index: number;

@@ -15,9 +15,7 @@ import {
     usePassData
 } from '@/src/stores/pool/hook';
 
-import { ADDRESS_NULL } from '@/src/common/constant/common';
-import { ChainId } from '@/src/common/constant/constance';
-import { TOKEN_STATUS } from '@/src/common/constant/token';
+import { ADDRESS_NULL, ChainId } from '@/src/common/constant/constance';
 import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
 import { useReader } from '@/src/hooks/useReader';
 import servicePool from '@/src/services/external-services/backend-server/pool';
@@ -168,14 +166,6 @@ const CreateLaunch = () => {
                         duration: 3,
                         showProgress: true
                     });
-
-                    // setTimeout(() => {
-                    //     getListTokenByOwner({
-                    //         ownerAddress: address as `0x${string}`,
-                    //         chainId: chainData.chainData.chainId as number,
-                    //         status: TOKEN_STATUS.INACTIVE
-                    //     });
-                    // }, 1000);
 
                     setTimeout(() => {
                         router.push(
@@ -369,7 +359,7 @@ const CreateLaunch = () => {
                         : ADDRESS_NULL
                 });
             } else {
-                console.log('data line 371-----', data);
+                // console.log('data line 371-----', data);
                 await useLaunchPool.actionAsync({
                     name: data.name.trim(),
                     symbol: data.symbol.trim(),

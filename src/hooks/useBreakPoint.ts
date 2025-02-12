@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-
-import { SCREEN_SM } from '@/src/common/constant/common';
+import { SCREEN_SM } from '../common/constant/constance';
 
 export const useBreakPoint = (innerWidth?: number) => {
     const breakpointWidth = innerWidth || SCREEN_SM;

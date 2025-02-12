@@ -3,9 +3,10 @@ import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getCont
 import {
     ChainId,
     KeyValueObj,
-    markSlider
+    markSlider,
+    TOKEN_STATUS
 } from '@/src/common/constant/constance';
-import { TOKEN_STATUS } from '@/src/common/constant/token';
+
 import { divToDecimal } from '@/src/common/utils/utils';
 import { useReader } from '@/src/hooks/useReader';
 import servicePool from '@/src/services/external-services/backend-server/pool';

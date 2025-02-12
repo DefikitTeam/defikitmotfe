@@ -1,8 +1,5 @@
 import { chains } from '@/src/common/constant/constance';
-import {
-    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD,
-    NEXT_PUBLIC_DOMAIN_MULTIPLE_STG
-} from '@/src/common/web3/constants/env';
+import { NEXT_PUBLIC_DOMAIN_MULTIPLE_STG } from '@/src/common/web3/constants/env';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
 import useWindowSize from '@/src/hooks/useWindowSize';

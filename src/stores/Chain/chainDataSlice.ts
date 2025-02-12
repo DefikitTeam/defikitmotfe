@@ -30,6 +30,7 @@ const getInitialChainData = () => {
         [`${NEXT_PUBLIC_DOMAIN_MULTIPLE_STG}`]: chains[1]
     };
 
+    // console.log('chainMappings[window.location.hostname]-----', chainMappings[window.location.hostname] )
     return chainMappings[window.location.hostname];
 };
 

@@ -2,11 +2,9 @@ import {
     ChainId,
     ENDPOINT_GRAPHQL_WITH_CHAIN
 } from '@/src/common/constant/constance';
-import { instance } from './axios';
 import { ApiResponse } from '../response.type';
+import { instance } from './axios';
 import serviceAuth from './backend-server/auth';
-import store from '@/src/stores';
-import { signOutTelegram, signOutWallet } from '@/src/stores/auth/slice';
 type Obj = { [key: string]: any };
 
 instance.interceptors.request.use(

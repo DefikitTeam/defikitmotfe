@@ -1,18 +1,17 @@
-import { reset } from 'viem/actions';
 import { useCallback } from 'react';
 import { RootState, useAppDispatch, useAppSelector } from '..';
 import { IGetAllQuery } from '../pool/type';
-import { IGetInviteCodeState, IInviteListRefer } from './type';
-import {
-    getInviteListRefer,
-    resetInviteListRefer,
-    setOpenModalInviteListRefer
-} from './list-refer-slice';
 import {
     getInviteCode,
     resetGetInviteCodeRefer,
     setIsOpenModalGetListCurrentCode
 } from './get-invite-code';
+import {
+    getInviteListRefer,
+    resetInviteListRefer,
+    setOpenModalInviteListRefer
+} from './list-refer-slice';
+import { IGetInviteCodeState, IInviteListRefer } from './type';
 
 export function useInviteListReferPortfolio(): [
     {

@@ -1,7 +1,6 @@
 /* eslint-disable */
 import {
     NEXT_PUBLIC_DOMAIN_BARTIO_STG,
-    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD,
     NEXT_PUBLIC_DOMAIN_MULTIPLE_STG
 } from '@/src/common/web3/constants/env';
 import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
@@ -11,14 +10,14 @@ import servicePool from '@/src/services/external-services/backend-server/pool';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { ILoginRequest } from '@/src/stores/auth/type';
 import { CaretDownOutlined } from '@ant-design/icons';
-// import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Col, Row, Spin } from 'antd';
-import { useEffect } from 'react';
-import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
-import ModalSelectChain from '../ui/ModalSelectChain';
-import NotificationButton from '../notification/notification-button';
+
 import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { Spin } from 'antd';
+import { useEffect, useRef } from 'react';
+import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
+import NotificationButton from '../notification/notification-button';
+import ModalSelectChain from '../ui/ModalSelectChain';
 
 const ConnectButtonWagmi = () => {
     const { address, isConnected, isConnecting } = useAccount();
@@ -41,18 +40,39 @@ const ConnectButtonWagmi = () => {
     const { disconnect } = useDisconnect();
     const { isMobile } = useWindowSize();
     const currentHostname = useCurrentHostNameInformation();
-    console.log('currentHostname line 44-----', currentHostname);
+
+    const prevAddress = useRef<string | null>(null);
+
+    const hasSignedRef = useRef(false); // Ngăn sign lại lần 2
+
     useEffect(() => {
         const handleSignMessage = async () => {
-            if ((address as `0x${string}`) && !authState.userWallet) {
+            if (
+                !hasSignedRef.current &&
+                (address as `0x${string}`) &&
+                prevAddress.current !== address &&
+                !authState.userWallet
+            ) {
+                console.log('authState.userWallet-----', authState.userWallet);
+                console.log('address------', address);
+                console.log('prevAddress.current------', prevAddress.current);
+                console.log('hasSignedRef.current------', hasSignedRef.current);
+
+                hasSignedRef.current = true; // Đánh dấu đã sign
+                prevAddress.current = address as `0x${string}`;
+
                 const message = address as `0x${string}`;
                 const refCode = localStorage
                     .getItem(REFCODE_INFO_STORAGE_KEY)
                     ?.replace(/"/g, '');
+
                 try {
                     const signature = await signMessageAsync({
                         message: message
                     });
+
+                    console.log('2222222');
+
                     const refIdFromStorage = await servicePool.getReferId();
                     const loginWalletData: ILoginRequest = {
                         wallet: {
@@ -67,10 +87,13 @@ const ConnectButtonWagmi = () => {
                         },
                         referralCode: refCode ? refCode : ''
                     };
+                    console.log('111111');
                     loginAction(loginWalletData);
                 } catch (error) {
                     console.error('User rejected the signature:', error);
                     disconnect();
+                    hasSignedRef.current = false;
+                    prevAddress.current = null;
                 }
             }
         };
@@ -79,7 +102,7 @@ const ConnectButtonWagmi = () => {
         if (error) {
             console.error('Error signing message:', error);
         }
-    }, [isConnected, address]);
+    }, [address]);
 
     useEffect(() => {
         if (!isConnected) {

@@ -4,7 +4,6 @@ import { CopyOutlined } from '@ant-design/icons';
 import { Modal, notification, Table, Tooltip } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useTranslations } from 'next-intl';
-import React from 'react';
 import { useAccount } from 'wagmi';
 
 const ModalListCurrentCode = () => {

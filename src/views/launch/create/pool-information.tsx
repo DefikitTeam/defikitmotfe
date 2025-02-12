@@ -1,14 +1,13 @@
 /* eslint-disable */
 import {
-    ChainId,
-    DEX_BY_CHAIN,
-    HARD_CAP_INITIAL_BY_CHAIN
-} from '@/src/common/constant/constance';
-import {
     ACCEPT_AVATAR_TYPES,
     AccountFileType,
+    ChainId,
+    DEX_BY_CHAIN,
+    HARD_CAP_INITIAL_BY_CHAIN,
     MAX_AVATAR_FILE_SIZE
-} from '@/src/common/constant/pool';
+} from '@/src/common/constant/constance';
+
 import { base64ToFile } from '@/src/common/lib/utils';
 import {
     getDateTimeInFormat,

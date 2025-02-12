@@ -1,6 +1,8 @@
 /* eslint-disable */
-import { ADDRESS_NULL } from '@/src/common/constant/common';
-import { listChainIdSupported } from '@/src/common/constant/constance';
+import {
+    ADDRESS_NULL,
+    listChainIdSupported
+} from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
 import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
@@ -49,7 +51,7 @@ const SaveButtonBuy = ({
     const convertMaxAmountToETH = new BigNumber(data?.maxAmountETH)
         .div(1e18)
         .toString();
-    console.log('data line 52----', data);
+    // console.log('data line 52----', data);
     const [
         { poolStateDetail },
         fetchPoolDetail,
