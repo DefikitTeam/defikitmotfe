@@ -1,4 +1,3 @@
-import { getEnvironmentConfig } from '@/src/common/utils/getEnvironmentConfig';
 import {
     NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_API_ENDPOINT_PROD
@@ -14,14 +13,15 @@ import {
     IGetAllInviteListReferResponse
 } from '../../response.type';
 import { get, post } from '../fetcher';
+import { ConfigService } from '@/src/config/services/config-service';
+const config = ConfigService.getInstance();
 
 const serviceInviteCode = {
     getInviteCode: async (): Promise<IGetInviteCodeResponse> => {
-        const { isProd } = getEnvironmentConfig();
         let res;
 
         res = await get(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/user/referral-code/get-invite-code`
+            `${config.getApiConfig().baseUrl}/user/referral-code/get-invite-code`
         );
 
         const data = res as IGetInviteCodeResponse;
@@ -33,10 +33,9 @@ const serviceInviteCode = {
         // return res?.data;
     },
     generateInviteCode: async (): Promise<IGetInviteCodeResponse> => {
-        const { isProd } = getEnvironmentConfig();
         let res;
         res = await post<any>(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/user/referral-code/generate-invite-code`
+            `${config.getApiConfig().baseUrl}/user/referral-code/generate-invite-code`
         );
 
         const data = res as IGetInviteCodeResponse;
@@ -44,11 +43,10 @@ const serviceInviteCode = {
     },
 
     checkInviteCode: async (code: string) => {
-        const { isProd } = getEnvironmentConfig();
         let res;
         try {
             res = await axios.get(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/referral-code/check-invite-code?code=${code}`
+                `${config.getApiConfig().baseUrl}/referral-code/check-invite-code?code=${code}`
             );
         } catch (error) {
             console.log('=========== check invite code error: ', error);
@@ -66,11 +64,9 @@ const serviceInviteCode = {
         page,
         limit
     }: IGetAllQuery): Promise<IGetAllDataResponse<IInviteReferItem>> => {
-        const { isProd } = getEnvironmentConfig();
-
         const payload = { page, limit };
         const response: IGetAllInviteListReferResponse = await get(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/user/referral-code/list-referers`,
+            `${config.getApiConfig().baseUrl}/user/referral-code/list-referers`,
             payload
         );
 

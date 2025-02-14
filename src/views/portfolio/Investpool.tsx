@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
-import { ChainId } from '@/src/common/constant/constance';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import servicePool from '@/src/services/external-services/backend-server/pool';
 import { IPool } from '@/src/services/response.type';
@@ -10,7 +9,6 @@ import { InvestPool } from '@/src/stores/pool/type';
 import BigNumber from 'bignumber.js';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useAccount } from 'wagmi';
 
 export const Investpool = ({
     item,
@@ -23,16 +21,15 @@ export const Investpool = ({
     onLoading: (isLoading: boolean) => void;
     address: string;
 }) => {
+    const { chainConfig } = useConfig();
     const chainData = useSelector((state: RootState) => state.chainData);
-    const multiCallerContract = getContract(
-        chainData.chainData.chainId || ChainId.BARTIO
-    );
+    const multiCallerContract = getContract(chainConfig?.chainId!);
 
     const { dataReader, isFetchingDataReader } = useReader({
         contractAddAndAbi: multiCallerContract,
         poolAddress: item.id as string,
         userAddress: address as `0x${string}`,
-        chainId: chainData.chainData.chainId as number
+        chainId: chainConfig?.chainId as number
     });
     useEffect(() => {
         onLoading(true);
@@ -77,7 +74,7 @@ export const Investpool = ({
     const getUserPoolInfo = async (poolAddress: string, address: string) => {
         if (address && poolAddress) {
             const userPoolInfo = await servicePool.getUserPool({
-                chainId: chainData.chainData.chainId,
+                chainId: chainConfig?.chainId!,
                 poolAddress: poolAddress,
                 userAddress: address
             });

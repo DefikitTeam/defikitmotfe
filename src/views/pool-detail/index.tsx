@@ -4,16 +4,19 @@ import { chains } from '@/src/common/constant/constance';
 import { randomDefaultPoolImage } from '@/src/common/utils/utils';
 import BoxArea from '@/src/components/common/box-area';
 import CommentTelegram from '@/src/components/common/comment-telegram';
+import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import TradingViewChart from '@/src/components/common/tradingview';
 import Loader from '@/src/components/loader';
+import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
+import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import servicePool, {
     REFERRAL_CODE_INFO_STORAGE_KEY
 } from '@/src/services/external-services/backend-server/pool';
 import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
-import { setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { Col, Row, notification } from 'antd';
@@ -34,9 +37,6 @@ import PoolPurchaseSummary from './pool-purchase-summary';
 import SocialDescInformation from './social-desc-information';
 import TokenInformation from './token-information';
 import TransactionList from './transaction-list';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
-import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 
 const PoolDetail = () => {
     const t = useTranslations();
@@ -69,6 +69,7 @@ const PoolDetail = () => {
     const router = useRouter();
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
+    const { chainConfig } = useConfig();
     const getCurrentChainUrl = (): IChainInfor | undefined => {
         return chains.find(
             (item) =>
@@ -89,16 +90,19 @@ const PoolDetail = () => {
         }
     }, [refCodeExisted]);
 
-    useEffect(() => {
-        if (refId) {
-            const chainInfo = getCurrentChainUrl();
-            if (chainInfo) {
-                dispatch(setChainData(chainInfo));
-                switchChain({ chainId: chainInfo.chainId });
-                // router.push(`${currentPath?.join('/')}?refId=${refId}`);
-            }
-        }
-    }, [refId]);
+    // useEffect(() => {
+    //     if (refId) {
+    //         const chainInfo = getCurrentChainUrl();
+    //         if (chainInfo) {
+    //             dispatch(setChainData(chainInfo));
+    //             switchChain({ chainId: chainInfo.chainId });
+    //             // router.push(`${currentPath?.join('/')}?refId=${refId}`);
+    //         }
+    //     }
+    // }, [refId]);
+
+    console.log('chainConfig line 106----', chainConfig);
+    console.log('chainData.chainData line 105-----', chainData.chainData);
 
     useEffect(() => {
         if (refId && !(address as `0x${string}`)) {
@@ -118,7 +122,7 @@ const PoolDetail = () => {
             });
 
             router.push(
-                `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}`
+                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
             );
             return;
         }
@@ -129,10 +133,10 @@ const PoolDetail = () => {
                 page: poolStateDetail.pageTransaction,
                 limit: poolStateDetail.limitTransaction,
                 poolAddress: poolAddress,
-                chainId: chainData.chainData.chainId as number
+                chainId: chainConfig?.chainId as number
             });
         }
-    }, [poolAddress, chainData.chainData.chainId, address]);
+    }, [poolAddress, chainConfig?.chainId, address]);
 
     // useEffect cho fetchHolderDistribution
     useEffect(() => {
@@ -144,12 +148,12 @@ const PoolDetail = () => {
                 page: poolStateDetail.pageHolderDistribution,
                 limit: poolStateDetail.limitHolderDistribution,
                 poolAddress: poolAddress,
-                chainId: chainData.chainData.chainId as number
+                chainId: chainConfig?.chainId as number
             });
         }
     }, [
         poolAddress,
-        chainData.chainData.chainId,
+        chainConfig?.chainId,
         poolStateDetail.pageHolderDistribution
     ]);
 
@@ -267,7 +271,7 @@ const PoolDetail = () => {
                             >
                                 <SocialDescInformation />
                                 <TradingViewChart
-                                    chainId={chainData.chainData.chainId}
+                                    chainId={chainConfig?.chainId!}
                                     poolInfo={pool}
                                 />
                                 <TokenInformation />

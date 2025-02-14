@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { shortWalletAddress } from '@/src/common/utils/utils';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { Transaction } from '@/src/stores/pool/type';
@@ -32,6 +32,7 @@ const TransactionList = () => {
 
     const { transactions } = poolStateDetail;
     const router = useRouter();
+    const { chainConfig } = useConfig();
     const handleOpenResentTx = (address: string, type: string) => {
         if (!isConnected || !address) {
             notification.error({
@@ -46,7 +47,7 @@ const TransactionList = () => {
         // TODO: need change REACT_APP_TEST_SEPOLIA_EXPLORER_URL follow environment, network
         if (address) {
             window.open(
-                chainData.chainData.explorerUrl + `/${type}/` + address,
+                chainConfig?.explorer + `/${type}/` + address,
                 '_blank',
                 'noopener,noreferrer'
             );
@@ -66,7 +67,7 @@ const TransactionList = () => {
         }
 
         router.push(
-            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
         );
     };
 
@@ -104,7 +105,7 @@ const TransactionList = () => {
             align: 'center'
         },
         {
-            title: `${t('TOTAL')} ${chainData.chainData.currency}`,
+            title: `${t('TOTAL')} ${chainConfig?.currency}`,
             dataIndex: 'eth',
             width: '5%',
             className: '!font-forza',
@@ -166,14 +167,10 @@ const TransactionList = () => {
                 page: poolStateDetail.pageTransaction,
                 limit: poolStateDetail.limitTransaction,
                 poolAddress: poolAddress,
-                chainId: chainData.chainData.chainId as number
+                chainId: chainConfig?.chainId as number
             });
         }
-    }, [
-        poolAddress,
-        chainData.chainData.chainId,
-        poolStateDetail.pageTransaction
-    ]);
+    }, [poolAddress, chainConfig?.chainId, poolStateDetail.pageTransaction]);
 
     const handlePageTransactionChange = (pageTransactionChange: number) => {
         setPageTransactionAction(pageTransactionChange);

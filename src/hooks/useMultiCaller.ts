@@ -4,13 +4,18 @@ import { getContract } from '../common/blockchain/evm/contracts/utils/getContrac
 import { ChainId } from '../common/constant/constance';
 import MultiCaller from '../common/wagmi/MultiCaller';
 import { RootState } from '../stores';
+import { ConfigService } from '../config/services/config-service';
+import { useConfig } from './useConfig';
 
 export function useMultiCaller() {
     // const { chainId } = useAccount();
     const chainData = useSelector((state: RootState) => state.chainData);
-    const multiCallerContract = getContract(
-        chainData.chainData.chainId || ChainId.BARTIO
-    );
+
+    const { chainConfig } = useConfig();
+
+    const config = ConfigService.getInstance();
+
+    const multiCallerContract = getContract(chainConfig?.chainId!);
 
     // multi caller
     const multiCaller = new MultiCaller(multiCallerContract);

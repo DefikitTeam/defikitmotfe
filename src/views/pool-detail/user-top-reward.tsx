@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { formatCurrency, shortWalletAddress } from '@/src/common/utils/utils';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { RootState } from '@/src/stores';
 import { usePoolDetail, useReward } from '@/src/stores/pool/hook';
@@ -28,9 +28,10 @@ const UserTopReward = () => {
 
     const { pool } = poolStateDetail;
     const { rewardState } = useReward();
-    // const { chainData } = useCurrentChainInformation();
     const { dataTopUserRewardByPool } = rewardState;
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
+    const { chainConfig } = useConfig();
 
     const userTopRewardByPoolTransformed: IUserTopRewardByPoolTransformed[] =
         dataTopUserRewardByPool?.map((item: IUserTopRewardByPool) => {
@@ -87,7 +88,7 @@ const UserTopReward = () => {
         }
 
         router.push(
-            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`
         );
     };
 

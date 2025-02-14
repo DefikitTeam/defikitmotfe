@@ -36,10 +36,12 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import SaveButtonSell from './save-button-sell';
+import { useConfig } from '@/src/hooks/useConfig';
 export interface ISellForm {}
 const { Text } = Typography;
 const SellToken = () => {
     const t = useTranslations();
+    const { chainConfig } = useConfig();
 
     const [data, setData] = useSellTokenInformation();
     const [{ portfolio }, fetchPortfolio, setIdCurrentChoosedTokenSell] =
@@ -75,7 +77,7 @@ const SellToken = () => {
     const { address, chainId } = useAccount();
     const chainData = useSelector((state: RootState) => state.chainData);
     const multiCallerContract = getContract(
-        chainData.chainData.chainId || ChainId.BARTIO
+        chainConfig?.chainId! || ChainId.BARTIO
     );
 
     const clearForm = () => {
@@ -174,7 +176,7 @@ const SellToken = () => {
     const getUserPoolInfo = async (poolAddress: string) => {
         if (address) {
             const userPoolInfo = await servicePool.getUserPool({
-                chainId: chainData.chainData.chainId,
+                chainId: chainConfig?.chainId!,
                 poolAddress: poolAddress,
                 userAddress: address
             });
@@ -337,7 +339,7 @@ const SellToken = () => {
                         maxAmountETH: Number(estimateSellRes)
                     });
                     setSellAmountBtn(
-                        `${parseFloat(maxRepeatPurchase) * value} ${selectedToken?.symbol} ~ ${new BigNumber(estimateSellRes).toFixed(6)} ${chainData.chainData.currency}`
+                        `${parseFloat(maxRepeatPurchase) * value} ${selectedToken?.symbol} ~ ${new BigNumber(estimateSellRes).toFixed(6)} ${chainConfig?.currency}`
                     );
                 }
             }
@@ -502,8 +504,7 @@ const SellToken = () => {
                     >
                         <div className="mb-0">
                             <span className="!font-forza text-base">
-                                {t('MAX_AMOUNT')}{' '}
-                                {`${chainData.chainData.currency}`}
+                                {t('MAX_AMOUNT')} {`${chainConfig?.currency}`}
                             </span>
                             <Input
                                 size="large"

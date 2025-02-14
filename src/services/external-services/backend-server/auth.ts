@@ -2,35 +2,37 @@
 import {
     NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_API_ENDPOINT_PROD,
-    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD
+    NEXT_PUBLIC_ENVIRONMENT
 } from '@/src/common/web3/constants/env';
-import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
 import {
     IDataUserLoginResponse,
     ILoginRequest,
-    ILoginResponse,
     ILoginTeleResponse,
     ILoginWalletResponse
 } from '@/src/stores/auth/type';
+import { IRefCode } from '@/src/stores/pool/type';
 import { Cookies } from 'react-cookie';
 import { post } from '../fetcher';
-import { IRefCode } from '@/src/stores/pool/type';
+import { ConfigService } from '@/src/config/services/config-service';
 const cookies = new Cookies();
 const USER_INFO_STORAGE_KEY = 'usr_if';
 const USER_WALLET_STORAGE_KEY = 'usr_wallet_if';
 const USER_TELE_STORAGE_KEY = 'usr_tele_if';
-const currentHostName = useCurrentHostNameInformation();
-const isProd =
-    currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
+// const currentHostName = useCurrentHostNameInformation();
+// const isProd =
+//     currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
 export const REFCODE_INFO_STORAGE_KEY = 'refCode';
 const USER_TOKEN_STORAGE_KEY = 'usr_tk';
 
 const USER_REFRESH_TOKEN_STORAGE_KEY = 'usr_refresh_token';
+// const isProd = NEXT_PUBLIC_ENVIRONMENT === 'production';
+
+const config = ConfigService.getInstance();
 
 const serviceAuth = {
     loginWallet: async (payload: ILoginRequest) => {
         const response = await post<any>(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/auth/login`,
+            `${config.getApiConfig().baseUrl}/auth/login`,
             payload
         );
         return response;

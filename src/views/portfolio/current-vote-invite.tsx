@@ -2,6 +2,7 @@ import {
     CodeReferStatus,
     statusBadgeColor
 } from '@/src/common/constant/constance';
+import { useConfig } from '@/src/hooks/useConfig';
 import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
 import { RootState } from '@/src/stores';
 import { useGetInviteCode } from '@/src/stores/invite-code/hook';
@@ -31,6 +32,7 @@ const CurrentCodeInvite = () => {
     const isAddressDifferent = addressParams && addressParams !== address;
 
     const t = useTranslations();
+    const { chainConfig } = useConfig();
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -39,7 +41,7 @@ const CurrentCodeInvite = () => {
             }
         }, 3000);
         return () => clearInterval(intervalId);
-    }, [chainData.chainData.chainId, address]);
+    }, [chainConfig?.chainId, address]);
 
     const handleCopy = (showCode: string | undefined) => {
         if (!isConnected || !address) {

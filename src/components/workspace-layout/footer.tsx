@@ -1,4 +1,4 @@
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import { notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -8,11 +8,13 @@ const Footer = () => {
     const router = useRouter();
     const { address, isConnected } = useAccount();
     const t = useTranslations();
-    const { chainData } = useCurrentChainInformation();
+    // const { chainData } = useCurrentChainInformation();
+
+    const { chainConfig } = useConfig();
     const handlePortfolioClick = () => {
         if (isConnected && address) {
             router.push(
-                `/${chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
+                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
             );
         } else {
             notification.error({
@@ -27,7 +29,7 @@ const Footer = () => {
     const handleClickCreateLaunch = () => {
         if (isConnected && address) {
             router.push(
-                `/${chainData.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
+                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
             );
         } else {
             notification.error({
@@ -88,7 +90,7 @@ const Footer = () => {
                         className="group inline-flex flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
                         onClick={() =>
                             router.push(
-                                `/${chainData.name.replace(/\s+/g, '').toLowerCase()}`
+                                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
                             )
                         }
                     >

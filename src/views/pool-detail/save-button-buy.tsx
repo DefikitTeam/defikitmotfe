@@ -4,8 +4,7 @@ import {
     listChainIdSupported
 } from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
-import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
+import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -51,7 +50,8 @@ const SaveButtonBuy = ({
     const convertMaxAmountToETH = new BigNumber(data?.maxAmountETH)
         .div(1e18)
         .toString();
-    // console.log('data line 52----', data);
+
+    const { chainConfig } = useConfig();
     const [
         { poolStateDetail },
         fetchPoolDetail,
@@ -65,7 +65,7 @@ const SaveButtonBuy = ({
 
     const { useBuyPoolMulti } = useMultiCaller();
     const [hasNotified, setHasNotified] = useState<boolean>(false);
-    const currentHostName = useCurrentHostNameInformation();
+    // const currentHostName = useCurrentHostNameInformation();
 
     useEffect(() => {
         if (useBuyPoolMulti.isLoadingInitBuyToken) {
@@ -108,13 +108,13 @@ const SaveButtonBuy = ({
                     page: poolStateDetail.pageTransaction,
                     limit: poolStateDetail.limitTransaction,
                     poolAddress: poolAddress,
-                    chainId: chainData.chainData.chainId as number
+                    chainId: chainConfig?.chainId as number
                 });
                 fetchHolderDistribution({
                     page: poolStateDetail.pageHolderDistribution,
                     limit: poolStateDetail.limitHolderDistribution,
                     poolAddress: poolAddress,
-                    chainId: chainData.chainData.chainId as number
+                    chainId: chainConfig?.chainId as number
                 });
             }, 10000);
         }

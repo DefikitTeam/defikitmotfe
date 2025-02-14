@@ -1,5 +1,5 @@
 /* eslint-disable */
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { useReward } from '@/src/stores/pool/hook';
@@ -21,23 +21,25 @@ const Affiliate = () => {
     } = useReward();
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
-    const { chainData } = useCurrentChainInformation();
+    // const { chainData } = useCurrentChainInformation();
     const { authState } = useAuthLogin();
+
+    const { chainConfig } = useConfig();
     useEffect(() => {
         if (poolAddress) {
             getPoolInfoRewardAction({
                 id: poolAddress,
-                chainId: chainData.chainId as number
+                chainId: chainConfig?.chainId as number
             });
             const intervalId = setInterval(() => {
                 getTopUserRewardByPoolAction({
                     pool: poolAddress,
-                    chainId: chainData.chainId as number
+                    chainId: chainConfig?.chainId as number
                 });
             }, 10000);
             return () => clearInterval(intervalId);
         }
-    }, [poolAddress, chainData.chainId]);
+    }, [poolAddress, chainConfig?.chainId]);
 
     return (
         <div

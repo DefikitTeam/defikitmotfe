@@ -1,9 +1,10 @@
-import { getEnvironmentConfig } from '@/src/common/utils/getEnvironmentConfig';
 import {
     NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_API_ENDPOINT_PROD
 } from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import axios from 'axios';
+const config = ConfigService.getInstance();
 
 const serviceUpload = {
     getPresignedUrlAvatar: async (
@@ -11,11 +12,10 @@ const serviceUpload = {
         tokenAddress: string,
         chainId: string
     ) => {
-        const { isProd } = getEnvironmentConfig();
         let data = new FormData();
         data.append('file', file);
         const response = await axios.post(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${tokenAddress}/icon`,
+            `${config.getApiConfig().baseUrl}/c/${chainId}/t/${tokenAddress}/icon`,
             data,
             {
                 headers: {
@@ -29,11 +29,10 @@ const serviceUpload = {
         return '';
     },
     getPresignedUrlAvatarWithoutAddress: async (file: any, chainId: string) => {
-        const { isProd } = getEnvironmentConfig();
         let data = new FormData();
         data.append('file', file);
         const response = await axios.post(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/icon`,
+            `${config.getApiConfig().baseUrl}/c/${chainId}/icon`,
             data,
             {
                 headers: {
@@ -53,10 +52,9 @@ const serviceUpload = {
         tokenAddress: string
     ) => {
         let res;
-        const { isProd } = getEnvironmentConfig();
         try {
             res = await axios.post(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${tokenAddress}/metadata`,
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${tokenAddress}/metadata`,
                 {
                     body: metadata
                 }
@@ -77,10 +75,9 @@ const serviceUpload = {
         signature: string
     ) => {
         let res;
-        const { isProd } = getEnvironmentConfig();
         try {
             res = await axios.post(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${signature}/metadata`,
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${signature}/metadata`,
                 {
                     body: metadata
                 }
@@ -101,10 +98,9 @@ const serviceUpload = {
         signature: string
     ) => {
         let res;
-        const { isProd } = getEnvironmentConfig();
         try {
             res = await axios.patch(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${tokenAddress}/metadata`,
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${tokenAddress}/metadata`,
                 // {
                 //     body: metadata
                 // }

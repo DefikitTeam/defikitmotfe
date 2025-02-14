@@ -44,6 +44,8 @@ import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import { useTopRefByVol } from '@/src/stores/top-ref-by-vol/hook';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
+import { useConfig } from '@/src/hooks/useConfig';
+import { config } from 'dotenv';
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -73,47 +75,62 @@ const KingOfTheHill = ({
     }, [metadata]);
 
     return (
-        <div
-            className={`relative mb-8 mt-4 flex justify-center overflow-y-auto overflow-x-hidden`}
-        >
-            <div className="w-full max-w-xl">
-                <div className="mb-4 animate-king-title text-center">
-                    <Text className="animate-king-text !font-forza !text-2xl !font-extrabold tracking-wider text-yellow-500">
-                        Rocket Pool
-                    </Text>
-                </div>
+        pool && (
+            <div
+                className={`relative mb-8 mt-4 flex justify-center overflow-y-auto overflow-x-hidden`}
+            >
+                <div className="w-full max-w-xl">
+                    <div className="mb-4 animate-king-title text-center">
+                        <Text className="animate-king-text !font-forza !text-2xl !font-extrabold tracking-wider text-yellow-500">
+                            Rocket Pool
+                        </Text>
+                    </div>
 
-                <div
-                    className="pool-item max-h-[290px] animate-king-pool rounded-lg border-2 border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 p-1"
-                    // data-pool-id={pool.id}
-                >
                     <div
-                        className="pool-item"
-                        data-pool-id={pool.id}
+                        className="pool-item max-h-[290px] animate-king-pool rounded-lg border-2 border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 p-1"
+                        // data-pool-id={pool.id}
                     >
-                        <ItemPool
-                            poolItem={pool}
-                            className="transform transition-transform hover:scale-[1.02]"
-                            metadata={
-                                metadataShow && metadataShow?.[pool.id]
-                                    ? metadataShow[pool.id]
-                                    : undefined
-                            }
-                            analysisData={
-                                analystData && analystData[pool.id]?.analystData
-                            }
-                            priceNative={priceNative}
-                            onClick={() => onPoolClick(pool.id)}
-                        />
+                        <div
+                            className="pool-item"
+                            data-pool-id={pool.id}
+                        >
+                            <ItemPool
+                                poolItem={pool}
+                                className="transform transition-transform hover:scale-[1.02]"
+                                metadata={
+                                    metadataShow && metadataShow?.[pool.id]
+                                        ? metadataShow[pool.id]
+                                        : undefined
+                                }
+                                analysisData={
+                                    analystData &&
+                                    analystData[pool.id]?.analystData
+                                }
+                                priceNative={priceNative}
+                                onClick={() => onPoolClick(pool.id)}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        )
     );
 };
 
 const HomePage = () => {
     const t = useTranslations();
+
+    const {
+        chainConfig,
+        supportedChains,
+        getContractAddress,
+        isChainSupported,
+        defaultChain,
+        environment
+    } = useConfig();
+
+    // Check if current chain is supported
+
     const {
         poolStateList,
         getListPoolAction,
@@ -132,7 +149,6 @@ const HomePage = () => {
         isConnected,
         isDisconnected
     } = useAccount();
-    const { disconnect } = useDisconnect();
 
     const {
         analystData,
@@ -164,6 +180,7 @@ const HomePage = () => {
     const [metadataShow, setMetadataShow] = useState<any>(null);
     const currentPath = pathname?.split('/');
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
+
     const getCurrentChainUrl = (): IChainInfor | undefined => {
         return chains.find(
             (item) =>
@@ -246,7 +263,8 @@ const HomePage = () => {
             statusPool: filter,
             orderByDirection: orderByDirection,
             orderBy: orderBy,
-            chainId: chainData.chainData.chainId,
+            // chainId: chainData.chainData.chainId,
+            chainId: chainConfig?.chainId!,
             metaDataFromStore: metadata,
             query: '',
             owner: address
@@ -265,14 +283,15 @@ const HomePage = () => {
     //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
     // }, []);
 
-    useEffect(() => {
-        const chainInfo = getCurrentChainUrl();
-        if (chainInfo) {
-            dispatch(setChainData(chainInfo));
-            switchChain({ chainId: chainInfo.chainId });
-            // router.push(`${currentPath?.join('/')}?refId=${refId}`);
-        }
-    }, [currentPath?.[2]]);
+    // useEffect(() => {
+    //     const chainInfo = getCurrentChainUrl();
+    //     // console.log('chainInfo')
+    //     if (chainInfo) {
+    //         dispatch(setChainData(chainInfo));
+    //         switchChain({ chainId: chainInfo.chainId });
+    //         // router.push(`${currentPath?.join('/')}?refId=${refId}`);
+    //     }
+    // }, [currentPath?.[2]]);
 
     useEffect(() => {
         if (!poolList && !priceNative) return;
@@ -298,7 +317,7 @@ const HomePage = () => {
         setKingPool(null);
         setAllPool([]);
         fetchPoolList();
-    }, [chainData.chainData.chainId]);
+    }, [chainConfig?.chainId]);
 
     useEffect(() => {
         if (!allPool.length) {
@@ -331,7 +350,7 @@ const HomePage = () => {
             .sort((a, b) => b.ratio - a.ratio)[0];
 
         setKingPool(poolWithClosestRatio?.pool || allPool[0]);
-    }, [allPool, focusPools, chainData.chainData.chainId]);
+    }, [allPool, focusPools, chainConfig?.chainId]);
 
     useEffect(() => {
         if (filter !== PoolStatus.ACTIVE || query) {
@@ -344,13 +363,7 @@ const HomePage = () => {
             const pollingInterval = setInterval(fetchPoolList, 5000);
             return () => clearInterval(pollingInterval);
         }
-    }, [
-        poolStateList.filter,
-        chainData.chainData.chainId,
-        filter,
-        query,
-        address
-    ]);
+    }, [poolStateList.filter, chainConfig?.chainId, filter, query, address]);
 
     const fetchPoolList = () => {
         getListPoolBackgroundAction({
@@ -359,7 +372,7 @@ const HomePage = () => {
             owner: address,
             orderByDirection: orderByDirection,
             orderBy: orderBy,
-            chainId: chainData.chainData.chainId || ChainId.BARTIO
+            chainId: chainConfig?.chainId
         });
     };
 
@@ -500,7 +513,7 @@ const HomePage = () => {
     useEffect(() => {
         getListPoolAction({
             statusPool: filter,
-            chainId: chainData.chainData.chainId,
+            chainId: chainConfig?.chainId!,
             metaDataFromStore: metadata,
             query: '',
             owner: address,
@@ -555,7 +568,7 @@ const HomePage = () => {
         }
 
         router.push(
-            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolId.toLowerCase()}`
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolId.toLowerCase()}`
         );
     };
 
@@ -571,7 +584,7 @@ const HomePage = () => {
         }
 
         router.push(
-            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolId}`
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolId}`
         );
     };
 

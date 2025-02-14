@@ -24,6 +24,7 @@ import Investpool from './Investpool';
 import ModalListCurrentCode from './modal-list-current-code';
 import ListRefer from './list-refer';
 import { TOKEN_STATUS } from '@/src/common/constant/constance';
+import { useConfig } from '@/src/hooks/useConfig';
 
 export interface IAssetList {
     index: number;
@@ -41,6 +42,8 @@ export interface IAssetList {
 
 const Statistical = () => {
     const t = useTranslations();
+
+    const { chainConfig } = useConfig();
     const [isLoadingClaimTokenOrSell, setIsLoadingClaimTokenOrSell] =
         useState(false);
     const { address, chainId, isConnected } = useAccount();
@@ -213,7 +216,7 @@ const Statistical = () => {
             return;
         }
         router.push(
-            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${addressPool}`
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${addressPool}`
         );
     };
     const baseColumns: ColumnsType<IAssetList> = [
@@ -396,7 +399,7 @@ const Statistical = () => {
                 <p className="!font-forza text-base text-black">
                     {t('TOTAL_INVESTED')}:{' '}
                     {new BigNumber(totalInvestedETH).div(1e18).toFixed(10)}{' '}
-                    {chainData.chainData.currency}
+                    {chainConfig?.currency}
                 </p>
 
                 <p className="!font-forza text-base text-black">

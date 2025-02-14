@@ -6,22 +6,19 @@ import { config } from './wagmi';
 import { RootState } from '@/src/stores';
 import { useSelector } from 'react-redux';
 import { berachain } from 'viem/chains';
+import { ConfigService } from '@/src/config/services/config-service';
 interface ProvidersProps {
     children: ReactNode;
 }
 const queryClient = new QueryClient();
 const GlobalConnectWalletProvider: FC<ProvidersProps> = ({ children }) => {
-    const chainData = useSelector(
-        (state: RootState) => state.chainData.chainData
-    );
-
-    // console.log('chainData line 18----', chainData)
+    const chainConfig = ConfigService.getInstance();
 
     return (
         <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
                 <RainbowKitProvider
-                    initialChain={chainData.chainId || berachain}
+                    initialChain={chainConfig.getDefaultChain()}
                     coolMode
                     theme={darkTheme({
                         accentColor: '#7b3fe4',

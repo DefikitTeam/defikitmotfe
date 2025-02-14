@@ -1,10 +1,12 @@
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import { Button } from 'antd';
 import { useRouter } from 'next/navigation';
 
 const NotFoundPage = () => {
-    const { chainData } = useCurrentChainInformation();
+    // const { chainData } = useCurrentChainInformation();
     const router = useRouter();
+
+    const { chainConfig } = useConfig();
     return (
         <div className="flex h-screen flex-grow  flex-col items-center justify-center  bg-gray-50">
             <div className="rounded-lg bg-white p-8 text-center shadow-xl">
@@ -16,7 +18,7 @@ const NotFoundPage = () => {
                     type="primary"
                     onClick={() => {
                         router.push(
-                            `/${chainData.name.replace(/\s+/g, '').toLowerCase()}`
+                            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
                         );
                     }}
                     className="mt-4 !font-forza"

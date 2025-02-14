@@ -5,14 +5,10 @@ import { Dropdown, MenuProps, Typography } from 'antd';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getEnvironment } from '../common/constant/constance';
 import useWindowSize from '../hooks/useWindowSize';
 import { useAuthLogin } from '../stores/auth/hook';
-import useCurrentHostNameInformation from '../hooks/useCurrentHostName';
-import {
-    NEXT_PUBLIC_DOMAIN_BARTIO_STG,
-    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD,
-    NEXT_PUBLIC_DOMAIN_MULTIPLE_STG
-} from '../common/web3/constants/env';
+
 const { Text } = Typography;
 const TelegramInfo = ({ name }: { name: string }) => {
     const t = useTranslations();
@@ -22,16 +18,18 @@ const TelegramInfo = ({ name }: { name: string }) => {
         logoutTelegramAction();
     };
 
-    const currentHostName = useCurrentHostNameInformation();
+    // const currentHostName = useCurrentHostNameInformation();
+    // const environment = (NEXT_PUBLIC_ENVIRONMENT as Environment) || 'development';
+    const environment = getEnvironment();
     let botName = '';
-    switch (currentHostName.url) {
-        case NEXT_PUBLIC_DOMAIN_BARTIO_STG:
+    switch (environment) {
+        case 'staging':
             botName = 'MotherOfTokensStgBot';
             break;
-        case NEXT_PUBLIC_DOMAIN_MULTIPLE_STG:
+        case 'development':
             botName = 'MotherOfTokensDevBot';
             break;
-        case NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD:
+        case 'production':
             botName = 'motheroftokens_bot';
             break;
     }

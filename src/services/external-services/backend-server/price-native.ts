@@ -1,19 +1,13 @@
-import { getEnvironmentConfig } from '@/src/common/utils/getEnvironmentConfig';
-import {
-    NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD
-} from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import axios from 'axios';
-
+const config = ConfigService.getInstance();
 const servicePriceNative = {
     getPriceNative: async (chainId: string) => {
-        const { isProd } = getEnvironmentConfig();
-
         let res;
 
         try {
             res = await axios.get(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/getPrice`
+                `${config.getApiConfig().baseUrl}/c/${chainId}/getPrice`
             );
         } catch (error) {
             console.log('=========== GET faucet error: ', error);
@@ -26,3 +20,5 @@ const servicePriceNative = {
 };
 
 export default servicePriceNative;
+
+config.getApiConfig().baseUrl;

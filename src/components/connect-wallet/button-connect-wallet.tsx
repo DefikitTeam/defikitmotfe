@@ -1,6 +1,8 @@
 /* eslint-disable */
+import { getEnvironment } from '@/src/common/constant/constance';
 import { useNotification } from '@/src/hooks/use-notification';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { ILoginRequest } from '@/src/stores/auth/type';
 import { EActionStatus } from '@/src/stores/type';
@@ -11,13 +13,6 @@ import { useAccount, useDisconnect } from 'wagmi';
 import TelegramLoginButton from '../common/telegram';
 import TelegramInfo from '../telegram-info';
 import ConnectButtonWagmi from './connect-button-wagmi';
-import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
-import {
-    NEXT_PUBLIC_DOMAIN_BARTIO_STG,
-    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD,
-    NEXT_PUBLIC_DOMAIN_MULTIPLE_STG
-} from '@/src/common/web3/constants/env';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 const { Text } = Typography;
 const ButtonConnectWallet = () => {
     const t = useTranslations();
@@ -36,16 +31,19 @@ const ButtonConnectWallet = () => {
         resetStatusLoginWalletAction
     } = useAuthLogin();
 
-    const currentHostName = useCurrentHostNameInformation();
+    // const currentHostName = useCurrentHostNameInformation();
+    // let botName = '';
+    //   const environment = (NEXT_PUBLIC_ENVIRONMENT as Environment) || 'development';
+    const environment = getEnvironment();
     let botName = '';
-    switch (currentHostName.url) {
-        case NEXT_PUBLIC_DOMAIN_BARTIO_STG:
+    switch (environment) {
+        case 'staging':
             botName = 'MotherOfTokensStgBot';
             break;
-        case NEXT_PUBLIC_DOMAIN_MULTIPLE_STG:
+        case 'development':
             botName = 'MotherOfTokensDevBot';
             break;
-        case NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD:
+        case 'production':
             botName = 'motheroftokens_bot';
             break;
     }

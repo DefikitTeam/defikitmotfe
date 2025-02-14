@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import Moment from 'react-moment';
 import BubbleUp from '@/src/components/common/bubble-up';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 interface Props {
     poolItem: IPoolList;
     metadata?: IMetaData | undefined;
@@ -25,9 +25,10 @@ const { Text } = Typography;
 const ItemPool = (props: Props) => {
     const { isMobile } = useWindowSize();
 
+    const { chainConfig } = useConfig();
+
     const [animationNewTransactionClass, setAnimationNewTransactionClass] =
         useState('');
-    const { chainData } = useCurrentChainInformation();
     // const [currency, setCurrency] = useState('ETH');
 
     const { poolItem, onClick, analysisData, metadata, priceNative } = props;
@@ -117,7 +118,7 @@ const ItemPool = (props: Props) => {
             setBuyAmounts([]);
             return;
         }
-        setBuyAmounts([`+${sumEth.toFixed(6)} ${chainData.currency}`]);
+        setBuyAmounts([`+${sumEth.toFixed(6)} ${chainConfig?.currency}`]);
         setAnimationNewTransactionClass('animate-blink shake');
     }, [poolItem.buyTransactions]);
 
@@ -172,7 +173,7 @@ ${isMobile ? `${props.className}` : `${props.className}`}
                     >
                         Raised/HC:{' '}
                         <span className="text-lg text-blue-800">
-                            {raisedShow}/{hardCapShow} ({chainData.currency},{' '}
+                            {raisedShow}/{hardCapShow} ({chainConfig?.currency},{' '}
                             {bondingCurve.toFixed(2)} % )
                         </span>
                     </Text>

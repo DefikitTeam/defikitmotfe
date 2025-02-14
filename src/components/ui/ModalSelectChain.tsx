@@ -1,23 +1,28 @@
-import { chains } from '@/src/common/constant/constance';
-import { NEXT_PUBLIC_DOMAIN_MULTIPLE_STG } from '@/src/common/web3/constants/env';
-import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
-import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
+import { CHAIN_CONFIG } from '@/src/config/environments/chains';
+import { ConfigService } from '@/src/config/services/config-service';
+import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { RootState } from '@/src/stores';
-import { setChainData } from '@/src/stores/Chain/chainDataSlice';
+import { IChainInfor, setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { Chain } from 'viem/chains';
 
 const ModalSelectChain = () => {
     const { isMobile } = useWindowSize();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const currentHostname = useCurrentHostNameInformation();
+
+    const { chainConfig, supportedChains, environment } = useConfig();
+
+    const listChains = CHAIN_CONFIG[environment].supportedChains;
     const chainData = useSelector(
         (state: RootState) => state.chainData.chainData
     );
+
     const dispatch = useDispatch();
     const pathname = usePathname();
     const router = useRouter();
@@ -30,41 +35,41 @@ const ModalSelectChain = () => {
         setIsModalOpen(false);
     };
 
-    const handleChangeChain = (chain: IChainInfor) => {
+    const handleChangeChain = (chain: Chain) => {
+        const configService = ConfigService.getInstance();
+        const newChainConfig = configService.getChainConfig(chain.id);
+        const chainData = {
+            chainId: chain.id,
+            name: chain.name,
+            currency: chain.nativeCurrency.symbol,
+            explorerUrl: chain.blockExplorers?.default.url,
+            rpcUrl: chain.rpcUrls.default.http[0]
+        };
+
         setIsModalOpen(false);
-        dispatch(setChainData(chain));
+        dispatch(setChainData(chainData as IChainInfor));
         router.push(`/${chain.name.replace(/\s+/g, '').toLowerCase()}`);
     };
 
-    useEffect(() => {
-        const currentPath = pathname?.split('/');
-        if (currentPath?.length === 2) {
-            router.push(`/${chainData.name.replace(/\s+/g, '').toLowerCase()}`);
-        }
-    }, [chainData.name, pathname, router]);
-
-    let listChainIds: number[] = [];
-    if (currentHostname.url === NEXT_PUBLIC_DOMAIN_MULTIPLE_STG) {
-        listChainIds = [80084, 84532, 80002, 11822, 1301];
-    }
-    // else if (currentHostname.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD) {
-    //     // listChainIds = [8453, 8822];
-    //     listChainIds = [80094];
-    // }
-    const listChains = chains.filter((chain) =>
-        listChainIds.includes(chain.chainId)
-    );
+    // useEffect(() => {
+    //     const currentPath = pathname?.split('/');
+    //     if (currentPath?.length === 2) {
+    //         router.push(`/${chainData.name.replace(/\s+/g, '').toLowerCase()}`);
+    //     }
+    // }, [chainData.name, pathname, router]);
 
     return (
         <>
-            <button
-                onClick={showModal}
-                className={`flex items-center justify-between gap-2 rounded-md bg-[#1a1b1f] font-bold text-white ${isMobile ? 'btn-sm max-h-[40px] gap-1 break-words px-4 py-1 text-xs font-semibold' : 'gap-2 px-4 py-2 text-base'}`}
-            >
-                {chainData.name}
+            {listChains.length > 1 && (
+                <button
+                    onClick={showModal}
+                    className={`flex items-center justify-between gap-2 rounded-md bg-[#1a1b1f] font-bold text-white ${isMobile ? 'btn-sm max-h-[40px] gap-1 break-words px-4 py-1 text-xs font-semibold' : 'gap-2 px-4 py-2 text-base'}`}
+                >
+                    {chainConfig?.name}
 
-                <CaretDownOutlined />
-            </button>
+                    <CaretDownOutlined />
+                </button>
+            )}
             <Modal
                 open={isModalOpen}
                 onCancel={handleCancel}
@@ -73,22 +78,23 @@ const ModalSelectChain = () => {
             >
                 <div className="absolute left-0 top-0 flex h-fit w-full flex-col gap-1 rounded-md bg-[#1a1b1f] p-5 text-white">
                     <p className="text-lg font-bold">Switch Networks</p>
-                    {listChains.map((chain) => (
-                        <button
-                            key={chain.chainId}
-                            onClick={() => handleChangeChain(chain)}
-                            className={`flex items-center justify-between gap-2 px-1 py-2 font-bold ${chainData.chainId === chain.chainId ? 'rounded-md bg-[#7b3fe4]' : ''}`}
-                        >
-                            <span>{chain.name}</span>
+                    {listChains.length > 1 &&
+                        listChains.map((chain) => (
+                            <button
+                                key={chain.id}
+                                onClick={() => handleChangeChain(chain)}
+                                className={`flex items-center justify-between gap-2 px-1 py-2 font-bold ${chainConfig?.chainId === chain.id ? 'rounded-md bg-[#7b3fe4]' : ''}`}
+                            >
+                                <span>{chain.name}</span>
 
-                            {chainData.chainId === chain.chainId && (
-                                <div className="flex items-center gap-1 text-sm font-semibold text-white">
-                                    Selected
-                                    <div className="h-2 w-2 rounded-full bg-[#30e000]"></div>
-                                </div>
-                            )}
-                        </button>
-                    ))}
+                                {chainConfig?.chainId === chain.id && (
+                                    <div className="flex items-center gap-1 text-sm font-semibold text-white">
+                                        Selected
+                                        <div className="h-2 w-2 rounded-full bg-[#30e000]"></div>
+                                    </div>
+                                )}
+                            </button>
+                        ))}
                 </div>
             </Modal>
         </>

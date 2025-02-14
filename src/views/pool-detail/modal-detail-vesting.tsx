@@ -5,7 +5,7 @@ import {
     getDateTimeInFormat,
     shortWalletAddress
 } from '@/src/common/utils/utils';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import servicePool from '@/src/services/external-services/backend-server/pool';
 import { usePoolDetail, useVesting } from '@/src/stores/pool/hook';
@@ -22,7 +22,9 @@ const ModalDetailVesting = () => {
     const { isMobile } = useWindowSize();
     const { address } = useAccount();
     const { setOpenModalVesting, vestingState } = useVesting();
-    const { chainData } = useCurrentChainInformation();
+    // const { chainData } = useCurrentChainInformation();
+
+    const { chainConfig } = useConfig();
     const [balanceOfUser, setBalanceOfUser] = useState('0');
 
     const [maxRepeatPurchase, setMaxRepeatPurchase] = useState('0');
@@ -41,7 +43,7 @@ const ModalDetailVesting = () => {
         if (pool) {
             getUserPoolInfo(pool.id);
         }
-    }, [pool.id, chainData.chainId, pool.soldBatch]);
+    }, [pool.id, chainConfig?.chainId, pool.soldBatch]);
 
     useEffect(() => {
         const tokenForSale = new BigNumber(pool.tokenForSale);
@@ -62,7 +64,7 @@ const ModalDetailVesting = () => {
     const getUserPoolInfo = async (poolAddress: string) => {
         if (address) {
             const userPoolInfo = await servicePool.getUserPool({
-                chainId: chainData.chainId,
+                chainId: chainConfig?.chainId!,
                 poolAddress: poolAddress,
                 userAddress: address
             });

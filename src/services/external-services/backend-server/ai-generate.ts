@@ -1,15 +1,16 @@
-import { getEnvironmentConfig } from '@/src/common/utils/getEnvironmentConfig';
 import {
     NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_API_ENDPOINT_PROD
 } from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import axios from 'axios';
+
+const config = ConfigService.getInstance();
+
 const serviceAiGenerate = {
     generateContent: async (prompt: string) => {
-        const { isProd } = getEnvironmentConfig();
-
         const response = await axios.post(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/generateDescription`,
+            `${config.getApiConfig().baseUrl}/generateDescription`,
             {
                 prompt
             }
@@ -18,10 +19,8 @@ const serviceAiGenerate = {
     },
 
     generateImage: async (prompt: string) => {
-        const { isProd } = getEnvironmentConfig();
-
         const response = await axios.post(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/generateImage`,
+            `${config.getApiConfig().baseUrl}/generateImage`,
             {
                 prompt
             }
@@ -29,10 +28,8 @@ const serviceAiGenerate = {
         return response.data.data;
     },
     generateDataAiAgent: async (prompt: string) => {
-        const { isProd } = getEnvironmentConfig();
-
         const response = await axios.post(
-            `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/generateDataAiAgent`,
+            `${config.getApiConfig().baseUrl}/generateDataAiAgent`,
             {
                 prompt
             }

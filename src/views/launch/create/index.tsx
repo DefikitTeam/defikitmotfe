@@ -1,11 +1,6 @@
 /* eslint-disable */
 'use client';
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
-import {
-    NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD,
-    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD
-} from '@/src/common/web3/constants/env';
 import BoxArea from '@/src/components/common/box-area';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import useWindowSize from '@/src/hooks/useWindowSize';
@@ -16,8 +11,11 @@ import {
 } from '@/src/stores/pool/hook';
 
 import { ADDRESS_NULL, ChainId } from '@/src/common/constant/constance';
-import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
+import ModalInviteBlocker from '@/src/components/common/invite-blocker';
+import { ConfigService } from '@/src/config/services/config-service';
 import { useReader } from '@/src/hooks/useReader';
+import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import servicePool from '@/src/services/external-services/backend-server/pool';
 import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -33,14 +31,14 @@ import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import PoolInformation from './pool-information';
 import SaveCreatePoolButton from './save-button';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
-import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
+import { useConfig } from '@/src/hooks/useConfig';
 export interface IPoolCreatForm {}
 const { Title } = Typography;
-const currentHostName = useCurrentHostNameInformation();
-const isProd =
-    currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
+// const currentHostName = useCurrentHostNameInformation();
+// const isProd =
+//     currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
+
+const config = ConfigService.getInstance();
 
 const CreateLaunch = () => {
     const { isMobile } = useWindowSize();
@@ -73,9 +71,10 @@ const CreateLaunch = () => {
     const chainData = useSelector((state: RootState) => state.chainData);
     const [data, , resetData] = useCreatePoolLaunchInformation();
     const { useLaunchPool } = useMultiCaller();
-    const multiCallerContract = getContract(
-        chainData.chainData.chainId || ChainId.BARTIO
-    );
+
+    const { chainConfig } = useConfig();
+
+    const multiCallerContract = getContract(chainConfig?.chainId!);
     const [signatureMetadata, setSignatureMetadata] = useState<string>('');
 
     const getFileAvatar = (value: {
@@ -149,11 +148,11 @@ const CreateLaunch = () => {
                             data.decimal,
                             totalSupplyBefore,
                             poolAddress as `0x${string}`,
-                            chainData.chainData.chainId.toString(),
+                            chainConfig?.chainId.toString()!,
                             data.aiAgent
                         ),
                         await serviceUpload.updateMetadata(
-                            chainData.chainData.chainId.toString(),
+                            chainConfig?.chainId.toString()!,
                             poolAddress as `0x${string}`,
                             signatureMetadata
                         )
@@ -169,7 +168,7 @@ const CreateLaunch = () => {
 
                     setTimeout(() => {
                         router.push(
-                            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolAddress.toLowerCase()}`
+                            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolAddress.toLowerCase()}`
                         );
                     }, 500);
                 } catch (error) {
@@ -249,7 +248,7 @@ const CreateLaunch = () => {
                 const res =
                     await serviceUpload.getPresignedUrlAvatarWithoutAddress(
                         avatarInfo?.file as File,
-                        chainData.chainData.chainId.toString()
+                        chainConfig?.chainId.toString()!
                     );
                 urlAvatar = res;
             }
@@ -257,7 +256,7 @@ const CreateLaunch = () => {
                 const res =
                     await serviceUpload.getPresignedUrlAvatarWithoutAddress(
                         avatarAiGentInfo?.file as File,
-                        chainData.chainData.chainId.toString()
+                        chainConfig?.chainId.toString()!
                     );
                 urlAiGentAvatar = res;
             }
@@ -295,12 +294,12 @@ const CreateLaunch = () => {
             const resData =
                 await serviceUpload.uploadMetadataToServerWithoutAddress(
                     metadataPayload,
-                    chainData.chainData.chainId.toString(),
+                    chainConfig?.chainId.toString()!,
                     signature
                 );
             let metaDataLink: string = '';
             if (resData && resData.status === 'success') {
-                metaDataLink = `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainData.chainData.chainId}/t/${signature}/metadata`;
+                metaDataLink = `${config.getApiConfig().baseUrl}/c/${chainConfig?.chainId}/t/${signature}/metadata`;
             }
             const maxDurationSell =
                 new Date(data.endTime).valueOf() -
@@ -359,7 +358,6 @@ const CreateLaunch = () => {
                         : ADDRESS_NULL
                 });
             } else {
-                // console.log('data line 371-----', data);
                 await useLaunchPool.actionAsync({
                     name: data.name.trim(),
                     symbol: data.symbol.trim(),

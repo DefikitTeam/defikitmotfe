@@ -4,7 +4,6 @@ import {
     formatCurrency,
     shortWalletAddress
 } from '@/src/common/utils/utils';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { usePoolDetail, useVesting } from '@/src/stores/pool/hook';
 import { CopyOutlined } from '@ant-design/icons';
@@ -12,10 +11,11 @@ import { Collapse, Tooltip, notification } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 
-import ModalDetailVesting from './modal-detail-vesting';
-import { CollapseProps } from 'antd/lib';
 import { DEX_BY_CHAIN } from '@/src/common/constant/constance';
+import { useConfig } from '@/src/hooks/useConfig';
+import { CollapseProps } from 'antd/lib';
 import { useAccount } from 'wagmi';
+import ModalDetailVesting from './modal-detail-vesting';
 
 const PoolDetailInformation = () => {
     const t = useTranslations();
@@ -25,7 +25,8 @@ const PoolDetailInformation = () => {
 
     const { pool, analystData } = poolStateDetail;
 
-    const { chainData } = useCurrentChainInformation();
+    // const { chainData } = useCurrentChainInformation();
+    const { chainConfig } = useConfig();
 
     const handleClickOpenViewDetail = () => {
         setOpenModalVesting(true);
@@ -133,7 +134,7 @@ const PoolDetailInformation = () => {
                             {pool
                                 ? `${new BigNumber(pool?.capInETH)
                                       .div(1e18)
-                                      .toFixed(7)} ${chainData.currency}`
+                                      .toFixed(7)} ${chainConfig?.currency}`
                                 : '0'}
                         </div>
                     </div>
@@ -143,7 +144,7 @@ const PoolDetailInformation = () => {
                         <div className="  ">
                             1 BOND = {analystData?.tokenPerBond} {pool?.symbol}{' '}
                             = {analystData?.startBondPerETH || 0}{' '}
-                            {chainData.currency}
+                            {chainConfig?.currency}
                         </div>
                     </div>
 
@@ -152,7 +153,7 @@ const PoolDetailInformation = () => {
                         <div className="  ">
                             1 BOND = {analystData?.tokenPerBond} {pool?.symbol}{' '}
                             = {analystData?.endBondPerETH || 0}{' '}
-                            {chainData.currency}
+                            {chainConfig?.currency}
                         </div>
                     </div>
 
@@ -161,7 +162,7 @@ const PoolDetailInformation = () => {
                         <div className="  ">
                             1 BOND = {analystData?.tokenPerBond} {pool?.symbol}{' '}
                             = {analystData?.listingBondPerETH || 0}{' '}
-                            {chainData.currency}
+                            {chainConfig?.currency}
                         </div>
                     </div>
 
@@ -195,7 +196,7 @@ const PoolDetailInformation = () => {
                         <div className="  ">
                             {
                                 DEX_BY_CHAIN[
-                                    chainData.chainId as keyof typeof DEX_BY_CHAIN
+                                    chainConfig?.chainId as keyof typeof DEX_BY_CHAIN
                                 ]
                             }
                         </div>

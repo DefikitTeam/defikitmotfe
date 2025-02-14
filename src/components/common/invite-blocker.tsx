@@ -1,20 +1,21 @@
 /* eslint-disable */
+import { useNotification } from '@/src/hooks/use-notification';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
 import { REFERRAL_CODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/pool';
 import { useAuthLogin } from '@/src/stores/auth/hook';
+import { EActionStatus } from '@/src/stores/type';
 import { Button, Input, Modal, Spin, Typography, notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
-import ConnectButtonWagmi from '../connect-wallet/connect-button-wagmi';
-import { useNotification } from '@/src/hooks/use-notification';
-import { EActionStatus } from '@/src/stores/type';
 import { useDisconnect } from 'wagmi';
+import ConnectButtonWagmi from '../connect-wallet/connect-button-wagmi';
 
-import { useSelector } from 'react-redux';
+import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
 
 const { Text, Link } = Typography;
 const ModalInviteBlocker = () => {
@@ -47,6 +48,8 @@ const ModalInviteBlocker = () => {
         }
     }, [authState.openModalInviteBlocker]);
 
+    const { chainConfig } = useConfig();
+
     useEffect(() => {
         // eslint-disable-next-line
         (async () => {
@@ -61,7 +64,7 @@ const ModalInviteBlocker = () => {
                 // });
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 router.push(
-                    `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}`
+                    `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
                 );
                 setOpenModalInviteBlocker(false);
                 resetStatusLoginWalletAction();
@@ -79,30 +82,6 @@ const ModalInviteBlocker = () => {
                 logoutWalletAction();
                 // logoutAction();
             }
-
-            // if (authState.statusLoginTele === EActionStatus.Failed) {
-            //     if (authState.errorMessage) {
-            //         await openNotification({
-            //             message: authState.errorMessage,
-            //             placement: 'topRight',
-            //             type: 'error'
-            //         });
-            //     }
-            //     logoutTelegramAction();
-            // }
-            // if (
-            //     authState.statusLoginTele == EActionStatus.Succeeded &&
-            //     authState.userTele
-            // ) {
-            //     await openNotification({
-            //         message: t('LOGIN_TELE_SUCCESSFULLY'),
-            //         placement: 'topRight',
-            //         type: 'success'
-            //     });
-
-            //     await new Promise((resolve) => setTimeout(resolve, 1000));
-            //     resetStatusLoginTeleAction();
-            // }
         })();
         // eslint-disable-next-line
     }, [authState.statusLoginWallet]);

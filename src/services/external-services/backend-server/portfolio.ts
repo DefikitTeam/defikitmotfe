@@ -1,24 +1,25 @@
 import {
-    ChainId,
-    ENDPOINT_GRAPHQL_WITH_CHAIN
-} from '@/src/common/constant/constance';
-import { getEnvironmentConfig } from '@/src/common/utils/getEnvironmentConfig';
-import {
     NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_API_ENDPOINT_PROD
 } from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import { IGetPortfolioParams } from '@/src/stores/profile/type';
 import axios from 'axios';
 import { gql, request } from 'graphql-request';
 import { IResponseProfileData } from '../../response.type';
+
+const config = ConfigService.getInstance();
+
 const servicePortfolio = {
     getProfileDAtaFromSubgraph: async ({
         chainId,
         wallet
     }: IGetPortfolioParams) => {
+        const config = ConfigService.getInstance();
+        const endpoint = config.getApiConfig().endpoints.subgraph[chainId];
+
         const response: IResponseProfileData = await request(
-            ENDPOINT_GRAPHQL_WITH_CHAIN[chainId] ||
-                ENDPOINT_GRAPHQL_WITH_CHAIN[ChainId.BARTIO],
+            endpoint,
             gql`
                 query getProfileData {
                     user(id: "${wallet.toLowerCase()}") {
@@ -99,11 +100,10 @@ const servicePortfolio = {
     },
 
     getYourFriendList: async (wallet: string) => {
-        const { isProd } = getEnvironmentConfig();
         let res;
         try {
             res = await axios.get(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/w/${wallet}/referers`
+                `${config.getApiConfig().baseUrl}/w/${wallet}/referers`
             );
         } catch (error) {
             console.log('======== get your friend list error', error);

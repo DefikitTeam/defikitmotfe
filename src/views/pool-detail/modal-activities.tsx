@@ -1,6 +1,4 @@
 /* eslint-disable */
-import { getDateTimeInFormat } from '@/src/common/utils/utils';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
 import { useActivities, usePoolDetail } from '@/src/stores/pool/hook';
 import { Transaction } from '@/src/stores/pool/type';
 import { Modal, Table } from 'antd';
@@ -10,14 +8,16 @@ import Moment from 'react-moment';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 
-import { useAccount } from 'wagmi';
+import { useConfig } from '@/src/hooks/useConfig';
 import { useTranslations } from 'next-intl';
+import { useAccount } from 'wagmi';
 
 const ModalActivities = () => {
     const t = useTranslations();
     const { address, chain, chainId } = useAccount();
     const [{ poolStateDetail }] = usePoolDetail();
-    const { chainData } = useCurrentChainInformation();
+    // const { chainData } = useCurrentChainInformation();
+    const { chainConfig } = useConfig();
     const [tableActivities, setTableActivities] = useState<Transaction[]>([]);
 
     const {
@@ -97,7 +97,7 @@ const ModalActivities = () => {
             align: 'center'
         },
         {
-            title: `${t('TOTAL')} ${chainData.currency}`,
+            title: `${t('TOTAL')} ${chainConfig?.currency}`,
             dataIndex: 'eth',
             width: '5%',
             className: '!font-forza',

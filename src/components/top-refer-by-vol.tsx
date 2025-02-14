@@ -9,6 +9,7 @@ import { RootState } from '../stores';
 import { useTopRefByVol } from '../stores/top-ref-by-vol/hook';
 import { EActionStatus } from '../stores/type';
 import { useTranslations } from 'next-intl';
+import { useConfig } from '../hooks/useConfig';
 const { Text } = Typography;
 
 const TopReferByVol = () => {
@@ -21,15 +22,16 @@ const TopReferByVol = () => {
         resetStatusGetAllTopRefByVolAction
     } = useTopRefByVol();
     const chainData = useSelector((state: RootState) => state.chainData);
+    const { chainConfig } = useConfig();
 
     useEffect(() => {
         const intervalId = setInterval(() => {
             getAllTopRefByVolAction({
-                chainId: chainData.chainData.chainId.toString()
+                chainId: chainConfig?.chainId.toString()!
             });
         }, 5000);
         return () => clearInterval(intervalId);
-    }, [chainData.chainData.chainId, address]);
+    }, [chainConfig?.chainId, address]);
 
     useEffect(() => {
         if (
@@ -43,7 +45,7 @@ const TopReferByVol = () => {
     const handleClickTopRefByVol = (id: string) => {
         if (isConnected && address) {
             router.push(
-                `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
+                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
             );
         } else {
             notification.error({
@@ -107,10 +109,7 @@ const TopReferByVol = () => {
                                                     </div>
                                                     <span className="!font-forza text-white">
                                                         {item.volumeInETH}{' '}
-                                                        {
-                                                            chainData.chainData
-                                                                .currency
-                                                        }
+                                                        {chainConfig?.currency}
                                                     </span>
                                                 </li>
                                             )

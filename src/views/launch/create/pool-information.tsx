@@ -48,6 +48,7 @@ import SocialMedia from './social_media';
 import AdvanceConfiguration from './advance-configuration';
 import AdditionalAgent from './additional-agent';
 import { useAccount } from 'wagmi';
+import { useConfig } from '@/src/hooks/useConfig';
 
 const getBase64 = (file: RcFile): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -99,9 +100,11 @@ const PoolInformation = ({
     });
 
     const { settingTokenState } = useListTokenOwner();
-    const chainData = useSelector(
-        (state: RootState) => state.chainData.chainData
-    );
+    // const chainData = useSelector(
+    //     (state: RootState) => state.chainData.chainData
+    // );
+
+    const { chainConfig } = useConfig();
     const [data, setData] = useCreatePoolLaunchInformation();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -147,16 +150,16 @@ const PoolInformation = ({
             ...data,
             fixedCapETH:
                 HARD_CAP_INITIAL_BY_CHAIN[
-                    chainData.chainId as keyof typeof HARD_CAP_INITIAL_BY_CHAIN
+                    chainConfig?.chainId as keyof typeof HARD_CAP_INITIAL_BY_CHAIN
                 ].toString()
         });
         form.setFieldValue(
             'fixedCapETH',
             HARD_CAP_INITIAL_BY_CHAIN[
-                chainData.chainId as keyof typeof HARD_CAP_INITIAL_BY_CHAIN
+                chainConfig?.chainId as keyof typeof HARD_CAP_INITIAL_BY_CHAIN
             ].toString()
         );
-    }, [chainData.chainId]);
+    }, [chainConfig?.chainId]);
 
     const onChange = (
         event:
@@ -890,10 +893,10 @@ const PoolInformation = ({
                             <span className="!font-forza text-base">
                                 {t('POOL_HARDCAP_FOR_BONDING_POOL')}
                                 {' ('}
-                                {chainData.currency}
+                                {chainConfig?.currency}
                                 {' )'}
                                 <Tooltip
-                                    title={`${t('PREFIX_HARDCAP_HELP')} ${DEX_BY_CHAIN[chainData.chainId as keyof typeof DEX_BY_CHAIN]} ${t('SUFFIX_HARDCAP_HELP')}`}
+                                    title={`${t('PREFIX_HARDCAP_HELP')} ${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN]} ${t('SUFFIX_HARDCAP_HELP')}`}
                                 >
                                     <QuestionCircleOutlined
                                         style={{ marginLeft: '8px' }}
@@ -904,27 +907,9 @@ const PoolInformation = ({
                         rules={[
                             {
                                 validator: async (_, value) => {
-                                    // if (
-                                    //     Number(chainData.chainId) ===
-                                    //         Number(ChainId.BASE_SEPOLIA) &&
-                                    //     Number(value) < 0.1
-                                    // ) {
-                                    //     return Promise.reject(
-                                    //         new Error('Min value is 0.1')
-                                    //     );
-                                    // } else {
-                                    //     if (Number(value) < 0.5) {
-                                    //         return Promise.reject(
-                                    //             new Error(
-                                    //                 t('INVALID_MIN_VALUE')
-                                    //             )
-                                    //         );
-                                    //     }
-                                    // }
-                                    // Kiểm tra điều kiện theo chain
                                     const numValue = Number(value);
                                     if (
-                                        Number(chainData.chainId) ===
+                                        Number(chainConfig?.chainId) ===
                                         Number(ChainId.BASE_SEPOLIA)
                                     ) {
                                         if (numValue < 0.1) {
@@ -933,7 +918,7 @@ const PoolInformation = ({
                                             );
                                         }
                                     } else if (
-                                        Number(chainData.chainId) ===
+                                        Number(chainConfig?.chainId) ===
                                         Number(ChainId.IOTA)
                                     ) {
                                         if (numValue < 10000) {
@@ -942,11 +927,13 @@ const PoolInformation = ({
                                             );
                                         }
                                     } else if (
-                                        Number(chainData.chainId) ===
+                                        Number(chainConfig?.chainId) ===
                                         Number(ChainId.BERACHAIN_MAINNET)
                                     ) {
                                         if (numValue < 1000) {
-                                            new Error('Min value is 1000');
+                                            return Promise.reject(
+                                                new Error('Min value is 1000')
+                                            );
                                         }
                                     } else {
                                         if (numValue < 0.5) {

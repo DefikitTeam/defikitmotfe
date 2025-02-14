@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { NOTIFICATION_STATUS } from '@/src/common/constant/constance';
 import { EActionStatus } from '@/src/stores/type';
 import { useRouter } from 'next/navigation';
+import { useConfig } from '@/src/hooks/useConfig';
 const NotificationButton = () => {
     const { isMobile } = useWindowSize();
     const t = useTranslations();
@@ -18,6 +19,7 @@ const NotificationButton = () => {
 
     const { address } = useAccount();
     const router = useRouter();
+    const { chainConfig } = useConfig();
     const {
         notificationState,
         getAllNotificationAction,
@@ -33,12 +35,12 @@ const NotificationButton = () => {
             if (address) {
                 getAllNotificationAction({
                     address: address,
-                    chainId: chainData.chainData.chainId.toString()
+                    chainId: chainConfig?.chainId.toString()!
                 });
             }
         }, 4000);
         return () => clearInterval(intervalId);
-    }, [address, chainData.chainData.chainId]);
+    }, [address, chainConfig?.chainId]);
 
     useEffect(() => {
         (async () => {
@@ -88,18 +90,18 @@ const NotificationButton = () => {
 
     const markAsRead = (id: number, poolAddress: string) => {
         markOneNotificationAction({
-            chainId: chainData.chainData.chainId.toString(),
+            chainId: chainConfig?.chainId.toString()!,
             notificationId: id
         });
         router.push(
-            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolAddress}`
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolAddress}`
         );
     };
 
     const markAllAsRead = async () => {
         markAllNotificationAction({
             address: address as `0x${string}`,
-            chainId: chainData.chainData.chainId.toString()
+            chainId: chainConfig?.chainId.toString()!
         });
     };
 
@@ -140,7 +142,7 @@ const NotificationButton = () => {
                             <h4 className="font-bold">
                                 {t('NOTIFICATION')}
                                 {' ('}
-                                {notificationState.notifications.length}
+                                {notificationState?.notifications?.length}
                                 {')'}
                             </h4>
                             <ul className="space-y-2">

@@ -1,4 +1,5 @@
 import { shortWalletAddress } from '@/src/common/utils/utils';
+import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { IHolderDistribution } from '@/src/stores/pool/type';
@@ -20,6 +21,7 @@ const HolderDistribution = () => {
     const router = useRouter();
 
     const { isConnected, address } = useAccount();
+    const { chainConfig } = useConfig();
 
     const handleClickHolder = (addressUser: string) => {
         if (!isConnected || !address) {
@@ -33,7 +35,7 @@ const HolderDistribution = () => {
         }
 
         router.push(
-            `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`
         );
     };
     const columns: ColumnsType<IHolderDistribution> = [

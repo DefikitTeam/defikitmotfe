@@ -1,12 +1,10 @@
 /* eslint-disable */
-import { ChainId } from '@/src/common/constant/constance';
+import { ChainId, getEnvironment } from '@/src/common/constant/constance';
 import { logger } from '@/src/common/utils/logger';
 import {
     NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD,
-    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD
+    NEXT_PUBLIC_API_ENDPOINT_PROD
 } from '@/src/common/web3/constants/env';
-import useCurrentHostNameInformation from '@/src/hooks/useCurrentHostName';
 import { updateMetaDataWorker } from '@/src/stores/pool/common';
 import {
     IGetAllPoolBackgroundQuery,
@@ -23,10 +21,14 @@ import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { querySubGraph } from '../fetcher';
 import { getQueryByStatus } from './query';
+import { ConfigService } from '@/src/config/services/config-service';
 export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
-const currentHostName = useCurrentHostNameInformation();
-const isProd =
-    currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
+// const currentHostName = useCurrentHostNameInformation();
+// const isProd =
+//     currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
+// const environment = getEnvironment()
+
+const config = ConfigService.getInstance();
 
 const servicePool = {
     getDetailPoolInfo: ({ poolAddress, chainId }: IGetDetailPoolParams) => {
@@ -136,7 +138,7 @@ const servicePool = {
                 owner: owner
             })
         };
-        return querySubGraph(payload, chainId);
+        return querySubGraph(payload, chainId!);
     },
 
     getPoolMetadata: async (poolId: string, metadataLink: string) => {
@@ -300,7 +302,7 @@ const servicePool = {
 
         try {
             res = await axios.post(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t`,
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t`,
                 data
             );
         } catch (error) {
@@ -316,7 +318,7 @@ const servicePool = {
 
         try {
             res = await axios.get(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${address}/discussion`
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}/discussion`
             );
         } catch (error) {
             logger.error(
@@ -332,7 +334,7 @@ const servicePool = {
         let res;
         try {
             res = await axios.get(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/t/${address}/social-score`
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}/social-score`
             );
         } catch (error) {
             console.log(
@@ -375,7 +377,7 @@ const servicePool = {
 
         try {
             res = await axios.get(
-                `${isProd ? NEXT_PUBLIC_API_ENDPOINT_PROD : NEXT_PUBLIC_API_ENDPOINT}/c/${chainId}/focus-pools`
+                `${config.getApiConfig().baseUrl}/c/${chainId}/focus-pools`
             );
         } catch (error) {
             // console.log(

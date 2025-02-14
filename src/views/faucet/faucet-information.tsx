@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { REGEX_WALLET_ADDRESS } from '@/src/common/constant/constance';
 import { useNotification } from '@/src/hooks/use-notification';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import serviceFaucet from '@/src/services/external-services/backend-server/faucet';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -15,9 +15,11 @@ import { useAccount, useDisconnect } from 'wagmi';
 const { Text, Title } = Typography;
 const FaucetInformation = () => {
     const { address, chainId, isConnected } = useAccount();
-    const { chainData } = useCurrentChainInformation();
+    // const { chainData } = useCurrentChainInformation();
     const t = useTranslations();
     const { disconnect } = useDisconnect();
+
+    const { chainConfig } = useConfig();
     const { isMobile } = useWindowSize();
     const router = useRouter();
     const [walletAddress, setWalletAddress] = useState('');
@@ -140,7 +142,7 @@ const FaucetInformation = () => {
             setIsLoadingFaucet(true);
             const res = await serviceFaucet.getFaucet(
                 address as string,
-                chainData?.chainId
+                chainConfig?.chainId!
             );
             try {
                 if (res && res.status === 'success') {
@@ -252,7 +254,7 @@ const FaucetInformation = () => {
                             className={`  mr-[6px] font-forza text-xl`}
                         >
                             {' '}
-                            {t('DESC_FAUCET')} {chainData.currency}
+                            {t('DESC_FAUCET')} {chainConfig?.currency}
                         </Title>
                     </div>
                 </Col>
@@ -330,7 +332,7 @@ const FaucetInformation = () => {
                         </span>
                         <span className="mt-[-6px] !font-forza text-xs">
                             {t('PRE_SUB_DESC_STEP2')}{' '}
-                            <strong>{chainData.currency}</strong>{' '}
+                            <strong>{chainConfig?.currency}</strong>{' '}
                             {t('SUB_SUB_DESC_STEP2')}{' '}
                         </span>
                         {(address as `0x${string}`) && authState.userTele && (
@@ -352,7 +354,7 @@ const FaucetInformation = () => {
                     <div className="flex flex-col gap-2">
                         <span className="relative w-fit !flex-1 text-nowrap !font-forza text-base">
                             <span className="absolute left-[-15px] top-1/2 h-2 w-2 -translate-y-1/2 transform rounded-full bg-black"></span>
-                            {t('DESC_STEP3')} {chainData.currency}{' '}
+                            {t('DESC_STEP3')} {chainConfig?.currency}{' '}
                             <CheckCircleFilled
                                 className={`
                                 ${isDoneFaucet ? 'text-green' : 'text-gray-400'}
@@ -434,7 +436,7 @@ const FaucetInformation = () => {
                                 <span className="animate-fadeIn !font-forza text-sm text-[#00C805]">
                                     {t('SUCCESS_FAUCET')}{' '}
                                     {t('FRE_SUB_SUCCESS_FAUCET')}{' '}
-                                    <strong>{chainData.currency}</strong>{' '}
+                                    <strong>{chainConfig?.currency}</strong>{' '}
                                     {t('SUB_SUB_SUCCESS_FAUCET')}{' '}
                                     <span
                                         className="cursor-pointer  rounded-sm border border-black bg-white text-xs text-black hover:bg-[black] hover:text-white"

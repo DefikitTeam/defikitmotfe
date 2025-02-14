@@ -1,9 +1,5 @@
-import { chains } from '@/src/common/constant/constance';
-import {
-    NEXT_PUBLIC_DOMAIN_BARTIO_STG,
-    NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD,
-    NEXT_PUBLIC_DOMAIN_MULTIPLE_STG
-} from '@/src/common/web3/constants/env';
+import { chains, getEnvironment } from '@/src/common/constant/constance';
+import { CHAIN_CONFIG } from '@/src/config/environments/chains';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface IChainInfor {
@@ -12,7 +8,7 @@ export interface IChainInfor {
     currency: string;
     explorerUrl: string;
     rpcUrl: string;
-    onFaucet: boolean;
+    // onFaucet: boolean;
 }
 
 interface ChainDataState {
@@ -20,18 +16,25 @@ interface ChainDataState {
 }
 
 const getInitialChainData = () => {
-    if (typeof window === 'undefined') {
-        return null;
-    }
+    const environment = getEnvironment();
 
-    const chainMappings: Record<string, IChainInfor> = {
-        [`${NEXT_PUBLIC_DOMAIN_BARTIO_STG}`]: chains[1],
-        [`${NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD}`]: chains[7],
-        [`${NEXT_PUBLIC_DOMAIN_MULTIPLE_STG}`]: chains[1]
+    const kien: any = {
+        chainId: CHAIN_CONFIG[environment].defaultChain.id,
+        name: CHAIN_CONFIG[environment].defaultChain.name,
+        currency: CHAIN_CONFIG[environment].defaultChain.nativeCurrency.symbol,
+        explorerUrl:
+            CHAIN_CONFIG[environment].defaultChain.blockExplorers.default.url,
+        rpcUrl: CHAIN_CONFIG[environment].defaultChain.rpcUrls.default.http[0]
     };
 
-    // console.log('chainMappings[window.location.hostname]-----', chainMappings[window.location.hostname] )
-    return chainMappings[window.location.hostname];
+    return {
+        chainId: CHAIN_CONFIG[environment].defaultChain.id,
+        name: CHAIN_CONFIG[environment].defaultChain.name,
+        currency: CHAIN_CONFIG[environment].defaultChain.nativeCurrency.symbol,
+        explorerUrl:
+            CHAIN_CONFIG[environment].defaultChain.blockExplorers.default.url,
+        rpcUrl: CHAIN_CONFIG[environment].defaultChain.rpcUrls.default.http[0]
+    };
 };
 
 const initialState: ChainDataState = {

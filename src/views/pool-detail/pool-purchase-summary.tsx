@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
-import { ChainId, markSlider } from '@/src/common/constant/constance';
+import { markSlider } from '@/src/common/constant/constance';
 import {
     calculateTimeLeft,
     currencyFormatter,
@@ -8,9 +8,10 @@ import {
     formatCurrency
 } from '@/src/common/utils/utils';
 import ModalSetMaxSlippage from '@/src/components/modal-set-max-slippage';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import servicePool from '@/src/services/external-services/backend-server/pool';
+import { RootState } from '@/src/stores';
 import {
     useActivities,
     useBuyPoolInformation,
@@ -32,12 +33,11 @@ import {
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/src/stores';
 const { Text, Title } = Typography;
 
 const PoolPurchaseSummary = () => {
@@ -59,9 +59,9 @@ const PoolPurchaseSummary = () => {
     const [isStart, setIsStart] = useState(false);
     const [maxRepeatPurchase, setMaxRepeatPurchase] = useState('0');
     const [maxAmountETH, setMaxAmountETH] = useState(0);
-    const multiCallerContract = getContract(
-        chainData.chainData.chainId || ChainId.BARTIO
-    );
+
+    const { chainConfig } = useConfig();
+    const multiCallerContract = getContract(chainConfig?.chainId!);
 
     const [balanceOfUser, setBalanceOfUser] = useState('0');
     const [sliderPercent, setSliderPercent] = useState<number>(0);
@@ -188,12 +188,12 @@ const PoolPurchaseSummary = () => {
             getPoolInformation();
             getUserPoolInfo(pool.id);
         }
-    }, [pool.id, chainData.chainData.chainId, status, pool.soldBatch, address]);
+    }, [pool.id, chainConfig?.chainId, status, pool.soldBatch, address]);
 
     const getUserPoolInfo = async (poolAddress: string) => {
         if (address) {
             const userPoolInfo = await servicePool.getUserPool({
-                chainId: chainData.chainData.chainId,
+                chainId: chainConfig?.chainId!,
                 poolAddress: poolAddress,
                 userAddress: address
             });
@@ -235,7 +235,7 @@ const PoolPurchaseSummary = () => {
                 ? `0`
                 : marketCap.isLessThanOrEqualTo(0.001)
                   ? `<0.001`
-                  : `${marketCap.toFixed(3)} ${chainData.chainData.currency} - $${currencyFormatter(
+                  : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
                         marketCap.times(priceNative)
                     )}`;
             setRaisedEth(raisedShow);
@@ -283,7 +283,7 @@ const PoolPurchaseSummary = () => {
         contractAddAndAbi: multiCallerContract,
         poolAddress: pool?.id as string,
         value: Number(bondAmountValue) >= 100 ? 100 : Number(bondAmountValue),
-        chainId: chainData.chainData.chainId as number
+        chainId: chainConfig?.chainId as number
     });
     const estimateBuyValue = dataReader ? dataReader[2] : undefined;
     const maxBondCurrent = dataReader ? dataReader[4] : undefined;
@@ -300,7 +300,7 @@ const PoolPurchaseSummary = () => {
         contractAddAndAbi: multiCallerContract,
         poolAddress: pool?.id as string,
         value: kien,
-        chainId: chainData.chainData.chainId as number
+        chainId: chainConfig?.chainId as number
     });
 
     const estimateBuyValue2 = dataReader2 ? dataReader2[2] : undefined;
@@ -328,7 +328,7 @@ const PoolPurchaseSummary = () => {
                 page: poolStateDetail.pageTransaction,
                 limit: poolStateDetail.limitTransaction,
                 poolAddress: poolAddress,
-                chainId: chainData.chainData.chainId as number
+                chainId: chainConfig?.chainId as number
             });
         }, 4000);
         return () => clearInterval(intervalId);
@@ -371,7 +371,7 @@ const PoolPurchaseSummary = () => {
                         maxAmountETH: Number(ethToBuy)
                     });
                     setBuyAmountBtn(
-                        `${parseFloat(maxRepeatPurchase) * value} ${pool?.symbol} ~ ${new BigNumber(estimateBuyRes).toFixed(6)} ${chainData.chainData.currency}`
+                        `${parseFloat(maxRepeatPurchase) * value} ${pool?.symbol} ~ ${new BigNumber(estimateBuyRes).toFixed(6)} ${chainConfig?.currency}`
                     );
                 }
             }
@@ -491,8 +491,7 @@ const PoolPurchaseSummary = () => {
                     >
                         <div className="mb-0 pl-4">
                             <span className="!font-forza text-base">
-                                {t('RAISED')}{' '}
-                                {`${chainData.chainData.currency}`}
+                                {t('RAISED')} {`${chainConfig?.currency}`}
                             </span>
                             <Input
                                 size="large"
@@ -643,7 +642,7 @@ const PoolPurchaseSummary = () => {
                         <Input
                             size="large"
                             disabled={true}
-                            value={`${maxRepeatPurchase} ${pool?.symbol} ~ ${showInitial} ${chainData.chainData.currency}`}
+                            value={`${maxRepeatPurchase} ${pool?.symbol} ~ ${showInitial} ${chainConfig?.currency}`}
                             className="!font-forza text-base"
                             style={{
                                 backgroundColor: '#CCCCCC',
@@ -755,8 +754,7 @@ const PoolPurchaseSummary = () => {
                     >
                         <div className="mb-0">
                             <span className="!font-forza text-base">
-                                {t('MAX_AMOUNT')}{' '}
-                                {`${chainData.chainData.currency}`}
+                                {t('MAX_AMOUNT')} {`${chainConfig?.currency}`}
                             </span>
 
                             <Input

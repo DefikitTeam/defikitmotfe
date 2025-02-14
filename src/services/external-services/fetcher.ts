@@ -1,10 +1,8 @@
-import {
-    ChainId,
-    ENDPOINT_GRAPHQL_WITH_CHAIN
-} from '@/src/common/constant/constance';
+import { ChainId } from '@/src/common/constant/constance';
 import { ApiResponse } from '../response.type';
 import { instance } from './axios';
 import serviceAuth from './backend-server/auth';
+import { ConfigService } from '@/src/config/services/config-service';
 type Obj = { [key: string]: any };
 
 instance.interceptors.request.use(
@@ -70,9 +68,11 @@ export async function CallApi(
 
 export const querySubGraph = (
     query: any,
-    chainId: ChainId = ChainId.BARTIO
+    chainId: ChainId
 ): Promise<Response> => {
-    const endpoint = ENDPOINT_GRAPHQL_WITH_CHAIN[chainId];
+    // const endpoint = ENDPOINT_GRAPHQL_WITH_CHAIN[chainId];
+    const config = ConfigService.getInstance();
+    const endpoint = config.getApiConfig().endpoints.subgraph[chainId];
     return CallApi(endpoint, query, 'POST');
 };
 

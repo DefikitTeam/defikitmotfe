@@ -1,16 +1,13 @@
 /* eslint-disable */
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
-import { ChainId } from '@/src/common/constant/constance';
 import { formatCurrency } from '@/src/common/utils/utils';
-import useCurrentChainInformation from '@/src/hooks/useCurrentChainInformation';
+import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { RootState } from '@/src/stores';
 import { usePoolDetail, useReward } from '@/src/stores/pool/hook';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 
 const PoolInfoReward = () => {
@@ -23,15 +20,15 @@ const PoolInfoReward = () => {
     const [{ poolStateDetail }] = usePoolDetail();
     const [rewardOfMe, setRewardOfMe] = useState<string>('0');
     const { pool: poolDetail } = poolStateDetail;
-    const chainData = useSelector((state: RootState) => state.chainData);
-    const multiCallerContract = getContract(
-        chainData.chainData.chainId || ChainId.BARTIO
-    );
+    // const chainData = useSelector((state: RootState) => state.chainData);
+
+    const { chainConfig } = useConfig();
+    const multiCallerContract = getContract(chainConfig?.chainId!);
     const { dataReader, isFetchingDataReader } = useReader({
         contractAddAndAbi: multiCallerContract,
         poolAddress: poolDetail?.id as string,
         userAddress: address as `0x${string}`,
-        chainId: chainData.chainData.chainId as number
+        chainId: chainConfig?.chainId as number
     });
     const estimateYourReward = dataReader ? dataReader[5] : undefined;
 
