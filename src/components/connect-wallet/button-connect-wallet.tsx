@@ -31,9 +31,6 @@ const ButtonConnectWallet = () => {
         resetStatusLoginWalletAction
     } = useAuthLogin();
 
-    // const currentHostName = useCurrentHostNameInformation();
-    // let botName = '';
-    //   const environment = (NEXT_PUBLIC_ENVIRONMENT as Environment) || 'development';
     const environment = getEnvironment();
     let botName = '';
     switch (environment) {

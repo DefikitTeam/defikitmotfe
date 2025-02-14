@@ -18,8 +18,6 @@ const TelegramInfo = ({ name }: { name: string }) => {
         logoutTelegramAction();
     };
 
-    // const currentHostName = useCurrentHostNameInformation();
-    // const environment = (NEXT_PUBLIC_ENVIRONMENT as Environment) || 'development';
     const environment = getEnvironment();
     let botName = '';
     switch (environment) {

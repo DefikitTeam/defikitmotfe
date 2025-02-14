@@ -18,14 +18,10 @@ const cookies = new Cookies();
 const USER_INFO_STORAGE_KEY = 'usr_if';
 const USER_WALLET_STORAGE_KEY = 'usr_wallet_if';
 const USER_TELE_STORAGE_KEY = 'usr_tele_if';
-// const currentHostName = useCurrentHostNameInformation();
-// const isProd =
-//     currentHostName.url === NEXT_PUBLIC_DOMAIN_BERACHAIN_MAINNET_PROD;
 export const REFCODE_INFO_STORAGE_KEY = 'refCode';
 const USER_TOKEN_STORAGE_KEY = 'usr_tk';
 
 const USER_REFRESH_TOKEN_STORAGE_KEY = 'usr_refresh_token';
-// const isProd = NEXT_PUBLIC_ENVIRONMENT === 'production';
 
 const config = ConfigService.getInstance();
 
