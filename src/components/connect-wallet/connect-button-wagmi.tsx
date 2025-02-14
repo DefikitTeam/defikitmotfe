@@ -97,12 +97,13 @@ const ConnectButtonWagmi = () => {
                 }
             }
         };
-
-        handleSignMessage();
-        if (error) {
-            console.error('Error signing message:', error);
+        if (isConnected) {
+            handleSignMessage();
+            if (error) {
+                console.error('Error signing message:', error);
+            }
         }
-    }, [address]);
+    }, [address, isConnected]);
 
     useEffect(() => {
         if (!isConnected) {
@@ -229,8 +230,8 @@ const ConnectButtonWagmi = () => {
                                                         </div>
                                                     )}
                                                     {isMobile &&
-                                                    chain?.name &&
-                                                    chain?.name?.length > 10 ? (
+                                                        chain?.name &&
+                                                        chain?.name?.length > 10 ? (
                                                         <p className="text-sm font-semibold">
                                                             {chain.name.slice(
                                                                 0,
@@ -362,8 +363,8 @@ const ConnectButtonWagmi = () => {
                                                         </div>
                                                     )}
                                                     {isMobile &&
-                                                    chain?.name &&
-                                                    chain?.name?.length > 10 ? (
+                                                        chain?.name &&
+                                                        chain?.name?.length > 10 ? (
                                                         <p className="text-sm font-semibold">
                                                             {chain.name.slice(
                                                                 0,
