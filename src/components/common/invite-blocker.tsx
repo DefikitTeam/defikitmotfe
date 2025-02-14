@@ -36,10 +36,10 @@ const ModalInviteBlocker = () => {
     const { disconnect } = useDisconnect();
     const router = useRouter();
     const chainData = useSelector((state: RootState) => state.chainData);
-    useEffect(() => {
-        localStorage.removeItem('wagmi.store');
-        localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
-    }, []);
+    // useEffect(() => {
+    //     localStorage.removeItem('wagmi.store');
+    //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
+    // }, []);
 
     useEffect(() => {
         if (authState.openModalInviteBlocker) {
