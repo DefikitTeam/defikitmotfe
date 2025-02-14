@@ -11,7 +11,7 @@ import { ChainId } from '@/src/common/constant/constance';
 import { ROCKET_EVM_ABI } from '../abi/rocket-evm-abi';
 
 export const developmentConfig: EnvironmentConfig = {
-    environment: 'development',
+    environment: 'staging',
     defaultChain: ChainId.BARTIO,
     supportedChains: [
         ChainId.BARTIO,
