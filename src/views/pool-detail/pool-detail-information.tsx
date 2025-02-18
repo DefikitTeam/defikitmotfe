@@ -25,7 +25,6 @@ const PoolDetailInformation = () => {
 
     const { pool, analystData } = poolStateDetail;
 
-    // const { chainData } = useCurrentChainInformation();
     const { chainConfig } = useConfig();
 
     const handleClickOpenViewDetail = () => {

@@ -37,8 +37,6 @@ const ConnectButtonWagmi = () => {
     const { chainConfig, defaultChain, environment, supportedChains } =
         useConfig();
 
-    // const { chainData } = useCurrentChainInformation();
-
     const { authState, loginAction } = useAuthLogin();
     const { disconnect } = useDisconnect();
     const { isMobile } = useWindowSize();

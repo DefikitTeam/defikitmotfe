@@ -123,13 +123,13 @@ const UserTopReward = () => {
             )
         },
 
-        {
-            title: t('BOND'),
-            dataIndex: 'bond',
-            width: '5%',
-            className: '!font-forza',
-            align: 'center'
-        },
+        // {
+        //     title: t('BOND'),
+        //     dataIndex: 'bond',
+        //     width: '5%',
+        //     className: '!font-forza',
+        //     align: 'center'
+        // },
         {
             title: `${t('REWARD')} ${pool?.symbol}`,
             dataIndex: 'reward',

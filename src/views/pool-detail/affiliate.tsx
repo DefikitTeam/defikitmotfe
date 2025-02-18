@@ -21,7 +21,6 @@ const Affiliate = () => {
     } = useReward();
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
-    // const { chainData } = useCurrentChainInformation();
     const { authState } = useAuthLogin();
 
     const { chainConfig } = useConfig();
@@ -31,12 +30,16 @@ const Affiliate = () => {
                 id: poolAddress,
                 chainId: chainConfig?.chainId as number
             });
+            getTopUserRewardByPoolAction({
+                pool: poolAddress,
+                chainId: chainConfig?.chainId as number
+            });
             const intervalId = setInterval(() => {
                 getTopUserRewardByPoolAction({
                     pool: poolAddress,
                     chainId: chainConfig?.chainId as number
                 });
-            }, 10000);
+            }, 5000);
             return () => clearInterval(intervalId);
         }
     }, [poolAddress, chainConfig?.chainId]);

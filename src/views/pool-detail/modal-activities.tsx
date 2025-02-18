@@ -16,7 +16,6 @@ const ModalActivities = () => {
     const t = useTranslations();
     const { address, chain, chainId } = useAccount();
     const [{ poolStateDetail }] = usePoolDetail();
-    // const { chainData } = useCurrentChainInformation();
     const { chainConfig } = useConfig();
     const [tableActivities, setTableActivities] = useState<Transaction[]>([]);
 

@@ -8,7 +8,6 @@ const Footer = () => {
     const router = useRouter();
     const { address, isConnected } = useAccount();
     const t = useTranslations();
-    // const { chainData } = useCurrentChainInformation();
 
     const { chainConfig } = useConfig();
     const handlePortfolioClick = () => {

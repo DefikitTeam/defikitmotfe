@@ -50,28 +50,28 @@ const Faucet = () => {
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
     useEffect(() => {
         const handler = async () => {
-            const isAccessTokenHasAndExpired =
-                await serviceAuth.checkAccessToken();
+            try {
+                const isAccessTokenHasAndExpired =
+                    await serviceAuth.checkAccessToken();
+                if (
+                    isAccessTokenHasAndExpired.data?.success ||
+                    (!refCodeExisted && authState.userInfo)
+                ) {
+                    setOpenModalInviteBlocker(false);
+                    return;
+                }
 
-            if (
-                // @ts-ignore
-                isAccessTokenHasAndExpired?.success ||
-                (!refCodeExisted && authState.userInfo)
-            ) {
-                setOpenModalInviteBlocker(false);
-                return;
-            }
-            // if (!refCodeExisted && authState.userInfo) {
-            //     setOpenModalInviteBlocker(false);
-            //     return;
-            // }
-            if (!refCodeExisted) {
                 setOpenModalInviteBlocker(true);
-                disconnect();
+                await disconnect();
+            } catch (error) {
+                setOpenModalInviteBlocker(true);
+                await disconnect();
             }
         };
+
         handler();
     }, [refCodeExisted]);
+
     useEffect(() => {
         if (!address) {
             notification.error({

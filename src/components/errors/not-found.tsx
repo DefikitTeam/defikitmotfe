@@ -3,7 +3,6 @@ import { Button } from 'antd';
 import { useRouter } from 'next/navigation';
 
 const NotFoundPage = () => {
-    // const { chainData } = useCurrentChainInformation();
     const router = useRouter();
 
     const { chainConfig } = useConfig();

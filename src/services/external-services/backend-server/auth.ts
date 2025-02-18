@@ -142,7 +142,6 @@ const serviceAuth = {
         res = await post<ICheckAccessTokenResponse>(
             `${config.getApiConfig().baseUrl}/auth/check-access-token`
         );
-        // console.log('res line 145----', res)
 
         return res;
     }

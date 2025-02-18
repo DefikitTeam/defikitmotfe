@@ -15,7 +15,6 @@ import { useAccount, useDisconnect } from 'wagmi';
 const { Text, Title } = Typography;
 const FaucetInformation = () => {
     const { address, chainId, isConnected } = useAccount();
-    // const { chainData } = useCurrentChainInformation();
     const t = useTranslations();
     const { disconnect } = useDisconnect();
 

@@ -22,7 +22,6 @@ const ModalDetailVesting = () => {
     const { isMobile } = useWindowSize();
     const { address } = useAccount();
     const { setOpenModalVesting, vestingState } = useVesting();
-    // const { chainData } = useCurrentChainInformation();
 
     const { chainConfig } = useConfig();
     const [balanceOfUser, setBalanceOfUser] = useState('0');

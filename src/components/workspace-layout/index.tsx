@@ -13,7 +13,6 @@ export interface IWorkspaceLayout {
 }
 
 const WorkspaceLayout = (props: IWorkspaceLayout) => {
-    // const { chainData } = useCurrentChainInformation();
     const router = useRouter();
     const pathname = usePathname();
     const currentPath = pathname?.split('/');

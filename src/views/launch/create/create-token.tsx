@@ -37,8 +37,6 @@
 //         resetPassData
 //     } = usePassData();
 
-//     const { chainData } = useCurrentChainInformation();
-
 //     const {
 //         setOpenModdalCreateToken,
 //         getListTokenByOwner,
