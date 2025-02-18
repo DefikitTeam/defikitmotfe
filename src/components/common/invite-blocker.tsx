@@ -9,7 +9,7 @@ import { EActionStatus } from '@/src/stores/type';
 import { Button, Input, Modal, Spin, Typography, notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
-import { useDisconnect } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import ConnectButtonWagmi from '../connect-wallet/connect-button-wagmi';
 
 import { useConfig } from '@/src/hooks/useConfig';
@@ -37,6 +37,8 @@ const ModalInviteBlocker = () => {
     const { disconnect } = useDisconnect();
     const router = useRouter();
     const chainData = useSelector((state: RootState) => state.chainData);
+    const {address} = useAccount()
+
     // useEffect(() => {
     //     localStorage.removeItem('wagmi.store');
     //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');

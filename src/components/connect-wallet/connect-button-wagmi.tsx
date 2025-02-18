@@ -48,8 +48,10 @@ const ConnectButtonWagmi = () => {
 
     console.log('show line 50-----', show);
     useEffect(() => {
+        if(!show) return;
+
         const isMetaMaskBrowser = /MetaMask/i.test(navigator.userAgent);
-        if (isMetaMaskBrowser && show === false) {
+        if (isMetaMaskBrowser) {
             console.log('chay vao metamask');
             return;
         }
@@ -93,7 +95,7 @@ const ConnectButtonWagmi = () => {
         if (error) {
             console.error('Error signing message:', error);
         }
-    }, [address]);
+    }, [address, show]);
 
     useEffect(() => {
         if (!isConnected) {
