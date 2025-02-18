@@ -76,3 +76,8 @@ export interface ILoginWalletResponse {
 export interface ISignature {
     signature: string | null;
 }
+
+export interface ICheckAccessTokenResponse {
+    success: boolean;
+    message: string;
+}

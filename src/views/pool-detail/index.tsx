@@ -11,7 +11,9 @@ import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import serviceAuth, {
+    REFCODE_INFO_STORAGE_KEY
+} from '@/src/services/external-services/backend-server/auth';
 import servicePool, {
     REFERRAL_CODE_INFO_STORAGE_KEY
 } from '@/src/services/external-services/backend-server/pool';
@@ -29,7 +31,7 @@ import {
 } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAccount, useSwitchChain } from 'wagmi';
+import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import Affiliate from './affiliate';
 import HolderDistribution from './holder-distribution';
 import PoolDetailInformation from './pool-detail-information';
@@ -58,6 +60,7 @@ const PoolDetail = () => {
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
     const { address } = useAccount();
+    const { disconnect } = useDisconnect();
     const [showAlert, setShowAlert] = useState(false);
     const chainData = useSelector((state: RootState) => state.chainData);
     const dispatch = useDispatch();
@@ -78,16 +81,25 @@ const PoolDetail = () => {
     };
 
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
-
     useEffect(() => {
-        if (!refCodeExisted && authState.userInfo) {
-            setOpenModalInviteBlocker(false);
-            return;
-        }
+        const handler = async () => {
+            const isAccessTokenHasAndExpired =
+                await serviceAuth.checkAccessToken();
 
-        if (!refCodeExisted) {
-            setOpenModalInviteBlocker(true);
-        }
+            if (
+                // @ts-ignore
+                isAccessTokenHasAndExpired?.success ||
+                (!refCodeExisted && authState.userInfo)
+            ) {
+                setOpenModalInviteBlocker(false);
+                return;
+            }
+            if (!refCodeExisted) {
+                setOpenModalInviteBlocker(true);
+                disconnect();
+            }
+        };
+        handler();
     }, [refCodeExisted]);
 
     // useEffect(() => {
@@ -100,9 +112,6 @@ const PoolDetail = () => {
     //         }
     //     }
     // }, [refId]);
-
-    console.log('chainConfig line 106----', chainConfig);
-    console.log('chainData.chainData line 105-----', chainData.chainData);
 
     useEffect(() => {
         if (refId && !(address as `0x${string}`)) {
@@ -251,6 +260,10 @@ const PoolDetail = () => {
         return <Loader />;
     }
 
+    console.log(
+        'poolStateDetail.linkDiscussionTelegram------',
+        poolStateDetail.linkDiscussionTelegram
+    );
     return (
         <BoxArea>
             <div className={`!pt-[20px] ${isMobile ? '' : 'px-5'}`}>

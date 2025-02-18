@@ -5,6 +5,7 @@ import {
     NEXT_PUBLIC_ENVIRONMENT
 } from '@/src/common/web3/constants/env';
 import {
+    ICheckAccessTokenResponse,
     IDataUserLoginResponse,
     ILoginRequest,
     ILoginTeleResponse,
@@ -134,6 +135,16 @@ const serviceAuth = {
                 console.log('refCode đã tồn tại:', existingRefCode);
             }
         }
+    },
+    checkAccessToken: async () => {
+        let res;
+
+        res = await post<ICheckAccessTokenResponse>(
+            `${config.getApiConfig().baseUrl}/auth/check-access-token`
+        );
+        // console.log('res line 145----', res)
+
+        return res;
     }
 };
 

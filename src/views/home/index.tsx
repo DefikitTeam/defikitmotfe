@@ -41,7 +41,9 @@ import ItemPool from './item-pool';
 import InviteBlocker from '@/src/components/common/invite-blocker';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import ModalInviteBlocker from '@/src/components/common/invite-blocker';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import serviceAuth, {
+    REFCODE_INFO_STORAGE_KEY
+} from '@/src/services/external-services/backend-server/auth';
 import { useTopRefByVol } from '@/src/stores/top-ref-by-vol/hook';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import { useConfig } from '@/src/hooks/useConfig';
@@ -161,6 +163,8 @@ const HomePage = () => {
         orderByDirection,
         orderBy
     } = poolStateList;
+
+    const { disconnect } = useDisconnect();
     const { switchChain } = useSwitchChain();
     const listRef = useRef<HTMLDivElement | null>(null);
     const [allPool, setAllPool] = useState<IPoolList[]>([]);
@@ -191,13 +195,24 @@ const HomePage = () => {
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
-        if (!refCodeExisted && authState.userInfo) {
-            setOpenModalInviteBlocker(false);
-            return;
-        }
-        if (!refCodeExisted) {
-            setOpenModalInviteBlocker(true);
-        }
+        const handler = async () => {
+            const isAccessTokenHasAndExpired =
+                await serviceAuth.checkAccessToken();
+
+            if (
+                // @ts-ignore
+                isAccessTokenHasAndExpired?.success ||
+                (!refCodeExisted && authState.userInfo)
+            ) {
+                setOpenModalInviteBlocker(false);
+                return;
+            }
+            if (!refCodeExisted) {
+                setOpenModalInviteBlocker(true);
+                disconnect();
+            }
+        };
+        handler();
     }, [refCodeExisted]);
 
     useEffect(() => {

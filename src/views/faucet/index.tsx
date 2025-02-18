@@ -9,14 +9,16 @@ import NotFoundPage from '@/src/components/errors/not-found';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import serviceAuth, {
+    REFCODE_INFO_STORAGE_KEY
+} from '@/src/services/external-services/backend-server/auth';
 import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { Col, notification, Row } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAccount, useSwitchChain } from 'wagmi';
+import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import FaucetInformation from './faucet-information';
 import ImageFaucet from './image-faucet';
 
@@ -42,21 +44,34 @@ const Faucet = () => {
     const router = useRouter();
 
     const { address } = useAccount();
+    const { disconnect } = useDisconnect();
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
-
     useEffect(() => {
-        if (!refCodeExisted && authState.userInfo) {
-            setOpenModalInviteBlocker(false);
-            return;
-        }
+        const handler = async () => {
+            const isAccessTokenHasAndExpired =
+                await serviceAuth.checkAccessToken();
 
-        if (!refCodeExisted) {
-            setOpenModalInviteBlocker(true);
-        }
+            if (
+                // @ts-ignore
+                isAccessTokenHasAndExpired?.success ||
+                (!refCodeExisted && authState.userInfo)
+            ) {
+                setOpenModalInviteBlocker(false);
+                return;
+            }
+            // if (!refCodeExisted && authState.userInfo) {
+            //     setOpenModalInviteBlocker(false);
+            //     return;
+            // }
+            if (!refCodeExisted) {
+                setOpenModalInviteBlocker(true);
+                disconnect();
+            }
+        };
+        handler();
     }, [refCodeExisted]);
-
     useEffect(() => {
         if (!address) {
             notification.error({

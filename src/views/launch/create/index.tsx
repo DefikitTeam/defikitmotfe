@@ -15,7 +15,9 @@ import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import { ConfigService } from '@/src/config/services/config-service';
 import { useReader } from '@/src/hooks/useReader';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import serviceAuth, {
+    REFCODE_INFO_STORAGE_KEY
+} from '@/src/services/external-services/backend-server/auth';
 import servicePool from '@/src/services/external-services/backend-server/pool';
 import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -28,7 +30,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useAccount } from 'wagmi';
+import { useAccount, useDisconnect } from 'wagmi';
 import PoolInformation from './pool-information';
 import SaveCreatePoolButton from './save-button';
 import { useConfig } from '@/src/hooks/useConfig';
@@ -91,19 +93,30 @@ const CreateLaunch = () => {
         setAvatarAiAgentInfo(value);
     };
 
+    const { disconnect } = useDisconnect();
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
-        if (!refCodeExisted && authState.userInfo) {
-            setOpenModalInviteBlocker(false);
-            return;
-        }
+        const handler = async () => {
+            const isAccessTokenHasAndExpired =
+                await serviceAuth.checkAccessToken();
 
-        if (!refCodeExisted) {
-            setOpenModalInviteBlocker(true);
-        }
+            if (
+                // @ts-ignore
+                isAccessTokenHasAndExpired?.success ||
+                (!refCodeExisted && authState.userInfo)
+            ) {
+                setOpenModalInviteBlocker(false);
+                return;
+            }
+            if (!refCodeExisted) {
+                setOpenModalInviteBlocker(true);
+                disconnect();
+            }
+        };
+        handler();
     }, [refCodeExisted]);
 
     useEffect(() => {
