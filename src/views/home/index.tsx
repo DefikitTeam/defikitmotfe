@@ -823,7 +823,7 @@ const HomePage = () => {
                     </div>
 
                     <div
-                        className="listTokens mt-2 max-h-[80vh] overflow-y-auto overflow-x-hidden"
+                        className={`listTokens mt-2 max-h-none overflow-y-auto overflow-x-hidden sm:max-h-[80vh] md:max-h-[80vh] lg:max-h-[80vh] xl:max-h-[80vh]`}
                         ref={listRef}
                     >
                         {/*<ClearCache />*/}
