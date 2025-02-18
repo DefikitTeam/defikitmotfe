@@ -97,9 +97,11 @@ const PoolDetail = () => {
 
                 setOpenModalInviteBlocker(true);
                 await disconnect();
+                localStorage.removeItem('wagmi.store');
             } catch (error) {
                 setOpenModalInviteBlocker(true);
                 await disconnect();
+                localStorage.removeItem('wagmi.store');
             }
         };
 

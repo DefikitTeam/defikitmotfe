@@ -53,6 +53,11 @@ const Faucet = () => {
             try {
                 const isAccessTokenHasAndExpired =
                     await serviceAuth.checkAccessToken();
+                console.log(
+                    'isAccessTokenHasAndExpired.data?.success-----',
+                    isAccessTokenHasAndExpired.data?.success
+                );
+                console.log();
                 if (
                     isAccessTokenHasAndExpired.data?.success ||
                     (!refCodeExisted && authState.userInfo)
@@ -63,9 +68,11 @@ const Faucet = () => {
 
                 setOpenModalInviteBlocker(true);
                 await disconnect();
+                localStorage.removeItem('wagmi.store');
             } catch (error) {
                 setOpenModalInviteBlocker(true);
                 await disconnect();
+                localStorage.removeItem('wagmi.store');
             }
         };
 

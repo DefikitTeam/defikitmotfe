@@ -10,7 +10,7 @@ import { useConfig } from '@/src/hooks/useConfig';
 import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import { Chain, ConnectButton } from '@rainbow-me/rainbowkit';
 import { Spin } from 'antd';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
 import NotificationButton from '../notification/notification-button';
 import ModalSelectChain from '../ui/ModalSelectChain';
@@ -41,7 +41,19 @@ const ConnectButtonWagmi = () => {
     const { disconnect } = useDisconnect();
     const { isMobile } = useWindowSize();
 
+    const [show, setShow] = useState<boolean>(false);
+    const handleClickConnectButton = () => {
+        setShow(true);
+    };
+
+    console.log('show line 50-----', show);
     useEffect(() => {
+        const isMetaMaskBrowser = /MetaMask/i.test(navigator.userAgent);
+        if (isMetaMaskBrowser && show === false) {
+            console.log('chay vao metamask');
+            return;
+        }
+
         const handleSignMessage = async () => {
             if ((address as `0x${string}`) && !authState.userWallet) {
                 const message = address as `0x${string}`;
@@ -86,6 +98,7 @@ const ConnectButtonWagmi = () => {
     useEffect(() => {
         if (!isConnected) {
             reset();
+            setShow(false);
         }
     }, [isConnected, reset]);
 
@@ -425,6 +438,7 @@ const ConnectButtonWagmi = () => {
                                         userSelect: 'none'
                                     }
                                 })}
+                                onClick={handleClickConnectButton}
                             >
                                 {!connected ? (
                                     <DisconnectedState
