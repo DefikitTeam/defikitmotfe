@@ -1,15 +1,15 @@
 import { notification, Typography } from 'antd';
 import { Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { shortWalletAddress } from '../common/utils/utils';
+import { useConfig } from '../hooks/useConfig';
 import { RootState } from '../stores';
 import { useTopRefByVol } from '../stores/top-ref-by-vol/hook';
 import { EActionStatus } from '../stores/type';
-import { useTranslations } from 'next-intl';
-import { useConfig } from '../hooks/useConfig';
 const { Text } = Typography;
 
 const TopReferByVol = () => {

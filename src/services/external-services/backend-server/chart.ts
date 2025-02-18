@@ -1,6 +1,6 @@
+import { ConfigService } from '@/src/config/services/config-service';
 import { IGetDetailPoolParams } from '@/src/stores/pool/type';
 import { querySubGraph } from '../fetcher';
-import { ConfigService } from '@/src/config/services/config-service';
 const config = ConfigService.getInstance();
 
 const serviceChart = {

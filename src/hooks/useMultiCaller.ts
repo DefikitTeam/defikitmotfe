@@ -1,10 +1,9 @@
 import { useSelector } from 'react-redux';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { getContract } from '../common/blockchain/evm/contracts/utils/getContract';
-import { ChainId } from '../common/constant/constance';
 import MultiCaller from '../common/wagmi/MultiCaller';
-import { RootState } from '../stores';
 import { ConfigService } from '../config/services/config-service';
+import { RootState } from '../stores';
 import { useConfig } from './useConfig';
 
 export function useMultiCaller() {

@@ -1,7 +1,4 @@
-import {
-    NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD
-} from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import {
     IGetInviteCodeResponse,
     IInviteReferItem
@@ -13,7 +10,6 @@ import {
     IGetAllInviteListReferResponse
 } from '../../response.type';
 import { get, post } from '../fetcher';
-import { ConfigService } from '@/src/config/services/config-service';
 const config = ConfigService.getInstance();
 
 const serviceInviteCode = {

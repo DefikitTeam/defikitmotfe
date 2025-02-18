@@ -1,8 +1,8 @@
 import { ChainId } from '@/src/common/constant/constance';
+import { ConfigService } from '@/src/config/services/config-service';
 import { ApiResponse } from '../response.type';
 import { instance } from './axios';
 import serviceAuth from './backend-server/auth';
-import { ConfigService } from '@/src/config/services/config-service';
 type Obj = { [key: string]: any };
 
 instance.interceptors.request.use(
@@ -123,3 +123,6 @@ function upload<T, R = ApiResponse<T>>(
     return instance.post(router, formData);
 }
 export { del, get, patch, post, put, upload };
+
+
+

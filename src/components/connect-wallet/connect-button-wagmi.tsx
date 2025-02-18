@@ -20,6 +20,7 @@ import ConnectedState from './connected-state';
 
 const ConnectButtonWagmi = () => {
     const { address, isConnected, isConnecting } = useAccount();
+     const { isMobile } = useWindowSize();
     const {
         signMessage,
         isSuccess,
@@ -39,16 +40,16 @@ const ConnectButtonWagmi = () => {
 
     const { authState, loginAction } = useAuthLogin();
     const { disconnect } = useDisconnect();
-    const { isMobile } = useWindowSize();
 
     const [show, setShow] = useState<boolean>(false);
+     const [hasAttemptedSignature, setHasAttemptedSignature] = useState(false);
     const handleClickConnectButton = () => {
         setShow(true);
     };
 
     console.log('show line 50-----', show);
     useEffect(() => {
-        if(!show) return;
+        if(!show || !address || hasAttemptedSignature) return;
 
         const isMetaMaskBrowser = /MetaMask/i.test(navigator.userAgent);
         if (isMetaMaskBrowser) {
@@ -57,13 +58,14 @@ const ConnectButtonWagmi = () => {
         }
 
         const handleSignMessage = async () => {
-            if ((address as `0x${string}`) && !authState.userWallet) {
+            if (!authState.userWallet) {
                 const message = address as `0x${string}`;
                 const refCode = localStorage
                     .getItem(REFCODE_INFO_STORAGE_KEY)
                     ?.replace(/"/g, '');
 
                 try {
+                    setHasAttemptedSignature(true);
                     const signature = await signMessageAsync({
                         message: message
                     });
@@ -91,7 +93,14 @@ const ConnectButtonWagmi = () => {
             }
         };
 
-        handleSignMessage();
+        // Add a slight delay for mobile devices to ensure wallet is ready
+        if (isMobile) {
+            setTimeout(() => {
+                handleSignMessage();
+            }, 1000);
+        } else {
+            handleSignMessage();
+        }
         if (error) {
             console.error('Error signing message:', error);
         }

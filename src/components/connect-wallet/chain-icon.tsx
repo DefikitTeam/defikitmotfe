@@ -1,4 +1,4 @@
-import { Chain, ConnectButton } from '@rainbow-me/rainbowkit';
+import { Chain } from '@rainbow-me/rainbowkit';
 
 export interface ChainIconProps {
     chain: Chain;

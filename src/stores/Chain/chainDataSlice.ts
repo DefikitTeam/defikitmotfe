@@ -1,4 +1,4 @@
-import { chains, getEnvironment } from '@/src/common/constant/constance';
+import { getEnvironment } from '@/src/common/constant/constance';
 import { CHAIN_CONFIG } from '@/src/config/environments/chains';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
