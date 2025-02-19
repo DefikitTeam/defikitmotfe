@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { useNotification } from '@/src/hooks/use-notification';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import serviceAuth, { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
 import { REFERRAL_CODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/pool';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -46,10 +46,12 @@ const ModalInviteBlocker = () => {
     // }, []);
 
     const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    // get userInfo from cookies
+    const userInfo = serviceAuth.getUserInfoStorage();
 
     useEffect(() => {
         if (authState.openModalInviteBlocker) {
-            if (address && authState.userInfo?.connectedWallet === address) {
+            if (isMobile && userInfo?.connectedWallet === address) {
                 setOpenModalInviteBlocker(false);
             } else {
                 inputRef.current?.focus();
@@ -218,6 +220,11 @@ const ModalInviteBlocker = () => {
                     <div className="mt-4">
                         <Text className="!font-forza text-base">
                             {JSON.stringify(authState)}
+                        </Text>
+                    </div>
+                    <div className="mt-4">
+                        <Text className="!font-forza text-base">
+                            {JSON.stringify(userInfo)}
                         </Text>
                     </div>
                 </div>
