@@ -123,6 +123,3 @@ function upload<T, R = ApiResponse<T>>(
     return instance.post(router, formData);
 }
 export { del, get, patch, post, put, upload };
-
-
-

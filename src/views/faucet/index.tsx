@@ -48,35 +48,21 @@ const Faucet = () => {
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+
     useEffect(() => {
-        const handler = async () => {
-            try {
-                const isAccessTokenHasAndExpired =
-                    await serviceAuth.checkAccessToken();
-                console.log(
-                    'isAccessTokenHasAndExpired.data?.success-----',
-                    isAccessTokenHasAndExpired.data?.success
-                );
-                console.log();
-                if (
-                    isAccessTokenHasAndExpired.data?.success ||
-                    (!refCodeExisted && authState.userInfo)
-                ) {
-                    setOpenModalInviteBlocker(false);
-                    return;
-                }
-
-                setOpenModalInviteBlocker(true);
-                await disconnect();
-                localStorage.removeItem('wagmi.store');
-            } catch (error) {
-                setOpenModalInviteBlocker(true);
-                await disconnect();
-                localStorage.removeItem('wagmi.store');
-            }
-        };
-
-        handler();
+        if (
+            Boolean(authState.userInfo?.connectedWallet) &&
+            Boolean(address) &&
+            authState.userInfo?.connectedWallet === address &&
+            !refCodeExisted
+        ) {
+            setOpenModalInviteBlocker(false);
+            return;
+        }
+        if (!refCodeExisted) {
+            setOpenModalInviteBlocker(true);
+            disconnect();
+        }
     }, [refCodeExisted]);
 
     useEffect(() => {
