@@ -49,9 +49,13 @@ const ModalInviteBlocker = () => {
 
     useEffect(() => {
         if (authState.openModalInviteBlocker) {
-            inputRef.current?.focus();
+            if (address && authState.userInfo?.connectedWallet === address) {
+                setOpenModalInviteBlocker(false);
+            } else {
+                inputRef.current?.focus();
+            }
         }
-    }, [authState.openModalInviteBlocker]);
+    }, [authState, address]);
 
     const { chainConfig } = useConfig();
 
@@ -157,8 +161,10 @@ const ModalInviteBlocker = () => {
                 centered
                 width={700}
                 footer={null}
-                maskStyle={{
-                    backgroundColor: 'rgba(0, 0, 0, 1)'
+                styles={{
+                    mask: {
+                        backgroundColor: 'rgba(0, 0, 0, 1)'
+                    }
                 }}
             >
                 <div className="flex h-full  flex-col gap-1 !font-forza">
