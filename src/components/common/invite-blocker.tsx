@@ -217,16 +217,21 @@ const ModalInviteBlocker = () => {
                             Twitter
                         </Link>
                     </div>
-                    <div className="mt-4">
-                        <Text className="!font-forza text-base">
-                            {JSON.stringify(authState)}
-                        </Text>
-                    </div>
-                    <div className="mt-4">
-                        <Text className="!font-forza text-base">
-                            {JSON.stringify(userInfo)}
-                        </Text>
-                    </div>
+                    {/* Staging: show data chainConfig and userInfo */}
+                    {chainConfig?.chainId === 80084 && (
+                        <>
+                            <div className="mt-4">
+                                <Text className="!font-forza text-base">
+                                    {JSON.stringify(chainConfig)}
+                                </Text>
+                            </div>
+                            <div className="mt-4">
+                                <Text className="!font-forza text-base">
+                                    {JSON.stringify(userInfo)}
+                                </Text>
+                            </div>
+                        </>
+                    )}
                 </div>
             </Modal>
         </div>
