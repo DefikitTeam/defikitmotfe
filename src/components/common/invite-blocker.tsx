@@ -215,6 +215,11 @@ const ModalInviteBlocker = () => {
                             Twitter
                         </Link>
                     </div>
+                    <div className="mt-4">
+                        <Text className="!font-forza text-base">
+                            {JSON.stringify(authState)}
+                        </Text>
+                    </div>
                 </div>
             </Modal>
         </div>
