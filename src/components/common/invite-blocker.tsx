@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { useNotification } from '@/src/hooks/use-notification';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import serviceAuth, { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
 import { REFERRAL_CODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/pool';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -16,6 +16,7 @@ import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
+import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 
 const { Text, Link } = Typography;
 const ModalInviteBlocker = () => {
@@ -44,11 +45,19 @@ const ModalInviteBlocker = () => {
     //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
     // }, []);
 
+    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    // get userInfo from cookies
+    const userInfo = serviceAuth.getUserInfoStorage();
+
     useEffect(() => {
         if (authState.openModalInviteBlocker) {
-            inputRef.current?.focus();
+            if (isMobile && userInfo?.connectedWallet === address) {
+                setOpenModalInviteBlocker(false);
+            } else {
+                inputRef.current?.focus();
+            }
         }
-    }, [authState.openModalInviteBlocker]);
+    }, [authState, address]);
 
     const { chainConfig } = useConfig();
 
@@ -107,6 +116,7 @@ const ModalInviteBlocker = () => {
                     REFERRAL_CODE_INFO_STORAGE_KEY,
                     JSON.stringify(res.data)
                 );
+                setRefCodeExisted(inviteCode.trim());
                 setOpenModalInviteBlocker(false);
                 setLoading(false);
             } else if (res && res.success === false) {
@@ -153,8 +163,10 @@ const ModalInviteBlocker = () => {
                 centered
                 width={700}
                 footer={null}
-                maskStyle={{
-                    backgroundColor: 'rgba(0, 0, 0, 1)'
+                styles={{
+                    mask: {
+                        backgroundColor: 'rgba(0, 0, 0, 1)'
+                    }
                 }}
             >
                 <div className="flex h-full  flex-col gap-1 !font-forza">
@@ -205,6 +217,21 @@ const ModalInviteBlocker = () => {
                             Twitter
                         </Link>
                     </div>
+                    {/* Staging: show data chainConfig and userInfo */}
+                    {chainConfig?.chainId === 80084 && (
+                        <>
+                            <div className="mt-4">
+                                <Text className="!font-forza text-base">
+                                    {JSON.stringify(chainConfig)}
+                                </Text>
+                            </div>
+                            <div className="mt-4">
+                                <Text className="!font-forza text-base">
+                                    {JSON.stringify(userInfo)}
+                                </Text>
+                            </div>
+                        </>
+                    )}
                 </div>
             </Modal>
         </div>

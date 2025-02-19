@@ -66,6 +66,8 @@ const ButtonConnectWallet = () => {
 
     useEffect(() => {
         if (!(address as `0x${string}`)) {
+            // If mobile, skip this action
+            if (isMobile) return;
             disconnect();
             logoutWalletAction();
         }
@@ -141,7 +143,7 @@ const ButtonConnectWallet = () => {
             ) : (
                 <TelegramInfo
                     name={authState.userTele.auth.username}
-                    // avatar="/images/default-avatar.png"
+                // avatar="/images/default-avatar.png"
                 />
             )}
         </div>

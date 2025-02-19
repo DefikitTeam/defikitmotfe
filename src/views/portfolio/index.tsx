@@ -81,18 +81,18 @@ const Portfolio = () => {
         }
     }, [currentPath?.[2]]);
 
-    const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
         if (
             Boolean(authState.userInfo?.connectedWallet) &&
             Boolean(address) &&
-            authState.userInfo?.connectedWallet === address &&
-            !refCodeExisted
+            authState.userInfo?.connectedWallet === address
         ) {
             setOpenModalInviteBlocker(false);
             return;
         }
+
         if (!refCodeExisted) {
             setOpenModalInviteBlocker(true);
             disconnect();

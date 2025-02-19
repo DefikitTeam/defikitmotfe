@@ -47,18 +47,18 @@ const Faucet = () => {
     const { disconnect } = useDisconnect();
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
-    const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
         if (
             Boolean(authState.userInfo?.connectedWallet) &&
             Boolean(address) &&
-            authState.userInfo?.connectedWallet === address &&
-            !refCodeExisted
+            authState.userInfo?.connectedWallet === address
         ) {
             setOpenModalInviteBlocker(false);
             return;
         }
+
         if (!refCodeExisted) {
             setOpenModalInviteBlocker(true);
             disconnect();
@@ -144,7 +144,7 @@ const Faucet = () => {
                             lg={6}
                             xl={6}
                             xxl={6}
-                            // className="h-full"
+                        // className="h-full"
                         >
                             <ImageFaucet />
                         </Col>
