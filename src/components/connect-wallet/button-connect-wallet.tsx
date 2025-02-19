@@ -76,7 +76,7 @@ const ButtonConnectWallet = () => {
         (async () => {
             if (
                 authState.statusLoginWallet === EActionStatus.Succeeded &&
-                authState.userWallet
+                authState.userWallet?.address === address
             ) {
                 await openNotification({
                     message: t('LOGIN_WALLET_SUCCESSFULLY'),

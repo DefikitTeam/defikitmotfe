@@ -99,29 +99,19 @@ const CreateLaunch = () => {
     const refCodeExisted = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
-        const handler = async () => {
-            try {
-                const isAccessTokenHasAndExpired =
-                    await serviceAuth.checkAccessToken();
-                if (
-                    isAccessTokenHasAndExpired.data?.success ||
-                    (!refCodeExisted && authState.userInfo)
-                ) {
-                    setOpenModalInviteBlocker(false);
-                    return;
-                }
-
-                setOpenModalInviteBlocker(true);
-                await disconnect();
-                localStorage.removeItem('wagmi.store');
-            } catch (error) {
-                setOpenModalInviteBlocker(true);
-                await disconnect();
-                localStorage.removeItem('wagmi.store');
-            }
-        };
-
-        handler();
+        if (
+            Boolean(authState.userInfo?.connectedWallet) &&
+            Boolean(address) &&
+            authState.userInfo?.connectedWallet === address &&
+            !refCodeExisted
+        ) {
+            setOpenModalInviteBlocker(false);
+            return;
+        }
+        if (!refCodeExisted) {
+            setOpenModalInviteBlocker(true);
+            disconnect();
+        }
     }, [refCodeExisted]);
 
     useEffect(() => {
