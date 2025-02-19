@@ -37,7 +37,7 @@ const ModalInviteBlocker = () => {
     const { disconnect } = useDisconnect();
     const router = useRouter();
     const chainData = useSelector((state: RootState) => state.chainData);
-    const {address} = useAccount()
+    const { address } = useAccount();
 
     // useEffect(() => {
     //     localStorage.removeItem('wagmi.store');
@@ -57,7 +57,7 @@ const ModalInviteBlocker = () => {
         (async () => {
             if (
                 authState.statusLoginWallet === EActionStatus.Succeeded &&
-                authState.userWallet
+                authState.userWallet?.address === address
             ) {
                 // await openNotification({
                 //     message: t('LOGIN_WALLET_SUCCESSFULLY'),
