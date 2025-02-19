@@ -87,12 +87,12 @@ const Portfolio = () => {
         if (
             Boolean(authState.userInfo?.connectedWallet) &&
             Boolean(address) &&
-            authState.userInfo?.connectedWallet === address &&
-            !refCodeExisted
+            authState.userInfo?.connectedWallet === address
         ) {
             setOpenModalInviteBlocker(false);
             return;
         }
+
         if (!refCodeExisted) {
             setOpenModalInviteBlocker(true);
             disconnect();

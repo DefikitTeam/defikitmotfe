@@ -199,8 +199,7 @@ const HomePage = () => {
         if (
             Boolean(authState.userInfo?.connectedWallet) &&
             Boolean(address) &&
-            authState.userInfo?.connectedWallet === address &&
-            !refCodeExisted
+            authState.userInfo?.connectedWallet === address
         ) {
             setOpenModalInviteBlocker(false);
             return;
@@ -209,7 +208,6 @@ const HomePage = () => {
         if (!refCodeExisted) {
             setOpenModalInviteBlocker(true);
             disconnect();
-
         }
     }, [refCodeExisted]);
 
@@ -611,8 +609,8 @@ const HomePage = () => {
         <BoxArea>
             <div
                 className={`${isMobile
-                        ? 'mt-4 flex min-h-screen flex-col justify-end overflow-auto text-center'
-                        : 'px-8 py-10 text-center'
+                    ? 'mt-4 flex min-h-screen flex-col justify-end overflow-auto text-center'
+                    : 'px-8 py-10 text-center'
                     }`}
             >
                 <Spin
@@ -867,8 +865,8 @@ const HomePage = () => {
                                                         )
                                                     }
                                                     className={`${(index + 1) % 2 === 0
-                                                            ? 'bg-evenColor'
-                                                            : 'bg-oddColor'
+                                                        ? 'bg-evenColor'
+                                                        : 'bg-oddColor'
                                                         }  ${index === 0 ? 'animate-newMessage' : ''}  `}
                                                     metadata={
                                                         metadataShow &&
