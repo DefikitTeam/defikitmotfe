@@ -16,6 +16,7 @@ import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
+import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 
 const { Text, Link } = Typography;
 const ModalInviteBlocker = () => {
@@ -43,6 +44,8 @@ const ModalInviteBlocker = () => {
     //     localStorage.removeItem('wagmi.store');
     //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
     // }, []);
+
+    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
         if (authState.openModalInviteBlocker) {
@@ -107,6 +110,7 @@ const ModalInviteBlocker = () => {
                     REFERRAL_CODE_INFO_STORAGE_KEY,
                     JSON.stringify(res.data)
                 );
+                setRefCodeExisted(inviteCode.trim());
                 setOpenModalInviteBlocker(false);
                 setLoading(false);
             } else if (res && res.success === false) {
