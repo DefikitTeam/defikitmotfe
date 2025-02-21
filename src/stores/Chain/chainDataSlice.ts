@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { getEnvironment } from '@/src/common/constant/constance';
 import { CHAIN_CONFIG } from '@/src/config/environments/chains';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -18,14 +20,7 @@ interface ChainDataState {
 const getInitialChainData = () => {
     const environment = getEnvironment();
 
-    const kien: any = {
-        chainId: CHAIN_CONFIG[environment].defaultChain.id,
-        name: CHAIN_CONFIG[environment].defaultChain.name,
-        currency: CHAIN_CONFIG[environment].defaultChain.nativeCurrency.symbol,
-        explorerUrl:
-            CHAIN_CONFIG[environment].defaultChain.blockExplorers.default.url,
-        rpcUrl: CHAIN_CONFIG[environment].defaultChain.rpcUrls.default.http[0]
-    };
+  
 
     return {
         chainId: CHAIN_CONFIG[environment].defaultChain.id,

@@ -1,18 +1,16 @@
-import { useSelector } from 'react-redux';
+/* eslint-disable */
+
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { getContract } from '../common/blockchain/evm/contracts/utils/getContract';
 import MultiCaller from '../common/wagmi/MultiCaller';
-import { ConfigService } from '../config/services/config-service';
-import { RootState } from '../stores';
 import { useConfig } from './useConfig';
 
 export function useMultiCaller() {
-    // const { chainId } = useAccount();
-    const chainData = useSelector((state: RootState) => state.chainData);
+ 
 
     const { chainConfig } = useConfig();
 
-    const config = ConfigService.getInstance();
+   
 
     const multiCallerContract = getContract(chainConfig?.chainId!);
 

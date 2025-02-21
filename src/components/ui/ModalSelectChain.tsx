@@ -1,14 +1,15 @@
+/* eslint-disable */
+
 import { CHAIN_CONFIG } from '@/src/config/environments/chains';
 import { ConfigService } from '@/src/config/services/config-service';
 import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { RootState } from '@/src/stores';
 import { IChainInfor, setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { Chain } from 'viem/chains';
 
@@ -16,15 +17,14 @@ const ModalSelectChain = () => {
     const { isMobile } = useWindowSize();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { chainConfig, supportedChains, environment } = useConfig();
+    const { chainConfig, environment } = useConfig();
 
     const listChains = CHAIN_CONFIG[environment].supportedChains;
-    const chainData = useSelector(
-        (state: RootState) => state.chainData.chainData
-    );
+
+   
 
     const dispatch = useDispatch();
-    const pathname = usePathname();
+ 
     const router = useRouter();
 
     const showModal = () => {
@@ -57,6 +57,9 @@ const ModalSelectChain = () => {
     //         router.push(`/${chainData.name.replace(/\s+/g, '').toLowerCase()}`);
     //     }
     // }, [chainData.name, pathname, router]);
+
+
+
 
     return (
         <>

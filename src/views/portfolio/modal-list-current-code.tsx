@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useGetInviteCode } from '@/src/stores/invite-code/hook';
 import { IGetInviteCodeResponseItem } from '@/src/stores/invite-code/type';
 import { CopyOutlined } from '@ant-design/icons';

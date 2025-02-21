@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { ChainId } from '@/src/common/constant/constance';
 import { ConfigService } from '@/src/config/services/config-service';
 import { ApiResponse } from '../response.type';

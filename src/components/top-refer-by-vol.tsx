@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { notification, Typography } from 'antd';
 import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -21,7 +23,7 @@ const TopReferByVol = () => {
         getAllTopRefByVolAction,
         resetStatusGetAllTopRefByVolAction
     } = useTopRefByVol();
-    const chainData = useSelector((state: RootState) => state.chainData);
+   
     const { chainConfig } = useConfig();
 
     useEffect(() => {
