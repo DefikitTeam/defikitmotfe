@@ -143,7 +143,7 @@ const ButtonConnectWallet = () => {
             ) : (
                 <TelegramInfo
                     name={authState.userTele.auth.username}
-                // avatar="/images/default-avatar.png"
+                    // avatar="/images/default-avatar.png"
                 />
             )}
         </div>

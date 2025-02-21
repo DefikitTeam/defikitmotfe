@@ -21,10 +21,8 @@ const ModalSelectChain = () => {
 
     const listChains = CHAIN_CONFIG[environment].supportedChains;
 
-   
-
     const dispatch = useDispatch();
- 
+
     const router = useRouter();
 
     const showModal = () => {
@@ -57,9 +55,6 @@ const ModalSelectChain = () => {
     //         router.push(`/${chainData.name.replace(/\s+/g, '').toLowerCase()}`);
     //     }
     // }, [chainData.name, pathname, router]);
-
-
-
 
     return (
         <>

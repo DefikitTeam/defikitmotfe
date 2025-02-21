@@ -91,7 +91,7 @@ const KingOfTheHill = ({
 
                     <div
                         className="pool-item max-h-[290px] animate-king-pool rounded-lg border-2 border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 p-1"
-                    // data-pool-id={pool.id}
+                        // data-pool-id={pool.id}
                     >
                         <div
                             className="pool-item"
@@ -193,7 +193,8 @@ const HomePage = () => {
         );
     };
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } =
+        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
         if (
@@ -541,8 +542,8 @@ const HomePage = () => {
                     orderBy === 'createdTimestamp'
                         ? 'tgeTimestamp'
                         : orderBy === 'latestTimestamp'
-                            ? 'latestTimestampBuy'
-                            : orderBy;
+                          ? 'latestTimestampBuy'
+                          : orderBy;
                 if (orderByDirection === PoolStatusSortFilter.ASC) {
                     return (a[orderByKey as keyof IPoolList] ?? 0) >
                         (b[orderByKey as keyof IPoolList] ?? 0)
@@ -608,10 +609,11 @@ const HomePage = () => {
     return (
         <BoxArea>
             <div
-                className={`${isMobile
-                    ? 'mt-4 flex min-h-screen flex-col justify-end overflow-auto text-center'
-                    : 'px-8 py-10 text-center'
-                    }`}
+                className={`${
+                    isMobile
+                        ? 'mt-4 flex min-h-screen flex-col justify-end overflow-auto text-center'
+                        : 'px-8 py-10 text-center'
+                }`}
             >
                 <Spin
                     spinning={poolStateList.status === EActionStatus.Pending}
@@ -729,7 +731,7 @@ const HomePage = () => {
                                 onClear={handleClearSearch}
                             />
                             {query &&
-                                statusGetPoolListBackground ===
+                            statusGetPoolListBackground ===
                                 EActionStatus.Pending ? (
                                 <div className="relative">
                                     <button
@@ -775,27 +777,27 @@ const HomePage = () => {
 
                                 {address
                                     ? poolStates.map(
-                                        (item: DropdownObject, key) => (
-                                            <Option
-                                                className="!font-forza"
-                                                value={item.value}
-                                                key={key}
-                                            >
-                                                {item.text}
-                                            </Option>
-                                        )
-                                    )
+                                          (item: DropdownObject, key) => (
+                                              <Option
+                                                  className="!font-forza"
+                                                  value={item.value}
+                                                  key={key}
+                                              >
+                                                  {item.text}
+                                              </Option>
+                                          )
+                                      )
                                     : poolStates
-                                        .slice(1, 7)
-                                        .map((item: DropdownObject, key) => (
-                                            <Option
-                                                className="!font-forza"
-                                                value={item.value}
-                                                key={key}
-                                            >
-                                                {item.text}
-                                            </Option>
-                                        ))}
+                                          .slice(1, 7)
+                                          .map((item: DropdownObject, key) => (
+                                              <Option
+                                                  className="!font-forza"
+                                                  value={item.value}
+                                                  key={key}
+                                              >
+                                                  {item.text}
+                                              </Option>
+                                          ))}
                             </Select>
 
                             <div className="flex flex-col">
@@ -864,16 +866,17 @@ const HomePage = () => {
                                                             pool.id
                                                         )
                                                     }
-                                                    className={`${(index + 1) % 2 === 0
-                                                        ? 'bg-evenColor'
-                                                        : 'bg-oddColor'
-                                                        }  ${index === 0 ? 'animate-newMessage' : ''}  `}
+                                                    className={`${
+                                                        (index + 1) % 2 === 0
+                                                            ? 'bg-evenColor'
+                                                            : 'bg-oddColor'
+                                                    }  ${index === 0 ? 'animate-newMessage' : ''}  `}
                                                     metadata={
                                                         metadataShow &&
-                                                            metadataShow?.[pool.id]
+                                                        metadataShow?.[pool.id]
                                                             ? metadataShow[
-                                                            pool.id
-                                                            ]
+                                                                  pool.id
+                                                              ]
                                                             : undefined
                                                     }
                                                     analysisData={

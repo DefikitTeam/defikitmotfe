@@ -20,8 +20,6 @@ interface ChainDataState {
 const getInitialChainData = () => {
     const environment = getEnvironment();
 
-  
-
     return {
         chainId: CHAIN_CONFIG[environment].defaultChain.id,
         name: CHAIN_CONFIG[environment].defaultChain.name,

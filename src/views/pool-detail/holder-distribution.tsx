@@ -17,7 +17,7 @@ const HolderDistribution = () => {
         usePoolDetail();
 
     const { holderDistribution, pool } = poolStateDetail;
-  
+
     const router = useRouter();
 
     const { isConnected, address } = useAccount();

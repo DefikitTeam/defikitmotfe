@@ -13,11 +13,14 @@ function useRefCodeWatcher(storageKey: string) {
             }
         } catch (e) {
             // If both localStorage and sessionStorage fail
-            console.warn('Browser storage is not available, using in-memory storage');
+            console.warn(
+                'Browser storage is not available, using in-memory storage'
+            );
         }
         return {
             getItem: (key: string) => memoryStorage.get(key) || null,
-            setItem: (key: string, value: string) => memoryStorage.set(key, value),
+            setItem: (key: string, value: string) =>
+                memoryStorage.set(key, value),
             removeItem: (key: string) => memoryStorage.delete(key)
         };
     };
@@ -57,9 +60,13 @@ function useRefCodeWatcher(storageKey: string) {
         };
 
         // Only add listener if we're using browser storage
-        if (typeof window !== 'undefined' && (window.localStorage || window.sessionStorage)) {
+        if (
+            typeof window !== 'undefined' &&
+            (window.localStorage || window.sessionStorage)
+        ) {
             window.addEventListener('storage', handleStorageChange);
-            return () => window.removeEventListener('storage', handleStorageChange);
+            return () =>
+                window.removeEventListener('storage', handleStorageChange);
         }
     }, [storageKey]);
 

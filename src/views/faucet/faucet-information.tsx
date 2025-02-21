@@ -398,24 +398,24 @@ const FaucetInformation = () => {
                                     color: 'white',
                                     opacity:
                                         !(address as `0x${string}`) ||
-                                            isLoadingFaucet === true ||
-                                            validateInput.walletAddress.error ===
+                                        isLoadingFaucet === true ||
+                                        validateInput.walletAddress.error ===
                                             true ||
-                                            !isClickFollow ||
-                                            !walletAddress ||
-                                            !isUserInfoSavedWithTelegram
+                                        !isClickFollow ||
+                                        !walletAddress ||
+                                        !isUserInfoSavedWithTelegram
                                             ? 0.6
                                             : 1,
                                     whiteSpace: 'normal',
                                     wordWrap: 'break-word',
                                     cursor:
                                         !(address as `0x${string}`) ||
-                                            isLoadingFaucet === true ||
-                                            validateInput.walletAddress.error ===
+                                        isLoadingFaucet === true ||
+                                        validateInput.walletAddress.error ===
                                             true ||
-                                            !isClickFollow ||
-                                            !walletAddress ||
-                                            !isUserInfoSavedWithTelegram
+                                        !isClickFollow ||
+                                        !walletAddress ||
+                                        !isUserInfoSavedWithTelegram
                                             ? 'not-allowed'
                                             : 'pointer'
                                 }}
@@ -423,7 +423,7 @@ const FaucetInformation = () => {
                                     !(address as `0x${string}`) ||
                                     !isClickFollow ||
                                     validateInput.walletAddress.error ===
-                                    true ||
+                                        true ||
                                     !walletAddress ||
                                     !isUserInfoSavedWithTelegram
                                 }

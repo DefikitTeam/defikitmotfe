@@ -113,7 +113,8 @@ const ConnectButtonWagmi = () => {
         }
     }, [isConnected, reset]);
 
-    const showChainSelector = CHAIN_CONFIG[environment].supportedChains.length > 1;
+    const showChainSelector =
+        CHAIN_CONFIG[environment].supportedChains.length > 1;
 
     return (
         <div className="flex flex-row items-center gap-[3px]">

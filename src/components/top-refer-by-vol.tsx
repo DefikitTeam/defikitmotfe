@@ -23,7 +23,7 @@ const TopReferByVol = () => {
         getAllTopRefByVolAction,
         resetStatusGetAllTopRefByVolAction
     } = useTopRefByVol();
-   
+
     const { chainConfig } = useConfig();
 
     useEffect(() => {

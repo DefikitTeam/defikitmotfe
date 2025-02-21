@@ -81,7 +81,8 @@ const Portfolio = () => {
         }
     }, [currentPath?.[2]]);
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } =
+        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
         if (

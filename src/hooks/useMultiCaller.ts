@@ -6,11 +6,7 @@ import MultiCaller from '../common/wagmi/MultiCaller';
 import { useConfig } from './useConfig';
 
 export function useMultiCaller() {
- 
-
     const { chainConfig } = useConfig();
-
-   
 
     const multiCallerContract = getContract(chainConfig?.chainId!);
 

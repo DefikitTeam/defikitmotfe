@@ -80,7 +80,8 @@ const PoolDetail = () => {
         );
     };
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } =
+        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
         if (
@@ -216,8 +217,8 @@ const PoolDetail = () => {
             metaDataInfo && metaDataInfo?.image
                 ? metaDataInfo?.image
                 : metaDataInfo?.tokenImageUrl
-                    ? metaDataInfo?.tokenImageUrl
-                    : randomDefaultPoolImage();
+                  ? metaDataInfo?.tokenImageUrl
+                  : randomDefaultPoolImage();
 
         let finalImageUrl: string;
         if (typeof image === 'object') {

@@ -34,7 +34,7 @@ import { useAccount, useDisconnect } from 'wagmi';
 import PoolInformation from './pool-information';
 import SaveCreatePoolButton from './save-button';
 import { useConfig } from '@/src/hooks/useConfig';
-export interface IPoolCreatForm { }
+export interface IPoolCreatForm {}
 const { Title } = Typography;
 // const currentHostName = useCurrentHostNameInformation();
 // const isProd =
@@ -96,7 +96,8 @@ const CreateLaunch = () => {
     const { disconnect } = useDisconnect();
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } =
+        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
         if (
@@ -285,7 +286,7 @@ const CreateLaunch = () => {
                         : data.websiteLink,
                 telegram:
                     data.telegramLink &&
-                        !data.telegramLink.startsWith('https://')
+                    !data.telegramLink.startsWith('https://')
                         ? `https://${data.telegramLink}`
                         : data.telegramLink,
                 twitter:
