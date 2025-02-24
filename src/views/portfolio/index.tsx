@@ -84,21 +84,21 @@ const Portfolio = () => {
     const { value: refCodeExisted, setValue: setRefCodeExisted } =
         useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
-    useEffect(() => {
-        if (
-            Boolean(authState.userInfo?.connectedWallet) &&
-            Boolean(address) &&
-            authState.userInfo?.connectedWallet === address
-        ) {
-            setOpenModalInviteBlocker(false);
-            return;
-        }
+    // useEffect(() => {
+    //     if (
+    //         Boolean(authState.userInfo?.connectedWallet) &&
+    //         Boolean(address) &&
+    //         authState.userInfo?.connectedWallet === address
+    //     ) {
+    //         setOpenModalInviteBlocker(false);
+    //         return;
+    //     }
 
-        if (!refCodeExisted) {
-            setOpenModalInviteBlocker(true);
-            disconnect();
-        }
-    }, [refCodeExisted]);
+    //     if (!refCodeExisted) {
+    //         setOpenModalInviteBlocker(true);
+    //         disconnect();
+    //     }
+    // }, [refCodeExisted]);
 
     useEffect(() => {
         if (!(address as `0x${string}`) || !chainId) {
