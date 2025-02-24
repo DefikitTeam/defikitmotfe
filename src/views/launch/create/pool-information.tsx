@@ -5,7 +5,8 @@ import {
     ChainId,
     DEX_BY_CHAIN,
     HARD_CAP_INITIAL_BY_CHAIN,
-    MAX_AVATAR_FILE_SIZE
+    MAX_AVATAR_FILE_SIZE,
+    MIN_HARDCAP_BY_CHAIN
 } from '@/src/common/constant/constance';
 
 import { base64ToFile } from '@/src/common/lib/utils';
@@ -49,6 +50,7 @@ import AdvanceConfiguration from './advance-configuration';
 import AdditionalAgent from './additional-agent';
 import { useAccount } from 'wagmi';
 import { useConfig } from '@/src/hooks/useConfig';
+import { ignore } from 'antd/es/theme/useToken';
 
 const getBase64 = (file: RcFile): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -908,41 +910,16 @@ const PoolInformation = ({
                             {
                                 validator: async (_, value) => {
                                     const numValue = Number(value);
-                                    if (
-                                        Number(chainConfig?.chainId) ===
-                                        Number(ChainId.BASE_SEPOLIA)
-                                    ) {
-                                        if (numValue < 0.1) {
-                                            return Promise.reject(
-                                                new Error('Min value is 0.1')
-                                            );
-                                        }
-                                    } else if (
-                                        Number(chainConfig?.chainId) ===
-                                        Number(ChainId.IOTA)
-                                    ) {
-                                        if (numValue < 10000) {
-                                            return Promise.reject(
-                                                new Error('Min value is 10000')
-                                            );
-                                        }
-                                    } else if (
-                                        Number(chainConfig?.chainId) ===
-                                        Number(ChainId.BERACHAIN_MAINNET)
-                                    ) {
-                                        if (numValue < 1000) {
-                                            return Promise.reject(
-                                                new Error('Min value is 1000')
-                                            );
-                                        }
-                                    } else {
-                                        if (numValue < 0.5) {
-                                            return Promise.reject(
-                                                new Error(
-                                                    t('INVALID_MIN_VALUE')
-                                                )
-                                            );
-                                        }
+                                    const chainId = Number(
+                                        chainConfig?.chainId
+                                    );
+                                    const config =
+                                        MIN_HARDCAP_BY_CHAIN[chainId];
+
+                                    if (numValue < config.min) {
+                                        return Promise.reject(
+                                            new Error(config.error)
+                                        );
                                     }
 
                                     return Promise.resolve();

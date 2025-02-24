@@ -5,11 +5,9 @@ import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { shortWalletAddress } from '../common/utils/utils';
 import { useConfig } from '../hooks/useConfig';
-import { RootState } from '../stores';
 import { useTopRefByVol } from '../stores/top-ref-by-vol/hook';
 import { EActionStatus } from '../stores/type';
 const { Text } = Typography;
@@ -25,12 +23,20 @@ const TopReferByVol = () => {
     } = useTopRefByVol();
 
     const { chainConfig } = useConfig();
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
+    const fetchTopRefByVol = () => {
+        if (chainConfig?.chainId) {
             getAllTopRefByVolAction({
-                chainId: chainConfig?.chainId.toString()!
+                chainId: chainConfig.chainId.toString()
             });
+        }
+    };
+    useEffect(() => {
+        fetchTopRefByVol();
+
+        const intervalId = setInterval(() => {
+            if (topRefByVolState.status !== EActionStatus.Pending) {
+                fetchTopRefByVol();
+            }
         }, 5000);
         return () => clearInterval(intervalId);
     }, [chainConfig?.chainId, address]);

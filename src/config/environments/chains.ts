@@ -31,7 +31,7 @@ export const CHAIN_CONFIG = {
     },
     staging: {
         defaultChain: berachainTestnetbArtio,
-        supportedChains: [berachainTestnetbArtio]
+        supportedChains: [berachainTestnetbArtio, baseSepolia]
     },
     development: {
         defaultChain: berachainTestnetbArtio,

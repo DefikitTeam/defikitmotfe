@@ -124,7 +124,7 @@ export const chains = [
         currency: 'ETH',
         explorerUrl: 'https://sepolia-explorer.base.org',
         rpcUrl: 'https://sepolia.base.org',
-        onFaucet: true
+        onFaucet: false
     },
     {
         chainId: 80084,
@@ -216,22 +216,39 @@ export const PLATFORM_FEE = {
     [ChainId.BASE]: 0.005,
     [ChainId.POLYGON_AMOY]: 0.005,
     [ChainId.ARTELA]: 0.005,
-    [ChainId.BASE_SEPOLIA]: 0.005,
+
     [ChainId.BARTIO]: 0.0001,
     [ChainId.BERACHAIN_MAINNET]: 0.1,
     [ChainId.UNICHAIN_SEPOLIA]: 0.005,
-    [ChainId.IOTA]: 0.05
+    [ChainId.IOTA]: 0.05,
+    [ChainId.BASE_SEPOLIA]: 0.005
 };
 
 export const HARD_CAP_INITIAL_BY_CHAIN = {
     [ChainId.BASE]: 2,
     [ChainId.POLYGON_AMOY]: 2,
     [ChainId.ARTELA]: 2,
-    [ChainId.BASE_SEPOLIA]: 2,
+    [ChainId.BASE_SEPOLIA]: 0.05,
     [ChainId.BARTIO]: 2,
     [ChainId.BERACHAIN_MAINNET]: 1000,
     [ChainId.UNICHAIN_SEPOLIA]: 2,
     [ChainId.IOTA]: 10000
+};
+
+export interface MinHardcapConfig {
+    min: number;
+    error: string;
+}
+
+export const MIN_HARDCAP_BY_CHAIN: { [key: number]: MinHardcapConfig } = {
+    [ChainId.BASE_SEPOLIA]: { min: 0.05, error: 'Min value is 0.05' },
+    [ChainId.IOTA]: { min: 10000, error: 'Min value is 10000' },
+    [ChainId.BERACHAIN_MAINNET]: { min: 1000, error: 'Min value is 1000' },
+    [ChainId.BASE]: { min: 2, error: 'Min value is 2' },
+    [ChainId.POLYGON_AMOY]: { min: 2, error: 'Min value is 2' },
+    [ChainId.ARTELA]: { min: 2, error: 'Min value is 2' },
+    [ChainId.BARTIO]: { min: 2, error: 'Min value is 2' },
+    [ChainId.UNICHAIN_SEPOLIA]: { min: 2, error: 'Min value is 2' }
 };
 
 export enum NOTIFICATION_STATUS {

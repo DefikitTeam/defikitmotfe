@@ -18,7 +18,8 @@ export const developmentConfig: EnvironmentConfig = {
         ChainId.ARTELA,
         ChainId.BASE_SEPOLIA,
         ChainId.POLYGON_AMOY,
-        ChainId.UNICHAIN_SEPOLIA
+        ChainId.UNICHAIN_SEPOLIA,
+        ChainId.BASE_SEPOLIA
     ],
     chains: {
         [ChainId.BARTIO]: {

@@ -47,6 +47,7 @@ const ModalSelectChain = () => {
         setIsModalOpen(false);
         dispatch(setChainData(chainData as IChainInfor));
         router.push(`/${chain.name.replace(/\s+/g, '').toLowerCase()}`);
+        window.location.reload();
     };
 
     // useEffect(() => {

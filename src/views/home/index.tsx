@@ -1,25 +1,29 @@
 /* eslint-disable */
 'use client';
 import {
-    ChainId,
+    chains,
     DropdownObject,
+    poolStates,
     PoolStatus,
     PoolStatusSortFilter,
-    PoolStatusSortOrderBy,
-    chains,
-    poolStates
+    PoolStatusSortOrderBy
 } from '@/src/common/constant/constance';
-import { setChainData } from '@/src/stores/Chain/chainDataSlice';
 
 import BoxArea from '@/src/components/common/box-area';
+import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import SearchComponent from '@/src/components/common/search';
 import EmptyPool from '@/src/components/empty';
 import TopReferByVol from '@/src/components/top-refer-by-vol';
+import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
+import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import { RootState } from '@/src/stores';
+import { useAuthLogin } from '@/src/stores/auth/hook';
 import { useListPool } from '@/src/stores/pool/hook';
 import { IPoolList } from '@/src/stores/pool/type';
+import { useTopRefByVol } from '@/src/stores/top-ref-by-vol/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import {
@@ -38,17 +42,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import ItemPool from './item-pool';
-import InviteBlocker from '@/src/components/common/invite-blocker';
-import { useAuthLogin } from '@/src/stores/auth/hook';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
-import serviceAuth, {
-    REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
-import { useTopRefByVol } from '@/src/stores/top-ref-by-vol/hook';
-import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
-import { useConfig } from '@/src/hooks/useConfig';
-import { config } from 'dotenv';
-import { ICheckAccessTokenResponse } from '@/src/stores/auth/type';
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -76,7 +69,9 @@ const KingOfTheHill = ({
             setMetadataShow(metadata);
         }
     }, [metadata]);
-
+    if (!pool) {
+        return null;
+    }
     return (
         pool && (
             <div
@@ -362,7 +357,7 @@ const HomePage = () => {
             .sort((a, b) => b.ratio - a.ratio)[0];
 
         setKingPool(poolWithClosestRatio?.pool || allPool[0]);
-    }, [allPool, focusPools, chainConfig?.chainId]);
+    }, [allPool, focusPools]);
 
     useEffect(() => {
         if (filter !== PoolStatus.ACTIVE || query) {
