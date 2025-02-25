@@ -370,4 +370,72 @@ export class LaunchPadInterface {
             this.handleErrors(err);
         }
     }
+
+    async spinLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+        }
+    ) {
+        try {
+            const { poolAddress } = params;
+            if (!poolAddress) {
+                throw new Error('Invalid params when call spinLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'spinLottery',
+                args: [poolAddress]
+            });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
+
+    async claimFundLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+        }
+    ) {
+        try {
+            const { poolAddress } = params;
+            if (!poolAddress) {
+                throw new Error('Invalid params when call claimFundLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'claimFundLottery',
+                args: [poolAddress]
+            });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
+
+    async depositForLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+            amount: string;
+            referrer: string;
+        }
+    ) {
+        try {
+            const { poolAddress, amount, referrer } = params;
+            if (!poolAddress || !amount || !referrer) {
+                throw new Error('Invalid params when call claimFundLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'depositForLottery',
+                args: [poolAddress, amount, referrer]
+            });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
 }

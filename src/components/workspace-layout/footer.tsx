@@ -1,5 +1,4 @@
 import { useConfig } from '@/src/hooks/useConfig';
-import { notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';

@@ -38,6 +38,7 @@ import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
+import LotteryButtons from './lottery-button';
 const { Text, Title } = Typography;
 
 const PoolPurchaseSummary = () => {
@@ -783,6 +784,7 @@ const PoolPurchaseSummary = () => {
                     clearForm={clearForm}
                     isTradeBex={isTradeBex}
                 />
+                <LotteryButtons />
             </Form>
 
             <ModalActivities />

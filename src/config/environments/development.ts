@@ -1,3 +1,4 @@
+import { ChainId } from '@/src/common/constant/constance';
 import {
     NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_ARTELA_CONTRACT_ADDRESS,
@@ -6,9 +7,9 @@ import {
     NEXT_PUBLIC_POLYGON_AMOY_CONTRACT_ADDRESS,
     NEXT_PUBLIC_UNICHAIN_SEPOLIA_CONTRACT_ADDRESS
 } from '@/src/common/web3/constants/env';
-import { EnvironmentConfig } from '../type';
-import { ChainId } from '@/src/common/constant/constance';
 import { ROCKET_EVM_ABI } from '../abi/rocket-evm-abi';
+import { ROCKET_EVM_ABI_LOTTERY } from '../abi/rocket-evm-abi-lottery';
+import { EnvironmentConfig } from '../type';
 
 export const developmentConfig: EnvironmentConfig = {
     environment: 'staging',
@@ -35,7 +36,7 @@ export const developmentConfig: EnvironmentConfig = {
             explorer: 'https://bartio.beratrail.io',
             rpcUrl: 'https://bartio.rpc.berachain.com',
             isTestnet: true,
-            contractAbis: ROCKET_EVM_ABI
+            contractAbis: ROCKET_EVM_ABI_LOTTERY
         },
 
         [ChainId.ARTELA]: {
