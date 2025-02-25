@@ -119,19 +119,19 @@ const PoolDetail = () => {
     }, [refId, poolAddress]);
 
     useEffect(() => {
-        if (!address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
+        // if (!address) {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: 'Please connect to your wallet',
+        //         duration: 3,
+        //         showProgress: true
+        //     });
 
-            router.push(
-                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
-            );
-            return;
-        }
+        //     router.push(
+        //         `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
+        //     );
+        //     return;
+        // }
 
         // resetPoolDetailAction();
         if (poolAddress && poolStateDetail.pageTransaction !== undefined) {

@@ -136,16 +136,16 @@ const SaveButtonBuy = ({
         setIsLoadingBuyToken(true);
 
         try {
-            if (!(chainId && address)) {
-                notification.error({
-                    message: 'Error',
-                    description: t('PLEASE_CONNECT_WALLET'),
-                    duration: 1,
-                    showProgress: true
-                });
-                return;
-            }
-            if (!listChainIdSupported.includes(chainId)) {
+            // if (!(chainId && address)) {
+            //     notification.error({
+            //         message: 'Error',
+            //         description: t('PLEASE_CONNECT_WALLET'),
+            //         duration: 1,
+            //         showProgress: true
+            //     });
+            //     return;
+            // }
+            if (!listChainIdSupported.includes(chainId!)) {
                 notification.error({
                     message: 'Error',
                     description: t('PLEASE_SWITCH_CHAIN_SYSTEM_SUPPORTED'),

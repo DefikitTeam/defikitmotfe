@@ -28,19 +28,19 @@ const SearchComponent = (props: SearchProps) => {
 
     const { isConnected, address } = useAccount();
     const handleOnClearSearch = () => {
-        if (isConnected && address) {
-            setQuery('');
-            props.onChange('');
-            props.onClear?.();
-        } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (isConnected && address) {
+        setQuery('');
+        props.onChange('');
+        props.onClear?.();
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
 
     return (

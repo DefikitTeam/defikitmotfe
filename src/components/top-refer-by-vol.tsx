@@ -51,19 +51,19 @@ const TopReferByVol = () => {
     }, [topRefByVolState.status]);
 
     const handleClickTopRefByVol = (id: string) => {
-        if (isConnected && address) {
-            router.push(
-                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
-            );
-        } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (isConnected && address) {
+        router.push(
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
+        );
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
 
     return (

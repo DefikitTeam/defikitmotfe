@@ -106,22 +106,18 @@ const FaucetInformation = () => {
         });
     };
     const handleClickFollowRocketLaunch = () => {
-        if (isConnected && address) {
-            window.open(
-                t('ROCKET_LAUNCH_LINK'),
-                '_blank',
-                'noopener,noreferrer'
-            );
-            setIsClickFollow(true);
-        } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (isConnected && address) {
+        window.open(t('ROCKET_LAUNCH_LINK'), '_blank', 'noopener,noreferrer');
+        setIsClickFollow(true);
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
     const handleClickCreateRocketLaunch = () => {
         if (isConnected && address) {
@@ -137,26 +133,17 @@ const FaucetInformation = () => {
     };
 
     const handleSubmitFaucet = async () => {
-        if (isConnected && address) {
-            setIsLoadingFaucet(true);
-            const res = await serviceFaucet.getFaucet(
-                address as string,
-                chainConfig?.chainId!
-            );
-            try {
-                if (res && res.status === 'success') {
-                    setIsLoadingFaucet(false);
-                    setIsDoneFaucet(true);
-                } else if (res && res.status === 'error') {
-                    notification.error({
-                        message: res.message,
-                        duration: 2,
-                        showProgress: true
-                    });
-                    setIsLoadingFaucet(false);
-                    setIsDoneFaucet(false);
-                }
-            } catch (error) {
+        // if (isConnected && address) {
+        setIsLoadingFaucet(true);
+        const res = await serviceFaucet.getFaucet(
+            address as string,
+            chainConfig?.chainId!
+        );
+        try {
+            if (res && res.status === 'success') {
+                setIsLoadingFaucet(false);
+                setIsDoneFaucet(true);
+            } else if (res && res.status === 'error') {
                 notification.error({
                     message: res.message,
                     duration: 2,
@@ -164,18 +151,27 @@ const FaucetInformation = () => {
                 });
                 setIsLoadingFaucet(false);
                 setIsDoneFaucet(false);
-            } finally {
-                setIsLoadingFaucet(false);
             }
-        } else {
+        } catch (error) {
             notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
+                message: res.message,
                 duration: 2,
                 showProgress: true
             });
-            return;
+            setIsLoadingFaucet(false);
+            setIsDoneFaucet(false);
+        } finally {
+            setIsLoadingFaucet(false);
         }
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
 
     useEffect(() => {

@@ -45,30 +45,30 @@ const ModalSetMaxSlippage = ({ type }: { type: string }) => {
     };
 
     const handleClick = () => {
-        if (isConnected && address) {
-            if (type === 'buy') {
-                setSlippage(amountSlippage);
-                setOpenModalSettingSlippage(false);
-            } else {
-                setSellSlippage(amountSellSlippage);
-                setOpenModalSellSettingSlippage(false);
-            }
-
-            notification.success({
-                message: t('CHANGE_SLIPPAGE_SUCCESSFULLY'),
-                placement: 'topRight',
-                showProgress: true,
-                duration: 1
-            });
+        // if (isConnected && address) {
+        if (type === 'buy') {
+            setSlippage(amountSlippage);
+            setOpenModalSettingSlippage(false);
         } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
+            setSellSlippage(amountSellSlippage);
+            setOpenModalSellSettingSlippage(false);
         }
+
+        notification.success({
+            message: t('CHANGE_SLIPPAGE_SUCCESSFULLY'),
+            placement: 'topRight',
+            showProgress: true,
+            duration: 1
+        });
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
 
     return (

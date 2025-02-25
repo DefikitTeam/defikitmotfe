@@ -11,34 +11,34 @@ const Footer = () => {
 
     const { chainConfig } = useConfig();
     const handlePortfolioClick = () => {
-        if (isConnected && address) {
-            router.push(
-                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
-            );
-        } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (isConnected && address) {
+        router.push(
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
+        );
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
     const handleClickCreateLaunch = () => {
-        if (isConnected && address) {
-            router.push(
-                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
-            );
-        } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (isConnected && address) {
+        router.push(
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
+        );
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
     // const handleClickFaucet = () => {
     //     if (isConnected && address) {
@@ -67,15 +67,15 @@ const Footer = () => {
     //     }
     // };
     const handleClickCommunity = () => {
-        if (!isConnected) {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (!isConnected) {
+        // notification.error({
+        //     message: 'Error',
+        //     description: t('PLEASE_CONNECT_WALLET'),
+        //     duration: 2,
+        //     showProgress: true
+        // });
+        // return;
+        // }
     };
 
     return (
