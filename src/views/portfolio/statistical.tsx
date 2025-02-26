@@ -369,7 +369,6 @@ const Statistical = () => {
                 await fetchGetInviteCode();
             }
         } catch (error) {
-            console.log('error line 405---', error);
             notification.error({
                 message: 'Error',
                 description:

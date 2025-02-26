@@ -59,6 +59,10 @@ export function useReader({
             {
                 functionName: 'getAmountIn',
                 args: [amountOut, reserveIn, reserveOut]
+            },
+            {
+                functionName: 'fundLottery',
+                args: [poolAddress]
             }
         ]
     };

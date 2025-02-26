@@ -63,6 +63,7 @@ import {
     IActivitiesState,
     IBuyPool,
     ICreatePoolLaunch,
+    IDepositLottery,
     IDetailPoolState,
     IGetAllPoolBackgroundQuery,
     IGetAllPoolQuery,
@@ -83,6 +84,10 @@ import {
     IVestingState
 } from './type';
 import { setIsOpenModalVesting } from './vestingSlice';
+import {
+    resetDepositLotteryInformation,
+    updateDepositLotteryInformation
+} from './depositLotterySlice';
 export function usePoolDetail(): [
     {
         poolStateDetail: IDetailPoolState;
@@ -274,6 +279,28 @@ export function useBuyPoolInformation(): [
     }, [dispatch]);
 
     return [data, setBuyPoolInformation, resetData];
+}
+
+export function useDepositLottery(): [
+    IDepositLottery,
+    (data: IDepositLottery) => void,
+    () => void
+] {
+    const dispatch = useAppDispatch();
+    const dataDeposit = useAppSelector(
+        (state: RootState) => state.depositLottery
+    );
+    const setDepositLotteryInformation = useCallback(
+        (data: IDepositLottery) => {
+            dispatch(updateDepositLotteryInformation(data));
+        },
+        [dispatch]
+    );
+    const resetData = useCallback(() => {
+        dispatch(resetDepositLotteryInformation());
+    }, [dispatch]);
+
+    return [dataDeposit, setDepositLotteryInformation, resetData];
 }
 
 export function useSellPoolInformation(): [

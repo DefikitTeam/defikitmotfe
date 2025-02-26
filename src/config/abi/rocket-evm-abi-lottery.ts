@@ -822,6 +822,25 @@ export const ROCKET_EVM_ABI_LOTTERY = [
     {
         inputs: [
             {
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            }
+        ],
+        name: 'fundLottery',
+        outputs: [
+            {
+                internalType: 'uint256',
+                name: '',
+                type: 'uint256'
+            }
+        ],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
                 internalType: 'uint256',
                 name: 'amountOut',
                 type: 'uint256'

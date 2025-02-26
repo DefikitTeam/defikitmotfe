@@ -425,15 +425,48 @@ export class LaunchPadInterface {
     ) {
         try {
             const { poolAddress, amount, referrer } = params;
+            console.log('params line 428----', params);
             if (!poolAddress || !amount || !referrer) {
-                throw new Error('Invalid params when call claimFundLottery');
+                throw new Error('Invalid params when call depositForLottery');
             }
 
-            await watcher.writeContractAsync({
-                ...this._contractStruct,
-                functionName: 'depositForLottery',
-                args: [poolAddress, amount, referrer]
-            });
+            if (!amount) {
+                throw new Error('Invalid amount when call depositForLottery');
+            }
+
+            if (poolAddress) {
+                const chainId = Number(this._contractStruct.chainId);
+
+                if (isNaN(chainId)) {
+                    throw new Error('Invalid chainId');
+                }
+
+                const parameters = { chainId: chainId };
+
+                const gasPrice = await getGasPrice(config, parameters);
+
+                if (!gasPrice) {
+                    throw new Error('Failed to fetch gas price');
+                }
+
+                const adjustedGasPrice = (gasPrice * BigInt(13)) / BigInt(10);
+
+                await watcher.writeContractAsync({
+                    ...this._contractStruct,
+                    functionName: 'depositForLottery',
+                    args: [poolAddress, ethers.parseEther(amount), referrer],
+                    gasPrice: adjustedGasPrice,
+                    value: ethers.parseEther(amount)
+                });
+            }
+
+            // await watcher.writeContractAsync({
+            //     ...this._contractStruct,
+            //     functionName: 'depositForLottery',
+            //     args: [poolAddress, ethers.parseEther(amount), referrer],
+            //     gasPrice: adjustedGasPrice,
+            //     value: ethers.parseEther(amount)
+            // });
         } catch (err) {
             this.handleErrors(err);
         }

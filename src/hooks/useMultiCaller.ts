@@ -223,7 +223,11 @@ export function useMultiCaller() {
             isLoadingInitDepositForLottery: depositForLotteryWatcher.isPending,
             isError:
                 depositForLotteryListener.isError ||
-                depositForLotteryWatcher.isError
+                depositForLotteryWatcher.isError,
+
+            error:
+                depositForLotteryListener.error ||
+                depositForLotteryWatcher.error
         }
     };
 }
