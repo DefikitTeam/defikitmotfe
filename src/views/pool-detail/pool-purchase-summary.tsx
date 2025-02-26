@@ -235,8 +235,8 @@ const PoolPurchaseSummary = () => {
             const raisedShow = marketCap.isEqualTo(0)
                 ? `0`
                 : marketCap.isLessThanOrEqualTo(0.001)
-                  ? `<0.001`
-                  : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
+                    ? `<0.001`
+                    : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
                         marketCap.times(priceNative)
                     )}`;
             setRaisedEth(raisedShow);
@@ -336,7 +336,7 @@ const PoolPurchaseSummary = () => {
     }, [chainId, poolAddress]);
 
     useEffect(() => {
-        const availableBonds = Number(maxBondCurrentValue) - Number(bondSold);
+        const availableBonds = Number(maxBondCurrentValue);
 
         const validBonds =
             isNaN(availableBonds) || availableBonds < 0
@@ -345,7 +345,7 @@ const PoolPurchaseSummary = () => {
 
         setBondAvailableCurrent(validBonds);
         setMaxSlider(Number(validBonds));
-    }, [maxBondCurrentValue, bondSold]);
+    }, [maxBondCurrentValue]);
 
     useEffect(() => {
         const value: number =
@@ -361,10 +361,10 @@ const PoolPurchaseSummary = () => {
                     const ethToBuy: number =
                         slippageState.slippage !== 0
                             ? Number(
-                                  new BigNumber(estimateBuyValueReal)
-                                      .times(1 + slippageState.slippage / 100)
-                                      .toFixed(0)
-                              )
+                                new BigNumber(estimateBuyValueReal)
+                                    .times(1 + slippageState.slippage / 100)
+                                    .toFixed(0)
+                            )
                             : Number(estimateBuyValueReal);
                     setMaxAmountETH(ethToBuy);
                     setData({
@@ -716,7 +716,7 @@ const PoolPurchaseSummary = () => {
                             min={0}
                             max={
                                 Number(bondAvailableCurrent) &&
-                                Number(bondAvailableCurrent) > 100
+                                    Number(bondAvailableCurrent) > 100
                                     ? 100
                                     : Number(bondAvailableCurrent)
                             }
@@ -764,8 +764,8 @@ const PoolPurchaseSummary = () => {
                                 value={
                                     maxAmountETH
                                         ? new BigNumber(maxAmountETH)
-                                              .div(1e18)
-                                              .toFixed(6)
+                                            .div(1e18)
+                                            .toFixed(6)
                                         : 0
                                 }
                                 className="!font-forza text-base"
