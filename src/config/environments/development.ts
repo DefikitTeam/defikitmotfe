@@ -13,7 +13,7 @@ import { ROCKET_EVM_ABI } from '../abi/rocket-evm-abi';
 
 export const developmentConfig: EnvironmentConfig = {
     environment: 'staging',
-    defaultChain: ChainId.BARTIO,
+    defaultChain: ChainId.MONAD,
     supportedChains: [
         ChainId.BARTIO,
         ChainId.ARTELA,
