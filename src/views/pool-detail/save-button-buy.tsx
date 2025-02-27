@@ -1,6 +1,8 @@
 /* eslint-disable */
 import {
     ADDRESS_NULL,
+    ChainId,
+    DEX_BY_CHAIN,
     listChainIdSupported
 } from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
@@ -14,6 +16,7 @@ import {
     usePoolDetail
 } from '@/src/stores/pool/hook';
 import { EActionStatus } from '@/src/stores/type';
+import { ExportOutlined } from '@ant-design/icons';
 import { Button, Spin, notification } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
@@ -195,7 +198,8 @@ const SaveButtonBuy = ({
                 );
             } else {
                 window.open(
-                    t('LINK_TRADE_ON_BEX') + `${poolAddress}`,
+                    `${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].linkSwap}` +
+                        `${poolAddress}`,
                     '_blank',
                     'noopener,noreferrer'
                 );
@@ -236,11 +240,48 @@ const SaveButtonBuy = ({
                     onClick={handleButtonBuyPoolOrTrade}
                     disabled={disableBtnBuy === true && isTradeBex === false}
                 >
-                    {isTradeBex
-                        ? Number(pool.startTime) < 1736496722
-                            ? 'Trade on Kodiak'
-                            : 'Trade on Bex'
-                        : `Buy ${text}`}
+                    {isTradeBex ? (
+                        <>
+                            {Number(pool.startTime) < 1736496722
+                                ? 'Trade on Kodiak'
+                                : `Trade on ${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].dexName}`}
+                            {chainConfig?.chainId === ChainId.MONAD && (
+                                <span
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(
+                                            'https://www.defined.fi/mon-test/0xc0ce32eee0eb8bf24fa2b00923a78abc5002f91e?quoteToken=token1',
+                                            '_blank',
+                                            'noopener,noreferrer'
+                                        );
+                                    }}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <svg
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="white"
+                                        strokeWidth="2"
+                                    >
+                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                        <polyline points="15 3 21 3 21 9" />
+                                        <line
+                                            x1="10"
+                                            y1="14"
+                                            x2="21"
+                                            y2="3"
+                                        />
+                                    </svg>
+
+                                    {/* <ExportOutlined /> */}
+                                </span>
+                            )}
+                        </>
+                    ) : (
+                        `Buy ${text}`
+                    )}
                 </Button>
             </div>
         </Spin>

@@ -4,6 +4,7 @@ import {
     berachain,
     berachainTestnetbArtio,
     Chain,
+    monadTestnet,
     polygonAmoy
 } from 'viem/chains';
 const unichainSepoliaTestnet: Chain = {
@@ -30,8 +31,12 @@ export const CHAIN_CONFIG = {
         supportedChains: [berachain]
     },
     staging: {
-        defaultChain: berachainTestnetbArtio,
-        supportedChains: [berachainTestnetbArtio, baseSepolia]
+        defaultChain: monadTestnet,
+        // berachainTestnetbArtio,
+        supportedChains: [
+            // berachainTestnetbArtio, baseSepolia
+            monadTestnet
+        ]
     },
     development: {
         defaultChain: berachainTestnetbArtio,

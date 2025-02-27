@@ -196,7 +196,7 @@ const PoolDetailInformation = () => {
                             {
                                 DEX_BY_CHAIN[
                                     chainConfig?.chainId as keyof typeof DEX_BY_CHAIN
-                                ]
+                                ].dexName
                             }
                         </div>
                     </div>
