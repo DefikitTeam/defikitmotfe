@@ -19,7 +19,7 @@ export async function generateMetadata() {
             title: `MONIT.FUN - Home`,
             description:
                 'MONIT.FUN is a decentralized platform for launching tokens',
-            url: `https://staging.rocketlaunch.fun`,
+            url: `https://testnet.monit.fun`,
             type: 'website',
             images: [
                 {
