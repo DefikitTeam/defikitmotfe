@@ -2,7 +2,7 @@
     "name": "rocketlaunch",
     "private": true,
     "scripts": {
-        "dev": "next dev -H 0.0.0.0 -p 3000",
+        "dev": "next dev -H 0.0.0.0 -p 80",
         "build": "next build",
         "build:prod": "rm -rf .next && next build",
         "start": "next start -H 0.0.0.0 -p 80",
