@@ -18,7 +18,7 @@ export const developmentConfig: EnvironmentConfig = {
     supportedChains: [
         ChainId.BARTIO,
         ChainId.ARTELA,
-        // ChainId.BASE_SEPOLIA,
+        ChainId.BASE_SEPOLIA,
         ChainId.POLYGON_AMOY,
         ChainId.UNICHAIN_SEPOLIA,
         ChainId.MONAD
@@ -113,7 +113,7 @@ export const developmentConfig: EnvironmentConfig = {
             explorer: 'https://testnet.monadexplorer.com',
             rpcUrl: 'https://testnet-rpc.monad.xyz',
             isTestnet: true,
-            contractAbis: ROCKET_EVM_ABI
+            contractAbis: ROCKET_EVM_ABI_LOTTERY
         }
     },
     api: {
