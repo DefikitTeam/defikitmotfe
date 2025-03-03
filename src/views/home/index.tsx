@@ -1,6 +1,7 @@
 /* eslint-disable */
 'use client';
 import {
+    ChainId,
     chains,
     DropdownObject,
     poolStates,
@@ -26,15 +27,7 @@ import { IPoolList } from '@/src/stores/pool/type';
 import { useTopRefByVol } from '@/src/stores/top-ref-by-vol/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
-import {
-    Col,
-    notification,
-    Row,
-    Select,
-    Spin,
-    Tooltip,
-    Typography
-} from 'antd';
+import { Col, Row, Select, Spin, Tooltip, Typography } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
@@ -64,6 +57,7 @@ const KingOfTheHill = ({
 }: KingOfTheHillProps) => {
     const [metadataShow, setMetadataShow] = useState<any>(null);
 
+    const { chainConfig } = useConfig();
     useEffect(() => {
         if (metadata) {
             setMetadataShow(metadata);
@@ -79,13 +73,15 @@ const KingOfTheHill = ({
             >
                 <div className="w-full max-w-xl">
                     <div className="mb-4 animate-king-title text-center">
-                        <Text className="animate-king-text !font-forza !text-2xl !font-extrabold tracking-wider text-yellow-500">
+                        <Text
+                            className={`animate-king-text !font-forza !text-2xl !font-extrabold tracking-wider ${chainConfig?.chainId === ChainId.MONAD}? 'text-purple-400': 'text-yellow-500'  `}
+                        >
                             Rocket Pool
                         </Text>
                     </div>
 
                     <div
-                        className="pool-item max-h-[290px] animate-king-pool rounded-lg border-2 border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 p-1"
+                        className={`pool-item max-h-[290px] animate-king-pool rounded-lg border-2 ${chainConfig?.chainId === ChainId.MONAD ? 'border-purple-400 bg-gradient-to-r from-purple-400/10 to-indigo-400/10' : 'border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10'} p-1`}
                         // data-pool-id={pool.id}
                     >
                         <div

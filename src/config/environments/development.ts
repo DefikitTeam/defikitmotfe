@@ -4,6 +4,7 @@ import {
     NEXT_PUBLIC_ARTELA_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BASE_SEPOLIA_CONTRACT_ADDRESS,
+    NEXT_PUBLIC_MONAD_CONTRACT_ADDRESS,
     NEXT_PUBLIC_POLYGON_AMOY_CONTRACT_ADDRESS,
     NEXT_PUBLIC_UNICHAIN_SEPOLIA_CONTRACT_ADDRESS
 } from '@/src/common/web3/constants/env';
@@ -13,14 +14,14 @@ import { EnvironmentConfig } from '../type';
 
 export const developmentConfig: EnvironmentConfig = {
     environment: 'staging',
-    defaultChain: ChainId.BARTIO,
+    defaultChain: ChainId.MONAD,
     supportedChains: [
         ChainId.BARTIO,
         ChainId.ARTELA,
         // ChainId.BASE_SEPOLIA,
         ChainId.POLYGON_AMOY,
         ChainId.UNICHAIN_SEPOLIA,
-        ChainId.BASE_SEPOLIA
+        ChainId.MONAD
     ],
     chains: {
         [ChainId.BARTIO]: {
@@ -98,6 +99,21 @@ export const developmentConfig: EnvironmentConfig = {
             rpcUrl: 'https://sepolia.unichain.org',
             isTestnet: true,
             contractAbis: ROCKET_EVM_ABI
+        },
+        [ChainId.MONAD]: {
+            chainId: ChainId.MONAD,
+            name: 'Monad Testnet',
+            currency: 'MON',
+            addresses: {
+                rocket: NEXT_PUBLIC_MONAD_CONTRACT_ADDRESS as string
+            },
+            subgraph: {
+                uri: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/monad_testnet`
+            },
+            explorer: 'https://testnet.monadexplorer.com',
+            rpcUrl: 'https://testnet-rpc.monad.xyz',
+            isTestnet: true,
+            contractAbis: ROCKET_EVM_ABI
         }
     },
     api: {
@@ -108,7 +124,8 @@ export const developmentConfig: EnvironmentConfig = {
                 [ChainId.ARTELA]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/artela`,
                 [ChainId.BASE_SEPOLIA]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/base-sepolia`,
                 [ChainId.POLYGON_AMOY]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/polygon-amoy`,
-                [ChainId.UNICHAIN_SEPOLIA]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/unichain-sepolia`
+                [ChainId.UNICHAIN_SEPOLIA]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/unichain-sepolia`,
+                [ChainId.MONAD]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/monad_testnet`
             }
         }
     }

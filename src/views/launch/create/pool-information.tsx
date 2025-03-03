@@ -2,7 +2,6 @@
 import {
     ACCEPT_AVATAR_TYPES,
     AccountFileType,
-    ChainId,
     DEX_BY_CHAIN,
     HARD_CAP_INITIAL_BY_CHAIN,
     MAX_AVATAR_FILE_SIZE,
@@ -15,8 +14,8 @@ import {
     nextDayFrom,
     nextMinuteFrom
 } from '@/src/common/utils/utils';
+import { useConfig } from '@/src/hooks/useConfig';
 import serviceAiGenerate from '@/src/services/external-services/backend-server/ai-generate';
-import { RootState } from '@/src/stores';
 import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hook';
 import { useListTokenOwner } from '@/src/stores/token/hook';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
@@ -43,14 +42,11 @@ import dayjs from 'dayjs';
 import { useTranslations } from 'next-intl';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { IPoolCreatForm } from '.';
-import SocialMedia from './social_media';
-import AdvanceConfiguration from './advance-configuration';
-import AdditionalAgent from './additional-agent';
 import { useAccount } from 'wagmi';
-import { useConfig } from '@/src/hooks/useConfig';
-import { ignore } from 'antd/es/theme/useToken';
+import { IPoolCreatForm } from '.';
+import AdditionalAgent from './additional-agent';
+import AdvanceConfiguration from './advance-configuration';
+import SocialMedia from './social_media';
 
 const getBase64 = (file: RcFile): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -898,7 +894,7 @@ const PoolInformation = ({
                                 {chainConfig?.currency}
                                 {' )'}
                                 <Tooltip
-                                    title={`${t('PREFIX_HARDCAP_HELP')} ${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN]} ${t('SUFFIX_HARDCAP_HELP')}`}
+                                    title={`${t('PREFIX_HARDCAP_HELP')} ${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].dexName} ${t('SUFFIX_HARDCAP_HELP')}`}
                                 >
                                     <QuestionCircleOutlined
                                         style={{ marginLeft: '8px' }}
