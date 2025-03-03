@@ -312,6 +312,12 @@ export interface IBuyPool {
 
 export interface ISellPool extends IBuyPool {}
 
+export interface IDepositLottery {
+    poolAddress: string;
+    referrer: string;
+    depositAmount: number;
+}
+
 export interface IGetTransactionByPoolAndSenderParams {
     poolAddress: string;
     senderAddress: string;

@@ -8,7 +8,6 @@ import {
 import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
-import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import {
     useActivities,
@@ -22,7 +21,6 @@ import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 
 const SaveButtonBuy = ({
@@ -64,7 +62,6 @@ const SaveButtonBuy = ({
     const { status, pool } = poolStateDetail;
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
-    const chainData = useSelector((state: RootState) => state.chainData);
 
     const { useBuyPoolMulti } = useMultiCaller();
     const [hasNotified, setHasNotified] = useState<boolean>(false);
@@ -125,6 +122,7 @@ const SaveButtonBuy = ({
             setHasNotified(false);
         }
     }, [useBuyPoolMulti.isConfirmed, status]);
+
     useEffect(() => {
         if (useBuyPoolMulti.isError) {
             setIsLoadingBuyToken(false);
@@ -135,6 +133,7 @@ const SaveButtonBuy = ({
             });
         }
     }, [useBuyPoolMulti.isError]);
+
     const handleBuyPool = async () => {
         setIsLoadingBuyToken(true);
 

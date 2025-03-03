@@ -8,7 +8,7 @@ import { IChainInfor, setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Chain } from 'viem/chains';
@@ -46,8 +46,10 @@ const ModalSelectChain = () => {
 
         setIsModalOpen(false);
         dispatch(setChainData(chainData as IChainInfor));
-        router.push(`/${chain.name.replace(/\s+/g, '').toLowerCase()}`);
-        window.location.reload();
+        // router.push(`/${chain.name.replace(/\s+/g, '').toLowerCase()}`);
+        const newRoute = `/${chain.name.replace(/\s+/g, '').toLowerCase()}`;
+
+        window.location.href = newRoute;
     };
 
     // useEffect(() => {

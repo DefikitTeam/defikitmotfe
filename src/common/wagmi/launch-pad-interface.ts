@@ -370,4 +370,108 @@ export class LaunchPadInterface {
             this.handleErrors(err);
         }
     }
+
+    async spinLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+        }
+    ) {
+        try {
+            const { poolAddress } = params;
+            if (!poolAddress) {
+                throw new Error('Invalid params when call spinLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'spinLottery',
+                args: [poolAddress]
+            });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
+
+    async claimFundLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+        }
+    ) {
+        try {
+            const { poolAddress } = params;
+            if (!poolAddress) {
+                throw new Error('Invalid params when call claimFundLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'claimFundLottery',
+                args: [poolAddress]
+            });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
+
+    async depositForLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+            amount: string;
+            referrer: string;
+        }
+    ) {
+        try {
+            const { poolAddress, amount, referrer } = params;
+            console.log('params line 428----', params);
+            if (!poolAddress || !amount || !referrer) {
+                throw new Error('Invalid params when call depositForLottery');
+            }
+
+            if (!amount) {
+                throw new Error('Invalid amount when call depositForLottery');
+            }
+            if (parseFloat(amount) === 0) {
+                throw new Error('Please enter a valid amount');
+            }
+
+            if (poolAddress) {
+                const chainId = Number(this._contractStruct.chainId);
+
+                if (isNaN(chainId)) {
+                    throw new Error('Invalid chainId');
+                }
+
+                const parameters = { chainId: chainId };
+
+                const gasPrice = await getGasPrice(config, parameters);
+
+                if (!gasPrice) {
+                    throw new Error('Failed to fetch gas price');
+                }
+
+                const adjustedGasPrice = (gasPrice * BigInt(13)) / BigInt(10);
+
+                await watcher.writeContractAsync({
+                    ...this._contractStruct,
+                    functionName: 'depositForLottery',
+                    args: [poolAddress, ethers.parseEther(amount), referrer],
+                    gasPrice: adjustedGasPrice,
+                    value: ethers.parseEther(amount)
+                });
+            }
+
+            // await watcher.writeContractAsync({
+            //     ...this._contractStruct,
+            //     functionName: 'depositForLottery',
+            //     args: [poolAddress, ethers.parseEther(amount), referrer],
+            //     gasPrice: adjustedGasPrice,
+            //     value: ethers.parseEther(amount)
+            // });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
 }

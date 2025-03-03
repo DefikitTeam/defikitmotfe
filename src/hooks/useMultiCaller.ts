@@ -43,6 +43,21 @@ export function useMultiCaller() {
         hash: sellTokenMultiWatcher.data
     });
 
+    const spinLotteryWatcher = useWriteContract();
+    const spinLotteryListener = useWaitForTransactionReceipt({
+        hash: spinLotteryWatcher.data
+    });
+
+    const claimFundLotteryWatcher = useWriteContract();
+    const claimFundLotteryListener = useWaitForTransactionReceipt({
+        hash: claimFundLotteryWatcher.data
+    });
+
+    const depositForLotteryWatcher = useWriteContract();
+    const depositForLotteryListener = useWaitForTransactionReceipt({
+        hash: depositForLotteryWatcher.data
+    });
+
     return {
         /*=======================MULTI=======================*/
 
@@ -168,6 +183,51 @@ export function useMultiCaller() {
             isLoadingInitSellToken: sellTokenMultiWatcher.isPending,
             isError:
                 sellTokenMultiListener.isError || sellTokenMultiWatcher.isError
+        },
+
+        useSpinLottery: {
+            actionAsync: (params: { poolAddress: string }) => {
+                return multiCaller.spinLottery(spinLotteryWatcher, params);
+            },
+            isConfirmed: spinLotteryListener.isSuccess,
+            isLoadingAgreedSpinLottery: spinLotteryListener.isLoading,
+            isLoadingInitSpinLottery: spinLotteryWatcher.isPending,
+            isError: spinLotteryListener.isError || spinLotteryWatcher.isError
+        },
+
+        useClaimFundLottery: {
+            actionAsync: (params: { poolAddress: string }) => {
+                return multiCaller.claimFundLottery(spinLotteryWatcher, params);
+            },
+            isConfirmed: claimFundLotteryListener.isSuccess,
+            isLoadingAgreedSpinLottery: claimFundLotteryListener.isLoading,
+            isLoadingInitSpinLottery: spinLotteryWatcher.isPending,
+            isError:
+                claimFundLotteryListener.isError || spinLotteryWatcher.isError
+        },
+
+        useDepositForLottery: {
+            actionAsync: (params: {
+                poolAddress: string;
+                amount: string;
+                referrer: string;
+            }) => {
+                return multiCaller.depositForLottery(
+                    depositForLotteryWatcher,
+                    params
+                );
+            },
+            isConfirmed: depositForLotteryListener.isSuccess,
+            isLoadingAgreedDepositForLottery:
+                depositForLotteryListener.isLoading,
+            isLoadingInitDepositForLottery: depositForLotteryWatcher.isPending,
+            isError:
+                depositForLotteryListener.isError ||
+                depositForLotteryWatcher.isError,
+
+            error:
+                depositForLotteryListener.error ||
+                depositForLotteryWatcher.error
         }
     };
 }
