@@ -2,7 +2,6 @@ import {
     artelaTestnet,
     baseSepolia,
     berachain,
-    berachainTestnetbArtio,
     Chain,
     polygonAmoy
 } from 'viem/chains';
@@ -30,13 +29,13 @@ export const CHAIN_CONFIG = {
         supportedChains: [berachain]
     },
     staging: {
-        defaultChain: berachainTestnetbArtio,
-        supportedChains: [berachainTestnetbArtio, baseSepolia]
+        defaultChain: baseSepolia,
+        supportedChains: [baseSepolia]
     },
     development: {
-        defaultChain: berachainTestnetbArtio,
+        defaultChain: baseSepolia,
         supportedChains: [
-            berachainTestnetbArtio,
+            baseSepolia,
             baseSepolia,
             polygonAmoy,
             artelaTestnet,

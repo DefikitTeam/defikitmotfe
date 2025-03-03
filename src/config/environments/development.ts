@@ -1,20 +1,18 @@
+import { ChainId } from '@/src/common/constant/constance';
 import {
     NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_ARTELA_CONTRACT_ADDRESS,
-    NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BASE_SEPOLIA_CONTRACT_ADDRESS,
     NEXT_PUBLIC_POLYGON_AMOY_CONTRACT_ADDRESS,
     NEXT_PUBLIC_UNICHAIN_SEPOLIA_CONTRACT_ADDRESS
 } from '@/src/common/web3/constants/env';
-import { EnvironmentConfig } from '../type';
-import { ChainId } from '@/src/common/constant/constance';
 import { ROCKET_EVM_ABI } from '../abi/rocket-evm-abi';
+import { EnvironmentConfig } from '../type';
 
 export const developmentConfig: EnvironmentConfig = {
     environment: 'staging',
-    defaultChain: ChainId.BARTIO,
+    defaultChain: ChainId.BASE_SEPOLIA,
     supportedChains: [
-        ChainId.BARTIO,
         ChainId.ARTELA,
         ChainId.BASE_SEPOLIA,
         ChainId.POLYGON_AMOY,
@@ -22,21 +20,6 @@ export const developmentConfig: EnvironmentConfig = {
         ChainId.BASE_SEPOLIA
     ],
     chains: {
-        [ChainId.BARTIO]: {
-            chainId: ChainId.BARTIO,
-            name: 'Berachain Bartio',
-            addresses: {
-                rocket: NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS as string
-            },
-            subgraph: {
-                uri: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/bartio`
-            },
-            currency: 'BERA',
-            explorer: 'https://bartio.beratrail.io',
-            rpcUrl: 'https://bartio.rpc.berachain.com',
-            isTestnet: true,
-            contractAbis: ROCKET_EVM_ABI
-        },
 
         [ChainId.ARTELA]: {
             chainId: ChainId.ARTELA,
