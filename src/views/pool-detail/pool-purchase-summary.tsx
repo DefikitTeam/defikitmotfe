@@ -11,7 +11,6 @@ import ModalSetMaxSlippage from '@/src/components/modal-set-max-slippage';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import servicePool from '@/src/services/external-services/backend-server/pool';
-import { RootState } from '@/src/stores';
 import {
     useActivities,
     useBuyPoolInformation,
@@ -35,7 +34,6 @@ import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import DepositLotteryButton from './deposit-lottery-button';
 import ModalActivities from './modal-activities';
@@ -49,10 +47,8 @@ const PoolPurchaseSummary = () => {
         usePoolDetail();
     const { pool, analystData, priceNative, status } = poolStateDetail;
     const { chainId, address, isConnected } = useAccount();
-    // const { address, isConnected } = useAccount();
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
-    const chainData = useSelector((state: RootState) => state.chainData);
     const [data, setData] = useBuyPoolInformation();
     const [dataDeposit, setDepositLotteryInformation] = useDepositLottery();
     const [maxBondCurrentValue, setMaxBondCurrentValue] = useState('0');
@@ -74,11 +70,9 @@ const PoolPurchaseSummary = () => {
     const [bondAmountValue, setBondAmountValue] = useState('');
     const [depositAmountValue, setDepositAmountValue] = useState('');
     const [disableBtnBuy, setDisableBtnBuy] = useState(true);
+    const [disableBtnDeposit, setDisableBtnDeposit] = useState(true);
+    const [disableBtnSpin, setDisableBtnSpin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-    // const [isLoadingDepositLottery, setIsLoadingDepositLottery] =
-    //     useState(false);
-    // const [isLoadingSpinLottery, setIsLoadingSpinLottery] = useState(false);
-
     const [raisedEth, setRaisedEth] = useState('0');
     const [showInitial, setShowInitial] = useState('0');
 
@@ -93,21 +87,35 @@ const PoolPurchaseSummary = () => {
         }
     });
 
+    const handleKeyPressDeposit = (event: any) => {
+        const pattern = /^[0-9.]$/;
+        if (!pattern.test(event.key)) {
+            event.preventDefault();
+        }
+    };
+
     const handleOnChangeDeposit = (
         event:
             | React.ChangeEvent<HTMLInputElement>
             | React.ChangeEvent<HTMLTextAreaElement>
     ) => {
-
         const { name, value } = event.target;
-        
+
         setDepositAmountValue(value.toString());
-        
+        // setDisableBtnDeposit(false);
         setDepositLotteryInformation({
             ...dataDeposit,
             [name]: Number(value)
         });
     };
+
+    useEffect(() => {
+        if (!dataDeposit.depositAmount) {
+            setDisableBtnDeposit(true);
+        } else {
+            setDisableBtnDeposit(false);
+        }
+    }, [dataDeposit.depositAmount]);
 
     const handleOnChange = (
         event:
@@ -247,6 +255,7 @@ const PoolPurchaseSummary = () => {
                 ...data,
                 poolAddress: pool.id
             });
+
             setDepositLotteryInformation({
                 ...dataDeposit,
                 poolAddress: pool.id
@@ -264,8 +273,8 @@ const PoolPurchaseSummary = () => {
             const raisedShow = marketCap.isEqualTo(0)
                 ? `0`
                 : marketCap.isLessThanOrEqualTo(0.001)
-                    ? `<0.001`
-                    : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
+                  ? `<0.001`
+                  : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
                         marketCap.times(priceNative)
                     )}`;
             setRaisedEth(raisedShow);
@@ -315,6 +324,7 @@ const PoolPurchaseSummary = () => {
         value: Number(bondAmountValue) >= 100 ? 100 : Number(bondAmountValue),
         chainId: chainConfig?.chainId as number
     });
+
     const estimateBuyValue = dataReader ? dataReader[2] : undefined;
     const maxBondCurrent = dataReader ? dataReader[4] : undefined;
     const funLottery = dataReader ? dataReader[7] : undefined;
@@ -391,10 +401,10 @@ const PoolPurchaseSummary = () => {
                     const ethToBuy: number =
                         slippageState.slippage !== 0
                             ? Number(
-                                new BigNumber(estimateBuyValueReal)
-                                    .times(1 + slippageState.slippage / 100)
-                                    .toFixed(0)
-                            )
+                                  new BigNumber(estimateBuyValueReal)
+                                      .times(1 + slippageState.slippage / 100)
+                                      .toFixed(0)
+                              )
                             : Number(estimateBuyValueReal);
                     setMaxAmountETH(ethToBuy);
                     setData({
@@ -451,14 +461,19 @@ const PoolPurchaseSummary = () => {
     useEffect(() => {
         try {
             if (!isFetchingDataReader && funLottery) {
-                const lotteryAmount = new BigNumber(funLottery?.result).toNumber();
-                setFunLotteryAvailable(lotteryAmount > 0 ? lotteryAmount.toString() : '0');
+                const lotteryAmount = new BigNumber(funLottery?.result)
+                    .div(1e18)
+                    .toFixed(3);
+                setFunLotteryAvailable(
+                    parseFloat(lotteryAmount) > 0
+                        ? lotteryAmount.toString()
+                        : '0'
+                );
             }
         } catch (error) {
             console.log('==== call funLottery error: ', error);
         }
     }, [isFetchingDataReader, funLottery]);
-
 
     useEffect(() => {
         if (pool?.soldBatch === pool?.totalBatch) {
@@ -770,7 +785,7 @@ const PoolPurchaseSummary = () => {
                             min={0}
                             max={
                                 Number(bondAvailableCurrent) &&
-                                    Number(bondAvailableCurrent) > 100
+                                Number(bondAvailableCurrent) > 100
                                     ? 100
                                     : Number(bondAvailableCurrent)
                             }
@@ -828,11 +843,11 @@ const PoolPurchaseSummary = () => {
                             >
                                 <div className="flex flex-col">
                                     <span className="font-forza text-base">
-                                        {t('FUN_LOTTERY_AVAILABLE')}
+                                        {t('FUND_LOTTERY_AVAILABLE')}
                                     </span>
                                     <span className="text-2xl font-bold text-blue-600">
                                         {Number(funLotteryAvailable)}{' '}
-                                        {t('BONDS')}
+                                        {`${chainConfig?.currency}/ETH`}
                                     </span>
                                 </div>
                             </Col>
@@ -859,8 +874,8 @@ const PoolPurchaseSummary = () => {
                                     value={
                                         maxAmountETH
                                             ? new BigNumber(maxAmountETH)
-                                                .div(1e18)
-                                                .toFixed(6)
+                                                  .div(1e18)
+                                                  .toFixed(6)
                                             : 0
                                     }
                                     className="!font-forza text-base"
@@ -887,13 +902,13 @@ const PoolPurchaseSummary = () => {
                                         *{' '}
                                     </Text>
                                     {`${t('DEPOSIT_AMOUNT')} ${chainConfig?.currency}`}
-                                    <Tooltip
+                                    {/* <Tooltip
                                         title={t('DEPOSIT_AMOUNT_TOOLTIP')}
                                     >
                                         <QuestionCircleOutlined
                                             style={{ marginLeft: '8px' }}
                                         />
-                                    </Tooltip>
+                                    </Tooltip> */}
                                 </span>
 
                                 <Input
@@ -901,12 +916,11 @@ const PoolPurchaseSummary = () => {
                                     placeholder={`Please enter ${chainConfig?.currency} amount`}
                                     name="depositAmount"
                                     value={depositAmountValue}
-                                    // onKeyPress={handleKeyPress}
+                                    onKeyPress={handleKeyPressDeposit}
                                     onChange={handleOnChangeDeposit}
                                     className="!font-forza text-base"
                                     style={{ color: '#000000', width: '100%' }}
                                 />
-                                
                             </div>
                         </Col>
                     )}
@@ -933,11 +947,27 @@ const PoolPurchaseSummary = () => {
                                 isTradeBex={isTradeBex}
                             />
                         ) : shouldShowDeposit && !shouldShowSpin ? (
-                            <DepositLotteryButton />
+                            <DepositLotteryButton
+                                disableBtnDeposit={disableBtnDeposit}
+                            />
                         ) : (
-                            <div className="mt-[6px] flex w-full gap-2">
-                                {shouldShowDeposit && <DepositLotteryButton />}
-                                {shouldShowSpin && <SpinLotteryButton />}
+                            <div className="mt-[6px]">
+                                <Row gutter={8}>
+                                    {shouldShowDeposit && (
+                                        <Col span={12}>
+                                            <DepositLotteryButton
+                                                disableBtnDeposit={
+                                                    disableBtnDeposit
+                                                }
+                                            />
+                                        </Col>
+                                    )}
+                                    {shouldShowSpin && (
+                                        <Col span={12}>
+                                            <SpinLotteryButton />
+                                        </Col>
+                                    )}
+                                </Row>
                             </div>
                         )}
                     </Col>

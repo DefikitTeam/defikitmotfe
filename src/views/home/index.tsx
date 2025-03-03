@@ -280,8 +280,6 @@ const HomePage = () => {
         setPoolState(filter);
     }, []);
 
- 
-
     // useEffect(() => {
     //     const chainInfo = getCurrentChainUrl();
     //     // console.log('chainInfo')

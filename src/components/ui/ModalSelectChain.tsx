@@ -47,11 +47,9 @@ const ModalSelectChain = () => {
         setIsModalOpen(false);
         dispatch(setChainData(chainData as IChainInfor));
         // router.push(`/${chain.name.replace(/\s+/g, '').toLowerCase()}`);
-        console.log('newChainConfig----', newChainConfig)
         const newRoute = `/${chain.name.replace(/\s+/g, '').toLowerCase()}`;
 
-        console.log('newRoute line 53---', newRoute);
-        window.location.href = newRoute; 
+        window.location.href = newRoute;
     };
 
     // useEffect(() => {

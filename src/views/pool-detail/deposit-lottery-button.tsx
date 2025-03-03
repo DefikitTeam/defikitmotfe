@@ -14,7 +14,11 @@ import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 
-const DepositLotteryButton = () => {
+const DepositLotteryButton = ({
+    disableBtnDeposit
+}: {
+    disableBtnDeposit: boolean;
+}) => {
     const [data, , resetData] = useDepositLottery();
 
     const [statusLoading, setStatusLoading] = useState(EActionStatus.Idle);
@@ -149,6 +153,11 @@ const DepositLotteryButton = () => {
                 <Button
                     type="default"
                     size="large"
+                    style={{
+                        whiteSpace: 'normal',
+                        wordWrap: 'break-word',
+                        opacity: disableBtnDeposit === true ? 0.6 : 1
+                    }}
                     className="w-full transform rounded-full bg-gradient-to-r from-purple-500 to-pink-500 !font-forza !font-forza text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-purple-600 hover:to-pink-600"
                     onClick={handleButtonDepositLottery}
                 >

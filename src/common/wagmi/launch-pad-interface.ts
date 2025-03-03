@@ -433,6 +433,9 @@ export class LaunchPadInterface {
             if (!amount) {
                 throw new Error('Invalid amount when call depositForLottery');
             }
+            if (parseFloat(amount) === 0) {
+                throw new Error('Please enter a valid amount');
+            }
 
             if (poolAddress) {
                 const chainId = Number(this._contractStruct.chainId);

@@ -17,7 +17,7 @@ export const developmentConfig: EnvironmentConfig = {
     supportedChains: [
         ChainId.BARTIO,
         ChainId.ARTELA,
-        ChainId.BASE_SEPOLIA,
+        // ChainId.BASE_SEPOLIA,
         ChainId.POLYGON_AMOY,
         ChainId.UNICHAIN_SEPOLIA,
         ChainId.BASE_SEPOLIA
@@ -67,7 +67,7 @@ export const developmentConfig: EnvironmentConfig = {
             explorer: 'https://basesepolia.beratrail.io',
             rpcUrl: 'https://basesepolia.rpc.berachain.com',
             isTestnet: true,
-            contractAbis: ROCKET_EVM_ABI
+            contractAbis: ROCKET_EVM_ABI_LOTTERY
         },
         [ChainId.POLYGON_AMOY]: {
             chainId: ChainId.POLYGON_AMOY,
