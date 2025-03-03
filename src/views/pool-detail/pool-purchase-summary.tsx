@@ -901,7 +901,7 @@ const PoolPurchaseSummary = () => {
                                     placeholder={`Please enter ${chainConfig?.currency} amount`}
                                     name="depositAmount"
                                     value={depositAmountValue}
-                                    onKeyPress={handleKeyPress}
+                                    // onKeyPress={handleKeyPress}
                                     onChange={handleOnChangeDeposit}
                                     className="!font-forza text-base"
                                     style={{ color: '#000000', width: '100%' }}
