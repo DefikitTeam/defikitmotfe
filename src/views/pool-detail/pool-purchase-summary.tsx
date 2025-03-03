@@ -98,10 +98,11 @@ const PoolPurchaseSummary = () => {
             | React.ChangeEvent<HTMLInputElement>
             | React.ChangeEvent<HTMLTextAreaElement>
     ) => {
+
         const { name, value } = event.target;
-
+        
         setDepositAmountValue(value.toString());
-
+        
         setDepositLotteryInformation({
             ...dataDeposit,
             [name]: Number(value)
@@ -449,15 +450,15 @@ const PoolPurchaseSummary = () => {
 
     useEffect(() => {
         try {
-            if (isFetchingDataReader === false && funLottery) {
-                setFunLotteryAvailable(
-                    new BigNumber(funLottery?.result).toString()
-                );
+            if (!isFetchingDataReader && funLottery) {
+                const lotteryAmount = new BigNumber(funLottery?.result).toNumber();
+                setFunLotteryAvailable(lotteryAmount > 0 ? lotteryAmount.toString() : '0');
             }
         } catch (error) {
             console.log('==== call funLottery error: ', error);
         }
     }, [isFetchingDataReader, funLottery]);
+
 
     useEffect(() => {
         if (pool?.soldBatch === pool?.totalBatch) {
@@ -896,23 +897,16 @@ const PoolPurchaseSummary = () => {
                                 </span>
 
                                 <Input
-                                    type="number"
+                                    type="text"
                                     placeholder={`Please enter ${chainConfig?.currency} amount`}
                                     name="depositAmount"
-                                    // max={maxSlider}
-                                    min={0}
-                                    // style={{ width: '100%' }}
                                     value={depositAmountValue}
                                     onKeyPress={handleKeyPress}
                                     onChange={handleOnChangeDeposit}
                                     className="!font-forza text-base"
                                     style={{ color: '#000000', width: '100%' }}
                                 />
-                                {/* {validateInput.bondAmount.error === true && (
-                                <Text className="text-red-500">
-                                    {validateInput.bondAmount.helperText}
-                                </Text>
-                            )} */}
+                                
                             </div>
                         </Col>
                     )}
