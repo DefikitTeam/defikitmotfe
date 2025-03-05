@@ -847,7 +847,7 @@ const PoolPurchaseSummary = () => {
                                     </span>
                                     <span className="text-2xl font-bold text-blue-600">
                                         {Number(funLotteryAvailable)}{' '}
-                                        {`${chainConfig?.currency}/ETH`}
+                                        {`${chainConfig?.currency}`}
                                     </span>
                                 </div>
                             </Col>
