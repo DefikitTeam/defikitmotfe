@@ -52,7 +52,7 @@ export const CHAIN_CONFIG = {
     },
     staging: {
         defaultChain: baseSepolia,
-        supportedChains: [baseSepolia, monadTestnet, somniaTestnet]
+        supportedChains: [baseSepolia, somniaTestnet]
     },
     development: {
         defaultChain: baseSepolia,
