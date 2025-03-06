@@ -1,3 +1,4 @@
+
 /* eslint-disable */
 import * as process from 'process';
 import { z } from 'zod';
@@ -138,3 +139,4 @@ export const LOG_LEVEL = LOG_LEVEL_SCHEMA.parse(
 
 export const isDev = process.env.NODE_ENV === 'development';
 export const isProd = process.env.NODE_ENV === 'production';
+
