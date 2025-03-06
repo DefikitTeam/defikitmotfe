@@ -1,4 +1,3 @@
-
 import {
     artelaTestnet,
     baseSepolia,
@@ -26,18 +25,35 @@ const unichainSepoliaTestnet: Chain = {
     testnet: true
 };
 
+const somniaTestnet: Chain = {
+    id: 50312,
+    name: 'Somnia Testnet',
+    nativeCurrency: {
+        name: 'Somnia',
+        symbol: 'STT',
+        decimals: 18
+    },
+    rpcUrls: {
+        default: { http: ['https://dream-rpc.somnia.network/'] },
+        public: { http: ['https://dream-rpc.somnia.network/'] }
+    },
+    blockExplorers: {
+        default: {
+            name: 'Somnia Explorer',
+            url: 'https://shannon-explorer.somnia.network/'
+        }
+    },
+    testnet: true
+};
+
 export const CHAIN_CONFIG = {
     production: {
         defaultChain: berachain,
         supportedChains: [berachain]
     },
     staging: {
-        defaultChain: monadTestnet,
-        // berachainTestnetbArtio,
-        supportedChains: [
-            // berachainTestnetbArtio, baseSepolia
-            monadTestnet
-        ]
+        defaultChain: baseSepolia,
+        supportedChains: [baseSepolia, monadTestnet, somniaTestnet]
     },
     development: {
         defaultChain: berachainTestnetbArtio,
@@ -50,7 +66,3 @@ export const CHAIN_CONFIG = {
         ]
     }
 };
-
-
-
-

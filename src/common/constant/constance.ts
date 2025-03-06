@@ -16,7 +16,8 @@ export enum ChainId {
     UNICHAIN_SEPOLIA = 1301,
     IOTA = 8822,
     BERACHAIN_MAINNET = 80094,
-    MONAD = 10143
+    MONAD = 10143,
+    SOMNIA = 50312
 }
 export const listChainIdSupported = [
     ChainId.BASE,
@@ -27,7 +28,8 @@ export const listChainIdSupported = [
     ChainId.UNICHAIN_SEPOLIA,
     ChainId.IOTA,
     ChainId.BERACHAIN_MAINNET,
-    ChainId.MONAD
+    ChainId.MONAD,
+    ChainId.SOMNIA
 ];
 
 export enum DexName {
@@ -83,6 +85,11 @@ export const DEX_BY_CHAIN = {
         dexName: DexName.UNISWAP,
         linkSwap:
             'https://app.uniswap.org/swap?chain=monad&inputCurrency=NATIVE&outputCurrency='
+    },
+    [ChainId.SOMNIA]: {
+        dexName: DexName.UNISWAP,
+        linkSwap:
+            'https://app.uniswap.org/swap?chain=somnia&inputCurrency=NATIVE&outputCurrency='
     }
 };
 
@@ -227,6 +234,14 @@ export const chains = [
         explorerUrl: 'https://testnet.monadexplorer.com',
         rpcUrl: 'https://testnet-rpc.monad.xyz',
         onFaucet: false
+    },
+    {
+        chainId: 50312,
+        name: 'Somnia Testnet',
+        currency: 'STT',
+        explorerUrl: 'https://shannon-explorer.somnia.network/',
+        rpcUrl: 'https://dream-rpc.somnia.network/',
+        onFaucet: false
     }
 ];
 
@@ -256,7 +271,8 @@ export const BLOCK_INTERVAL = {
     [ChainId.ARTELA]: 2,
     [ChainId.BASE_SEPOLIA]: 2,
     [ChainId.UNICHAIN_SEPOLIA]: 2,
-    [ChainId.MONAD]: 2
+    [ChainId.MONAD]: 2,
+    [ChainId.SOMNIA]: 2
 };
 
 export const PLATFORM_FEE = {
@@ -270,7 +286,8 @@ export const PLATFORM_FEE = {
     [ChainId.IOTA]: 0.05,
     [ChainId.BASE_SEPOLIA]: 0.005,
 
-    [ChainId.MONAD]: 0.01
+    [ChainId.MONAD]: 0.01,
+    [ChainId.SOMNIA]: 0.01
 };
 
 export const HARD_CAP_INITIAL_BY_CHAIN = {
@@ -283,7 +300,8 @@ export const HARD_CAP_INITIAL_BY_CHAIN = {
     [ChainId.UNICHAIN_SEPOLIA]: 2,
 
     [ChainId.IOTA]: 10000,
-    [ChainId.MONAD]: 0.1
+    [ChainId.MONAD]: 0.1,
+    [ChainId.SOMNIA]: 0.1
 };
 
 export interface MinHardcapConfig {
@@ -300,7 +318,8 @@ export const MIN_HARDCAP_BY_CHAIN: { [key: number]: MinHardcapConfig } = {
     [ChainId.ARTELA]: { min: 2, error: 'Min value is 2' },
     [ChainId.BARTIO]: { min: 2, error: 'Min value is 2' },
     [ChainId.UNICHAIN_SEPOLIA]: { min: 2, error: 'Min value is 2' },
-    [ChainId.MONAD]: { min: 0.1, error: 'Min value is 0.1' }
+    [ChainId.MONAD]: { min: 0.1, error: 'Min value is 0.1' },
+    [ChainId.SOMNIA]: { min: 0.1, error: 'Min value is 0.1' }
 };
 
 export enum NOTIFICATION_STATUS {

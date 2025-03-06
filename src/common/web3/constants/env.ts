@@ -1,4 +1,3 @@
-
 /* eslint-disable */
 import * as process from 'process';
 import { z } from 'zod';
@@ -10,21 +9,6 @@ export const NEXT_PUBLIC_PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 export const NEXT_PUBLIC_SUPPORTED_CHAINS =
     process.env.NEXT_PUBLIC_SUPPORTED_CHAINS;
-
-export const NEXT_PUBLIC_BARTIO_CHAIN_NAME =
-    process.env.NEXT_PUBLIC_BARTIO_CHAIN_NAME;
-
-export const NEXT_PUBLIC_BARTIO_CHAIN_ID =
-    process.env.NEXT_PUBLIC_BARTIO_CHAIN_ID;
-
-export const NEXT_PUBLIC_BARTIO_CHAIN_RPC =
-    process.env.NEXT_PUBLIC_BARTIO_CHAIN_RPC;
-
-export const NEXT_PUBLIC_BARTIO_CHAIN_EXPLORER =
-    process.env.NEXT_PUBLIC_BARTIO_CHAIN_EXPLORER;
-
-export const NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS =
-    process.env.NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS;
 
 export const NEXT_PUBLIC_BASE_SEPOLIA_CHAIN_NAME =
     process.env.NEXT_PUBLIC_BASE_SEPOLIA_CHAIN_NAME;
@@ -127,6 +111,17 @@ export const NEXT_PUBLIC_MONAD_CHAIN_EXPLORER =
 export const NEXT_PUBLIC_MONAD_CONTRACT_ADDRESS =
     process.env.NEXT_PUBLIC_MONAD_CONTRACT_ADDRESS;
 
+export const NEXT_PUBLIC_SOMNIA_CHAIN_NAME =
+    process.env.NEXT_PUBLIC_SOMNIA_CHAIN_NAME;
+export const NEXT_PUBLIC_SOMNIA_CHAIN_ID =
+    process.env.NEXT_PUBLIC_SOMNIA_CHAIN_ID;
+export const NEXT_PUBLIC_SOMNIA_CHAIN_RPC =
+    process.env.NEXT_PUBLIC_SOMNIA_CHAIN_RPC;
+export const NEXT_PUBLIC_SOMNIA_CHAIN_EXPLORER =
+    process.env.NEXT_PUBLIC_SOMNIA_CHAIN_EXPLORER;
+export const NEXT_PUBLIC_SOMNIA_CONTRACT_ADDRESS =
+    process.env.NEXT_PUBLIC_SOMNIA_CONTRACT_ADDRESS;
+
 export const NEXT_PUBLIC_IS_FAUCET = process.env.NEXT_PUBLIC_IS_FAUCET;
 
 export const LOG_LEVEL_SCHEMA = z
@@ -139,4 +134,3 @@ export const LOG_LEVEL = LOG_LEVEL_SCHEMA.parse(
 
 export const isDev = process.env.NODE_ENV === 'development';
 export const isProd = process.env.NODE_ENV === 'production';
-
