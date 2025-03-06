@@ -12,29 +12,31 @@ const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 
 export async function generateMetadata() {
     return {
-        title: `MONIT.FUN - Home`,
+        title: `Rocket Launch - Home`,
         description:
-            'MONIT.FUN is a decentralized platform for launching tokens',
+            'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
         openGraph: {
-            title: `MONIT.FUN - Home`,
+            title: `Rocket Launch - Home`,
             description:
-                'MONIT.FUN is a decentralized platform for launching tokens',
-            url: `https://testnet.monit.fun`,
+                'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
+            url: `https://staging.defikitmotfe.pages.dev/`,
             type: 'website',
             images: [
                 {
                     url: 'https://testnet.rocketlaunch.fun/rocket_launch.jpg',
                     width: 800,
                     height: 600,
-                    alt: 'MONIT.FUN Image'
+                    alt: 'Rocket Launch Image'
+
+
                 }
             ]
         },
         twitter: {
             card: 'summary_large_image',
-            title: `MONIT.FUN - Home`,
+            title: `Rocket Launch - Home`,
             description:
-                'MONIT.FUN is a decentralized platform for launching tokens',
+                'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
             images: 'https://testnet.rocketlaunch.fun/rocket_launch.jpg'
         }
     };
