@@ -2,7 +2,6 @@ import {
     artelaTestnet,
     baseSepolia,
     berachain,
-    berachainTestnetbArtio,
     Chain,
     monadTestnet,
     polygonAmoy
@@ -56,9 +55,9 @@ export const CHAIN_CONFIG = {
         supportedChains: [baseSepolia, monadTestnet, somniaTestnet]
     },
     development: {
-        defaultChain: berachainTestnetbArtio,
+        defaultChain: baseSepolia,
         supportedChains: [
-            berachainTestnetbArtio,
+            
             baseSepolia,
             polygonAmoy,
             artelaTestnet,
