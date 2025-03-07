@@ -49,9 +49,9 @@ export const DEX_BY_CHAIN = {
             'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
     },
     [ChainId.BASE_SEPOLIA]: {
-        dexName: DexName.BEX,
+        dexName: DexName.UNISWAP,
         linkSwap:
-            'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+            'https://app.uniswap.org/swap?chain=basesepolia&inputCurrency=NATIVE&outputCurrency='
     },
     [ChainId.ARTELA]: {
         dexName: DexName.BEX,

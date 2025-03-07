@@ -57,7 +57,6 @@ export const CHAIN_CONFIG = {
     development: {
         defaultChain: baseSepolia,
         supportedChains: [
-            
             baseSepolia,
             polygonAmoy,
             artelaTestnet,

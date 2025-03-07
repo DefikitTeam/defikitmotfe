@@ -27,8 +27,6 @@ export async function generateMetadata() {
                     width: 800,
                     height: 600,
                     alt: 'Rocket Launch Image'
-
-
                 }
             ]
         },
