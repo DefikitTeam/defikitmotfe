@@ -5,7 +5,6 @@ import { Dropdown, MenuProps, Typography } from 'antd';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getEnvironment } from '../common/constant/constance';
 import useWindowSize from '../hooks/useWindowSize';
 import { useAuthLogin } from '../stores/auth/hook';
 
@@ -18,19 +17,19 @@ const TelegramInfo = ({ name }: { name: string }) => {
         logoutTelegramAction();
     };
 
-    const environment = getEnvironment();
+    // const environment = getEnvironment();
     let botName = '';
-    switch (environment) {
-        case 'staging':
-            botName = 'MotherOfTokensMonadBot';
-            break;
-        case 'development':
-            botName = 'MotherOfTokensDevBot';
-            break;
-        case 'production':
-            botName = 'motheroftokens_bot';
-            break;
-    }
+    // switch (environment) {
+    //     case 'staging':
+    botName = 'MotherOfTokensMonadBot';
+    //         break;
+    //     case 'development':
+    //         botName = 'MotherOfTokensDevBot';
+    //         break;
+    //     case 'production':
+    //         botName = 'motheroftokens_bot';
+    //         break;
+    // }
 
     const items: MenuProps['items'] = [
         {

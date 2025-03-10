@@ -8,7 +8,7 @@ import { IChainInfor, setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Chain } from 'viem/chains';
@@ -17,9 +17,9 @@ const ModalSelectChain = () => {
     const { isMobile } = useWindowSize();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { chainConfig, environment } = useConfig();
+    const { chainConfig } = useConfig();
 
-    const listChains = CHAIN_CONFIG[environment].supportedChains;
+    const listChains = CHAIN_CONFIG.supportedChains;
 
     const dispatch = useDispatch();
 

@@ -1,10 +1,6 @@
 /* eslint-disable */
 
-import { Environment } from '@/src/config/type';
-import {
-    NEXT_PUBLIC_ENVIRONMENT,
-    NEXT_PUBLIC_SUPPORTED_CHAINS
-} from '../web3/constants/env';
+import { NEXT_PUBLIC_SUPPORTED_CHAINS } from '../web3/constants/env';
 import { SUPPORTED_NETWORKS } from '../web3/network';
 
 export enum ChainId {
@@ -239,16 +235,16 @@ export const getSupportedChains = (): number[] => {
         .filter((chainId) => !isNaN(chainId)); // Lọc bỏ giá trị NaN
 };
 
-export const getEnvironment = (): Environment => {
-    const env = NEXT_PUBLIC_ENVIRONMENT as Environment;
-    const validEnvironments: Environment[] = [
-        'development',
-        'staging',
-        'production'
-    ];
+// export const getEnvironment = (): Environment => {
+//     const env = NEXT_PUBLIC_ENVIRONMENT as Environment;
+//     const validEnvironments: Environment[] = [
+//         'development',
+//         'staging',
+//         'production'
+//     ];
 
-    return validEnvironments.includes(env) ? env : 'development';
-};
+//     return validEnvironments.includes(env) ? env : 'development';
+// };
 
 export const BLOCK_INTERVAL = {
     [ChainId.BASE]: 2,

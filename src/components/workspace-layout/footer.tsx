@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useConfig } from '@/src/hooks/useConfig';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';

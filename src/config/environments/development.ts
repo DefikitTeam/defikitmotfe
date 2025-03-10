@@ -2,7 +2,6 @@ import { ChainId } from '@/src/common/constant/constance';
 import {
     NEXT_PUBLIC_API_ENDPOINT,
     NEXT_PUBLIC_ARTELA_CONTRACT_ADDRESS,
-    NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS,
     NEXT_PUBLIC_BASE_SEPOLIA_CONTRACT_ADDRESS,
     NEXT_PUBLIC_MONAD_CONTRACT_ADDRESS,
     NEXT_PUBLIC_POLYGON_AMOY_CONTRACT_ADDRESS,
@@ -16,7 +15,6 @@ export const developmentConfig: EnvironmentConfig = {
     environment: 'staging',
     defaultChain: ChainId.MONAD,
     supportedChains: [
-        ChainId.BARTIO,
         ChainId.ARTELA,
         ChainId.BASE_SEPOLIA,
         ChainId.POLYGON_AMOY,
@@ -24,22 +22,6 @@ export const developmentConfig: EnvironmentConfig = {
         ChainId.MONAD
     ],
     chains: {
-        [ChainId.BARTIO]: {
-            chainId: ChainId.BARTIO,
-            name: 'Berachain Bartio',
-            addresses: {
-                rocket: NEXT_PUBLIC_BARTIO_ROCKET_CONTRACT_ADDRESS as string
-            },
-            subgraph: {
-                uri: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/bartio`
-            },
-            currency: 'BERA',
-            explorer: 'https://bartio.beratrail.io',
-            rpcUrl: 'https://bartio.rpc.berachain.com',
-            isTestnet: true,
-            contractAbis: ROCKET_EVM_ABI_LOTTERY
-        },
-
         [ChainId.ARTELA]: {
             chainId: ChainId.ARTELA,
             name: 'Artela Testnet',
@@ -120,7 +102,6 @@ export const developmentConfig: EnvironmentConfig = {
         baseUrl: NEXT_PUBLIC_API_ENDPOINT as string,
         endpoints: {
             subgraph: {
-                [ChainId.BARTIO]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/bartio`,
                 [ChainId.ARTELA]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/artela`,
                 [ChainId.BASE_SEPOLIA]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/base-sepolia`,
                 [ChainId.POLYGON_AMOY]: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/polygon-amoy`,

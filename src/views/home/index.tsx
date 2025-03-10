@@ -119,8 +119,7 @@ const HomePage = () => {
         supportedChains,
         getContractAddress,
         isChainSupported,
-        defaultChain,
-        environment
+        defaultChain
     } = useConfig();
 
     // Check if current chain is supported

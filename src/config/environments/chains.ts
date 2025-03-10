@@ -1,12 +1,6 @@
-import {
-    artelaTestnet,
-    baseSepolia,
-    berachain,
-    berachainTestnetbArtio,
-    Chain,
-    monadTestnet,
-    polygonAmoy
-} from 'viem/chains';
+/* eslint-disable */
+
+import { Chain, monadTestnet } from 'viem/chains';
 const unichainSepoliaTestnet: Chain = {
     id: 1301,
     name: 'Unichain Sepolia Testnet',
@@ -26,26 +20,26 @@ const unichainSepoliaTestnet: Chain = {
 };
 
 export const CHAIN_CONFIG = {
-    production: {
-        defaultChain: berachain,
-        supportedChains: [berachain]
-    },
-    staging: {
-        defaultChain: monadTestnet,
-        // berachainTestnetbArtio,
-        supportedChains: [
-            // berachainTestnetbArtio, baseSepolia
-            monadTestnet
-        ]
-    },
-    development: {
-        defaultChain: berachainTestnetbArtio,
-        supportedChains: [
-            berachainTestnetbArtio,
-            baseSepolia,
-            polygonAmoy,
-            artelaTestnet,
-            unichainSepoliaTestnet
-        ]
-    }
+    // production: {
+    //     defaultChain: berachain,
+    //     supportedChains: [berachain]
+    // },
+    // staging: {
+    defaultChain: monadTestnet,
+    // berachainTestnetbArtio,
+    supportedChains: [
+        // berachainTestnetbArtio, baseSepolia
+        monadTestnet
+    ]
+    // },
+    // development: {
+    //     defaultChain: berachainTestnetbArtio,
+    //     supportedChains: [
+    //         berachainTestnetbArtio,
+    //         baseSepolia,
+    //         polygonAmoy,
+    //         artelaTestnet,
+    //         unichainSepoliaTestnet
+    //     ]
+    // }
 };

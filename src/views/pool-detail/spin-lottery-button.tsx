@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { listChainIdSupported } from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';

@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { getEnvironment } from '@/src/common/constant/constance';
 import { useNotification } from '@/src/hooks/use-notification';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
@@ -31,19 +30,19 @@ const ButtonConnectWallet = () => {
         resetStatusLoginWalletAction
     } = useAuthLogin();
 
-    const environment = getEnvironment();
+    // const environment = getEnvironment();
     let botName = '';
-    switch (environment) {
-        case 'staging':
-            botName = 'MotherOfTokensMonadBot';
-            break;
-        case 'development':
-            botName = 'MotherOfTokensDevBot';
-            break;
-        case 'production':
-            botName = 'motheroftokens_bot';
-            break;
-    }
+    // switch (environment) {
+    //     case 'staging':
+    botName = 'MotherOfTokensMonadBot';
+    // break;
+    // case 'development':
+    //     botName = 'MotherOfTokensDevBot';
+    //     break;
+    // case 'production':
+    //     botName = 'motheroftokens_bot';
+    //     break;
+    // }
 
     const handleLoginWithTelegram = async (user: any) => {
         if (user) {

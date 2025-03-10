@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import {
     ADDRESS_NULL,
     listChainIdSupported
@@ -11,7 +13,7 @@ import { Button, notification, Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 import { Loader } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 
 const DepositLotteryButton = ({
