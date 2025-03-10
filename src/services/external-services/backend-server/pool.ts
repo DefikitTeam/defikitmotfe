@@ -1,10 +1,7 @@
 /* eslint-disable */
-import { ChainId, getEnvironment } from '@/src/common/constant/constance';
+import { ChainId } from '@/src/common/constant/constance';
 import { logger } from '@/src/common/utils/logger';
-import {
-    NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD
-} from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import { updateMetaDataWorker } from '@/src/stores/pool/common';
 import {
     IGetAllPoolBackgroundQuery,
@@ -21,7 +18,6 @@ import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { querySubGraph } from '../fetcher';
 import { getQueryByStatus } from './query';
-import { ConfigService } from '@/src/config/services/config-service';
 export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
 // const currentHostName = useCurrentHostNameInformation();
 // const isProd =

@@ -6,7 +6,7 @@ import { Abi } from 'viem';
 export const getContract = (chainId: number): ContractStruct => {
     let address: string = '';
 
-    const { chainConfig, environment, getContractAbi } = useConfig();
+    const { chainConfig,  getContractAbi } = useConfig();
 
     let abi: Abi = getContractAbi(chainId);
     address = chainConfig?.addresses.rocket as string;

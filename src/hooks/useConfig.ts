@@ -32,8 +32,8 @@ export const useConfig = () => {
             getSubgraphUri: (chainId: number) => config.getSubgraphUri(chainId),
 
             // API and environment getters
-            apiConfig: config.getApiConfig(),
-            environment: config.getEnvironment()
+            apiConfig: config.getApiConfig()
+            // environment: config.getEnvironment()
         }),
         [chain]
     ); // Re-compute when chain changes

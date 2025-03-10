@@ -36,8 +36,7 @@ const ConnectButtonWagmi = () => {
         context
     } = useSignMessage();
 
-    const { chainConfig, defaultChain, environment, supportedChains } =
-        useConfig();
+    const { chainConfig, defaultChain, supportedChains } = useConfig();
 
     const { authState, loginAction } = useAuthLogin();
     const { disconnect } = useDisconnect();
@@ -113,8 +112,7 @@ const ConnectButtonWagmi = () => {
         }
     }, [isConnected, reset]);
 
-    const showChainSelector =
-        CHAIN_CONFIG[environment].supportedChains.length > 1;
+    const showChainSelector = CHAIN_CONFIG.supportedChains.length > 1;
 
     return (
         <div className="flex flex-row items-center gap-[3px]">
