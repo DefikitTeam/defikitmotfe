@@ -1,6 +1,5 @@
 /* eslint-disable */
 
-import { listChainIdSupported } from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { usePoolDetail } from '@/src/stores/pool/hook';
@@ -77,15 +76,7 @@ const SpinLotteryButton = () => {
 
         setIsLoadingSpinLottery(true);
         try {
-            if (!listChainIdSupported.includes(chainId!)) {
-                notification.error({
-                    message: 'Error',
-                    description: t('PLEASE_SWITCH_CHAIN_SYSTEM_SUPPORTED'),
-                    duration: 1,
-                    showProgress: true
-                });
-                return;
-            }
+          
             await useSpinLottery.actionAsync({
                 poolAddress: poolAddress as `0x${string}`
             });

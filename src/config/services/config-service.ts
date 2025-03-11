@@ -75,4 +75,29 @@ export class ConfigService {
     getExplorer(chainId: number): string | undefined {
         return this.getChainConfig(chainId)?.explorer;
     }
+
+
+
+
+    // Thêm phương thức này vào class ConfigService
+    getPlatformFee(chainId: number): number {
+        return this.getChainConfig(chainId)?.platformFee || 0;
+    }
+
+    // Tương tự, bạn có thể thêm các phương thức khác
+    getBlockInterval(chainId: number): number {
+        return this.getChainConfig(chainId)?.blockInterval || 2;
+    }
+
+    getHardCapInitial(chainId: number): number {
+        return this.getChainConfig(chainId)?.hardCapInitial || 0;
+    }
+
+    getMinHardcap(chainId: number): { min: number; error: string } | undefined {
+        return this.getChainConfig(chainId)?.minHardcap;
+    }
+
+    getDexInfo(chainId: number): { name: any; linkSwap: string } | undefined {
+        return this.getChainConfig(chainId)?.dex;
+    }
 }

@@ -14,17 +14,8 @@ export enum ChainId {
     BERACHAIN_MAINNET = 80094,
     MONAD = 10143
 }
-export const listChainIdSupported = [
-    ChainId.BASE,
-    ChainId.BASE_SEPOLIA,
-    ChainId.BARTIO,
-    ChainId.POLYGON_AMOY,
-    ChainId.ARTELA,
-    ChainId.UNICHAIN_SEPOLIA,
-    ChainId.IOTA,
-    ChainId.BERACHAIN_MAINNET,
-    ChainId.MONAD
-];
+
+
 
 export enum DexName {
     UNISWAP = 'Uniswap',
@@ -36,51 +27,51 @@ export enum DexName {
     // UNI_DEX = 'UniDex'
 }
 
-export const DEX_BY_CHAIN = {
-    [ChainId.BASE]: {
-        dexName: DexName.BEX,
-        linkSwap:
-            'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
-    },
-    [ChainId.BASE_SEPOLIA]: {
-        dexName: DexName.BEX,
-        linkSwap:
-            'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
-    },
-    [ChainId.ARTELA]: {
-        dexName: DexName.BEX,
-        linkSwap:
-            'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
-    },
-    [ChainId.BARTIO]: {
-        dexName: DexName.KODIAK,
-        linkSwap: 'https://app.kodiak.finance/#/swap?outputCurrency='
-    },
-    [ChainId.IOTA]: {
-        dexName: DexName.BEX,
-        linkSwap:
-            'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
-    },
-    [ChainId.POLYGON_AMOY]: {
-        dexName: DexName.BEX,
-        linkSwap:
-            'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
-    },
-    [ChainId.UNICHAIN_SEPOLIA]: {
-        dexName: DexName.BEX,
-        linkSwap:
-            'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
-    },
-    [ChainId.BERACHAIN_MAINNET]: {
-        dexName: DexName.KODIAK,
-        linkSwap: 'https://app.kodiak.finance/#/swap?outputCurrency='
-    },
-    [ChainId.MONAD]: {
-        dexName: DexName.UNISWAP,
-        linkSwap:
-            'https://app.uniswap.org/swap?chain=monad&inputCurrency=NATIVE&outputCurrency='
-    }
-};
+// export const DEX_BY_CHAIN = {
+//     [ChainId.BASE]: {
+//         dexName: DexName.BEX,
+//         linkSwap:
+//             'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+//     },
+//     [ChainId.BASE_SEPOLIA]: {
+//         dexName: DexName.BEX,
+//         linkSwap:
+//             'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+//     },
+//     [ChainId.ARTELA]: {
+//         dexName: DexName.BEX,
+//         linkSwap:
+//             'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+//     },
+//     [ChainId.BARTIO]: {
+//         dexName: DexName.KODIAK,
+//         linkSwap: 'https://app.kodiak.finance/#/swap?outputCurrency='
+//     },
+//     [ChainId.IOTA]: {
+//         dexName: DexName.BEX,
+//         linkSwap:
+//             'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+//     },
+//     [ChainId.POLYGON_AMOY]: {
+//         dexName: DexName.BEX,
+//         linkSwap:
+//             'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+//     },
+//     [ChainId.UNICHAIN_SEPOLIA]: {
+//         dexName: DexName.BEX,
+//         linkSwap:
+//             'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+//     },
+//     [ChainId.BERACHAIN_MAINNET]: {
+//         dexName: DexName.KODIAK,
+//         linkSwap: 'https://app.kodiak.finance/#/swap?outputCurrency='
+//     },
+//     [ChainId.MONAD]: {
+//         dexName: DexName.UNISWAP,
+//         linkSwap:
+//             'https://app.uniswap.org/swap?chain=monad&inputCurrency=NATIVE&outputCurrency='
+//     }
+// };
 
 export const TIME_IN_YEAR = 31536000; // unit second
 export enum PoolStatus {
@@ -246,58 +237,58 @@ export const getSupportedChains = (): number[] => {
 //     return validEnvironments.includes(env) ? env : 'development';
 // };
 
-export const BLOCK_INTERVAL = {
-    [ChainId.BASE]: 2,
-    [ChainId.POLYGON_AMOY]: 2,
-    [ChainId.ARTELA]: 2,
-    [ChainId.BASE_SEPOLIA]: 2,
-    [ChainId.UNICHAIN_SEPOLIA]: 2,
-    [ChainId.MONAD]: 2
-};
+// export const BLOCK_INTERVAL = {
+//     [ChainId.BASE]: 2,
+//     [ChainId.POLYGON_AMOY]: 2,
+//     [ChainId.ARTELA]: 2,
+//     [ChainId.BASE_SEPOLIA]: 2,
+//     [ChainId.UNICHAIN_SEPOLIA]: 2,
+//     [ChainId.MONAD]: 2
+// };
 
-export const PLATFORM_FEE = {
-    [ChainId.BASE]: 0.005,
-    [ChainId.POLYGON_AMOY]: 0.005,
-    [ChainId.ARTELA]: 0.005,
+// export const PLATFORM_FEE = {
+//     [ChainId.BASE]: 0.005,
+//     [ChainId.POLYGON_AMOY]: 0.005,
+//     [ChainId.ARTELA]: 0.005,
 
-    [ChainId.BARTIO]: 0.1,
-    [ChainId.BERACHAIN_MAINNET]: 0.1,
-    [ChainId.UNICHAIN_SEPOLIA]: 0.005,
-    [ChainId.IOTA]: 0.05,
-    [ChainId.BASE_SEPOLIA]: 0.005,
+//     [ChainId.BARTIO]: 0.1,
+//     [ChainId.BERACHAIN_MAINNET]: 0.1,
+//     [ChainId.UNICHAIN_SEPOLIA]: 0.005,
+//     [ChainId.IOTA]: 0.05,
+//     [ChainId.BASE_SEPOLIA]: 0.005,
 
-    [ChainId.MONAD]: 0.01
-};
+//     [ChainId.MONAD]: 0.01
+// };
 
-export const HARD_CAP_INITIAL_BY_CHAIN = {
-    [ChainId.BASE]: 2,
-    [ChainId.POLYGON_AMOY]: 2,
-    [ChainId.ARTELA]: 2,
-    [ChainId.BASE_SEPOLIA]: 0.05,
-    [ChainId.BARTIO]: 2,
-    [ChainId.BERACHAIN_MAINNET]: 1000,
-    [ChainId.UNICHAIN_SEPOLIA]: 2,
+// export const HARD_CAP_INITIAL_BY_CHAIN = {
+//     [ChainId.BASE]: 2,
+//     [ChainId.POLYGON_AMOY]: 2,
+//     [ChainId.ARTELA]: 2,
+//     [ChainId.BASE_SEPOLIA]: 0.05,
+//     [ChainId.BARTIO]: 2,
+//     [ChainId.BERACHAIN_MAINNET]: 1000,
+//     [ChainId.UNICHAIN_SEPOLIA]: 2,
 
-    [ChainId.IOTA]: 10000,
-    [ChainId.MONAD]: 0.1
-};
+//     [ChainId.IOTA]: 10000,
+//     [ChainId.MONAD]: 0.1
+// };
 
-export interface MinHardcapConfig {
-    min: number;
-    error: string;
-}
+// export interface MinHardcapConfig {
+//     min: number;
+//     error: string;
+// }
 
-export const MIN_HARDCAP_BY_CHAIN: { [key: number]: MinHardcapConfig } = {
-    [ChainId.BASE_SEPOLIA]: { min: 0.05, error: 'Min value is 0.05' },
-    [ChainId.IOTA]: { min: 10000, error: 'Min value is 10000' },
-    [ChainId.BERACHAIN_MAINNET]: { min: 1000, error: 'Min value is 1000' },
-    [ChainId.BASE]: { min: 2, error: 'Min value is 2' },
-    [ChainId.POLYGON_AMOY]: { min: 2, error: 'Min value is 2' },
-    [ChainId.ARTELA]: { min: 2, error: 'Min value is 2' },
-    [ChainId.BARTIO]: { min: 2, error: 'Min value is 2' },
-    [ChainId.UNICHAIN_SEPOLIA]: { min: 2, error: 'Min value is 2' },
-    [ChainId.MONAD]: { min: 0.1, error: 'Min value is 0.1' }
-};
+// export const MIN_HARDCAP_BY_CHAIN: { [key: number]: MinHardcapConfig } = {
+//     [ChainId.BASE_SEPOLIA]: { min: 0.05, error: 'Min value is 0.05' },
+//     [ChainId.IOTA]: { min: 10000, error: 'Min value is 10000' },
+//     [ChainId.BERACHAIN_MAINNET]: { min: 1000, error: 'Min value is 1000' },
+//     [ChainId.BASE]: { min: 2, error: 'Min value is 2' },
+//     [ChainId.POLYGON_AMOY]: { min: 2, error: 'Min value is 2' },
+//     [ChainId.ARTELA]: { min: 2, error: 'Min value is 2' },
+//     [ChainId.BARTIO]: { min: 2, error: 'Min value is 2' },
+//     [ChainId.UNICHAIN_SEPOLIA]: { min: 2, error: 'Min value is 2' },
+//     [ChainId.MONAD]: { min: 0.1, error: 'Min value is 0.1' }
+// };
 
 export enum NOTIFICATION_STATUS {
     UNREAD = 'UNREAD',

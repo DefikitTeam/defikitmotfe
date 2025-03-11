@@ -10,12 +10,13 @@ import {
     usePassData
 } from '@/src/stores/pool/hook';
 
-import { ADDRESS_NULL, ChainId } from '@/src/common/constant/constance';
+import { ADDRESS_NULL } from '@/src/common/constant/constance';
 import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import { ConfigService } from '@/src/config/services/config-service';
+import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
-import serviceAuth, {
+import {
     REFCODE_INFO_STORAGE_KEY
 } from '@/src/services/external-services/backend-server/auth';
 import servicePool from '@/src/services/external-services/backend-server/pool';
@@ -33,7 +34,6 @@ import { useSelector } from 'react-redux';
 import { useAccount, useDisconnect } from 'wagmi';
 import PoolInformation from './pool-information';
 import SaveCreatePoolButton from './save-button';
-import { useConfig } from '@/src/hooks/useConfig';
 export interface IPoolCreatForm {}
 const { Title } = Typography;
 // const currentHostName = useCurrentHostNameInformation();

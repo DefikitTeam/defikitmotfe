@@ -2,8 +2,7 @@
 import {
     ADDRESS_NULL,
     ChainId,
-    DEX_BY_CHAIN,
-    listChainIdSupported
+  
 } from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
@@ -48,7 +47,7 @@ const SaveButtonBuy = ({
         .div(1e18)
         .toString();
 
-    const { chainConfig } = useConfig();
+    const { chainConfig, getDexInfo } = useConfig();
     const [
         { poolStateDetail },
         fetchPoolDetail,
@@ -134,15 +133,7 @@ const SaveButtonBuy = ({
 
         try {
 
-            if (!listChainIdSupported.includes(chainId!)) {
-                notification.error({
-                    message: 'Error',
-                    description: t('PLEASE_SWITCH_CHAIN_SYSTEM_SUPPORTED'),
-                    duration: 1,
-                    showProgress: true
-                });
-                return;
-            }
+            
             await useBuyPoolMulti.actionAsync({
                 poolAddress: data?.poolAddress,
                 numberBatch: data?.numberBatch,
@@ -184,8 +175,7 @@ const SaveButtonBuy = ({
                 );
             } else {
                 window.open(
-                    `${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].linkSwap}` +
-                    `${poolAddress}`,
+                    `${getDexInfo(chainConfig?.chainId || 0)?.linkSwap || ''}${poolAddress}`,
                     '_blank',
                     'noopener,noreferrer'
                 );
@@ -227,11 +217,11 @@ const SaveButtonBuy = ({
                     disabled={disableBtnBuy === true && isTradeBex === false}
                 >
                     {isTradeBex ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                             <span>
                                 {Number(pool.startTime) < 1736496722
                                     ? 'Trade on Kodiak'
-                                    : `Trade on ${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].dexName}`}
+                                    : `Trade on ${getDexInfo(chainConfig?.chainId || 0)?.name || 'DEX'}`}
                             </span>
                             {chainConfig?.chainId === ChainId.MONAD && (
                                 <span
@@ -243,7 +233,7 @@ const SaveButtonBuy = ({
                                             'noopener,noreferrer'
                                         );
                                     }}
-                                    style={{ cursor: 'pointer' }}
+                                    className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
                                 >
                                     <svg
                                         width="16"
@@ -252,6 +242,7 @@ const SaveButtonBuy = ({
                                         fill="none"
                                         stroke="white"
                                         strokeWidth="2"
+                                        className="ml-1"
                                     >
                                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                                         <polyline points="15 3 21 3 21 9" />

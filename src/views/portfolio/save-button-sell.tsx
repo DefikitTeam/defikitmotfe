@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { listChainIdSupported } from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import {
@@ -105,15 +104,7 @@ const SaveButtonSell = ({
                 });
                 return;
             }
-            if (!listChainIdSupported.includes(chainId)) {
-                notification.error({
-                    message: 'Error',
-                    description: t('PLEASE_SWITCH_CHAIN_SYSTEM_SUPPORTED'),
-                    duration: 1,
-                    showProgress: true
-                });
-                return;
-            }
+           
 
             await useSellToken.actionAsync({
                 poolAddress: data.poolAddress,
