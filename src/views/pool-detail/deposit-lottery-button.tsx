@@ -3,7 +3,6 @@
 
 import {
     ADDRESS_NULL,
-    listChainIdSupported
 } from '@/src/common/constant/constance';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
@@ -111,16 +110,7 @@ const DepositLotteryButton = ({
 
         setIsLoadingDepositLottery(true);
         try {
-            if (!listChainIdSupported.includes(chainId!)) {
-                notification.error({
-                    message: 'Error',
-                    description: t('PLEASE_SWITCH_CHAIN_SYSTEM_SUPPORTED'),
-                    duration: 1,
-                    showProgress: true
-                });
-                return;
-            }
-
+           
             await useDepositForLottery.actionAsync({
                 poolAddress: data?.poolAddress,
                 amount: convertAmountToETH,

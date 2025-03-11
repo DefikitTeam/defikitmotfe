@@ -2,10 +2,7 @@
 import {
     ACCEPT_AVATAR_TYPES,
     AccountFileType,
-    DEX_BY_CHAIN,
-    HARD_CAP_INITIAL_BY_CHAIN,
     MAX_AVATAR_FILE_SIZE,
-    MIN_HARDCAP_BY_CHAIN
 } from '@/src/common/constant/constance';
 
 import { base64ToFile } from '@/src/common/lib/utils';
@@ -102,7 +99,7 @@ const PoolInformation = ({
     //     (state: RootState) => state.chainData.chainData
     // );
 
-    const { chainConfig } = useConfig();
+    const { chainConfig , getHardCapInitial, getDexInfo, getMinHardcap} = useConfig();
     const [data, setData] = useCreatePoolLaunchInformation();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -144,19 +141,21 @@ const PoolInformation = ({
     }, [data.name]);
 
     useEffect(() => {
+        
+
+
         setData({
             ...data,
-            fixedCapETH:
-                HARD_CAP_INITIAL_BY_CHAIN[
-                    chainConfig?.chainId as keyof typeof HARD_CAP_INITIAL_BY_CHAIN
-                ].toString()
+            fixedCapETH: getHardCapInitial(chainConfig?.chainId || 0).toString()
         });
+
         form.setFieldValue(
             'fixedCapETH',
-            HARD_CAP_INITIAL_BY_CHAIN[
-                chainConfig?.chainId as keyof typeof HARD_CAP_INITIAL_BY_CHAIN
-            ].toString()
+            getHardCapInitial(chainConfig?.chainId || 0).toString()
         );
+
+
+
     }, [chainConfig?.chainId]);
 
     const onChange = (
@@ -894,7 +893,7 @@ const PoolInformation = ({
                                 {chainConfig?.currency}
                                 {' )'}
                                 <Tooltip
-                                    title={`${t('PREFIX_HARDCAP_HELP')} ${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].dexName} ${t('SUFFIX_HARDCAP_HELP')}`}
+                                    title={`${t('PREFIX_HARDCAP_HELP')} ${getDexInfo(chainConfig?.chainId || 0)?.name || ''} ${t('SUFFIX_HARDCAP_HELP')}`}
                                 >
                                     <QuestionCircleOutlined
                                         style={{ marginLeft: '8px' }}
@@ -909,10 +908,9 @@ const PoolInformation = ({
                                     const chainId = Number(
                                         chainConfig?.chainId
                                     );
-                                    const config =
-                                        MIN_HARDCAP_BY_CHAIN[chainId];
+                                    const config = getMinHardcap(chainId);
 
-                                    if (numValue < config.min) {
+                                    if (config && numValue < config.min) {
                                         return Promise.reject(
                                             new Error(config.error)
                                         );

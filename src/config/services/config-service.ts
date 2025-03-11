@@ -75,4 +75,27 @@ export class ConfigService {
     getExplorer(chainId: number): string | undefined {
         return this.getChainConfig(chainId)?.explorer;
     }
+
+
+
+
+    getPlatformFee(chainId: number): number {
+        return this.getChainConfig(chainId)?.platformFee || 0;
+    }
+
+    getBlockInterval(chainId: number): number {
+        return this.getChainConfig(chainId)?.blockInterval || 2;
+    }
+
+    getHardCapInitial(chainId: number): number {
+        return this.getChainConfig(chainId)?.hardCapInitial || 0;
+    }
+
+    getMinHardcap(chainId: number): { min: number; error: string } | undefined {
+        return this.getChainConfig(chainId)?.minHardcap;
+    }
+
+    getDexInfo(chainId: number): { name: any; linkSwap: string } | undefined {
+        return this.getChainConfig(chainId)?.dex;
+    }
 }

@@ -1,4 +1,5 @@
 import { config } from '@/src/components/connect-wallet/wagmi';
+import { ConfigService } from '@/src/config/services/config-service';
 import { getGasPrice } from '@wagmi/core';
 import { message } from 'antd';
 import { JointContent } from 'antd/lib/message/interface';
@@ -6,7 +7,7 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Abi, BaseError, ContractFunctionRevertedError } from 'viem';
 import { UseWriteContractReturnType } from 'wagmi';
-import { ChainId, PLATFORM_FEE } from '../constant/constance';
+import { ChainId } from '../constant/constance';
 
 export interface ContractStruct {
     address: `0x${string}`;
@@ -167,6 +168,8 @@ export class LaunchPadInterface {
                 throw new Error('Invalid params when create launch pool ');
             }
 
+            const chainConfig = ConfigService.getInstance();
+
             await watcher.writeContractAsync({
                 ...this._contractStruct,
                 functionName: 'activePool',
@@ -186,11 +189,19 @@ export class LaunchPadInterface {
                         metadata
                     }
                 ],
+                // value: BigInt(
+                //     new BigNumber(PLATFORM_FEE[this._contractStruct.chainId])
+                //         .times(1e18)
+                //         .toFixed(0)
+                // )
+
                 value: BigInt(
-                    new BigNumber(PLATFORM_FEE[this._contractStruct.chainId])
+                    new BigNumber(chainConfig.getPlatformFee(this._contractStruct.chainId))
                         .times(1e18)
                         .toFixed(0)
                 )
+
+
             });
         } catch (error) {
             this.handleErrors(error);
@@ -281,6 +292,8 @@ export class LaunchPadInterface {
                 }
             }
 
+            const chainConfig = ConfigService.getInstance();
+            
             await watcher.writeContractAsync({
                 ...this._contractStruct,
                 functionName: 'launchPool',
@@ -311,15 +324,23 @@ export class LaunchPadInterface {
                 //         .times(1e18)
                 //         .toFixed(0)
                 // )
-                value: BigInt(
-                    new BigNumber(maxAmountETH!)
-                        .plus(
-                            new BigNumber(
-                                PLATFORM_FEE[this._contractStruct.chainId]
-                            ).times(1e18)
-                        )
-                        .toFixed(0)
-                )
+                // value: BigInt(
+                //     new BigNumber(maxAmountETH!)
+                //         .plus(
+                //             new BigNumber(
+                //                 PLATFORM_FEE[this._contractStruct.chainId]
+                //             ).times(1e18)
+                //         )
+                //         .toFixed(0)
+                // )
+
+
+
+                 value: BigInt(
+                     new BigNumber(chainConfig.getPlatformFee(this._contractStruct.chainId))
+                         .times(1e18)
+                         .toFixed(0)
+                 )
             });
         } catch (err) {
             this.handleErrors(err);
