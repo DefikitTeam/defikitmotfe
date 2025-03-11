@@ -42,11 +42,7 @@ const SaveButtonBuy = ({
     const [isLoadingBuyToken, setIsLoadingBuyToken] = useState<boolean>(false);
     const { authState } = useAuthLogin();
     const t = useTranslations();
-    const {
-        activitiesState,
-        getListTransactionByPoolAndSender,
-        setOpenModalActiviti
-    } = useActivities();
+
 
     const convertMaxAmountToETH = new BigNumber(data?.maxAmountETH)
         .div(1e18)
@@ -65,7 +61,6 @@ const SaveButtonBuy = ({
 
     const { useBuyPoolMulti } = useMultiCaller();
     const [hasNotified, setHasNotified] = useState<boolean>(false);
-    // const currentHostName = useCurrentHostNameInformation();
 
     useEffect(() => {
         if (useBuyPoolMulti.isLoadingInitBuyToken) {
@@ -138,15 +133,7 @@ const SaveButtonBuy = ({
         setIsLoadingBuyToken(true);
 
         try {
-            // if (!(chainId && address)) {
-            //     notification.error({
-            //         message: 'Error',
-            //         description: t('PLEASE_CONNECT_WALLET'),
-            //         duration: 1,
-            //         showProgress: true
-            //     });
-            //     return;
-            // }
+
             if (!listChainIdSupported.includes(chainId!)) {
                 notification.error({
                     message: 'Error',
@@ -198,7 +185,7 @@ const SaveButtonBuy = ({
             } else {
                 window.open(
                     `${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].linkSwap}` +
-                        `${poolAddress}`,
+                    `${poolAddress}`,
                     '_blank',
                     'noopener,noreferrer'
                 );
@@ -240,10 +227,12 @@ const SaveButtonBuy = ({
                     disabled={disableBtnBuy === true && isTradeBex === false}
                 >
                     {isTradeBex ? (
-                        <>
-                            {Number(pool.startTime) < 1736496722
-                                ? 'Trade on Kodiak'
-                                : `Trade on ${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].dexName}`}
+                        <div className="flex items-center gap-2">
+                            <span>
+                                {Number(pool.startTime) < 1736496722
+                                    ? 'Trade on Kodiak'
+                                    : `Trade on ${DEX_BY_CHAIN[chainConfig?.chainId as keyof typeof DEX_BY_CHAIN].dexName}`}
+                            </span>
                             {chainConfig?.chainId === ChainId.MONAD && (
                                 <span
                                     onClick={(e) => {
@@ -273,11 +262,9 @@ const SaveButtonBuy = ({
                                             y2="3"
                                         />
                                     </svg>
-
-                                    {/* <ExportOutlined /> */}
                                 </span>
                             )}
-                        </>
+                        </div>
                     ) : (
                         `Buy ${text}`
                     )}
