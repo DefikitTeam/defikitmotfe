@@ -506,16 +506,25 @@ const PoolPurchaseSummary = () => {
     });
 
     // const funLotteryAvailableFake = 0;
-    // const bondAvailableCurrentFake = 22;
-    const shouldShowBuyButton =
-        Number(funLotteryAvailable) <= 0 ||
-        (Number(funLotteryAvailable) === 0 &&
-            Number(bondAvailableCurrent) === 0);
+    // const bondAvailableCurrentFake = 0;
+
+
     const shouldShowDeposit =
         Number(funLotteryAvailable) > 0 || Number(bondAvailableCurrent) === 0;
 
     const shouldShowSpin =
         Number(funLotteryAvailable) > 0 && Number(bondAvailableCurrent) > 0;
+
+
+
+    const shouldShowBuyButton = !shouldShowDeposit && !shouldShowSpin;
+   
+
+
+
+
+
+
 
     return (
         <div className="h-full w-full">
