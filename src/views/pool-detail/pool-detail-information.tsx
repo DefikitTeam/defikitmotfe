@@ -192,9 +192,7 @@ const PoolDetailInformation = () => {
                     <div className="flex justify-between">
                         <div className="  ">{t('LISTING_ON')}:</div>
                         <div className="  ">
-                            {
-                                getDexInfo(chainConfig?.chainId || 0)?.name
-                            }
+                            {getDexInfo(chainConfig?.chainId || 0)?.name}
                         </div>
                     </div>
 

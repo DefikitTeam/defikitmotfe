@@ -16,8 +16,6 @@ export enum ChainId {
     SOMNIA = 50312
 }
 
-
-
 export enum DexName {
     UNISWAP = 'Uniswap',
     KODIAK = 'Kodiak',
