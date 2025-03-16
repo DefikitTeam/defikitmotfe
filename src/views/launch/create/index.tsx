@@ -16,9 +16,7 @@ import { ConfigService } from '@/src/config/services/config-service';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
-import {
-    REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import servicePool from '@/src/services/external-services/backend-server/pool';
 import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -158,7 +156,8 @@ const CreateLaunch = () => {
                             totalSupplyBefore,
                             poolAddress as `0x${string}`,
                             chainConfig?.chainId.toString()!,
-                            data.aiAgent
+                            data.aiAgent,
+                            address as `0x${string}`
                         ),
                         await serviceUpload.updateMetadata(
                             chainConfig?.chainId.toString()!,
@@ -252,6 +251,7 @@ const CreateLaunch = () => {
         let urlAvatar: string = '';
         let urlAiGentAvatar: string = '';
         setIsLoadingCreateLaunch(true);
+
         try {
             if (avatarInfo?.flag) {
                 const res =

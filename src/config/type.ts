@@ -1,4 +1,4 @@
-import { DexName } from "../common/constant/constance";
+import { DexName } from '../common/constant/constance';
 
 export type ChainId = number;
 export type Environment = 'development' | 'staging' | 'production';

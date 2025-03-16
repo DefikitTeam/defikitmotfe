@@ -104,7 +104,6 @@ const SaveButtonSell = ({
                 });
                 return;
             }
-           
 
             await useSellToken.actionAsync({
                 poolAddress: data.poolAddress,

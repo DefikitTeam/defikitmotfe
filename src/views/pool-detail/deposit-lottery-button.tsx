@@ -110,7 +110,6 @@ const DepositLotteryButton = ({
 
         setIsLoadingDepositLottery(true);
         try {
-           
             await useDepositForLottery.actionAsync({
                 poolAddress: data?.poolAddress,
                 amount: convertAmountToETH,

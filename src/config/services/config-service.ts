@@ -3,7 +3,7 @@ import { ChainConfig, EnvironmentConfig } from '../type';
 export class ConfigService {
     private static instance: ConfigService;
     private currentConfig: EnvironmentConfig;
-    // private environment: Environment;
+    // private environment: Environment;d
 
     private constructor() {
         // this.environment =
@@ -76,9 +76,7 @@ export class ConfigService {
         return this.getChainConfig(chainId)?.explorer;
     }
 
-
-
-
+    // Thêm phương thức này vào class ConfigService
     getPlatformFee(chainId: number): number {
         return this.getChainConfig(chainId)?.platformFee || 0;
     }
