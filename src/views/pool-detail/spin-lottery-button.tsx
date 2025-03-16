@@ -76,7 +76,6 @@ const SpinLotteryButton = () => {
 
         setIsLoadingSpinLottery(true);
         try {
-          
             await useSpinLottery.actionAsync({
                 poolAddress: poolAddress as `0x${string}`
             });

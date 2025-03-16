@@ -32,7 +32,8 @@ export const productionConfig: EnvironmentConfig = {
             contractAbis: ROCKET_EVM_ABI_PROD,
             dex: {
                 name: DexName.BEX,
-                linkSwap: 'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+                linkSwap:
+                    'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
             },
             blockInterval: 2,
             platformFee: 0.005,
@@ -57,7 +58,8 @@ export const productionConfig: EnvironmentConfig = {
             contractAbis: ROCKET_EVM_ABI_IOTA_PROD,
             dex: {
                 name: DexName.BEX,
-                linkSwap: 'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+                linkSwap:
+                    'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
             },
             blockInterval: 2,
             platformFee: 0.05,

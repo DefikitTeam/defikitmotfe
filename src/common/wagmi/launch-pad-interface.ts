@@ -196,12 +196,12 @@ export class LaunchPadInterface {
                 // )
 
                 value: BigInt(
-                    new BigNumber(chainConfig.getPlatformFee(this._contractStruct.chainId))
+                    new BigNumber(
+                        chainConfig.getPlatformFee(this._contractStruct.chainId)
+                    )
                         .times(1e18)
                         .toFixed(0)
                 )
-
-
             });
         } catch (error) {
             this.handleErrors(error);
@@ -293,7 +293,7 @@ export class LaunchPadInterface {
             }
 
             const chainConfig = ConfigService.getInstance();
-            
+
             await watcher.writeContractAsync({
                 ...this._contractStruct,
                 functionName: 'launchPool',
@@ -334,13 +334,13 @@ export class LaunchPadInterface {
                 //         .toFixed(0)
                 // )
 
-
-
-                 value: BigInt(
-                     new BigNumber(chainConfig.getPlatformFee(this._contractStruct.chainId))
-                         .times(1e18)
-                         .toFixed(0)
-                 )
+                value: BigInt(
+                    new BigNumber(
+                        chainConfig.getPlatformFee(this._contractStruct.chainId)
+                    )
+                        .times(1e18)
+                        .toFixed(0)
+                )
             });
         } catch (err) {
             this.handleErrors(err);

@@ -276,7 +276,8 @@ const servicePool = {
         totalSupply: string,
         address: string,
         chainId: string,
-        dataAgent?: any
+        dataAgent?: any,
+        ownerAddress?: string
     ) => {
         let res;
 
@@ -294,6 +295,7 @@ const servicePool = {
 
         if (dataAgent !== undefined) {
             data.dataAgent = dataAgent;
+            data.ownerAddress = ownerAddress;
         }
 
         try {

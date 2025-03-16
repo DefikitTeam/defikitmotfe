@@ -2,7 +2,7 @@
 import {
     ACCEPT_AVATAR_TYPES,
     AccountFileType,
-    MAX_AVATAR_FILE_SIZE,
+    MAX_AVATAR_FILE_SIZE
 } from '@/src/common/constant/constance';
 
 import { base64ToFile } from '@/src/common/lib/utils';
@@ -99,7 +99,8 @@ const PoolInformation = ({
     //     (state: RootState) => state.chainData.chainData
     // );
 
-    const { chainConfig , getHardCapInitial, getDexInfo, getMinHardcap} = useConfig();
+    const { chainConfig, getHardCapInitial, getDexInfo, getMinHardcap } =
+        useConfig();
     const [data, setData] = useCreatePoolLaunchInformation();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -141,9 +142,6 @@ const PoolInformation = ({
     }, [data.name]);
 
     useEffect(() => {
-        
-
-
         setData({
             ...data,
             fixedCapETH: getHardCapInitial(chainConfig?.chainId || 0).toString()
@@ -153,9 +151,6 @@ const PoolInformation = ({
             'fixedCapETH',
             getHardCapInitial(chainConfig?.chainId || 0).toString()
         );
-
-
-
     }, [chainConfig?.chainId]);
 
     const onChange = (

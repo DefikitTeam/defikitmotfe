@@ -31,17 +31,15 @@ export const useConfig = () => {
             getExplorer: (chainId: number) => config.getExplorer(chainId),
             getSubgraphUri: (chainId: number) => config.getSubgraphUri(chainId),
 
-
             // Chain specific configuration getters
             getPlatformFee: (chainId: number) => config.getPlatformFee(chainId),
-            getBlockInterval: (chainId: number) => config.getBlockInterval(chainId),
-            getHardCapInitial: (chainId: number) => config.getHardCapInitial(chainId),
+            getBlockInterval: (chainId: number) =>
+                config.getBlockInterval(chainId),
+            getHardCapInitial: (chainId: number) =>
+                config.getHardCapInitial(chainId),
             getMinHardcap: (chainId: number) => config.getMinHardcap(chainId),
             getDexInfo: (chainId: number) => config.getDexInfo(chainId),
 
-
-
-            
             // API and environment getters
             apiConfig: config.getApiConfig()
             // environment: config.getEnvironment()

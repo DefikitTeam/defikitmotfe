@@ -1,9 +1,5 @@
 /* eslint-disable */
-import {
-    ADDRESS_NULL,
-    ChainId,
-  
-} from '@/src/common/constant/constance';
+import { ADDRESS_NULL, ChainId } from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
@@ -41,7 +37,6 @@ const SaveButtonBuy = ({
     const [isLoadingBuyToken, setIsLoadingBuyToken] = useState<boolean>(false);
     const { authState } = useAuthLogin();
     const t = useTranslations();
-
 
     const convertMaxAmountToETH = new BigNumber(data?.maxAmountETH)
         .div(1e18)
@@ -132,8 +127,6 @@ const SaveButtonBuy = ({
         setIsLoadingBuyToken(true);
 
         try {
-
-            
             await useBuyPoolMulti.actionAsync({
                 poolAddress: data?.poolAddress,
                 numberBatch: data?.numberBatch,
@@ -233,7 +226,7 @@ const SaveButtonBuy = ({
                                             'noopener,noreferrer'
                                         );
                                     }}
-                                    className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+                                    className="flex cursor-pointer items-center transition-opacity hover:opacity-80"
                                 >
                                     <svg
                                         width="16"

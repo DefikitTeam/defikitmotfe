@@ -38,7 +38,8 @@ export const developmentConfig: EnvironmentConfig = {
             contractAbis: ROCKET_EVM_ABI,
             dex: {
                 name: DexName.BEX,
-                linkSwap: 'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+                linkSwap:
+                    'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
             },
             blockInterval: 2,
             platformFee: 0.005,
@@ -62,7 +63,8 @@ export const developmentConfig: EnvironmentConfig = {
             contractAbis: ROCKET_EVM_ABI_LOTTERY,
             dex: {
                 name: DexName.BEX,
-                linkSwap: 'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+                linkSwap:
+                    'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
             },
             blockInterval: 2,
             platformFee: 0.005,
@@ -86,7 +88,8 @@ export const developmentConfig: EnvironmentConfig = {
             contractAbis: ROCKET_EVM_ABI,
             dex: {
                 name: DexName.BEX,
-                linkSwap: 'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+                linkSwap:
+                    'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
             },
             blockInterval: 2,
             platformFee: 0.005,
@@ -110,7 +113,8 @@ export const developmentConfig: EnvironmentConfig = {
             contractAbis: ROCKET_EVM_ABI,
             dex: {
                 name: DexName.BEX,
-                linkSwap: 'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+                linkSwap:
+                    'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
             },
             blockInterval: 2,
             platformFee: 0.005,
@@ -134,7 +138,8 @@ export const developmentConfig: EnvironmentConfig = {
             contractAbis: ROCKET_EVM_ABI_LOTTERY,
             dex: {
                 name: DexName.UNISWAP,
-                linkSwap: 'https://app.uniswap.org/swap?chain=monad&inputCurrency=NATIVE&outputCurrency='
+                linkSwap:
+                    'https://app.uniswap.org/swap?chain=monad&inputCurrency=NATIVE&outputCurrency='
             },
             blockInterval: 2,
             platformFee: 0.01,
