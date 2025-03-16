@@ -12,7 +12,7 @@ import { EActionStatus } from '@/src/stores/type';
 import { Button, notification, Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 import { Loader } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';s
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 
