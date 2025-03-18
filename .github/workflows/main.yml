@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Extract Branch Name
-        id: extract_branch
-        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
@@ -21,4 +19,4 @@ jobs:
           -d chat_id=$TELEGRAM_TO \
           -d message_thread_id=$TELEGRAM_TOPIC_ID \
           -d parse_mode=Markdown \
-          -d text="🚀 *GitHub Notification*%0A📂 *Branch*: ${{ env.branch_name }}%0A👤 *Pushed By*: ${{ github.actor }}%0A📦 *Repository*: ${{ github.repository }}%0A🔗 *Commit*: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+          -d text="🚀 *GitHub Notification*%0A📂 *Branch*: ${{ github.ref }}%0A👤 *Pushed By*: ${{ github.actor }}%0A📦 *Repository*: ${{ github.repository }}%0A🔗 *Commit*: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
