@@ -2,13 +2,15 @@ name: notify telegram
 
 on:
   push:
-    branches: ['*']
+    branches: 
+     - main
+     - fixbug/**
 
 jobs:
   notifyTelegram:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract Branch Name
+      - name: Notify telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
