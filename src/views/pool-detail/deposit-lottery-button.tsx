@@ -36,9 +36,7 @@ const DepositLotteryButton = ({
         fetchHolderDistribution
     ] = usePoolDetail();
     const { status, pool } = poolStateDetail;
-    const convertAmountToETH = new BigNumber(data?.depositAmount)
-        .times(1e18)
-        .toString();
+    
 
     const { chainConfig } = useConfig();
     const { useDepositForLottery } = useMultiCaller();
@@ -112,7 +110,7 @@ const DepositLotteryButton = ({
         try {
             await useDepositForLottery.actionAsync({
                 poolAddress: data?.poolAddress,
-                amount: convertAmountToETH,
+                amount: data?.depositAmount.toString(),
                 referrer: authState.userInfo?.referrer
                     ? authState.userInfo?.referrer
                     : ADDRESS_NULL
