@@ -511,8 +511,8 @@ const PoolPurchaseSummary = () => {
 
 
     const isForceShowBuyButton =
-        parseInt(pool.endTime) * 1000 < currentTime.valueOf() &&
-        Number(pool.batchAvailable) > 0;
+        (parseInt(pool.endTime) * 1000 < currentTime.valueOf() &&
+        Number(pool.batchAvailable) > 0) || (Number(pool.batchAvailable) === 0 && Number(pool.soldBatch) === Number(pool.totalBatch));
 
 
 

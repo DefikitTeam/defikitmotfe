@@ -10,7 +10,6 @@ import { useAuthLogin } from '@/src/stores/auth/hook';
 import { useDepositLottery, usePoolDetail } from '@/src/stores/pool/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { Button, notification, Spin } from 'antd';
-import BigNumber from 'bignumber.js';
 import { Loader } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
