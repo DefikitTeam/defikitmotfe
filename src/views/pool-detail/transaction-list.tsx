@@ -33,8 +33,8 @@ const TransactionList = () => {
     const { transactions } = poolStateDetail;
     const router = useRouter();
     const { chainConfig } = useConfig();
-    const handleOpenResentTx = (address: string, type: string) => {
-        if (!isConnected || !address) {
+    const handleOpenResentTx = (hash: string, type: string) => {
+        if (!isConnected) {
             notification.error({
                 message: 'Error',
                 description: 'Please connect to your wallet',
@@ -45,9 +45,9 @@ const TransactionList = () => {
         }
 
         // TODO: need change REACT_APP_TEST_SEPOLIA_EXPLORER_URL follow environment, network
-        if (address) {
+        if (hash) {
             window.open(
-                chainConfig?.explorer + `/${type}/` + address,
+                chainConfig?.explorer + `/${type}/` + hash,
                 '_blank',
                 'noopener,noreferrer'
             );
@@ -74,11 +74,11 @@ const TransactionList = () => {
     const columns: ColumnsType<Transaction> = [
         {
             title: t('TYPE'),
-            dataIndex: 'isBuy',
+            dataIndex: 'type',
             width: '5%',
             className: '!font-forza',
             align: 'center',
-            render: (_, record) => <div>{record.isBuy ? 'Buy' : 'Sell'}</div>
+            render: (_, record) => <div>{record.type}</div>
         },
         {
             title: t('PRICE'),
@@ -115,7 +115,7 @@ const TransactionList = () => {
             )
         },
         {
-            title: t('BUYER'),
+            title: t('SENDER'),
             dataIndex: 'sender',
             width: '5%',
             className: '!font-forza',
@@ -154,7 +154,7 @@ const TransactionList = () => {
                 <div className="">
                     <ExportOutlined
                         style={{ color: '#3687D8', fontSize: '15px' }}
-                        onClick={() => handleOpenResentTx(record.id, 'tx')}
+                        onClick={() => handleOpenResentTx(record.hash, 'tx')}
                     />
                 </div>
             )
