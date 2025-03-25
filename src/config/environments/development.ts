@@ -57,8 +57,9 @@ export const developmentConfig: EnvironmentConfig = {
             subgraph: {
                 uri: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/base-sepolia`
             },
-            explorer: 'https://basesepolia.beratrail.io',
-            rpcUrl: 'https://basesepolia.rpc.berachain.com',
+            explorer: 'https://sepolia.basescan.org/',
+            // rpcUrl: 'https://basesepolia.rpc.berachain.com',
+            rpcUrl: 'https://sepolia.base.org/',
             isTestnet: true,
             contractAbis: ROCKET_EVM_ABI_LOTTERY,
             dex: {

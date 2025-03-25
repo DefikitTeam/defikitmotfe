@@ -42,6 +42,8 @@ export interface IAnalystData {
 
 export interface Transaction {
     id: string;
+    hash: string;
+    type: string;
     pool: string;
     sender: string;
     blockNumber: string;

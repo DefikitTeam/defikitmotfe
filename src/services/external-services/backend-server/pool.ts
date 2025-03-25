@@ -107,6 +107,8 @@ const servicePool = {
           orderDirection: desc
         ) {
           id
+          hash
+          type
           pool
           sender
           blockNumber
