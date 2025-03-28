@@ -1,10 +1,10 @@
-import { IMessageExample } from '@/src/stores/pool/type';
+import { MessagePair } from "@/src/stores/pool/type";
 
 export function mapMessageExamples(
     rawExamples: string[],
     nameAgent: string
-): IMessageExample[] {
-    const mappedExamples: IMessageExample[] = [];
+): MessagePair[] {
+    const mappedExamples: MessagePair[] = [];
 
     for (let i = 0; i < rawExamples.length; i += 2) {
         const userMessage = rawExamples[i];
@@ -13,20 +13,25 @@ export function mapMessageExamples(
         const userText = userMessage.replace(/User: "/, '').replace(/"$/, '');
         const agentText = agentMessage.replace(/Me: "/, '').replace(/"$/, '');
 
-        mappedExamples.push({
-            user: {
+        const messagePair: MessagePair = [
+            {
                 user: `user${i + 1}`,
                 content: {
                     text: userText
                 }
-            },
-            agent: {
+            },  
+            {
                 user: nameAgent,
                 content: {
                     text: agentText
                 }
             }
-        });
+        ];
+
+        mappedExamples.push(messagePair);
+
+
+        
     }
 
     return mappedExamples;

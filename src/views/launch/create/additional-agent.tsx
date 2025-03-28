@@ -318,7 +318,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
         setLoadingGenDataAiAgent(true);
         const response: IGenerateDataAiAgentResponse =
             await serviceAiGenerate.generateDataAiAgent(
-                data?.aiAgent?.nameAgent ?? ''
+                data?.aiAgent?.name ?? ''
             );
 
         const formattedData = {
@@ -334,7 +334,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
 
             messageExamples: mapMessageExamples(
                 response.messageExamples ?? [],
-                data?.aiAgent?.nameAgent ?? ''
+                data?.aiAgent?.name ?? ''
             ),
 
             postExamples:
@@ -344,6 +344,8 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                         .replace(/\"/g, '')
                         .trim()
                 ) || [],
+
+                
             adjectives:
                 response.adjectives?.map((item) =>
                     item
@@ -466,7 +468,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                 ...data,
                 aiAgent: {
                     ...data.aiAgent,
-                    clientsAgent: selectedItemsSocial
+                    clients: selectedItemsSocial
                 }
             });
         }
@@ -496,7 +498,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
     };
 
     useEffect(() => {
-        if (!data.aiAgent?.nameAgent) {
+        if (!data.aiAgent?.name) {
             resetDataAiAgent();
             setTechnologyOptions([]);
             setSelectedItemsTech([]);
@@ -504,10 +506,10 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
             form.setFieldsValue({
                 topics: [],
                 bio: '',
-                clientsAgent: []
+                clients: []
             });
         }
-    }, [data.aiAgent?.nameAgent]);
+    }, [data.aiAgent?.name]);
 
     const items: CollapseProps['items'] = [
         {
@@ -524,19 +526,19 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                             xxl={24}
                         >
                             <Form.Item
-                                name="nameAgent"
+                                name="name"
                                 label={
                                     <span className="!font-forza text-base">
                                         {t('NAME_AGENT')}
                                     </span>
                                 }
                                 className="mb-0"
-                                initialValue={data?.aiAgent?.nameAgent}
+                                initialValue={data?.aiAgent?.name}
                             >
                                 <Input
-                                    name="nameAgent"
+                                    name="name"
                                     size="large"
-                                    value={data?.aiAgent?.nameAgent}
+                                    value={data?.aiAgent?.name}
                                     placeholder={t('AI_AGENT_NAME')}
                                     onChange={onChange}
                                     onKeyPress={handleKeyPress}
@@ -545,7 +547,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                 {loadingGenDataAiAgent ? (
                                     <Spin className="absolute bottom-2 right-2" />
                                 ) : (
-                                    data?.aiAgent?.nameAgent &&
+                                    data?.aiAgent?.name &&
                                     address && (
                                         <Tooltip title="Click to generate data AI Agent">
                                             <Button
@@ -659,7 +661,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                     ) : null}
 
                                     {!loadingImage &&
-                                        data.aiAgent?.nameAgent && (
+                                        data.aiAgent?.name && (
                                             <>
                                                 <Button
                                                     className="bg-[#297fd6] !font-forza text-sm text-white"
@@ -701,7 +703,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                                                     generatePromptGenerateImage(
                                                                         data
                                                                             ?.aiAgent
-                                                                            ?.nameAgent ??
+                                                                            ?.name ??
                                                                             ''
                                                                     )
                                                                 }

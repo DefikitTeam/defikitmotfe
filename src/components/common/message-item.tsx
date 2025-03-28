@@ -1,14 +1,14 @@
-import { IMessageExample } from '@/src/stores/pool/type';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Col, Input, Row, Typography } from 'antd';
 import React, { ChangeEvent } from 'react';
 
 import { useTranslations } from 'next-intl';
+import { MessagePair } from '@/src/stores/pool/type';
 
 interface IMessageItem {
     index: number;
     title: string;
-    item: IMessageExample;
+    item: MessagePair;
     onChangeUser: (value: string) => void;
     onChangeAgent: (value: string) => void;
     onDelete: () => void;
@@ -53,7 +53,7 @@ const MessageItem = ({
                     <div className="flex items-center justify-between gap-2">
                         <div className="flex w-full flex-col">
                             <Text className="!font-forza leading-10">
-                                {`${item.user.user}`} {index}:
+                                {`${item[0].user}`} {index}:
                             </Text>
                             <Input
                                 className="!font-forza placeholder:text-sm"
@@ -61,7 +61,7 @@ const MessageItem = ({
                                     'ENTER_YOUR_EXAMPLE_QUESTION_USER'
                                 )}
                                 size="large"
-                                value={item.user.content.text}
+                                value={item[0].content.text}
                                 onChange={onChange(onChangeUser)}
                             />
                         </div>
@@ -72,7 +72,7 @@ const MessageItem = ({
                     <div className="flex items-center justify-between gap-2">
                         <div className="flex w-full flex-col">
                             <Text className="!font-forza leading-10">
-                                {`${item.agent.user}`} {index}:
+                                {`${item[1].user}`} {index}:
                             </Text>
                             <Input
                                 className="!font-forza placeholder:text-sm"
@@ -80,7 +80,7 @@ const MessageItem = ({
                                     'ENTER_YOUR_EXAMPLE_QUESTION_AGENT'
                                 )}
                                 size="large"
-                                value={item.agent.content.text}
+                                value={item[1].content.text}
                                 onChange={onChange(onChangeAgent)}
                             />
                         </div>

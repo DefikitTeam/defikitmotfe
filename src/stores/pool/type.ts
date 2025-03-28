@@ -361,20 +361,35 @@ export interface IVestingState extends FetchError {
     openModalVesting: boolean;
 }
 
-export interface IMessageExample {
-    user: {
-        user: string;
-        content: {
-            text: string;
-        };
-    };
-    agent: {
-        user: string;
-        content: {
-            text: string;
-        };
-    };
+// export interface IMessageExample {
+//     user: {
+//         user: string;
+//         content: {
+//             text: string;
+//         };
+//     };
+//     agent: {
+//         user: string;
+//         content: {
+//             text: string;
+//         };
+//     };
+// }
+export interface IMessageContent {
+    text: string;
 }
+
+
+
+
+export interface IMessage {
+    user: string;
+    content: IMessageContent;
+}
+
+export type MessagePair = [IMessage, IMessage]; // Tuple của 2 message
+
+
 
 export interface IStyleAiAgentCommunity {
     chat?: string[];
@@ -383,15 +398,17 @@ export interface IStyleAiAgentCommunity {
 }
 
 export interface ICreateAiAgent {
-    nameAgent?: string;
-    clientsAgent?: string[];
+    name?: string;
+    clients?: string[];
     plugins?: string[];
     modelProvider?: string;
     settings?: any;
     system?: string;
     bio?: string;
     lore?: string[];
-    messageExamples?: IMessageExample[];
+    messageExamples?: MessagePair[];
+
+
     postExamples?: string[];
     adjectives?: string[];
     people?: string[];
