@@ -446,7 +446,6 @@ export class LaunchPadInterface {
     ) {
         try {
             const { poolAddress, amount, referrer } = params;
-            console.log('params line 428----', params);
             if (!poolAddress || !amount || !referrer) {
                 throw new Error('Invalid params when call depositForLottery');
             }

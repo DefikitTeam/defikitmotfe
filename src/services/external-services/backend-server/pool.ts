@@ -313,16 +313,17 @@ const servicePool = {
         }
         return '';
     },
-    getDiscussionLink: async (chainId: string, address: string) => {
+
+    getDetailPoolDataFromServer: async (chainId: string, address: string) => {
         let res;
 
         try {
             res = await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}/discussion`
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}`
             );
         } catch (error) {
             logger.error(
-                `======= get discussion link to server error: ${error}`
+                `======= get detail pool data from server error: ${error}`
             );
         }
         if (res && res.status === 200) {
@@ -330,6 +331,7 @@ const servicePool = {
         }
         return '';
     },
+
     getSocialScoreInfo: async (chainId: string, address: string) => {
         let res;
         try {

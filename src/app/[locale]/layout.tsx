@@ -70,36 +70,98 @@ export default async function RootLayout({
                     rel="stylesheet"
                     href="https://ai-cms.alex-defikit.workers.dev/styling.css"
                 />
-                <script
-                    src="https://ai-cms.alex-defikit.workers.dev/widget.js"
-                    defer // Add defer attribute
-                />
+                <script src="https://ai-cms.alex-defikit.workers.dev/widget.js"></script>
+
+                {/* <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                function initWidget() {
+                    if (typeof AIChatWidget !== 'undefined') {
+                        AIChatWidget.init({
+                            agentId: '0aaa3cba-65b2-4673-add0-efbc03c3c2f2',
+                            serverUrl: 'https://aiapi-internal.defikit.net',
+                            widgetUrl: 'https://ai-cms.alex-defikit.workers.dev',
+                            position: 'bottom-right',
+                            welcomeMessage: 's',
+                            defaultOpen: false, // Thêm option này để widget không tự động mở
+                           
+                        });
+                    } else {
+                        setTimeout(initWidget, 100); // Thử lại sau 100ms nếu widget chưa load
+                    }
+                }
+
+                // Đợi document load xong mới khởi tạo widget
+                if (document.readyState === 'complete') {
+                    initWidget();
+                } else {
+                    window.addEventListener('load', initWidget);
+                }
+            `
+                    }}
+                /> */}
+
+                
             </head>
 
             <body className={roboto.className}>
                 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+                {/* <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                        function initWidget() {
+                            if (typeof AIChatWidget !== 'undefined') {
+                                AIChatWidget.init({
+                                    agentId: '0aaa3cba-65b2-4673-add0-efbc03c3c2f2',
+                                    serverUrl: 'https://aiapi-internal.defikit.net',
+                                    widgetUrl: 'https://ai-cms.alex-defikit.workers.dev',
+                                    position: 'bottom-right',
+                                    defaultOpen: false,
+                                    welcomeMessage: 's',
+                                    customStyles: {
+                                        zIndex: 99999999
+                                    }
+                                });
+                            } else {
+                                setTimeout(initWidget, 100);
+                            }
+                        }
+
+                        // Đợi document load xong
+                        if (document.readyState === 'complete') {
+                            initWidget();
+                        } else {
+                            window.addEventListener('load', initWidget);
+                        }
+                    `
+                    }}
+                /> */}
+
+
+
+
+
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `
                 function initWidget() {
                     if (typeof AIChatWidget !== 'undefined') {
                         AIChatWidget.init({
-                            agentId: '5105450d-3b4c-46ca-b2f8-2584193dec34',
+                            agentId: '0aaa3cba-65b2-4673-add0-efbc03c3c2f2',
                             serverUrl: 'https://aiapi-internal.defikit.net',
+                            widgetUrl: 'https://ai-cms.alex-defikit.workers.dev',
                             position: 'bottom-right',
-                            containerID: 'ai-chat-widget', // Add this line
-                            customStyles: {
-                                position: 'fixed',
-                                bottom: '120px',
-                                right: '40px',
-                                zIndex: '99999',
-                            }
+                            welcomeMessage: 's',
+                            defaultOpen: false, // Thêm option này để widget không tự động mở
+                           
                         });
                     } else {
-                        setTimeout(initWidget, 500); // Increased timeout
+                        setTimeout(initWidget, 100); // Thử lại sau 100ms nếu widget chưa load
                     }
                 }
-                
+
+                // Đợi document load xong mới khởi tạo widget
                 if (document.readyState === 'complete') {
                     initWidget();
                 } else {
@@ -108,6 +170,13 @@ export default async function RootLayout({
             `
                     }}
                 />
+
+
+                
+
+
+
+
                 <noscript>
                     You need to enable JavaScript to run this app.
                 </noscript>

@@ -40,9 +40,7 @@ const initialState: ICreatePoolLaunch = {
         system: '',
         bio: '',
         lore: [],
-        messageExamples: [
-            
-        ],
+        messageExamples: [],
         postExamples: [],
         adjectives: [],
         people: [],

@@ -149,7 +149,8 @@ export interface IDetailPoolState {
     transactions: Transaction[];
     // latestTimeUpdate: number;
     priceNative: number;
-    linkDiscussionTelegram: string;
+    dataDetailPoolFromServer: IDataDetailPoolFromServer;
+    // linkDiscussionTelegram: string;
     analystData: IAnalystData;
     holderDistribution: IHolderDistribution[];
 
@@ -168,6 +169,20 @@ export interface IHolderDistribution {
     isPool: boolean;
     isCreator: boolean;
 }
+
+export interface IDataDetailPoolFromServer {
+    id: string | null;
+    address: string | null;
+    name: string | null;
+    symbol: string | null;
+    decimals: string | null;
+    totalSupply: string | null;
+    startTime: string | null;
+    discussionId: string | null;
+
+    aiAgentId: string | null;
+    aiAgentName: string | null;
+}
 export interface IDetailPoolResponseData {
     pool: IPoolDetail | undefined;
     metaDataInfo: { id: string; metadata: IMetaData };
@@ -176,7 +191,7 @@ export interface IDetailPoolResponseData {
     priceNative: number;
     analystData: { id: string; analystData: IAnalystData };
     transactions: Transaction[];
-    linkDiscussionTelegram: string;
+    dataDetailPoolFromServer: IDataDetailPoolFromServer;
     totalTransaction: number;
     totalHolder: number;
     totalReferrer: number;
@@ -187,7 +202,8 @@ export interface IDetailPoolBackgroundResponseData {
     analystData: { id: string; analystData: IAnalystData };
     transactions: Transaction[];
     pool: IPoolDetail | undefined;
-    linkDiscussionTelegram: string;
+    detailPoolData: IPoolDetail | undefined;
+    dataDetailPoolFromServer: IDataDetailPoolFromServer;
     socialScoreInfo: ISocialScoreInfo;
 }
 
@@ -379,17 +395,12 @@ export interface IMessageContent {
     text: string;
 }
 
-
-
-
 export interface IMessage {
     user: string;
     content: IMessageContent;
 }
 
 export type MessagePair = [IMessage, IMessage]; // Tuple của 2 message
-
-
 
 export interface IStyleAiAgentCommunity {
     chat?: string[];
@@ -407,7 +418,6 @@ export interface ICreateAiAgent {
     bio?: string;
     lore?: string[];
     messageExamples?: MessagePair[];
-
 
     postExamples?: string[];
     adjectives?: string[];

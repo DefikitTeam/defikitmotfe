@@ -1,10 +1,6 @@
 /* eslint-disable */
 
-
-import {
-    baseSepolia,
-    Chain
-} from 'viem/chains';
+import { baseSepolia, Chain } from 'viem/chains';
 const unichainSepoliaTestnet: Chain = {
     id: 1301,
     name: 'Unichain Sepolia Testnet',

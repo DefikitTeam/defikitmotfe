@@ -165,6 +165,11 @@ export function usePoolDetail(): [
     const resetPoolDetailAction = useCallback(() => {
         dispatch(resetPoolDetail());
     }, [dispatch]);
+
+    // const fetchPoolDetailFromServerAction = useCallback(() => {
+    //     dispatch(fetchPoolDetailFromServer());
+    // }, [dispatch]);
+
     return [
         {
             poolStateDetail
@@ -177,6 +182,7 @@ export function usePoolDetail(): [
         fetchTransactions,
         setOpenModalSocialScoreAction,
         resetPoolDetailAction
+        // fetchPoolDetailFromServerAction
     ];
 }
 

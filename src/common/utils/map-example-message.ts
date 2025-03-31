@@ -1,4 +1,4 @@
-import { MessagePair } from "@/src/stores/pool/type";
+import { MessagePair } from '@/src/stores/pool/type';
 
 export function mapMessageExamples(
     rawExamples: string[],
@@ -15,11 +15,11 @@ export function mapMessageExamples(
 
         const messagePair: MessagePair = [
             {
-                user: `user${i + 1}`,
+                user: `user`,
                 content: {
                     text: userText
                 }
-            },  
+            },
             {
                 user: nameAgent,
                 content: {
@@ -29,9 +29,6 @@ export function mapMessageExamples(
         ];
 
         mappedExamples.push(messagePair);
-
-
-        
     }
 
     return mappedExamples;

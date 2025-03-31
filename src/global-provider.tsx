@@ -27,7 +27,6 @@ const GlobalProvider: FC<ProvidersProps> = ({ locale, messages, children }) => {
                 <ConfigProvider theme={theme}>
                     <AntdRegistry>
                         <GlobalConnectWalletProvider>
-                            {/* <div>demo12</div> */}
                             {children}
                         </GlobalConnectWalletProvider>
                     </AntdRegistry>

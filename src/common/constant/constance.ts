@@ -26,7 +26,6 @@ export enum DexName {
     // UNI_DEX = 'UniDex'
 }
 
-
 export const TIME_IN_YEAR = 31536000; // unit second
 export enum PoolStatus {
     MY_POOl = 'MY_POOL',
@@ -187,7 +186,6 @@ export const getSupportedChains = (): number[] => {
         .map((id) => parseInt(id.trim()))
         .filter((chainId) => !isNaN(chainId)); // Lọc bỏ giá trị NaN
 };
-
 
 export enum NOTIFICATION_STATUS {
     UNREAD = 'UNREAD',

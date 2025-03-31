@@ -509,22 +509,23 @@ const PoolPurchaseSummary = () => {
     // const bondAvailableCurrentFake = 4;
     const currentTime = new Date();
 
-
     const isForceShowBuyButton =
         (parseInt(pool.endTime) * 1000 < currentTime.valueOf() &&
-        Number(pool.batchAvailable) > 0) || (Number(pool.batchAvailable) === 0 && Number(pool.soldBatch) === Number(pool.totalBatch));
+            Number(pool.batchAvailable) > 0) ||
+        (Number(pool.batchAvailable) === 0 &&
+            Number(pool.soldBatch) === Number(pool.totalBatch));
 
+    const shouldShowDeposit =
+        (!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
+        Number(bondAvailableCurrent) === 0;
 
+    const shouldShowSpin =
+        !isForceShowBuyButton &&
+        Number(funLotteryAvailable) > 0 &&
+        Number(bondAvailableCurrent) > 0;
 
-    const shouldShowDeposit = !isForceShowBuyButton && 
-        Number(funLotteryAvailable) > 0 || Number(bondAvailableCurrent) === 0;
-
-    const shouldShowSpin = !isForceShowBuyButton &&  
-        Number(funLotteryAvailable) > 0 && Number(bondAvailableCurrent) > 0;
-
-    const shouldShowBuyButton = isForceShowBuyButton ||
-        (!shouldShowDeposit && !shouldShowSpin) 
-
+    const shouldShowBuyButton =
+        isForceShowBuyButton || (!shouldShowDeposit && !shouldShowSpin);
 
     return (
         <div className="h-full w-full">

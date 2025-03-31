@@ -345,7 +345,6 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                         .trim()
                 ) || [],
 
-                
             adjectives:
                 response.adjectives?.map((item) =>
                     item
@@ -660,81 +659,80 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                         />
                                     ) : null}
 
-                                    {!loadingImage &&
-                                        data.aiAgent?.name && (
-                                            <>
-                                                <Button
-                                                    className="bg-[#297fd6] !font-forza text-sm text-white"
-                                                    onClick={showModal}
-                                                >
-                                                    {t('GENERATE_IMAGE')}
-                                                </Button>
+                                    {!loadingImage && data.aiAgent?.name && (
+                                        <>
+                                            <Button
+                                                className="bg-[#297fd6] !font-forza text-sm text-white"
+                                                onClick={showModal}
+                                            >
+                                                {t('GENERATE_IMAGE')}
+                                            </Button>
 
-                                                <Modal
-                                                    title="Generate Image"
-                                                    centered
-                                                    width={1000}
-                                                    open={isModalOpen}
-                                                    onOk={handleOk}
-                                                    onCancel={handleCancelModal}
-                                                >
-                                                    <div className="relative flex items-center gap-2">
-                                                        <TextArea
-                                                            rows={8}
-                                                            onChange={
-                                                                onChangePromptGenerateImage
+                                            <Modal
+                                                title="Generate Image"
+                                                centered
+                                                width={1000}
+                                                open={isModalOpen}
+                                                onOk={handleOk}
+                                                onCancel={handleCancelModal}
+                                            >
+                                                <div className="relative flex items-center gap-2">
+                                                    <TextArea
+                                                        rows={8}
+                                                        onChange={
+                                                            onChangePromptGenerateImage
+                                                        }
+                                                        value={
+                                                            promptGenerateImage
+                                                        }
+                                                        name="promptGenerateImage"
+                                                        className="!font-forza text-base"
+                                                        placeholder="Please enter the prompt for generating image"
+                                                    />
+                                                    {}
+                                                    {loadingPromptGenerateImage ? (
+                                                        <Spin className="absolute bottom-2 right-2" />
+                                                    ) : (
+                                                        <Button
+                                                            type="primary"
+                                                            size="small"
+                                                            className="absolute bottom-2 right-2 cursor-pointer"
+                                                            onClick={() =>
+                                                                generatePromptGenerateImage(
+                                                                    data
+                                                                        ?.aiAgent
+                                                                        ?.name ??
+                                                                        ''
+                                                                )
                                                             }
-                                                            value={
-                                                                promptGenerateImage
-                                                            }
-                                                            name="promptGenerateImage"
-                                                            className="!font-forza text-base"
-                                                            placeholder="Please enter the prompt for generating image"
-                                                        />
-                                                        {}
-                                                        {loadingPromptGenerateImage ? (
-                                                            <Spin className="absolute bottom-2 right-2" />
-                                                        ) : (
-                                                            <Button
-                                                                type="primary"
-                                                                size="small"
-                                                                className="absolute bottom-2 right-2 cursor-pointer"
-                                                                onClick={() =>
-                                                                    generatePromptGenerateImage(
-                                                                        data
-                                                                            ?.aiAgent
-                                                                            ?.name ??
-                                                                            ''
-                                                                    )
-                                                                }
+                                                        >
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                width="16"
+                                                                height="16"
+                                                                viewBox="0 0 24 24"
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                strokeWidth="2"
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                className="lucide lucide-wand-sparkles"
                                                             >
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    width="16"
-                                                                    height="16"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    strokeWidth="2"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    className="lucide lucide-wand-sparkles"
-                                                                >
-                                                                    <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" />
-                                                                    <path d="m14 7 3 3" />
-                                                                    <path d="M5 6v4" />
-                                                                    <path d="M19 14v4" />
-                                                                    <path d="M10 2v2" />
-                                                                    <path d="M7 8H3" />
-                                                                    <path d="M21 16h-4" />
-                                                                    <path d="M11 3H9" />
-                                                                </svg>
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                </Modal>
-                                            </>
-                                        )}
+                                                                <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72" />
+                                                                <path d="m14 7 3 3" />
+                                                                <path d="M5 6v4" />
+                                                                <path d="M19 14v4" />
+                                                                <path d="M10 2v2" />
+                                                                <path d="M7 8H3" />
+                                                                <path d="M21 16h-4" />
+                                                                <path d="M11 3H9" />
+                                                            </svg>
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </Modal>
+                                        </>
+                                    )}
                                 </div>
                                 <Modal
                                     open={previewOpen}

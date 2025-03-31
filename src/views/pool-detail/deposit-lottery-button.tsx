@@ -1,9 +1,6 @@
 /* eslint-disable */
 
-
-import {
-    ADDRESS_NULL,
-} from '@/src/common/constant/constance';
+import { ADDRESS_NULL } from '@/src/common/constant/constance';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -35,7 +32,6 @@ const DepositLotteryButton = ({
         fetchHolderDistribution
     ] = usePoolDetail();
     const { status, pool } = poolStateDetail;
-    
 
     const { chainConfig } = useConfig();
     const { useDepositForLottery } = useMultiCaller();
