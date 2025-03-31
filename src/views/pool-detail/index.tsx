@@ -249,6 +249,9 @@ const PoolDetail = () => {
         return <Loader />;
     }
 
+
+    const agentIdFake: any = '21cfb7af-6776-4c9c-9ae7-a72b688c713b'
+
     return (
         <BoxArea>
             <div className={`!pt-[20px] ${isMobile ? '' : 'px-5'}`}>
@@ -317,14 +320,14 @@ const PoolDetail = () => {
                                     </>
                                 ) : null}
 
-                                {/* {dataDetailPoolFromServer.aiAgentId && (
+                                {agentIdFake && (
                                     <AiChatWidget
                                         agentId={
-                                            dataDetailPoolFromServer.aiAgentId ??
+                                            agentIdFake ??
                                             ''
                                         }
                                     />
-                                )} */}
+                                )}
                             </div>
                         </Col>
                     </Row>

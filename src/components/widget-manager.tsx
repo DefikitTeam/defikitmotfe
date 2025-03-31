@@ -16,7 +16,6 @@ const WidgetManager = () => {
         const widgetStyles = document.querySelectorAll('[data-ai-chat-widget]');
         widgetStyles.forEach(style => style.remove());
     };
-
     useEffect(() => {
         // Kiểm tra nếu không phải trang pool detail thì cleanup
         if (!pathname?.includes('/pool/address/')) {
