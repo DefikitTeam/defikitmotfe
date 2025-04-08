@@ -28,7 +28,7 @@ const initialState: ICreatePoolLaunch = {
     metadata: '',
     aiAgent: {
         name: '',
-        clients: ['twitter'],
+        clients: ['twitter', 'telegram', 'discord'],
         plugins: [],
         modelProvider: 'google',
         settings: {

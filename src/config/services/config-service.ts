@@ -1,13 +1,10 @@
-import { developmentConfig } from '../environments/development';
+import { productionConfig } from '../environments/production';
 import { ChainConfig, EnvironmentConfig } from '../type';
 export class ConfigService {
     private static instance: ConfigService;
     private currentConfig: EnvironmentConfig;
-    // private environment: Environment;d
 
     private constructor() {
-        // this.environment =
-        //     (NEXT_PUBLIC_ENVIRONMENT as Environment) || 'development';
         this.currentConfig = this.loadConfig();
     }
 
@@ -19,15 +16,7 @@ export class ConfigService {
     }
 
     private loadConfig(): EnvironmentConfig {
-        // switch (this.environment) {
-        //     case 'production':
-        //         return productionConfig;
-        //     case 'staging':
-        return developmentConfig;
-        //     case 'development':
-        //     default:
-        //         return developmentConfig;
-        // }
+        return productionConfig;
     }
 
     getChainConfig(chainId: number): ChainConfig | undefined {
@@ -48,10 +37,6 @@ export class ConfigService {
     isChainSupported(chainId: number): boolean {
         return this.currentConfig.supportedChains.includes(chainId);
     }
-
-    // getEnvironment(): Environment {
-    //     return this.environment;
-    // }
 
     getContractAddress(
         chainId: number,
@@ -76,7 +61,6 @@ export class ConfigService {
         return this.getChainConfig(chainId)?.explorer;
     }
 
-    // Thêm phương thức này vào class ConfigService
     getPlatformFee(chainId: number): number {
         return this.getChainConfig(chainId)?.platformFee || 0;
     }

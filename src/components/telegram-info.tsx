@@ -17,19 +17,8 @@ const TelegramInfo = ({ name }: { name: string }) => {
         logoutTelegramAction();
     };
 
-    // const environment = getEnvironment();
     let botName = '';
-    // switch (environment) {
-    //     case 'staging':
-    botName = 'MotherOfTokensMonadBot';
-    //         break;
-    //     case 'development':
-    //         botName = 'MotherOfTokensDevBot';
-    //         break;
-    //     case 'production':
-    //         botName = 'motheroftokens_bot';
-    //         break;
-    // }
+    botName = 'motheroftokens_bot';
 
     const items: MenuProps['items'] = [
         {

@@ -23,7 +23,7 @@ export interface IAiChatWidget {
 }
 
 const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId }) => {
-    console.log('agentId line 26-----', agentId)
+    console.log('agentId line 26-----', agentId);
     useEffect(() => {
         if (agentId && window.AIChatWidget) {
             window.AIChatWidget.init({
@@ -42,8 +42,10 @@ const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId }) => {
             if (widgetContainer) {
                 widgetContainer.remove();
             }
-            const widgetStyles = document.querySelectorAll('[data-ai-chat-widget]');
-            widgetStyles.forEach(style => style.remove());
+            const widgetStyles = document.querySelectorAll(
+                '[data-ai-chat-widget]'
+            );
+            widgetStyles.forEach((style) => style.remove());
         }
 
         return () => {
