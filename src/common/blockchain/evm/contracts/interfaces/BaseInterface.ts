@@ -37,12 +37,17 @@ export default class BaseInterface {
         return receipt?.hash;
     }
 
-    _toNumber(num: string | number | bigint | BigNumber): number {
+    _toNumber(num: string | number | bigint | BigNumber | { toString(): string }): number {
+        if (num === undefined || num === null) {
+            return 0;
+        }
+
         try {
             if (num instanceof BigNumber) {
                 return num.toNumber();
             }
-            return new BigNumber(num.toString()).toNumber();
+            const bigNum = new BigNumber(num.toString());
+            return bigNum.toNumber();
         } catch (er) {
             if (typeof num === 'bigint' || typeof num === 'string') {
                 return Number.parseFloat(ethers.formatEther(num));
@@ -51,8 +56,11 @@ export default class BaseInterface {
         }
     }
 
-    _toEther(bigNumber: any) {
-        return Number.parseFloat(ethers.formatEther(bigNumber));
+    _toEther(bigNumber: string | bigint | { toString(): string }) {
+        if (bigNumber === undefined || bigNumber === null) {
+            return 0;
+        }
+        return Number.parseFloat(ethers.formatEther(bigNumber.toString()));
     }
 
     async _toWei(amount: number) {
