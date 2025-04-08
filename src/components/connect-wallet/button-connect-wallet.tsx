@@ -34,7 +34,7 @@ const ButtonConnectWallet = () => {
     let botName = '';
     // switch (environment) {
     //     case 'staging':
-    botName = 'MotherOfTokensMonadBot';
+    botName = 'motheroftokens_bot';
     // break;
     // case 'development':
     //     botName = 'MotherOfTokensDevBot';
