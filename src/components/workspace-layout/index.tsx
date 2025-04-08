@@ -7,6 +7,7 @@ import { ReactNode, useCallback, useEffect } from 'react';
 import Content from './content';
 import Footer from './footer';
 import Header from './header';
+import WidgetManager from '../widget-manager';
 
 export interface IWorkspaceLayout {
     children: ReactNode;
@@ -36,6 +37,7 @@ const WorkspaceLayout = (props: IWorkspaceLayout) => {
 
     return (
         <Layout className="min-h-screen">
+            <WidgetManager />
             <Header />
             <Layout className="mt-12">
                 <Content {...props} />

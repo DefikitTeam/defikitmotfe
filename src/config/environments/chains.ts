@@ -1,11 +1,6 @@
-import {
-    artelaTestnet,
-    baseSepolia,
-    berachain,
-    berachainTestnetbArtio,
-    Chain,
-    polygonAmoy
-} from 'viem/chains';
+/* eslint-disable */
+
+import { baseSepolia, Chain } from 'viem/chains';
 const unichainSepoliaTestnet: Chain = {
     id: 1301,
     name: 'Unichain Sepolia Testnet',
@@ -24,23 +19,43 @@ const unichainSepoliaTestnet: Chain = {
     testnet: true
 };
 
+const somniaTestnet: Chain = {
+    id: 50312,
+    name: 'Somnia Testnet',
+    nativeCurrency: {
+        name: 'Somnia',
+        symbol: 'STT',
+        decimals: 18
+    },
+    rpcUrls: {
+        default: { http: ['https://dream-rpc.somnia.network/'] },
+        public: { http: ['https://dream-rpc.somnia.network/'] }
+    },
+    blockExplorers: {
+        default: {
+            name: 'Somnia Explorer',
+            url: 'https://shannon-explorer.somnia.network/'
+        }
+    },
+    testnet: true
+};
+
 export const CHAIN_CONFIG = {
-    production: {
-        defaultChain: berachain,
-        supportedChains: [berachain]
-    },
-    staging: {
-        defaultChain: berachainTestnetbArtio,
-        supportedChains: [berachainTestnetbArtio]
-    },
-    development: {
-        defaultChain: berachainTestnetbArtio,
-        supportedChains: [
-            berachainTestnetbArtio,
-            baseSepolia,
-            polygonAmoy,
-            artelaTestnet,
-            unichainSepoliaTestnet
-        ]
-    }
+    // production: {
+    //     defaultChain: berachain,
+    //     supportedChains: [berachain]
+    // },
+    // staging: {
+    defaultChain: baseSepolia,
+    supportedChains: [baseSepolia, somniaTestnet]
+    // },
+    // development: {
+    //     defaultChain: baseSepolia,
+    //     supportedChains: [
+    //         baseSepolia,
+    //         polygonAmoy,
+    //         artelaTestnet,
+    //         unichainSepoliaTestnet
+    //     ]
+    // }
 };

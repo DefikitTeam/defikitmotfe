@@ -383,7 +383,7 @@ const TradingViewChart = (props: Props) => {
                                 );
                             }
 
-                            candleSeries.setData(arrayData);
+                            candleSeries?.setData(arrayData);
                             volumeSeries.setData(
                                 arrayData.map(
                                     (item) =>
@@ -408,19 +408,19 @@ const TradingViewChart = (props: Props) => {
                                     arrayData[arrayData.length - 1]?.open
                                 ),
                                 close: customFormatNumber(
-                                    arrayData[arrayData.length - 1].close
+                                    arrayData[arrayData.length - 1]?.close
                                 ),
                                 high: customFormatNumber(
-                                    arrayData[arrayData.length - 1].high
+                                    arrayData[arrayData.length - 1]?.high
                                 ),
                                 low: customFormatNumber(
-                                    arrayData[arrayData.length - 1].low
+                                    arrayData[arrayData.length - 1]?.low
                                 ),
-                                time: arrayData[arrayData.length - 1].time
+                                time: arrayData[arrayData.length - 1]?.time
                             });
                             const currentPriceColor =
-                                arrayData[arrayData.length - 1].close <
-                                arrayData[arrayData.length - 1].open
+                                arrayData[arrayData.length - 1]?.close <
+                                arrayData[arrayData.length - 1]?.open
                                     ? '#F23645'
                                     : '#089981';
                             setPriceColor(currentPriceColor);

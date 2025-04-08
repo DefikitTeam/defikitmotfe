@@ -1,8 +1,7 @@
 /* eslint-disable */
 import {
     NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD,
-    NEXT_PUBLIC_ENVIRONMENT
+    NEXT_PUBLIC_API_ENDPOINT_PROD
 } from '@/src/common/web3/constants/env';
 import {
     ICheckAccessTokenResponse,

@@ -11,10 +11,10 @@ import ModalSetMaxSlippage from '@/src/components/modal-set-max-slippage';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import servicePool from '@/src/services/external-services/backend-server/pool';
-import { RootState } from '@/src/stores';
 import {
     useActivities,
     useBuyPoolInformation,
+    useDepositLottery,
     usePoolDetail,
     useSlippage
 } from '@/src/stores/pool/hook';
@@ -34,10 +34,11 @@ import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
+import DepositLotteryButton from './deposit-lottery-button';
 import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
+import SpinLotteryButton from './spin-lottery-button';
 const { Text, Title } = Typography;
 
 const PoolPurchaseSummary = () => {
@@ -46,12 +47,12 @@ const PoolPurchaseSummary = () => {
         usePoolDetail();
     const { pool, analystData, priceNative, status } = poolStateDetail;
     const { chainId, address, isConnected } = useAccount();
-    // const { address, isConnected } = useAccount();
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
-    const chainData = useSelector((state: RootState) => state.chainData);
     const [data, setData] = useBuyPoolInformation();
+    const [dataDeposit, setDepositLotteryInformation] = useDepositLottery();
     const [maxBondCurrentValue, setMaxBondCurrentValue] = useState('0');
+    const [funLotteryAvailable, setFunLotteryAvailable] = useState('0');
     const [bondAvailableCurrent, setBondAvailableCurrent] =
         useState<string>('0');
     const [bondingCurveProgress, setBondingCurveProgress] = useState('0');
@@ -67,9 +68,11 @@ const PoolPurchaseSummary = () => {
     const [sliderPercent, setSliderPercent] = useState<number>(0);
     const [maxSlider, setMaxSlider] = useState(0);
     const [bondAmountValue, setBondAmountValue] = useState('');
+    const [depositAmountValue, setDepositAmountValue] = useState('');
     const [disableBtnBuy, setDisableBtnBuy] = useState(true);
+    const [disableBtnDeposit, setDisableBtnDeposit] = useState(true);
+    const [disableBtnSpin, setDisableBtnSpin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-
     const [raisedEth, setRaisedEth] = useState('0');
     const [showInitial, setShowInitial] = useState('0');
 
@@ -83,6 +86,36 @@ const PoolPurchaseSummary = () => {
             helperText: ''
         }
     });
+
+    const handleKeyPressDeposit = (event: any) => {
+        const pattern = /^[0-9.]$/;
+        if (!pattern.test(event.key)) {
+            event.preventDefault();
+        }
+    };
+
+    const handleOnChangeDeposit = (
+        event:
+            | React.ChangeEvent<HTMLInputElement>
+            | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+        const { name, value } = event.target;
+
+        setDepositAmountValue(value.toString());
+        // setDisableBtnDeposit(false);
+        setDepositLotteryInformation({
+            ...dataDeposit,
+            [name]: Number(value)
+        });
+    };
+
+    useEffect(() => {
+        if (!dataDeposit.depositAmount) {
+            setDisableBtnDeposit(true);
+        } else {
+            setDisableBtnDeposit(false);
+        }
+    }, [dataDeposit.depositAmount]);
 
     const handleOnChange = (
         event:
@@ -222,6 +255,12 @@ const PoolPurchaseSummary = () => {
                 ...data,
                 poolAddress: pool.id
             });
+
+            setDepositLotteryInformation({
+                ...dataDeposit,
+                poolAddress: pool.id
+            });
+
             // setMaxSlider(Number(pool?.batchAvailable));
             const tokenForSale = new BigNumber(pool.tokenForSale);
             const totalBatch = new BigNumber(pool.totalBatch);
@@ -285,8 +324,10 @@ const PoolPurchaseSummary = () => {
         value: Number(bondAmountValue) >= 100 ? 100 : Number(bondAmountValue),
         chainId: chainConfig?.chainId as number
     });
+
     const estimateBuyValue = dataReader ? dataReader[2] : undefined;
     const maxBondCurrent = dataReader ? dataReader[4] : undefined;
+    const funLottery = dataReader ? dataReader[7] : undefined;
 
     const estimateBuyValueReal = estimateBuyValue?.result;
 
@@ -335,7 +376,7 @@ const PoolPurchaseSummary = () => {
     }, [chainId, poolAddress]);
 
     useEffect(() => {
-        const availableBonds = Number(maxBondCurrentValue) - Number(bondSold);
+        const availableBonds = Number(maxBondCurrentValue);
 
         const validBonds =
             isNaN(availableBonds) || availableBonds < 0
@@ -344,7 +385,7 @@ const PoolPurchaseSummary = () => {
 
         setBondAvailableCurrent(validBonds);
         setMaxSlider(Number(validBonds));
-    }, [maxBondCurrentValue, bondSold]);
+    }, [maxBondCurrentValue]);
 
     useEffect(() => {
         const value: number =
@@ -418,6 +459,23 @@ const PoolPurchaseSummary = () => {
     }, [isFetchingDataReader, maxBondCurrent]);
 
     useEffect(() => {
+        try {
+            if (!isFetchingDataReader && funLottery) {
+                const lotteryAmount = new BigNumber(funLottery?.result)
+                    .div(1e18)
+                    .toFixed(3);
+                setFunLotteryAvailable(
+                    parseFloat(lotteryAmount) > 0
+                        ? lotteryAmount.toString()
+                        : '0'
+                );
+            }
+        } catch (error) {
+            console.log('==== call funLottery error: ', error);
+        }
+    }, [isFetchingDataReader, funLottery]);
+
+    useEffect(() => {
         if (pool?.soldBatch === pool?.totalBatch) {
             setEndTime({
                 days: 0,
@@ -446,6 +504,28 @@ const PoolPurchaseSummary = () => {
         }, 1000);
         return () => clearTimeout(timer);
     });
+
+    // const funLotteryAvailableFake = 3;
+    // const bondAvailableCurrentFake = 4;
+    const currentTime = new Date();
+
+    const isForceShowBuyButton =
+        (parseInt(pool.endTime) * 1000 < currentTime.valueOf() &&
+            Number(pool.batchAvailable) > 0) ||
+        (Number(pool.batchAvailable) === 0 &&
+            Number(pool.soldBatch) === Number(pool.totalBatch));
+
+    const shouldShowDeposit =
+        (!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
+        Number(bondAvailableCurrent) === 0;
+
+    const shouldShowSpin =
+        !isForceShowBuyButton &&
+        Number(funLotteryAvailable) > 0 &&
+        Number(bondAvailableCurrent) > 0;
+
+    const shouldShowBuyButton =
+        isForceShowBuyButton || (!shouldShowDeposit && !shouldShowSpin);
 
     return (
         <div className="h-full w-full">
@@ -688,6 +768,7 @@ const PoolPurchaseSummary = () => {
                             )}
                         </div>
                     </Col>
+
                     <Col
                         xs={24}
                         sm={24}
@@ -740,49 +821,168 @@ const PoolPurchaseSummary = () => {
                         xxl={24}
                         className="mb-0 mt-0"
                     >
-                        <div className="mt-1 text-right !font-forza text-base text-blue-400 ">
-                            {t('BOND_AVAILABLE')}:{' '}
-                            {Number(bondAvailableCurrent)} {t('BONDS')}
-                        </div>
+                        <Row
+                            gutter={[16, 12]}
+                            className="mb-6 rounded-lg bg-gray-50 p-2 shadow-md"
+                            justify="space-between"
+                        >
+                            <Col
+                                xs={12}
+                                sm={12}
+                                md={12}
+                                lg={12}
+                                xxl={12}
+                                className="flex items-center"
+                            >
+                                <div className="flex flex-col">
+                                    <span className="font-forza text-base">
+                                        {t('BOND_AVAILABLE')}
+                                    </span>
+                                    <span className="text-2xl font-bold text-blue-600">
+                                        {Number(bondAvailableCurrent)}{' '}
+                                        {t('BONDS')}
+                                    </span>
+                                </div>
+                            </Col>
+                            <Col
+                                xs={12}
+                                sm={12}
+                                md={12}
+                                lg={12}
+                                xxl={12}
+                                className="flex items-center"
+                            >
+                                <div className="flex flex-col">
+                                    <span className="font-forza text-base">
+                                        {t('FUND_LOTTERY_AVAILABLE')}
+                                    </span>
+                                    <span className="text-2xl font-bold text-blue-600">
+                                        {Number(funLotteryAvailable)}{' '}
+                                        {`${chainConfig?.currency}`}
+                                    </span>
+                                </div>
+                            </Col>
+                        </Row>
                     </Col>
+
+                    {shouldShowBuyButton && (
+                        <Col
+                            xs={24}
+                            sm={24}
+                            lg={24}
+                            md={24}
+                            xxl={24}
+                        >
+                            <div className="mb-0">
+                                <span className="!font-forza text-base">
+                                    {t('MAX_AMOUNT')}{' '}
+                                    {`${chainConfig?.currency}`}
+                                </span>
+
+                                <Input
+                                    size="large"
+                                    disabled={true}
+                                    value={
+                                        maxAmountETH
+                                            ? new BigNumber(maxAmountETH)
+                                                  .div(1e18)
+                                                  .toFixed(6)
+                                            : 0
+                                    }
+                                    className="!font-forza text-base"
+                                    style={{
+                                        backgroundColor: '#CCCCCC',
+                                        color: '#7E7E97'
+                                    }}
+                                />
+                            </div>
+                        </Col>
+                    )}
+
+                    {shouldShowDeposit && (
+                        <Col
+                            xs={24}
+                            sm={24}
+                            lg={24}
+                            md={24}
+                            xxl={24}
+                        >
+                            <div className="mb-0">
+                                <span className="!font-forza text-base">
+                                    <Text className="text-lg text-red-500">
+                                        *{' '}
+                                    </Text>
+                                    {`${t('DEPOSIT_AMOUNT')} ${chainConfig?.currency}`}
+                                    {/* <Tooltip
+                                        title={t('DEPOSIT_AMOUNT_TOOLTIP')}
+                                    >
+                                        <QuestionCircleOutlined
+                                            style={{ marginLeft: '8px' }}
+                                        />
+                                    </Tooltip> */}
+                                </span>
+
+                                <Input
+                                    type="text"
+                                    placeholder={`Please enter ${chainConfig?.currency} amount`}
+                                    name="depositAmount"
+                                    value={depositAmountValue}
+                                    onKeyPress={handleKeyPressDeposit}
+                                    onChange={handleOnChangeDeposit}
+                                    className="!font-forza text-base"
+                                    style={{ color: '#000000', width: '100%' }}
+                                />
+                            </div>
+                        </Col>
+                    )}
+                </Row>
+
+                <Row
+                    gutter={[16, 16]}
+                    className="mb-4"
+                >
                     <Col
                         xs={24}
                         sm={24}
                         lg={24}
                         md={24}
                         xxl={24}
+                        className="mb-0"
                     >
-                        <div className="mb-0">
-                            <span className="!font-forza text-base">
-                                {t('MAX_AMOUNT')} {`${chainConfig?.currency}`}
-                            </span>
-
-                            <Input
-                                size="large"
-                                disabled={true}
-                                value={
-                                    maxAmountETH
-                                        ? new BigNumber(maxAmountETH)
-                                              .div(1e18)
-                                              .toFixed(6)
-                                        : 0
-                                }
-                                className="!font-forza text-base"
-                                style={{
-                                    backgroundColor: '#CCCCCC',
-                                    color: '#7E7E97'
-                                }}
+                        {shouldShowBuyButton ? (
+                            <SaveButtonBuy
+                                text={buyAmountBtn}
+                                isLoading={isLoading}
+                                disableBtnBuy={disableBtnBuy}
+                                clearForm={clearForm}
+                                isTradeBex={isTradeBex}
                             />
-                        </div>
+                        ) : shouldShowDeposit && !shouldShowSpin ? (
+                            <DepositLotteryButton
+                                disableBtnDeposit={disableBtnDeposit}
+                            />
+                        ) : (
+                            <div className="mt-[6px]">
+                                <Row gutter={8}>
+                                    {shouldShowDeposit && (
+                                        <Col span={12}>
+                                            <DepositLotteryButton
+                                                disableBtnDeposit={
+                                                    disableBtnDeposit
+                                                }
+                                            />
+                                        </Col>
+                                    )}
+                                    {shouldShowSpin && (
+                                        <Col span={12}>
+                                            <SpinLotteryButton />
+                                        </Col>
+                                    )}
+                                </Row>
+                            </div>
+                        )}
                     </Col>
                 </Row>
-                <SaveButtonBuy
-                    text={buyAmountBtn}
-                    isLoading={isLoading}
-                    disableBtnBuy={disableBtnBuy}
-                    clearForm={clearForm}
-                    isTradeBex={isTradeBex}
-                />
             </Form>
 
             <ModalActivities />

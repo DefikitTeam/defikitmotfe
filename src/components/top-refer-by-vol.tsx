@@ -1,13 +1,13 @@
+/* eslint-disable */
+
 import { notification, Typography } from 'antd';
 import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { shortWalletAddress } from '../common/utils/utils';
 import { useConfig } from '../hooks/useConfig';
-import { RootState } from '../stores';
 import { useTopRefByVol } from '../stores/top-ref-by-vol/hook';
 import { EActionStatus } from '../stores/type';
 const { Text } = Typography;
@@ -21,14 +21,22 @@ const TopReferByVol = () => {
         getAllTopRefByVolAction,
         resetStatusGetAllTopRefByVolAction
     } = useTopRefByVol();
-    const chainData = useSelector((state: RootState) => state.chainData);
-    const { chainConfig } = useConfig();
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
+    const { chainConfig } = useConfig();
+    const fetchTopRefByVol = () => {
+        if (chainConfig?.chainId) {
             getAllTopRefByVolAction({
-                chainId: chainConfig?.chainId.toString()!
+                chainId: chainConfig.chainId.toString()
             });
+        }
+    };
+    useEffect(() => {
+        fetchTopRefByVol();
+
+        const intervalId = setInterval(() => {
+            if (topRefByVolState.status !== EActionStatus.Pending) {
+                fetchTopRefByVol();
+            }
         }, 5000);
         return () => clearInterval(intervalId);
     }, [chainConfig?.chainId, address]);
@@ -43,19 +51,19 @@ const TopReferByVol = () => {
     }, [topRefByVolState.status]);
 
     const handleClickTopRefByVol = (id: string) => {
-        if (isConnected && address) {
-            router.push(
-                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
-            );
-        } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (isConnected && address) {
+        router.push(
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
+        );
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
 
     return (

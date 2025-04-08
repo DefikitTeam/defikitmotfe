@@ -1,13 +1,13 @@
+/* eslint-disable */
+
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
-import { RootState } from '@/src/stores';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { IHolderDistribution } from '@/src/stores/pool/type';
 import { notification, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 
 const HolderDistribution = () => {
@@ -17,7 +17,7 @@ const HolderDistribution = () => {
         usePoolDetail();
 
     const { holderDistribution, pool } = poolStateDetail;
-    const chainData = useSelector((state: RootState) => state.chainData);
+
     const router = useRouter();
 
     const { isConnected, address } = useAccount();

@@ -1,4 +1,5 @@
 import { config } from '@/src/components/connect-wallet/wagmi';
+import { ConfigService } from '@/src/config/services/config-service';
 import { getGasPrice } from '@wagmi/core';
 import { message } from 'antd';
 import { JointContent } from 'antd/lib/message/interface';
@@ -6,7 +7,7 @@ import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { Abi, BaseError, ContractFunctionRevertedError } from 'viem';
 import { UseWriteContractReturnType } from 'wagmi';
-import { ChainId, PLATFORM_FEE } from '../constant/constance';
+import { ChainId } from '../constant/constance';
 
 export interface ContractStruct {
     address: `0x${string}`;
@@ -167,6 +168,8 @@ export class LaunchPadInterface {
                 throw new Error('Invalid params when create launch pool ');
             }
 
+            const chainConfig = ConfigService.getInstance();
+
             await watcher.writeContractAsync({
                 ...this._contractStruct,
                 functionName: 'activePool',
@@ -186,8 +189,16 @@ export class LaunchPadInterface {
                         metadata
                     }
                 ],
+                // value: BigInt(
+                //     new BigNumber(PLATFORM_FEE[this._contractStruct.chainId])
+                //         .times(1e18)
+                //         .toFixed(0)
+                // )
+
                 value: BigInt(
-                    new BigNumber(PLATFORM_FEE[this._contractStruct.chainId])
+                    new BigNumber(
+                        chainConfig.getPlatformFee(this._contractStruct.chainId)
+                    )
                         .times(1e18)
                         .toFixed(0)
                 )
@@ -281,6 +292,8 @@ export class LaunchPadInterface {
                 }
             }
 
+            const chainConfig = ConfigService.getInstance();
+
             await watcher.writeContractAsync({
                 ...this._contractStruct,
                 functionName: 'launchPool',
@@ -311,13 +324,21 @@ export class LaunchPadInterface {
                 //         .times(1e18)
                 //         .toFixed(0)
                 // )
+                // value: BigInt(
+                //     new BigNumber(maxAmountETH!)
+                //         .plus(
+                //             new BigNumber(
+                //                 PLATFORM_FEE[this._contractStruct.chainId]
+                //             ).times(1e18)
+                //         )
+                //         .toFixed(0)
+                // )
+
                 value: BigInt(
-                    new BigNumber(maxAmountETH!)
-                        .plus(
-                            new BigNumber(
-                                PLATFORM_FEE[this._contractStruct.chainId]
-                            ).times(1e18)
-                        )
+                    new BigNumber(
+                        chainConfig.getPlatformFee(this._contractStruct.chainId)
+                    )
+                        .times(1e18)
                         .toFixed(0)
                 )
             });
@@ -366,6 +387,109 @@ export class LaunchPadInterface {
                 functionName: 'sell',
                 args: [poolAddress, numberBatch]
             });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
+
+    async spinLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+        }
+    ) {
+        try {
+            const { poolAddress } = params;
+            if (!poolAddress) {
+                throw new Error('Invalid params when call spinLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'spinLottery',
+                args: [poolAddress]
+            });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
+
+    async claimFundLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+        }
+    ) {
+        try {
+            const { poolAddress } = params;
+            if (!poolAddress) {
+                throw new Error('Invalid params when call claimFundLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'claimFundLottery',
+                args: [poolAddress]
+            });
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
+
+    async depositForLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+            amount: string;
+            referrer: string;
+        }
+    ) {
+        try {
+            const { poolAddress, amount, referrer } = params;
+            if (!poolAddress || !amount || !referrer) {
+                throw new Error('Invalid params when call depositForLottery');
+            }
+
+            if (!amount) {
+                throw new Error('Invalid amount when call depositForLottery');
+            }
+            if (parseFloat(amount) === 0) {
+                throw new Error('Please enter a valid amount');
+            }
+
+            if (poolAddress) {
+                const chainId = Number(this._contractStruct.chainId);
+
+                if (isNaN(chainId)) {
+                    throw new Error('Invalid chainId');
+                }
+
+                const parameters = { chainId: chainId };
+
+                const gasPrice = await getGasPrice(config, parameters);
+
+                if (!gasPrice) {
+                    throw new Error('Failed to fetch gas price');
+                }
+
+                const adjustedGasPrice = (gasPrice * BigInt(13)) / BigInt(10);
+
+                await watcher.writeContractAsync({
+                    ...this._contractStruct,
+                    functionName: 'depositForLottery',
+                    args: [poolAddress, ethers.parseEther(amount), referrer],
+                    gasPrice: adjustedGasPrice,
+                    value: ethers.parseEther(amount)
+                });
+            }
+
+            // await watcher.writeContractAsync({
+            //     ...this._contractStruct,
+            //     functionName: 'depositForLottery',
+            //     args: [poolAddress, ethers.parseEther(amount), referrer],
+            //     gasPrice: adjustedGasPrice,
+            //     value: ethers.parseEther(amount)
+            // });
         } catch (err) {
             this.handleErrors(err);
         }

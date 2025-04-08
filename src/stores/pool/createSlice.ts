@@ -27,8 +27,8 @@ const initialState: ICreatePoolLaunch = {
     minDurationSell: 12,
     metadata: '',
     aiAgent: {
-        nameAgent: '',
-        clientsAgent: ['twitter'],
+        name: '',
+        clients: ['twitter'],
         plugins: [],
         modelProvider: 'google',
         settings: {
@@ -40,22 +40,7 @@ const initialState: ICreatePoolLaunch = {
         system: '',
         bio: '',
         lore: [],
-        messageExamples: [
-            // {
-            //     user: {
-            //         user: 'user',
-            //         content: {
-            //             text: "Hey Elon, what's the latest update on Neuralink?"
-            //         }
-            //     },
-            //     agent: {
-            //         user: 'elon musk',
-            //         content: {
-            //             text: "Elon Musk: \"We're making great progress on the development of Neuralink's brain-machine interface technology. Stay tuned for some exciting announcements soon! #Neuralink #BrainComputerInterface"
-            //         }
-            //     }
-            // }
-        ],
+        messageExamples: [],
         postExamples: [],
         adjectives: [],
         people: [],

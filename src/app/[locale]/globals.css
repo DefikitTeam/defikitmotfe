@@ -53,3 +53,16 @@ body,
 .ant-input-group-addon {
     padding: 0 !important;
 }
+
+#ai-chat-widget,
+.ai-chat-widget,
+[class*="ai-chat"] {
+    position: fixed !important;
+    bottom: 120px !important;
+    right: 40px !important;
+    z-index: 99999 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}

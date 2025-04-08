@@ -1,10 +1,7 @@
 /* eslint-disable */
-import { ChainId, getEnvironment } from '@/src/common/constant/constance';
+import { ChainId } from '@/src/common/constant/constance';
 import { logger } from '@/src/common/utils/logger';
-import {
-    NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD
-} from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import { updateMetaDataWorker } from '@/src/stores/pool/common';
 import {
     IGetAllPoolBackgroundQuery,
@@ -21,7 +18,6 @@ import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { querySubGraph } from '../fetcher';
 import { getQueryByStatus } from './query';
-import { ConfigService } from '@/src/config/services/config-service';
 export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
 // const currentHostName = useCurrentHostNameInformation();
 // const isProd =
@@ -111,6 +107,8 @@ const servicePool = {
           orderDirection: desc
         ) {
           id
+          hash
+          type
           pool
           sender
           blockNumber
@@ -280,7 +278,8 @@ const servicePool = {
         totalSupply: string,
         address: string,
         chainId: string,
-        dataAgent?: any
+        dataAgent?: any,
+        ownerAddress?: string
     ) => {
         let res;
 
@@ -298,6 +297,7 @@ const servicePool = {
 
         if (dataAgent !== undefined) {
             data.dataAgent = dataAgent;
+            data.ownerAddress = ownerAddress;
         }
 
         try {
@@ -313,16 +313,17 @@ const servicePool = {
         }
         return '';
     },
-    getDiscussionLink: async (chainId: string, address: string) => {
+
+    getDetailPoolDataFromServer: async (chainId: string, address: string) => {
         let res;
 
         try {
             res = await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}/discussion`
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}`
             );
         } catch (error) {
             logger.error(
-                `======= get discussion link to server error: ${error}`
+                `======= get detail pool data from server error: ${error}`
             );
         }
         if (res && res.status === 200) {
@@ -330,6 +331,7 @@ const servicePool = {
         }
         return '';
     },
+
     getSocialScoreInfo: async (chainId: string, address: string) => {
         let res;
         try {

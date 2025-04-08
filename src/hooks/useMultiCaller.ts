@@ -1,18 +1,12 @@
-import { useSelector } from 'react-redux';
+/* eslint-disable */
+
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { getContract } from '../common/blockchain/evm/contracts/utils/getContract';
 import MultiCaller from '../common/wagmi/MultiCaller';
-import { ConfigService } from '../config/services/config-service';
-import { RootState } from '../stores';
 import { useConfig } from './useConfig';
 
 export function useMultiCaller() {
-    // const { chainId } = useAccount();
-    const chainData = useSelector((state: RootState) => state.chainData);
-
     const { chainConfig } = useConfig();
-
-    const config = ConfigService.getInstance();
 
     const multiCallerContract = getContract(chainConfig?.chainId!);
 
@@ -47,6 +41,21 @@ export function useMultiCaller() {
     const sellTokenMultiWatcher = useWriteContract();
     const sellTokenMultiListener = useWaitForTransactionReceipt({
         hash: sellTokenMultiWatcher.data
+    });
+
+    const spinLotteryWatcher = useWriteContract();
+    const spinLotteryListener = useWaitForTransactionReceipt({
+        hash: spinLotteryWatcher.data
+    });
+
+    const claimFundLotteryWatcher = useWriteContract();
+    const claimFundLotteryListener = useWaitForTransactionReceipt({
+        hash: claimFundLotteryWatcher.data
+    });
+
+    const depositForLotteryWatcher = useWriteContract();
+    const depositForLotteryListener = useWaitForTransactionReceipt({
+        hash: depositForLotteryWatcher.data
     });
 
     return {
@@ -174,6 +183,51 @@ export function useMultiCaller() {
             isLoadingInitSellToken: sellTokenMultiWatcher.isPending,
             isError:
                 sellTokenMultiListener.isError || sellTokenMultiWatcher.isError
+        },
+
+        useSpinLottery: {
+            actionAsync: (params: { poolAddress: string }) => {
+                return multiCaller.spinLottery(spinLotteryWatcher, params);
+            },
+            isConfirmed: spinLotteryListener.isSuccess,
+            isLoadingAgreedSpinLottery: spinLotteryListener.isLoading,
+            isLoadingInitSpinLottery: spinLotteryWatcher.isPending,
+            isError: spinLotteryListener.isError || spinLotteryWatcher.isError
+        },
+
+        useClaimFundLottery: {
+            actionAsync: (params: { poolAddress: string }) => {
+                return multiCaller.claimFundLottery(spinLotteryWatcher, params);
+            },
+            isConfirmed: claimFundLotteryListener.isSuccess,
+            isLoadingAgreedSpinLottery: claimFundLotteryListener.isLoading,
+            isLoadingInitSpinLottery: spinLotteryWatcher.isPending,
+            isError:
+                claimFundLotteryListener.isError || spinLotteryWatcher.isError
+        },
+
+        useDepositForLottery: {
+            actionAsync: (params: {
+                poolAddress: string;
+                amount: string;
+                referrer: string;
+            }) => {
+                return multiCaller.depositForLottery(
+                    depositForLotteryWatcher,
+                    params
+                );
+            },
+            isConfirmed: depositForLotteryListener.isSuccess,
+            isLoadingAgreedDepositForLottery:
+                depositForLotteryListener.isLoading,
+            isLoadingInitDepositForLottery: depositForLotteryWatcher.isPending,
+            isError:
+                depositForLotteryListener.isError ||
+                depositForLotteryWatcher.isError,
+
+            error:
+                depositForLotteryListener.error ||
+                depositForLotteryWatcher.error
         }
     };
 }

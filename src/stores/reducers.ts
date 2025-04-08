@@ -20,7 +20,7 @@ import topRefByVolReducer from '@/src/stores/top-ref-by-vol/slice';
 // import checkInviteCodeReducer from '@/src/stores/invite-code/check-invite-slice';
 import inviteListReferReducer from '@/src/stores/invite-code/list-refer-slice';
 import getInviteCodeReducer from '@/src/stores/invite-code/get-invite-code';
-
+import depositLotteryReducer from '@/src/stores/pool/depositLotterySlice';
 const rootReducer = combineReducers({
     auth: authReducer,
     poolDetail: poolDetailReducer,
@@ -42,7 +42,8 @@ const rootReducer = combineReducers({
     topRefByVol: topRefByVolReducer,
     // checkInviteCode: checkInviteCodeReducer,
     inviteListRefer: inviteListReferReducer,
-    getInviteCode: getInviteCodeReducer
+    getInviteCode: getInviteCodeReducer,
+    depositLottery: depositLotteryReducer
 });
 
 export default rootReducer;

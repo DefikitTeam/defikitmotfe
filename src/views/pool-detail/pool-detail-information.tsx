@@ -11,7 +11,6 @@ import { Collapse, Tooltip, notification } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 
-import { DEX_BY_CHAIN } from '@/src/common/constant/constance';
 import { useConfig } from '@/src/hooks/useConfig';
 import { CollapseProps } from 'antd/lib';
 import { useAccount } from 'wagmi';
@@ -25,7 +24,7 @@ const PoolDetailInformation = () => {
 
     const { pool, analystData } = poolStateDetail;
 
-    const { chainConfig } = useConfig();
+    const { chainConfig, getDexInfo } = useConfig();
 
     const handleClickOpenViewDetail = () => {
         setOpenModalVesting(true);
@@ -193,11 +192,7 @@ const PoolDetailInformation = () => {
                     <div className="flex justify-between">
                         <div className="  ">{t('LISTING_ON')}:</div>
                         <div className="  ">
-                            {
-                                DEX_BY_CHAIN[
-                                    chainConfig?.chainId as keyof typeof DEX_BY_CHAIN
-                                ]
-                            }
+                            {getDexInfo(chainConfig?.chainId || 0)?.name}
                         </div>
                     </div>
 

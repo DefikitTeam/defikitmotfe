@@ -42,6 +42,8 @@ export interface IAnalystData {
 
 export interface Transaction {
     id: string;
+    hash: string;
+    type: string;
     pool: string;
     sender: string;
     blockNumber: string;
@@ -147,7 +149,8 @@ export interface IDetailPoolState {
     transactions: Transaction[];
     // latestTimeUpdate: number;
     priceNative: number;
-    linkDiscussionTelegram: string;
+    dataDetailPoolFromServer: IDataDetailPoolFromServer;
+    // linkDiscussionTelegram: string;
     analystData: IAnalystData;
     holderDistribution: IHolderDistribution[];
 
@@ -166,6 +169,20 @@ export interface IHolderDistribution {
     isPool: boolean;
     isCreator: boolean;
 }
+
+export interface IDataDetailPoolFromServer {
+    id: string | null;
+    address: string | null;
+    name: string | null;
+    symbol: string | null;
+    decimals: string | null;
+    totalSupply: string | null;
+    startTime: string | null;
+    discussionId: string | null;
+
+    aiAgentId: string | null;
+    aiAgentName: string | null;
+}
 export interface IDetailPoolResponseData {
     pool: IPoolDetail | undefined;
     metaDataInfo: { id: string; metadata: IMetaData };
@@ -174,7 +191,7 @@ export interface IDetailPoolResponseData {
     priceNative: number;
     analystData: { id: string; analystData: IAnalystData };
     transactions: Transaction[];
-    linkDiscussionTelegram: string;
+    dataDetailPoolFromServer: IDataDetailPoolFromServer;
     totalTransaction: number;
     totalHolder: number;
     totalReferrer: number;
@@ -185,7 +202,8 @@ export interface IDetailPoolBackgroundResponseData {
     analystData: { id: string; analystData: IAnalystData };
     transactions: Transaction[];
     pool: IPoolDetail | undefined;
-    linkDiscussionTelegram: string;
+    detailPoolData: IPoolDetail | undefined;
+    dataDetailPoolFromServer: IDataDetailPoolFromServer;
     socialScoreInfo: ISocialScoreInfo;
 }
 
@@ -312,6 +330,12 @@ export interface IBuyPool {
 
 export interface ISellPool extends IBuyPool {}
 
+export interface IDepositLottery {
+    poolAddress: string;
+    referrer: string;
+    depositAmount: number;
+}
+
 export interface IGetTransactionByPoolAndSenderParams {
     poolAddress: string;
     senderAddress: string;
@@ -353,20 +377,30 @@ export interface IVestingState extends FetchError {
     openModalVesting: boolean;
 }
 
-export interface IMessageExample {
-    user: {
-        user: string;
-        content: {
-            text: string;
-        };
-    };
-    agent: {
-        user: string;
-        content: {
-            text: string;
-        };
-    };
+// export interface IMessageExample {
+//     user: {
+//         user: string;
+//         content: {
+//             text: string;
+//         };
+//     };
+//     agent: {
+//         user: string;
+//         content: {
+//             text: string;
+//         };
+//     };
+// }
+export interface IMessageContent {
+    text: string;
 }
+
+export interface IMessage {
+    user: string;
+    content: IMessageContent;
+}
+
+export type MessagePair = [IMessage, IMessage]; // Tuple của 2 message
 
 export interface IStyleAiAgentCommunity {
     chat?: string[];
@@ -375,15 +409,16 @@ export interface IStyleAiAgentCommunity {
 }
 
 export interface ICreateAiAgent {
-    nameAgent?: string;
-    clientsAgent?: string[];
+    name?: string;
+    clients?: string[];
     plugins?: string[];
     modelProvider?: string;
     settings?: any;
     system?: string;
     bio?: string;
     lore?: string[];
-    messageExamples?: IMessageExample[];
+    messageExamples?: MessagePair[];
+
     postExamples?: string[];
     adjectives?: string[];
     people?: string[];

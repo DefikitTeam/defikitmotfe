@@ -17,6 +17,7 @@ import ModalSelectChain from '../ui/ModalSelectChain';
 import DisconnectedState from './disconnected-state';
 import UnsupportedChainState from './unsupported-chain-state';
 import ConnectedState from './connected-state';
+import { CHAIN_CONFIG } from '@/src/config/environments/chains';
 
 const ConnectButtonWagmi = () => {
     const { address, isConnected, isConnecting } = useAccount();
@@ -35,8 +36,7 @@ const ConnectButtonWagmi = () => {
         context
     } = useSignMessage();
 
-    const { chainConfig, defaultChain, environment, supportedChains } =
-        useConfig();
+    const { chainConfig, defaultChain, supportedChains } = useConfig();
 
     const { authState, loginAction } = useAuthLogin();
     const { disconnect } = useDisconnect();
@@ -112,7 +112,7 @@ const ConnectButtonWagmi = () => {
         }
     }, [isConnected, reset]);
 
-    const showChainSelector = supportedChains.length > 1;
+    const showChainSelector = CHAIN_CONFIG.supportedChains.length > 1;
 
     return (
         <div className="flex flex-row items-center gap-[3px]">

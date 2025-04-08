@@ -2,35 +2,32 @@
 'use client';
 import {
     ChainId,
+    chains,
     DropdownObject,
+    poolStates,
     PoolStatus,
     PoolStatusSortFilter,
-    PoolStatusSortOrderBy,
-    chains,
-    poolStates
+    PoolStatusSortOrderBy
 } from '@/src/common/constant/constance';
-import { setChainData } from '@/src/stores/Chain/chainDataSlice';
 
 import BoxArea from '@/src/components/common/box-area';
+import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import SearchComponent from '@/src/components/common/search';
 import EmptyPool from '@/src/components/empty';
 import TopReferByVol from '@/src/components/top-refer-by-vol';
+import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
+import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import { RootState } from '@/src/stores';
+import { useAuthLogin } from '@/src/stores/auth/hook';
 import { useListPool } from '@/src/stores/pool/hook';
 import { IPoolList } from '@/src/stores/pool/type';
+import { useTopRefByVol } from '@/src/stores/top-ref-by-vol/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
-import {
-    Col,
-    notification,
-    Row,
-    Select,
-    Spin,
-    Tooltip,
-    Typography
-} from 'antd';
+import { Col, Row, Select, Spin, Tooltip, Typography } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
@@ -38,17 +35,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import ItemPool from './item-pool';
-import InviteBlocker from '@/src/components/common/invite-blocker';
-import { useAuthLogin } from '@/src/stores/auth/hook';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
-import serviceAuth, {
-    REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
-import { useTopRefByVol } from '@/src/stores/top-ref-by-vol/hook';
-import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
-import { useConfig } from '@/src/hooks/useConfig';
-import { config } from 'dotenv';
-import { ICheckAccessTokenResponse } from '@/src/stores/auth/type';
 const { Option } = Select;
 const { Text } = Typography;
 
@@ -71,12 +57,15 @@ const KingOfTheHill = ({
 }: KingOfTheHillProps) => {
     const [metadataShow, setMetadataShow] = useState<any>(null);
 
+    const { chainConfig } = useConfig();
     useEffect(() => {
         if (metadata) {
             setMetadataShow(metadata);
         }
     }, [metadata]);
-
+    if (!pool) {
+        return null;
+    }
     return (
         pool && (
             <div
@@ -84,14 +73,16 @@ const KingOfTheHill = ({
             >
                 <div className="w-full max-w-xl">
                     <div className="mb-4 animate-king-title text-center">
-                        <Text className="animate-king-text !font-forza !text-2xl !font-extrabold tracking-wider text-yellow-500">
+                        <Text
+                            className={`animate-king-text !font-forza !text-2xl !font-extrabold tracking-wider ${chainConfig?.chainId === ChainId.MONAD}? 'text-purple-400': 'text-yellow-500'  `}
+                        >
                             Rocket Pool
                         </Text>
                     </div>
 
                     <div
-                        className="pool-item max-h-[290px] animate-king-pool rounded-lg border-2 border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 p-1"
-                    // data-pool-id={pool.id}
+                        className={`pool-item max-h-[290px] animate-king-pool rounded-lg border-2 ${chainConfig?.chainId === ChainId.MONAD ? 'border-purple-400 bg-gradient-to-r from-purple-400/10 to-indigo-400/10' : 'border-yellow-500 bg-gradient-to-r from-yellow-500/10 to-amber-500/10'} p-1`}
+                        // data-pool-id={pool.id}
                     >
                         <div
                             className="pool-item"
@@ -128,8 +119,7 @@ const HomePage = () => {
         supportedChains,
         getContractAddress,
         isChainSupported,
-        defaultChain,
-        environment
+        defaultChain
     } = useConfig();
 
     // Check if current chain is supported
@@ -193,23 +183,24 @@ const HomePage = () => {
         );
     };
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } =
+        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
-    useEffect(() => {
-        if (
-            Boolean(authState.userInfo?.connectedWallet) &&
-            Boolean(address) &&
-            authState.userInfo?.connectedWallet === address
-        ) {
-            setOpenModalInviteBlocker(false);
-            return;
-        }
+    // useEffect(() => {
+    //     if (
+    //         Boolean(authState.userInfo?.connectedWallet) &&
+    //         Boolean(address) &&
+    //         authState.userInfo?.connectedWallet === address
+    //     ) {
+    //         setOpenModalInviteBlocker(false);
+    //         return;
+    //     }
 
-        if (!refCodeExisted) {
-            setOpenModalInviteBlocker(true);
-            disconnect();
-        }
-    }, [refCodeExisted]);
+    //     if (!refCodeExisted) {
+    //         setOpenModalInviteBlocker(true);
+    //         disconnect();
+    //     }
+    // }, [refCodeExisted]);
 
     useEffect(() => {
         if (metadata) {
@@ -285,16 +276,6 @@ const HomePage = () => {
     }, []);
 
     // useEffect(() => {
-    //     localStorage.removeItem('wagmi.store');
-    //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
-    // }, []);
-
-    // useEffect(() => {
-    //     localStorage.removeItem('wagmi.store');
-    //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
-    // }, []);
-
-    // useEffect(() => {
     //     const chainInfo = getCurrentChainUrl();
     //     // console.log('chainInfo')
     //     if (chainInfo) {
@@ -361,7 +342,7 @@ const HomePage = () => {
             .sort((a, b) => b.ratio - a.ratio)[0];
 
         setKingPool(poolWithClosestRatio?.pool || allPool[0]);
-    }, [allPool, focusPools, chainConfig?.chainId]);
+    }, [allPool, focusPools]);
 
     useEffect(() => {
         if (filter !== PoolStatus.ACTIVE || query) {
@@ -395,17 +376,17 @@ const HomePage = () => {
     };
 
     const handleClickStartToken = () => {
-        if (isConnected && address) {
-            router.push('/create-launch');
-        } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (isConnected && address) {
+        router.push('/create-launch');
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
 
     const handleSelectChange = (value: string) => {
@@ -450,20 +431,20 @@ const HomePage = () => {
     };
 
     const handleSearch = () => {
-        if (isConnected && address) {
-            if (searchText.trim()) {
-                const searchQuery = searchText.trim().toLowerCase();
-                setQuery(searchQuery);
-            }
-        } else {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
+        // if (isConnected && address) {
+        if (searchText.trim()) {
+            const searchQuery = searchText.trim().toLowerCase();
+            setQuery(searchQuery);
         }
+        // } else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
     };
 
     const handleClearSearch = () => {
@@ -472,15 +453,15 @@ const HomePage = () => {
     };
 
     const handleClickSortFilter = (value: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (!isConnected || !address) {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
 
         switch (filter) {
             case PoolStatus.MY_POOl:
@@ -541,8 +522,8 @@ const HomePage = () => {
                     orderBy === 'createdTimestamp'
                         ? 'tgeTimestamp'
                         : orderBy === 'latestTimestamp'
-                            ? 'latestTimestampBuy'
-                            : orderBy;
+                          ? 'latestTimestampBuy'
+                          : orderBy;
                 if (orderByDirection === PoolStatusSortFilter.ASC) {
                     return (a[orderByKey as keyof IPoolList] ?? 0) >
                         (b[orderByKey as keyof IPoolList] ?? 0)
@@ -568,15 +549,15 @@ const HomePage = () => {
     }, [allPool]);
 
     const handleClickPoolItem = (poolId: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (!isConnected || !address) {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
 
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolId.toLowerCase()}`
@@ -584,15 +565,15 @@ const HomePage = () => {
     };
 
     const handleOnPoolClick = (poolId: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 2,
-                showProgress: true
-            });
-            return;
-        }
+        // if (!isConnected || !address) {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: t('PLEASE_CONNECT_WALLET'),
+        //         duration: 2,
+        //         showProgress: true
+        //     });
+        //     return;
+        // }
 
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolId}`
@@ -608,10 +589,11 @@ const HomePage = () => {
     return (
         <BoxArea>
             <div
-                className={`${isMobile
-                    ? 'mt-4 flex min-h-screen flex-col justify-end overflow-auto text-center'
-                    : 'px-8 py-10 text-center'
-                    }`}
+                className={`${
+                    isMobile
+                        ? 'mt-4 flex min-h-screen flex-col justify-end overflow-auto text-center'
+                        : 'px-8 py-10 text-center'
+                }`}
             >
                 <Spin
                     spinning={poolStateList.status === EActionStatus.Pending}
@@ -729,7 +711,7 @@ const HomePage = () => {
                                 onClear={handleClearSearch}
                             />
                             {query &&
-                                statusGetPoolListBackground ===
+                            statusGetPoolListBackground ===
                                 EActionStatus.Pending ? (
                                 <div className="relative">
                                     <button
@@ -775,27 +757,27 @@ const HomePage = () => {
 
                                 {address
                                     ? poolStates.map(
-                                        (item: DropdownObject, key) => (
-                                            <Option
-                                                className="!font-forza"
-                                                value={item.value}
-                                                key={key}
-                                            >
-                                                {item.text}
-                                            </Option>
-                                        )
-                                    )
+                                          (item: DropdownObject, key) => (
+                                              <Option
+                                                  className="!font-forza"
+                                                  value={item.value}
+                                                  key={key}
+                                              >
+                                                  {item.text}
+                                              </Option>
+                                          )
+                                      )
                                     : poolStates
-                                        .slice(1, 7)
-                                        .map((item: DropdownObject, key) => (
-                                            <Option
-                                                className="!font-forza"
-                                                value={item.value}
-                                                key={key}
-                                            >
-                                                {item.text}
-                                            </Option>
-                                        ))}
+                                          .slice(1, 7)
+                                          .map((item: DropdownObject, key) => (
+                                              <Option
+                                                  className="!font-forza"
+                                                  value={item.value}
+                                                  key={key}
+                                              >
+                                                  {item.text}
+                                              </Option>
+                                          ))}
                             </Select>
 
                             <div className="flex flex-col">
@@ -864,16 +846,17 @@ const HomePage = () => {
                                                             pool.id
                                                         )
                                                     }
-                                                    className={`${(index + 1) % 2 === 0
-                                                        ? 'bg-evenColor'
-                                                        : 'bg-oddColor'
-                                                        }  ${index === 0 ? 'animate-newMessage' : ''}  `}
+                                                    className={`${
+                                                        (index + 1) % 2 === 0
+                                                            ? 'bg-evenColor'
+                                                            : 'bg-oddColor'
+                                                    }  ${index === 0 ? 'animate-newMessage' : ''}  `}
                                                     metadata={
                                                         metadataShow &&
-                                                            metadataShow?.[pool.id]
+                                                        metadataShow?.[pool.id]
                                                             ? metadataShow[
-                                                            pool.id
-                                                            ]
+                                                                  pool.id
+                                                              ]
                                                             : undefined
                                                     }
                                                     analysisData={

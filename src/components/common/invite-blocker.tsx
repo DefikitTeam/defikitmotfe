@@ -1,7 +1,9 @@
 /* eslint-disable */
 import { useNotification } from '@/src/hooks/use-notification';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import serviceAuth, { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
+import serviceAuth, {
+    REFCODE_INFO_STORAGE_KEY
+} from '@/src/services/external-services/backend-server/auth';
 import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
 import { REFERRAL_CODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/pool';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -45,7 +47,8 @@ const ModalInviteBlocker = () => {
     //     localStorage.setItem('wagmi.io.metamask.disconnected', 'true');
     // }, []);
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } =
+        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
     // get userInfo from cookies
     const userInfo = serviceAuth.getUserInfoStorage();
 

@@ -1,3 +1,5 @@
+import { DexName } from '../common/constant/constance';
+
 export type ChainId = number;
 export type Environment = 'development' | 'staging' | 'production';
 
@@ -19,6 +21,18 @@ export interface ChainConfig {
     explorer: string;
     isTestnet: boolean;
     contractAbis: any;
+    dex: {
+        name: DexName;
+        linkSwap: string;
+    };
+    blockInterval: number;
+    platformFee: number;
+    hardCapInitial: number;
+    minHardcap: {
+        min: number;
+        error: string;
+    };
+    onFaucet?: boolean;
 }
 
 export interface EnvironmentConfig {

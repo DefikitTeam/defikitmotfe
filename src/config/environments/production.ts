@@ -1,4 +1,4 @@
-import { ChainId } from '@/src/common/constant/constance';
+import { ChainId, DexName } from '@/src/common/constant/constance';
 import {
     NEXT_PUBLIC_API_ENDPOINT_PROD,
     NEXT_PUBLIC_BASE_CONTRACT_ADDRESS_PROD,
@@ -29,7 +29,17 @@ export const productionConfig: EnvironmentConfig = {
             explorer: 'https://basescan.org',
             rpcUrl: 'https://mainnet.base.org',
             isTestnet: false,
-            contractAbis: ROCKET_EVM_ABI_PROD
+            contractAbis: ROCKET_EVM_ABI_PROD,
+            dex: {
+                name: DexName.BEX,
+                linkSwap:
+                    'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+            },
+            blockInterval: 2,
+            platformFee: 0.005,
+            hardCapInitial: 2,
+            minHardcap: { min: 2, error: 'Min value is 2' },
+            onFaucet: false
         },
         [ChainId.IOTA]: {
             chainId: ChainId.IOTA,
@@ -45,7 +55,17 @@ export const productionConfig: EnvironmentConfig = {
             explorer: 'https://explorer.evm.iota.org/',
             rpcUrl: 'https://json-rpc.evm.iotaledger.net',
             isTestnet: false,
-            contractAbis: ROCKET_EVM_ABI_IOTA_PROD
+            contractAbis: ROCKET_EVM_ABI_IOTA_PROD,
+            dex: {
+                name: DexName.BEX,
+                linkSwap:
+                    'https://bartio.bex.berachain.com/swap?&inputCurrency=Bera&outputCurrency='
+            },
+            blockInterval: 2,
+            platformFee: 0.05,
+            hardCapInitial: 10000,
+            minHardcap: { min: 10000, error: 'Min value is 10000' },
+            onFaucet: false
         },
         [ChainId.BERACHAIN_MAINNET]: {
             chainId: ChainId.BERACHAIN_MAINNET,
@@ -61,7 +81,16 @@ export const productionConfig: EnvironmentConfig = {
             explorer: 'https://berascan.com/',
             rpcUrl: 'https://rpc.berachain.com/',
             isTestnet: false,
-            contractAbis: ROCKET_EVM_ABI
+            contractAbis: ROCKET_EVM_ABI,
+            dex: {
+                name: DexName.KODIAK,
+                linkSwap: 'https://app.kodiak.finance/#/swap?outputCurrency='
+            },
+            blockInterval: 2,
+            platformFee: 0.1,
+            hardCapInitial: 1000,
+            minHardcap: { min: 1000, error: 'Min value is 1000' },
+            onFaucet: false
         }
     },
     api: {

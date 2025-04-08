@@ -65,7 +65,19 @@ const initialState: IDetailPoolState = {
     },
     transactions: [],
     priceNative: 0,
-    linkDiscussionTelegram: '',
+    dataDetailPoolFromServer: {
+        id: '',
+        address: '',
+        name: '',
+        symbol: '',
+        decimals: '',
+        totalSupply: '',
+        startTime: '',
+        discussionId: '',
+        aiAgentId: '',
+        aiAgentName: ''
+    },
+    // linkDiscussionTelegram: '',
     holderDistribution: []
 };
 
@@ -86,7 +98,7 @@ export const getDetailPoolBackground = createAsyncThunk<
         const [
             transactionListResponse,
             analystDataExtraInfor,
-            discussionLink,
+            detailPoolData,
             socialScoreInfo
         ] = await Promise.all([
             servicePool.getTransaction(
@@ -99,7 +111,10 @@ export const getDetailPoolBackground = createAsyncThunk<
                 poolDetailData.data.pool,
                 Number(priceNative.price)
             ),
-            servicePool.getDiscussionLink(chainId.toString(), poolAddress),
+            servicePool.getDetailPoolDataFromServer(
+                chainId.toString(),
+                poolAddress
+            ),
             servicePool.getSocialScoreInfo(chainId.toString(), poolAddress)
         ]);
 
@@ -110,7 +125,8 @@ export const getDetailPoolBackground = createAsyncThunk<
             transactions: transactionList.data.transactions,
             analystData: analystDataExtraInfor,
             priceNative: priceNative.price,
-            linkDiscussionTelegram: discussionLink.discussionId,
+            dataDetailPoolFromServer: detailPoolData.data,
+            // linkDiscussionTelegram: detailPoolData.data.pool.discussionId,
             socialScoreInfo: socialScoreInfo.data
         } as unknown as IDetailPoolBackgroundResponseData;
     } catch (error) {
@@ -142,7 +158,7 @@ export const getPoolDetail = createAsyncThunk<
             metaDataExtraInfor,
             transactionListResponse,
             analystDataExtraInfor,
-            discussionLink,
+            detailPoolData,
             socialScoreInfo
         ] = await Promise.all([
             updateMetaDataWorker(
@@ -159,20 +175,14 @@ export const getPoolDetail = createAsyncThunk<
                 poolDetailData.data.pool,
                 Number(priceNative.price)
             ),
-            servicePool.getDiscussionLink(chainId.toString(), poolAddress),
+            servicePool.getDetailPoolDataFromServer(
+                chainId.toString(),
+                poolAddress
+            ),
             servicePool.getSocialScoreInfo(chainId.toString(), poolAddress)
         ]);
 
         const transactionList = await transactionListResponse.json();
-        const kien: any = {
-            pool: poolDetailData.data.pool,
-            metaDataInfo: metaDataExtraInfor,
-            transactions: transactionList.data.transactions,
-            analystData: analystDataExtraInfor,
-            priceNative: priceNative.price,
-            linkDiscussionTelegram: discussionLink.discussionId,
-            socialScoreInfo: socialScoreInfo.data
-        };
 
         return {
             pool: poolDetailData.data.pool,
@@ -180,7 +190,7 @@ export const getPoolDetail = createAsyncThunk<
             transactions: transactionList.data.transactions,
             analystData: analystDataExtraInfor,
             priceNative: priceNative.price,
-            linkDiscussionTelegram: discussionLink.discussionId,
+            dataDetailPoolFromServer: detailPoolData.data,
             socialScoreInfo: socialScoreInfo.data
         } as unknown as IDetailPoolResponseData;
     } catch (error) {
@@ -273,12 +283,14 @@ export const poolDetailSlice = createSlice({
         builder.addCase(getPoolDetail.pending, (state) => {
             state.status = EActionStatus.Pending;
         });
+
         builder.addCase(
             getPoolDetail.fulfilled,
             (state, action: PayloadAction<IDetailPoolResponseData>) => {
                 state.status = EActionStatus.Succeeded;
-                state.linkDiscussionTelegram =
-                    action.payload.linkDiscussionTelegram;
+                state.dataDetailPoolFromServer =
+                    action.payload.dataDetailPoolFromServer;
+
                 state.transactions = action.payload.transactions;
                 state.pool = action.payload.pool;
                 state.metaDataInfo = action.payload?.metaDataInfo?.metadata;
@@ -302,8 +314,8 @@ export const poolDetailSlice = createSlice({
                     action: PayloadAction<IDetailPoolBackgroundResponseData>
                 ) => {
                     state.status = EActionStatus.Succeeded;
-                    state.linkDiscussionTelegram =
-                        action.payload.linkDiscussionTelegram;
+                    state.dataDetailPoolFromServer =
+                        action.payload.dataDetailPoolFromServer;
                     state.transactions = action.payload.transactions;
                     state.pool = action.payload.pool;
                     state.analystData = action.payload.analystData.analystData;

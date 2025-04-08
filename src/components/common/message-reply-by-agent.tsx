@@ -16,22 +16,23 @@ const MessageReplyByAgent = () => {
         setData({
             ...data,
             aiAgent: {
+                ...data.aiAgent,
                 messageExamples: [
                     ...(data.aiAgent?.messageExamples ?? []),
-                    {
-                        user: {
-                            user: `user`,
+                    [
+                        {
+                            user: 'user',
                             content: {
                                 text: ''
                             }
                         },
-                        agent: {
-                            user: `agent`,
+                        {
+                            user: 'agent',
                             content: {
                                 text: ''
                             }
                         }
-                    }
+                    ]
                 ]
             }
         });
@@ -53,16 +54,21 @@ const MessageReplyByAgent = () => {
         (name: 'user' | 'agent', index: number) => (value: string) => {
             const messageExamples = [...(data?.aiAgent?.messageExamples ?? [])];
 
-            messageExamples[index] = {
-                ...messageExamples[index],
-                [name]: {
-                    ...messageExamples[index][name],
+            if (name === 'user') {
+                messageExamples[index][0] = {
+                    user: 'user',
                     content: {
-                        ...messageExamples[index][name]?.content,
                         text: value
                     }
-                }
-            };
+                };
+            } else {
+                messageExamples[index][1] = {
+                    user: 'agent',
+                    content: {
+                        text: value
+                    }
+                };
+            }
 
             setData({
                 ...data,

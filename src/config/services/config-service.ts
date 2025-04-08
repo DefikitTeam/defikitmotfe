@@ -1,15 +1,13 @@
-import { NEXT_PUBLIC_ENVIRONMENT } from '@/src/common/web3/constants/env';
 import { developmentConfig } from '../environments/development';
-import { productionConfig } from '../environments/production';
-import { ChainConfig, Environment, EnvironmentConfig } from '../type';
+import { ChainConfig, EnvironmentConfig } from '../type';
 export class ConfigService {
     private static instance: ConfigService;
     private currentConfig: EnvironmentConfig;
-    private environment: Environment;
+    // private environment: Environment;d
 
     private constructor() {
-        this.environment =
-            (NEXT_PUBLIC_ENVIRONMENT as Environment) || 'development';
+        // this.environment =
+        //     (NEXT_PUBLIC_ENVIRONMENT as Environment) || 'development';
         this.currentConfig = this.loadConfig();
     }
 
@@ -21,15 +19,15 @@ export class ConfigService {
     }
 
     private loadConfig(): EnvironmentConfig {
-        switch (this.environment) {
-            case 'production':
-                return productionConfig;
-            case 'staging':
-                return developmentConfig;
-            case 'development':
-            default:
-                return developmentConfig;
-        }
+        // switch (this.environment) {
+        //     case 'production':
+        //         return productionConfig;
+        //     case 'staging':
+        return developmentConfig;
+        //     case 'development':
+        //     default:
+        //         return developmentConfig;
+        // }
     }
 
     getChainConfig(chainId: number): ChainConfig | undefined {
@@ -51,9 +49,9 @@ export class ConfigService {
         return this.currentConfig.supportedChains.includes(chainId);
     }
 
-    getEnvironment(): Environment {
-        return this.environment;
-    }
+    // getEnvironment(): Environment {
+    //     return this.environment;
+    // }
 
     getContractAddress(
         chainId: number,
@@ -76,5 +74,26 @@ export class ConfigService {
 
     getExplorer(chainId: number): string | undefined {
         return this.getChainConfig(chainId)?.explorer;
+    }
+
+    // Thêm phương thức này vào class ConfigService
+    getPlatformFee(chainId: number): number {
+        return this.getChainConfig(chainId)?.platformFee || 0;
+    }
+
+    getBlockInterval(chainId: number): number {
+        return this.getChainConfig(chainId)?.blockInterval || 2;
+    }
+
+    getHardCapInitial(chainId: number): number {
+        return this.getChainConfig(chainId)?.hardCapInitial || 0;
+    }
+
+    getMinHardcap(chainId: number): { min: number; error: string } | undefined {
+        return this.getChainConfig(chainId)?.minHardcap;
+    }
+
+    getDexInfo(chainId: number): { name: any; linkSwap: string } | undefined {
+        return this.getChainConfig(chainId)?.dex;
     }
 }

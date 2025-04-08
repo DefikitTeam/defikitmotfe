@@ -1,10 +1,6 @@
 /* eslint-disable */
 
-import { Environment } from '@/src/config/type';
-import {
-    NEXT_PUBLIC_ENVIRONMENT,
-    NEXT_PUBLIC_SUPPORTED_CHAINS
-} from '../web3/constants/env';
+import { NEXT_PUBLIC_SUPPORTED_CHAINS } from '../web3/constants/env';
 import { SUPPORTED_NETWORKS } from '../web3/network';
 
 export enum ChainId {
@@ -15,38 +11,20 @@ export enum ChainId {
     ARTELA = 11822,
     UNICHAIN_SEPOLIA = 1301,
     IOTA = 8822,
-    BERACHAIN_MAINNET = 80094
+    BERACHAIN_MAINNET = 80094,
+    MONAD = 10143,
+    SOMNIA = 50312
 }
-export const listChainIdSupported = [
-    ChainId.BASE,
-    ChainId.BASE_SEPOLIA,
-    ChainId.BARTIO,
-    ChainId.POLYGON_AMOY,
-    ChainId.ARTELA,
-    ChainId.UNICHAIN_SEPOLIA,
-    ChainId.IOTA,
-    ChainId.BERACHAIN_MAINNET
-];
 
 export enum DexName {
     UNISWAP = 'Uniswap',
     KODIAK = 'Kodiak',
-    WAGMI = 'Wagmi'
+    WAGMI = 'Wagmi',
+    BEX = 'Bex'
     // QUICK_SWAP = 'QuickSwap',
     // ARTELA_DEX = 'ArtelaDex',
     // UNI_DEX = 'UniDex'
 }
-
-export const DEX_BY_CHAIN = {
-    [ChainId.BASE]: DexName.UNISWAP,
-    [ChainId.BASE_SEPOLIA]: DexName.UNISWAP,
-    [ChainId.ARTELA]: DexName.UNISWAP,
-    [ChainId.BARTIO]: DexName.KODIAK,
-    [ChainId.IOTA]: DexName.WAGMI,
-    [ChainId.POLYGON_AMOY]: DexName.UNISWAP,
-    [ChainId.UNICHAIN_SEPOLIA]: DexName.UNISWAP,
-    [ChainId.BERACHAIN_MAINNET]: DexName.KODIAK
-};
 
 export const TIME_IN_YEAR = 31536000; // unit second
 export enum PoolStatus {
@@ -124,7 +102,7 @@ export const chains = [
         currency: 'ETH',
         explorerUrl: 'https://sepolia-explorer.base.org',
         rpcUrl: 'https://sepolia.base.org',
-        onFaucet: true
+        onFaucet: false
     },
     {
         chainId: 80084,
@@ -181,6 +159,22 @@ export const chains = [
         explorerUrl: 'https://berascan.com/',
         rpcUrl: 'https://rpc.berachain.com/',
         onFaucet: false
+    },
+    {
+        chainId: 10143,
+        name: 'Monad Testnet',
+        currency: 'MONA',
+        explorerUrl: 'https://testnet.monadexplorer.com',
+        rpcUrl: 'https://testnet-rpc.monad.xyz',
+        onFaucet: false
+    },
+    {
+        chainId: 50312,
+        name: 'Somnia Testnet',
+        currency: 'STT',
+        explorerUrl: 'https://shannon-explorer.somnia.network/',
+        rpcUrl: 'https://dream-rpc.somnia.network/',
+        onFaucet: false
     }
 ];
 
@@ -191,47 +185,6 @@ export const getSupportedChains = (): number[] => {
         .split(',')
         .map((id) => parseInt(id.trim()))
         .filter((chainId) => !isNaN(chainId)); // Lọc bỏ giá trị NaN
-};
-
-export const getEnvironment = (): Environment => {
-    const env = NEXT_PUBLIC_ENVIRONMENT as Environment;
-    const validEnvironments: Environment[] = [
-        'development',
-        'staging',
-        'production'
-    ];
-
-    return validEnvironments.includes(env) ? env : 'development';
-};
-
-export const BLOCK_INTERVAL = {
-    [ChainId.BASE]: 2,
-    [ChainId.POLYGON_AMOY]: 2,
-    [ChainId.ARTELA]: 2,
-    [ChainId.BASE_SEPOLIA]: 2,
-    [ChainId.UNICHAIN_SEPOLIA]: 2
-};
-
-export const PLATFORM_FEE = {
-    [ChainId.BASE]: 0.005,
-    [ChainId.POLYGON_AMOY]: 0.005,
-    [ChainId.ARTELA]: 0.005,
-    [ChainId.BASE_SEPOLIA]: 0.005,
-    [ChainId.BARTIO]: 0.0001,
-    [ChainId.BERACHAIN_MAINNET]: 0.1,
-    [ChainId.UNICHAIN_SEPOLIA]: 0.005,
-    [ChainId.IOTA]: 0.05
-};
-
-export const HARD_CAP_INITIAL_BY_CHAIN = {
-    [ChainId.BASE]: 2,
-    [ChainId.POLYGON_AMOY]: 2,
-    [ChainId.ARTELA]: 2,
-    [ChainId.BASE_SEPOLIA]: 2,
-    [ChainId.BARTIO]: 2,
-    [ChainId.BERACHAIN_MAINNET]: 1000,
-    [ChainId.UNICHAIN_SEPOLIA]: 2,
-    [ChainId.IOTA]: 10000
 };
 
 export enum NOTIFICATION_STATUS {

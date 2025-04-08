@@ -39,6 +39,7 @@ import PoolPurchaseSummary from './pool-purchase-summary';
 import SocialDescInformation from './social-desc-information';
 import TokenInformation from './token-information';
 import TransactionList from './transaction-list';
+import AiChatWidget from './ai-chat-widget';
 
 const PoolDetail = () => {
     const t = useTranslations();
@@ -56,7 +57,13 @@ const PoolDetail = () => {
         resetPoolDetailAction
     ] = usePoolDetail();
 
-    const { pool, status, transactions, metaDataInfo } = poolStateDetail;
+    const {
+        pool,
+        status,
+        transactions,
+        metaDataInfo,
+        dataDetailPoolFromServer
+    } = poolStateDetail;
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
     const { address } = useAccount();
@@ -80,23 +87,24 @@ const PoolDetail = () => {
         );
     };
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } =
+        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
-    useEffect(() => {
-        if (
-            Boolean(authState.userInfo?.connectedWallet) &&
-            Boolean(address) &&
-            authState.userInfo?.connectedWallet === address
-        ) {
-            setOpenModalInviteBlocker(false);
-            return;
-        }
+    // useEffect(() => {
+    //     if (
+    //         Boolean(authState.userInfo?.connectedWallet) &&
+    //         Boolean(address) &&
+    //         authState.userInfo?.connectedWallet === address
+    //     ) {
+    //         setOpenModalInviteBlocker(false);
+    //         return;
+    //     }
 
-        if (!refCodeExisted) {
-            setOpenModalInviteBlocker(true);
-            disconnect();
-        }
-    }, [refCodeExisted]);
+    //     if (!refCodeExisted) {
+    //         setOpenModalInviteBlocker(true);
+    //         disconnect();
+    //     }
+    // }, [refCodeExisted]);
 
     // useEffect(() => {
     //     if (refId) {
@@ -118,21 +126,6 @@ const PoolDetail = () => {
     }, [refId, poolAddress]);
 
     useEffect(() => {
-        if (!address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-
-            router.push(
-                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
-            );
-            return;
-        }
-
-        // resetPoolDetailAction();
         if (poolAddress && poolStateDetail.pageTransaction !== undefined) {
             fetchPoolDetail({
                 page: poolStateDetail.pageTransaction,
@@ -216,8 +209,8 @@ const PoolDetail = () => {
             metaDataInfo && metaDataInfo?.image
                 ? metaDataInfo?.image
                 : metaDataInfo?.tokenImageUrl
-                    ? metaDataInfo?.tokenImageUrl
-                    : randomDefaultPoolImage();
+                  ? metaDataInfo?.tokenImageUrl
+                  : randomDefaultPoolImage();
 
         let finalImageUrl: string;
         if (typeof image === 'object') {
@@ -285,13 +278,13 @@ const PoolDetail = () => {
                                 {!isMobile ? (
                                     <>
                                         <Affiliate />
-                                        {poolStateDetail.linkDiscussionTelegram ? (
+                                        {/* {poolStateDetail.dataDetailPoolFromServer.discussionId ? (
                                             <CommentTelegram
                                                 discussionLink={
-                                                    poolStateDetail.linkDiscussionTelegram
+                                                    poolStateDetail.dataDetailPoolFromServer.discussionId
                                                 }
                                             />
-                                        ) : null}
+                                        ) : null} */}
                                     </>
                                 ) : null}
                             </div>
@@ -310,15 +303,28 @@ const PoolDetail = () => {
                                 {isMobile ? (
                                     <>
                                         <Affiliate />
-                                        {poolStateDetail.linkDiscussionTelegram ? (
+                                        {poolStateDetail
+                                            .dataDetailPoolFromServer
+                                            .discussionId ? (
                                             <CommentTelegram
                                                 discussionLink={
-                                                    poolStateDetail.linkDiscussionTelegram
+                                                    poolStateDetail
+                                                        .dataDetailPoolFromServer
+                                                        .discussionId
                                                 }
                                             />
                                         ) : null}
                                     </>
                                 ) : null}
+
+                                {/* {dataDetailPoolFromServer.aiAgentId && (
+                                    <AiChatWidget
+                                        agentId={
+                                            dataDetailPoolFromServer.aiAgentId ??
+                                            ''
+                                        }
+                                    />
+                                )} */}
                             </div>
                         </Col>
                     </Row>

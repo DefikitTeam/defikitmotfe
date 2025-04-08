@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { ConfigService } from '@/src/config/services/config-service';
 import { IGetDetailPoolParams } from '@/src/stores/pool/type';
 import { querySubGraph } from '../fetcher';

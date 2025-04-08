@@ -10,14 +10,13 @@ import {
     usePassData
 } from '@/src/stores/pool/hook';
 
-import { ADDRESS_NULL, ChainId } from '@/src/common/constant/constance';
+import { ADDRESS_NULL } from '@/src/common/constant/constance';
 import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import { ConfigService } from '@/src/config/services/config-service';
+import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
-import serviceAuth, {
-    REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import servicePool from '@/src/services/external-services/backend-server/pool';
 import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
@@ -33,8 +32,7 @@ import { useSelector } from 'react-redux';
 import { useAccount, useDisconnect } from 'wagmi';
 import PoolInformation from './pool-information';
 import SaveCreatePoolButton from './save-button';
-import { useConfig } from '@/src/hooks/useConfig';
-export interface IPoolCreatForm { }
+export interface IPoolCreatForm {}
 const { Title } = Typography;
 // const currentHostName = useCurrentHostNameInformation();
 // const isProd =
@@ -96,23 +94,24 @@ const CreateLaunch = () => {
     const { disconnect } = useDisconnect();
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } = useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+    const { value: refCodeExisted, setValue: setRefCodeExisted } =
+        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
-    useEffect(() => {
-        if (
-            Boolean(authState.userInfo?.connectedWallet) &&
-            Boolean(address) &&
-            authState.userInfo?.connectedWallet === address
-        ) {
-            setOpenModalInviteBlocker(false);
-            return;
-        }
+    // useEffect(() => {
+    //     if (
+    //         Boolean(authState.userInfo?.connectedWallet) &&
+    //         Boolean(address) &&
+    //         authState.userInfo?.connectedWallet === address
+    //     ) {
+    //         setOpenModalInviteBlocker(false);
+    //         return;
+    //     }
 
-        if (!refCodeExisted) {
-            setOpenModalInviteBlocker(true);
-            disconnect();
-        }
-    }, [refCodeExisted]);
+    //     if (!refCodeExisted) {
+    //         setOpenModalInviteBlocker(true);
+    //         disconnect();
+    //     }
+    // }, [refCodeExisted]);
 
     useEffect(() => {
         if (useLaunchPool.isLoadingInitLaunchPool) {
@@ -157,7 +156,8 @@ const CreateLaunch = () => {
                             totalSupplyBefore,
                             poolAddress as `0x${string}`,
                             chainConfig?.chainId.toString()!,
-                            data.aiAgent
+                            data.aiAgent,
+                            address as `0x${string}`
                         ),
                         await serviceUpload.updateMetadata(
                             chainConfig?.chainId.toString()!,
@@ -251,6 +251,7 @@ const CreateLaunch = () => {
         let urlAvatar: string = '';
         let urlAiGentAvatar: string = '';
         setIsLoadingCreateLaunch(true);
+
         try {
             if (avatarInfo?.flag) {
                 const res =
@@ -285,7 +286,7 @@ const CreateLaunch = () => {
                         : data.websiteLink,
                 telegram:
                     data.telegramLink &&
-                        !data.telegramLink.startsWith('https://')
+                    !data.telegramLink.startsWith('https://')
                         ? `https://${data.telegramLink}`
                         : data.telegramLink,
                 twitter:
