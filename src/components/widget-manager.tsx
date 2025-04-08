@@ -14,7 +14,7 @@ const WidgetManager = () => {
             widgetContainer.remove();
         }
         const widgetStyles = document.querySelectorAll('[data-ai-chat-widget]');
-        widgetStyles.forEach(style => style.remove());
+        widgetStyles.forEach((style) => style.remove());
     };
 
     useEffect(() => {

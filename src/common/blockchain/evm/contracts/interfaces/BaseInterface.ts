@@ -37,11 +37,17 @@ export default class BaseInterface {
         return receipt?.hash;
     }
 
-    _toNumber(num: any) {
+    _toNumber(num: string | number | bigint | BigNumber): number {
         try {
-            return new BigNumber(num).toNumber();
+            if (num instanceof BigNumber) {
+                return num.toNumber();
+            }
+            return new BigNumber(num.toString()).toNumber();
         } catch (er) {
-            return Number.parseFloat(ethers.formatEther(num));
+            if (typeof num === 'bigint' || typeof num === 'string') {
+                return Number.parseFloat(ethers.formatEther(num));
+            }
+            return Number(num);
         }
     }
 
