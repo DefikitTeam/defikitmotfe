@@ -11,7 +11,9 @@
         "trans": "node src/scripts/translate.js",
         "format": "prettier --write \"src/**/*.{ts,tsx}\"",
         "format:lint-staged": "lint-staged",
-        "prepare-husky": "husky install && npx win-chmod 755 .husky/*"
+        "prepare-husky": "husky install && npx win-chmod 755 .husky/*",
+        "type-check": "tsc --noEmit",
+        "build-cf": "NODE_ENV=production next build"
     },
     "engines": {
         "node": "^18.18.0 || >=20.0.0"
