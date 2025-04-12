@@ -11,7 +11,7 @@ import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import serviceAuth, {
+import {
     REFCODE_INFO_STORAGE_KEY
 } from '@/src/services/external-services/backend-server/auth';
 import servicePool, {
@@ -21,7 +21,7 @@ import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { EActionStatus } from '@/src/stores/type';
-import { Col, Row, notification } from 'antd';
+import { Col, Row } from 'antd';
 import { useTranslations } from 'next-intl';
 import {
     useParams,
