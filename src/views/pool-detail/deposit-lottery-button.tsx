@@ -77,10 +77,7 @@ const DepositLotteryButton = ({
     useEffect(() => {
         if (useDepositForLottery.isError && useDepositForLottery.error) {
             setIsLoadingDepositLottery(false);
-            console.log(
-                'useDepositForLottery.isError line 81---',
-                useDepositForLottery.isError
-            );
+
             console.log(useDepositForLottery.error.message);
             notification.error({
                 message: 'Transaction Failed',

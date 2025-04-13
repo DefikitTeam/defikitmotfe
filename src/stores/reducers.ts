@@ -21,6 +21,7 @@ import topRefByVolReducer from '@/src/stores/top-ref-by-vol/slice';
 import inviteListReferReducer from '@/src/stores/invite-code/list-refer-slice';
 import getInviteCodeReducer from '@/src/stores/invite-code/get-invite-code';
 import depositLotteryReducer from '@/src/stores/pool/depositLotterySlice';
+import userReducer from '@/src/stores/Twitter/userSlice';
 const rootReducer = combineReducers({
     auth: authReducer,
     poolDetail: poolDetailReducer,
@@ -43,7 +44,8 @@ const rootReducer = combineReducers({
     // checkInviteCode: checkInviteCodeReducer,
     inviteListRefer: inviteListReferReducer,
     getInviteCode: getInviteCodeReducer,
-    depositLottery: depositLotteryReducer
+    depositLottery: depositLotteryReducer,
+    user: userReducer
 });
 
 export default rootReducer;

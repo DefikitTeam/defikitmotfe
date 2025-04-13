@@ -2,7 +2,7 @@
 import { TIME_IN_YEAR } from '@/src/common/constant/constance';
 import { IPoolDetail } from '@/src/services/response.type';
 import axios from 'axios';
-import  BigNumber  from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { IMetaData, IPoolList, IResponseMetadata } from './type';
 
 export const getReserves = (pool: IPoolDetail) => {
