@@ -2,10 +2,36 @@ import { formatCurrency, shortWalletAddress } from '@/src/common/utils/utils';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { CopyOutlined } from '@ant-design/icons';
-import { Tooltip, notification } from 'antd';
+import { Tooltip, notification, Tag } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useAccount } from 'wagmi';
+import { PoolStatus } from '@/src/common/constant/constance';
+
+const StatusBadge = ({ status }: { status: string }) => {
+    const getStatusConfig = () => {
+        switch (status) {
+            case PoolStatus.ACTIVE:
+                return { color: 'success' };
+            case PoolStatus.FULL:
+                return { color: 'blue' };
+            case PoolStatus.FINISHED:
+                return { color: 'purple' };
+            case PoolStatus.FAIL:
+                return { color: 'error' };
+            case PoolStatus.COMPLETED:
+                return { color: 'cyan' };
+            default:
+                return { color: 'default' };
+        }
+    };
+
+    return (
+        <Tag {...getStatusConfig()} className="!px-3 !py-1 !text-sm !font-medium !rounded-full">
+            {status}
+        </Tag>
+    );
+};
 
 const TokenInformation = () => {
     const t = useTranslations();
@@ -38,12 +64,15 @@ const TokenInformation = () => {
     };
 
     return (
-        <div className="bg-white pt-2  font-forza text-base">
-            <h3 className=" font-bold">Token:</h3>
+        <div className="bg-white pt-2 font-forza text-base">
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold">Token:</h3>
+                {pool?.status && <StatusBadge status={pool.status} />}
+            </div>
             <div className="flex flex-col justify-between">
                 <div className="flex justify-between">
-                    <div className="  ">{t('ADDRESS')}:</div>
-                    <div className="  ">
+                    <div className="">{t('ADDRESS')}:</div>
+                    <div className="">
                         <Tooltip
                             title={t('COPY_TO_CLIPBOARD')}
                             className=""
@@ -56,31 +85,31 @@ const TokenInformation = () => {
                         </Tooltip>
                         {isMobile
                             ? shortWalletAddress(
-                                  pool ? pool.id.toLowerCase() : ''
-                              )
+                                pool ? pool.id.toLowerCase() : ''
+                            )
                             : pool?.id.toLowerCase()}
                     </div>
                 </div>
                 <div className="flex justify-between">
-                    <div className="  ">{t('NAME')}:</div>
-                    <div className="  ">{pool?.name}</div>
+                    <div className="">{t('NAME')}:</div>
+                    <div className="">{pool?.name}</div>
                 </div>
                 <div className="flex justify-between">
-                    <div className="  ">{t('SYMBOL')}:</div>
-                    <div className="  ">{pool?.symbol}</div>
+                    <div className="">{t('SYMBOL')}:</div>
+                    <div className="">{pool?.symbol}</div>
                 </div>
                 <div className="flex justify-between">
-                    <div className="  ">{t('DECIMAL')}:</div>
-                    <div className="  ">{pool?.decimals}</div>
+                    <div className="">{t('DECIMAL')}:</div>
+                    <div className="">{pool?.decimals}</div>
                 </div>
                 <div className="flex justify-between">
-                    <div className="  ">{t('TOTAL_SUPPLY')}:</div>
-                    <div className="  ">
+                    <div className="">{t('TOTAL_SUPPLY')}:</div>
+                    <div className="">
                         {formatCurrency(
                             pool
                                 ? new BigNumber(pool.totalSupplyToken)
-                                      .div(10 ** parseInt(pool.decimals))
-                                      .toFixed(0)
+                                    .div(10 ** parseInt(pool.decimals))
+                                    .toFixed(0)
                                 : '0'
                         )}
                     </div>
