@@ -10,7 +10,7 @@ const serviceFaucet = {
                 `${config.getApiConfig().baseUrl}/c/${chainId}/faucet/${address}`
             );
         } catch (error) {
-            console.log('=========== GET faucet error: ', error);
+            // console.log('=========== GET faucet error: ', error);
         }
         if (res && res.status === 200) {
             return res.data;

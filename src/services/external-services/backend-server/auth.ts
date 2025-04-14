@@ -131,7 +131,7 @@ const serviceAuth = {
                     JSON.stringify(refCode)
                 );
             } else {
-                console.log('refCode đã tồn tại:', existingRefCode);
+                // console.log('refCode đã tồn tại:', existingRefCode);
             }
         }
     },

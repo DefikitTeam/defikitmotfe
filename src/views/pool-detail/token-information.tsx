@@ -27,7 +27,10 @@ const StatusBadge = ({ status }: { status: string }) => {
     };
 
     return (
-        <Tag {...getStatusConfig()} className="!px-3 !py-1 !text-sm !font-medium !rounded-full">
+        <Tag
+            {...getStatusConfig()}
+            className="!rounded-full !px-3 !py-1 !text-sm !font-medium"
+        >
             {status}
         </Tag>
     );
@@ -65,7 +68,7 @@ const TokenInformation = () => {
 
     return (
         <div className="bg-white pt-2 font-forza text-base">
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4 flex items-center justify-between">
                 <h3 className="font-bold">Token:</h3>
                 {pool?.status && <StatusBadge status={pool.status} />}
             </div>
@@ -85,8 +88,8 @@ const TokenInformation = () => {
                         </Tooltip>
                         {isMobile
                             ? shortWalletAddress(
-                                pool ? pool.id.toLowerCase() : ''
-                            )
+                                  pool ? pool.id.toLowerCase() : ''
+                              )
                             : pool?.id.toLowerCase()}
                     </div>
                 </div>
@@ -108,8 +111,8 @@ const TokenInformation = () => {
                         {formatCurrency(
                             pool
                                 ? new BigNumber(pool.totalSupplyToken)
-                                    .div(10 ** parseInt(pool.decimals))
-                                    .toFixed(0)
+                                      .div(10 ** parseInt(pool.decimals))
+                                      .toFixed(0)
                                 : '0'
                         )}
                     </div>

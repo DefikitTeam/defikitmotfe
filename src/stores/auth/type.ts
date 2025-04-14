@@ -36,6 +36,12 @@ export interface ILoginRequest {
         signature: string | null;
         refId: string | null;
     };
+    // twitter?: {
+    //     twitterId: string;
+    //     twitterUsername: string;
+    //     twitterName: string;
+    //     twitterProfileImage: string;
+    // };
     referralCode: string;
 }
 

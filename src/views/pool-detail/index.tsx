@@ -11,9 +11,7 @@ import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import {
-    REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import servicePool, {
     REFERRAL_CODE_INFO_STORAGE_KEY
 } from '@/src/services/external-services/backend-server/pool';
