@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
-import { markSlider } from '@/src/common/constant/constance';
+import { markSlider, PoolStatus } from '@/src/common/constant/constance';
 import {
     calculateTimeLeft,
     currencyFormatter,
@@ -516,14 +516,25 @@ const PoolPurchaseSummary = () => {
 
 
 
-    const shouldShowDeposit = !isForceShowBuyButton && 
-        Number(funLotteryAvailable) > 0 || Number(bondAvailableCurrent) === 0;
+    const shouldShowDeposit =
+        pool.status !== PoolStatus.FAIL &&
+        pool.status !== PoolStatus.COMPLETED && (
+            (!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
+            Number(bondAvailableCurrent) === 0
+        );
 
-    const shouldShowSpin = !isForceShowBuyButton &&  
-        Number(funLotteryAvailable) > 0 && Number(bondAvailableCurrent) > 0;
+    const shouldShowSpin =
+        pool.status !== PoolStatus.FAIL &&
+        pool.status !== PoolStatus.COMPLETED &&
+        !isForceShowBuyButton &&
+        Number(funLotteryAvailable) > 0 &&
+        Number(bondAvailableCurrent) > 0;
 
-    const shouldShowBuyButton = isForceShowBuyButton ||
-        (!shouldShowDeposit && !shouldShowSpin) 
+    const shouldShowBuyButton =
+        pool.status !== PoolStatus.FAIL &&
+        (
+            isForceShowBuyButton || (!shouldShowDeposit && !shouldShowSpin)
+        );
 
 
     return (
@@ -812,59 +823,63 @@ const PoolPurchaseSummary = () => {
                             }
                         />
                     </Col>
-                    <Col
-                        xs={24}
-                        sm={24}
-                        lg={24}
-                        md={24}
-                        xxl={24}
-                        className="mb-0 mt-0"
-                    >
-                        <Row
-                            gutter={[16, 12]}
-                            className="mb-6 rounded-lg bg-gray-50 p-2 shadow-md"
-                            justify="space-between"
+                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && (
+                        <Col
+                            xs={24}
+                            sm={24}
+                            lg={24}
+                            md={24}
+                            xxl={24}
+                            className="mb-0 mt-0"
                         >
-                            <Col
-                                xs={12}
-                                sm={12}
-                                md={12}
-                                lg={12}
-                                xxl={12}
-                                className="flex items-center"
+                            <Row
+                                gutter={[16, 12]}
+                                className="mb-6 rounded-lg bg-gray-50 p-2 shadow-md"
+                                justify="space-between"
                             >
-                                <div className="flex flex-col">
-                                    <span className="font-forza text-base">
-                                        {t('BOND_AVAILABLE')}
-                                    </span>
-                                    <span className="text-2xl font-bold text-blue-600">
-                                        {Number(bondAvailableCurrent)}{' '}
-                                        {t('BONDS')}
-                                    </span>
-                                </div>
-                            </Col>
-                            <Col
-                                xs={12}
-                                sm={12}
-                                md={12}
-                                lg={12}
-                                xxl={12}
-                                className="flex items-center"
-                            >
-                                <div className="flex flex-col">
-                                    <span className="font-forza text-base">
-                                        {t('FUND_LOTTERY_AVAILABLE')}
-                                    </span>
-                                    <span className="text-2xl font-bold text-blue-600">
-                                        {Number(funLotteryAvailable)}{' '}
-                                        {`${chainConfig?.currency}`}
-                                    </span>
-                                </div>
-                            </Col>
-                        </Row>
-                    </Col>
 
-                    {shouldShowBuyButton && (
+                                <Col
+                                    xs={12}
+                                    sm={12}
+                                    md={12}
+                                    lg={12}
+                                    xxl={12}
+                                    className="flex items-center"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="font-forza text-base">
+                                            {t('BOND_AVAILABLE')}
+                                        </span>
+                                        <span className="text-2xl font-bold text-blue-600">
+                                            {Number(bondAvailableCurrent)}{' '}
+                                            {t('BONDS')}
+                                        </span>
+                                    </div>
+                                </Col>
+                                <Col
+                                    xs={12}
+                                    sm={12}
+                                    md={12}
+                                    lg={12}
+                                    xxl={12}
+                                    className="flex items-center"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="font-forza text-base">
+                                            {t('FUND_LOTTERY_AVAILABLE')}
+                                        </span>
+                                        <span className="text-2xl font-bold text-blue-600">
+                                            {Number(funLotteryAvailable)}{' '}
+                                            {`${chainConfig?.currency}`}
+                                        </span>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Col>
+                    )}
+
+
+                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && shouldShowBuyButton && (
                         <Col
                             xs={24}
                             sm={24}
@@ -884,8 +899,8 @@ const PoolPurchaseSummary = () => {
                                     value={
                                         maxAmountETH
                                             ? new BigNumber(maxAmountETH)
-                                                  .div(1e18)
-                                                  .toFixed(6)
+                                                .div(1e18)
+                                                .toFixed(6)
                                             : 0
                                     }
                                     className="!font-forza text-base"
@@ -898,7 +913,7 @@ const PoolPurchaseSummary = () => {
                         </Col>
                     )}
 
-                    {shouldShowDeposit && (
+                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && shouldShowDeposit && (
                         <Col
                             xs={24}
                             sm={24}
@@ -934,6 +949,9 @@ const PoolPurchaseSummary = () => {
                             </div>
                         </Col>
                     )}
+
+
+
                 </Row>
 
                 <Row
