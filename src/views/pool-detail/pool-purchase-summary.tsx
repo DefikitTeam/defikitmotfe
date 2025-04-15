@@ -516,18 +516,24 @@ const PoolPurchaseSummary = () => {
             Number(pool.soldBatch) === Number(pool.totalBatch));
 
     const shouldShowDeposit =
-        pool.status !== PoolStatus.FAIL && (
+        pool.status !== PoolStatus.FAIL &&
+        pool.status !== PoolStatus.COMPLETED && (
             (!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
             Number(bondAvailableCurrent) === 0
-        )
+        );
 
-    const shouldShowSpin = pool.status !== PoolStatus.FAIL &&
+    const shouldShowSpin =
+        pool.status !== PoolStatus.FAIL &&
+        pool.status !== PoolStatus.COMPLETED &&
         !isForceShowBuyButton &&
         Number(funLotteryAvailable) > 0 &&
         Number(bondAvailableCurrent) > 0;
 
-    const shouldShowBuyButton = pool.status !== PoolStatus.FAIL && (
-        isForceShowBuyButton || (!shouldShowDeposit && !shouldShowSpin))
+    const shouldShowBuyButton =
+        pool.status !== PoolStatus.FAIL &&
+        (
+            isForceShowBuyButton || (!shouldShowDeposit && !shouldShowSpin)
+        );
 
     return (
         <div className="h-full w-full">
@@ -816,7 +822,7 @@ const PoolPurchaseSummary = () => {
                         />
                     </Col>
 
-                    {pool.status != PoolStatus.FAIL && (
+                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && (
                         <Col
                             xs={24}
                             sm={24}
@@ -875,7 +881,7 @@ const PoolPurchaseSummary = () => {
 
 
 
-                    {pool.status != PoolStatus.FAIL && shouldShowBuyButton && (
+                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && shouldShowBuyButton && (
                         <Col
                             xs={24}
                             sm={24}
@@ -909,7 +915,7 @@ const PoolPurchaseSummary = () => {
                         </Col>
                     )}
 
-                    {pool.status != PoolStatus.FAIL && shouldShowDeposit && (
+                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && shouldShowDeposit && (
                         <Col
                             xs={24}
                             sm={24}
