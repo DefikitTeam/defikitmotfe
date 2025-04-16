@@ -45,14 +45,20 @@ const serviceUpload = {
     uploadMetadataToServer: async (
         metadata: any,
         chainId: string,
-        tokenAddress: string
+        tokenAddress: string,
+        address?: string,
+        signature?: string,
+        message?: string
     ) => {
         let res;
         try {
             res = await axios.post(
                 `${config.getApiConfig().baseUrl}/c/${chainId}/t/${tokenAddress}/metadata`,
                 {
-                    body: metadata
+                    body: metadata,
+                    address,
+                    signature,
+                    message
                 }
             );
         } catch (error) {

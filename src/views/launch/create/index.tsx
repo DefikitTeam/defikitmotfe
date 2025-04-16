@@ -306,6 +306,7 @@ const CreateLaunch = () => {
                     chainConfig?.chainId.toString()!,
                     signature
                 );
+
             let metaDataLink: string = '';
             if (resData && resData.status === 'success') {
                 metaDataLink = `${config.getApiConfig().baseUrl}/c/${chainConfig?.chainId}/t/${signature}/metadata`;
