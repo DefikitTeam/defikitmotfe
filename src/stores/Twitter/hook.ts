@@ -52,7 +52,6 @@ export const useAuthTwitterLogin = (): AuthTwitterLoginType => {
 
     const handleTwitterCallback = useCallback(
         (event: MessageEvent) => {
-            console.log('Received message event:', event);
 
             // Chấp nhận message từ cả API endpoint
             if (
@@ -60,14 +59,11 @@ export const useAuthTwitterLogin = (): AuthTwitterLoginType => {
                 event.origin === 'http://localhost:4000'
             ) {
                 const data = event.data;
-                // console.log('Received data:', data);
 
                 if (data.success && data.twitter) {
-                    // console.log('Setting twitter user:', data.twitter);
                     dispatch(setTwitterUser(data.twitter));
                     dispatch(setLoading(false));
                 } else if (data.error) {
-                    // console.log('Setting error:', data.error);
                     dispatch(setError(data.error));
                     dispatch(setLoading(false));
                 }

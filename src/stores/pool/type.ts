@@ -85,6 +85,7 @@ export interface IFormData {
 export interface IResponseMetadata {
     data: {
         image: IFormData;
+        imageAiAgent: IFormData;
         description: IFormData;
         website: IFormData;
         telegram: IFormData;

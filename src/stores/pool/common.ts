@@ -29,6 +29,7 @@ export async function updateMetaDataWorker(
                 id: id,
                 metadata: {
                     image: res.image,
+                    imageAiAgent: res.imageAiAgent,
                     description: res.description,
                     website: res.website,
                     telegram: res.telegram,
@@ -43,6 +44,7 @@ export async function updateMetaDataWorker(
             id: id,
             metadata: {
                 image: data.image || '',
+                imageAiAgent: data.imageAiAgent || '',
                 description: data.description || '',
                 website: data.website || '',
                 telegram: data.telegram,
