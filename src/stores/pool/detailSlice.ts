@@ -163,7 +163,8 @@ export const getPoolDetail = createAsyncThunk<
         ] = await Promise.all([
             updateMetaDataWorker(
                 poolDetailData.data.pool.id,
-                poolDetailData.data.pool.metadata
+                // poolDetailData.data.pool.metadata
+                chainId.toString()
             ),
             servicePool.getTransaction(
                 Number(params.page),

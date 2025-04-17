@@ -139,9 +139,9 @@ const servicePool = {
         return querySubGraph(payload, chainId!);
     },
 
-    getPoolMetadata: async (poolId: string, metadataLink: string) => {
+    getPoolMetadata: async (poolId: string, chainId: string) => {
         try {
-            const response = await updateMetaDataWorker(poolId, metadataLink);
+            const response = await updateMetaDataWorker(poolId, chainId);
 
             return response;
         } catch (error) {

@@ -238,7 +238,8 @@ const HomePage = () => {
                     if (pool && pool.metadata) {
                         getMetadataPoolVisibleAction({
                             id: poolId,
-                            metadataLink: pool.metadata
+                            chainId: chainConfig?.chainId?.toString()!,
+                            // metadataLink: pool.metadata
                         });
                     }
                     setVisiblePools((prev) => [...prev, poolId]);

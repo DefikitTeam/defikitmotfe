@@ -4,6 +4,7 @@ import { IPoolDetail } from '@/src/services/response.type';
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { IMetaData, IPoolList, IResponseMetadata } from './type';
+import { ConfigService } from '@/src/config/services/config-service';
 
 export const getReserves = (pool: IPoolDetail) => {
     return {
@@ -12,13 +13,27 @@ export const getReserves = (pool: IPoolDetail) => {
     };
 };
 
+const config = ConfigService.getInstance();
 export async function updateMetaDataWorker(
     id: string,
-    metadataLink: string
+    
+    // metadataLink: string,
+    chainId?: string
 ): Promise<any> {
     try {
+
+        /**
+         * 
+         *
+         *  await axios.get(
+                `${config.getApiConfig().baseUrl}/c/${chainId}/getPrice`
+            );
+         */
         const response: IResponseMetadata | IResponseMetadata =
-            await axios.get(metadataLink);
+            // await axios.get(metadataLink);
+            await axios.get(
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${id}/metadata`
+            );
 
         if ('body' in response.data) {
             const { body } = response.data;

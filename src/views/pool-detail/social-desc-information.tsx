@@ -239,7 +239,7 @@ const SocialDescInformation = () => {
     };
 
     return (
-        <div className="relative flex flex-col gap-1 bg-white">
+        <div className="relative flex flex-col gap-4  bg-white">
             <div className="flex h-full space-x-2">
                 <img
                     src={
@@ -421,42 +421,6 @@ const SocialDescInformation = () => {
                     </Tooltip>
                 )}
 
-                <div
-                    className="flex h-[40px] w-[40px] animate-pulse cursor-pointer items-center justify-center 
-                    rounded-full bg-blue-500 shadow-lg"
-                    onClick={handleClickShowSocialScore}
-                >
-                    <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="animate-[ping_2s_ease-in-out_infinite]"
-                    >
-                        <rect
-                            x="2"
-                            y="12"
-                            width="4"
-                            height="8"
-                        />
-                        <rect
-                            x="10"
-                            y="8"
-                            width="4"
-                            height="12"
-                        />
-                        <rect
-                            x="18"
-                            y="4"
-                            width="4"
-                            height="16"
-                        />
-                    </svg>
-                </div>
                 {isConnected &&
                     address &&
                     address.toLowerCase() ===
@@ -528,6 +492,43 @@ const SocialDescInformation = () => {
                         </div>
                     </Tooltip>
                 )}
+
+                <div
+                    className="flex h-[40px] w-[40px] animate-pulse cursor-pointer items-center justify-center 
+                    rounded-full bg-blue-500 shadow-lg"
+                    onClick={handleClickShowSocialScore}
+                >
+                    <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="white"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="animate-[ping_2s_ease-in-out_infinite]"
+                    >
+                        <rect
+                            x="2"
+                            y="12"
+                            width="4"
+                            height="8"
+                        />
+                        <rect
+                            x="10"
+                            y="8"
+                            width="4"
+                            height="12"
+                        />
+                        <rect
+                            x="18"
+                            y="4"
+                            width="4"
+                            height="16"
+                        />
+                    </svg>
+                </div>
             </div>
 
             {showImagePreview && (
