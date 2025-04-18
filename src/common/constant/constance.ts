@@ -13,7 +13,8 @@ export enum ChainId {
     IOTA = 8822,
     BERACHAIN_MAINNET = 80094,
     MONAD = 10143,
-    SOMNIA = 50312
+    SOMNIA = 50312,
+    BERACHAIN_BEPOLIA = 80069
 }
 
 export enum DexName {
@@ -174,6 +175,14 @@ export const chains = [
         currency: 'STT',
         explorerUrl: 'https://shannon-explorer.somnia.network/',
         rpcUrl: 'https://dream-rpc.somnia.network/',
+        onFaucet: false
+    },
+    {
+        chainId: 80069,
+        name: 'Berachain Bepolia',
+        currency: 'BERA',
+        explorerUrl: 'https://bepolia.beratrail.io',
+        rpcUrl: 'https://bepolia.rpc.berachain.com',
         onFaucet: false
     }
 ];

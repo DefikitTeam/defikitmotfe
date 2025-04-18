@@ -231,22 +231,22 @@ const SocialDescInformation = () => {
                         : metaDataInfo?.description,
                 website:
                     values.websiteLink &&
-                        !values.websiteLink.startsWith('https://')
+                    !values.websiteLink.startsWith('https://')
                         ? `https://${values.websiteLink}`
                         : values.websiteLink,
                 telegram:
                     values.telegramLink &&
-                        !values.telegramLink.startsWith('https://')
+                    !values.telegramLink.startsWith('https://')
                         ? `https://${values.telegramLink}`
                         : values.telegramLink,
                 twitter:
                     values.twitterLink &&
-                        !values.twitterLink.startsWith('https://')
+                    !values.twitterLink.startsWith('https://')
                         ? `https://${values.twitterLink}`
                         : values.twitterLink,
                 discord:
                     values.discordLink &&
-                        !values.discordLink.startsWith('https://')
+                    !values.discordLink.startsWith('https://')
                         ? `https://${values.discordLink}`
                         : values.discordLink
             };
@@ -298,7 +298,10 @@ const SocialDescInformation = () => {
         }
     };
 
-    const generateTwitterIntentUrl = (tokenAddress: string, poolUrl: string) => {
+    const generateTwitterIntentUrl = (
+        tokenAddress: string,
+        poolUrl: string
+    ) => {
         const text = `📬 Token address: ${tokenAddress}\n🚀 Just launched a new token on RocketLaunch.Fun\n🔗 Link: ${poolUrl}\n#RocketLaunch #Berachain  #crypto`;
         return `https://x.com/intent/post?text=${encodeURIComponent(text)}`;
     };
@@ -313,13 +316,16 @@ const SocialDescInformation = () => {
             });
             return;
         }
-        if (isConnected &&
+        if (
+            isConnected &&
             address &&
-            address.toLowerCase() ===
-            poolStateDetail.pool?.owner?.toLowerCase()) {
-
+            address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()
+        ) {
             const poolUrl = `${window.location.origin}${window.location.pathname}`;
-            const twitterIntentUrl = generateTwitterIntentUrl(poolAddress, poolUrl);
+            const twitterIntentUrl = generateTwitterIntentUrl(
+                poolAddress,
+                poolUrl
+            );
             window.open(twitterIntentUrl, '_blank', 'noopener,noreferrer');
         } else {
             notification.error({
@@ -330,19 +336,23 @@ const SocialDescInformation = () => {
             });
             return;
         }
-
-
     };
 
     const renderTwitterHighlight = () => {
-        if (!isConnected || !address || address.toLowerCase() !== poolStateDetail.pool?.owner?.toLowerCase()) {
+        if (
+            !isConnected ||
+            !address ||
+            address.toLowerCase() !== poolStateDetail.pool?.owner?.toLowerCase()
+        ) {
             return null;
         }
 
         if (!finalTwitterUrl) {
             return (
-                <div className="relative group">
-                    <div className={`absolute -inset-2 bg-blue-500/20 rounded-full blur-sm transition-all duration-500 `}></div>
+                <div className="group relative">
+                    <div
+                        className={`absolute -inset-2 rounded-full bg-blue-500/20 blur-sm transition-all duration-500 `}
+                    ></div>
                     <div className="relative">
                         <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-blue-400 transition-all duration-300 hover:border-blue-500">
                             <Image
@@ -354,25 +364,26 @@ const SocialDescInformation = () => {
                                 onClick={() => setIsModalOpen(true)}
                             />
                         </div>
-                        
-                        
-                     
-
-
                     </div>
                 </div>
             );
         }
 
         return (
-            <div className="relative group">
-                <div className={`absolute -inset-2 bg-green-500/20 rounded-full blur-sm transition-all duration-500 `}></div>
+            <div className="group relative">
+                <div
+                    className={`bg-green-500/20 absolute -inset-2 rounded-full blur-sm transition-all duration-500 `}
+                ></div>
                 <Tooltip
                     title={
-                        address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase() ? (
+                        address.toLowerCase() ===
+                        poolStateDetail.pool?.owner?.toLowerCase() ? (
                             <div className="!font-forza">
                                 <p>Click to share on Twitter</p>
-                                <p className="text-yellow-300">Task: Post about your token with keyword {poolAddress}</p>
+                                <p className="text-yellow-300">
+                                    Task: Post about your token with keyword{' '}
+                                    {poolAddress}
+                                </p>
                             </div>
                         ) : null
                     }
@@ -388,7 +399,6 @@ const SocialDescInformation = () => {
                             style={{ cursor: 'pointer' }}
                             onClick={handleTwitterClick}
                         />
-                       
                     </div>
                 </Tooltip>
             </div>
@@ -449,27 +459,34 @@ const SocialDescInformation = () => {
                     />
                 )}
 
-                {!finalTelegramUrl && isConnected && address && (address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()) && (
-                    <Tooltip
-                        title={
-                            <div className="!font-forza">
-                                <p className="text-yellow-300">Task: Complete metadata by adding Telegram group</p>
+                {!finalTelegramUrl &&
+                    isConnected &&
+                    address &&
+                    address.toLowerCase() ===
+                        poolStateDetail.pool?.owner?.toLowerCase() && (
+                        <Tooltip
+                            title={
+                                <div className="!font-forza">
+                                    <p className="text-yellow-300">
+                                        Task: Complete metadata by adding
+                                        Telegram group
+                                    </p>
+                                </div>
+                            }
+                            overlayClassName="!font-forza"
+                        >
+                            <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
+                                <Image
+                                    src="/icon/telegram.svg"
+                                    alt="telegram"
+                                    width={30}
+                                    height={30}
+                                    style={{ opacity: 0.5, cursor: 'pointer' }}
+                                    onClick={() => setIsModalOpen(true)}
+                                />
                             </div>
-                        }
-                        overlayClassName="!font-forza"
-                    >
-                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
-                            <Image
-                                src="/icon/telegram.svg"
-                                alt="telegram"
-                                width={30}
-                                height={30}
-                                style={{ opacity: 0.5, cursor: 'pointer' }}
-                                onClick={() => setIsModalOpen(true)}
-                            />
-                        </div>
-                    </Tooltip>
-                )}
+                        </Tooltip>
+                    )}
 
                 {finalWebsiteUrl && (
                     <Image
@@ -482,27 +499,34 @@ const SocialDescInformation = () => {
                     />
                 )}
 
-                {!finalWebsiteUrl && isConnected && address && (address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()) && (
-                    <Tooltip
-                        title={
-                            <div className="!font-forza">
-                                <p className="text-yellow-300">Task: Complete metadata by adding Website link</p>
+                {!finalWebsiteUrl &&
+                    isConnected &&
+                    address &&
+                    address.toLowerCase() ===
+                        poolStateDetail.pool?.owner?.toLowerCase() && (
+                        <Tooltip
+                            title={
+                                <div className="!font-forza">
+                                    <p className="text-yellow-300">
+                                        Task: Complete metadata by adding
+                                        Website link
+                                    </p>
+                                </div>
+                            }
+                            overlayClassName="!font-forza"
+                        >
+                            <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
+                                <Image
+                                    src="/icon/web.svg"
+                                    alt="website"
+                                    width={30}
+                                    height={30}
+                                    style={{ opacity: 0.5, cursor: 'pointer' }}
+                                    onClick={() => setIsModalOpen(true)}
+                                />
                             </div>
-                        }
-                        overlayClassName="!font-forza"
-                    >
-                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
-                            <Image
-                                src="/icon/web.svg"
-                                alt="website"
-                                width={30}
-                                height={30}
-                                style={{ opacity: 0.5, cursor: 'pointer' }}
-                                onClick={() => setIsModalOpen(true)}
-                            />
-                        </div>
-                    </Tooltip>
-                )}
+                        </Tooltip>
+                    )}
 
                 {finalDiscordUrl && (
                     <Image
@@ -515,32 +539,39 @@ const SocialDescInformation = () => {
                     />
                 )}
 
-                {!finalDiscordUrl && isConnected && address && (address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()) && (
-                    <Tooltip
-                        title={
-                            <div className="!font-forza">
-                                <p className="text-yellow-300">Task: Complete metadata by adding Discord server</p>
+                {!finalDiscordUrl &&
+                    isConnected &&
+                    address &&
+                    address.toLowerCase() ===
+                        poolStateDetail.pool?.owner?.toLowerCase() && (
+                        <Tooltip
+                            title={
+                                <div className="!font-forza">
+                                    <p className="text-yellow-300">
+                                        Task: Complete metadata by adding
+                                        Discord server
+                                    </p>
+                                </div>
+                            }
+                            overlayClassName="!font-forza"
+                        >
+                            <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
+                                <Image
+                                    src="/icon/discord.svg"
+                                    alt="discord"
+                                    width={30}
+                                    height={30}
+                                    style={{ opacity: 0.5, cursor: 'pointer' }}
+                                    onClick={() => setIsModalOpen(true)}
+                                />
                             </div>
-                        }
-                        overlayClassName="!font-forza"
-                    >
-                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
-                            <Image
-                                src="/icon/discord.svg"
-                                alt="discord"
-                                width={30}
-                                height={30}
-                                style={{ opacity: 0.5, cursor: 'pointer' }}
-                                onClick={() => setIsModalOpen(true)}
-                            />
-                        </div>
-                    </Tooltip>
-                )}
+                        </Tooltip>
+                    )}
 
                 {isConnected &&
                     address &&
                     address.toLowerCase() ===
-                    poolStateDetail.pool?.owner?.toLowerCase() && (
+                        poolStateDetail.pool?.owner?.toLowerCase() && (
                         <Tooltip
                             title="Update social media links"
                             overlayClassName="!font-forza"
@@ -569,45 +600,52 @@ const SocialDescInformation = () => {
                     )}
 
                 {/* Add AI Agent tooltip */}
-                {isConnected && address && (address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()) && poolStateDetail.dataDetailPoolFromServer?.aiAgentId && (
-                    <Tooltip
-                        title={
-                            <div className="!font-forza">
-                                <p className="text-yellow-300">Task: Create AI Agent for your token</p>
-                            </div>
-                        }
-                        overlayClassName="!font-forza"
-                    >
-                        <div
-                            className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400 cursor-pointer"
-                            onClick={() => {
-                                // Handle AI Agent creation - you can add navigation or modal here
-                                notification.info({
-                                    message: 'AI Agent Creation',
-                                    description: 'Please create an AI Agent to enhance your token capabilities',
-                                    duration: 3,
-                                    showProgress: true
-                                });
-                            }}
+                {isConnected &&
+                    address &&
+                    address.toLowerCase() ===
+                        poolStateDetail.pool?.owner?.toLowerCase() &&
+                    poolStateDetail.dataDetailPoolFromServer?.aiAgentId && (
+                        <Tooltip
+                            title={
+                                <div className="!font-forza">
+                                    <p className="text-yellow-300">
+                                        Task: Create AI Agent for your token
+                                    </p>
+                                </div>
+                            }
+                            overlayClassName="!font-forza"
                         >
-                            <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="gray"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                            <div
+                                className="flex h-[40px] w-[40px] cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-gray-400"
+                                onClick={() => {
+                                    // Handle AI Agent creation - you can add navigation or modal here
+                                    notification.info({
+                                        message: 'AI Agent Creation',
+                                        description:
+                                            'Please create an AI Agent to enhance your token capabilities',
+                                        duration: 3,
+                                        showProgress: true
+                                    });
+                                }}
                             >
-                                <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
-                                <path d="M12 2a10 10 0 1 1-10 10h10V2z" />
-                                <path d="M12 12 9 9" />
-                                <path d="m12 12 3-3" />
-                            </svg>
-                        </div>
-                    </Tooltip>
-                )}
+                                <svg
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="gray"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
+                                    <path d="M12 2a10 10 0 1 1-10 10h10V2z" />
+                                    <path d="M12 12 9 9" />
+                                    <path d="m12 12 3-3" />
+                                </svg>
+                            </div>
+                        </Tooltip>
+                    )}
 
                 <div
                     className="flex h-[40px] w-[40px] animate-pulse cursor-pointer items-center justify-center 

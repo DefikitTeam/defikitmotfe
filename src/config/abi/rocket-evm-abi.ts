@@ -127,6 +127,31 @@ export const ROCKET_EVM_ABI = [
             {
                 indexed: false,
                 internalType: 'uint256',
+                name: 'ethAmount',
+                type: 'uint256'
+            }
+        ],
+        name: 'ClaimFundLottery',
+        type: 'event'
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'pool',
+                type: 'address'
+            },
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'user',
+                type: 'address'
+            },
+            {
+                indexed: false,
+                internalType: 'uint256',
                 name: 'amount',
                 type: 'uint256'
             }
@@ -198,6 +223,31 @@ export const ROCKET_EVM_ABI = [
                 internalType: 'address',
                 name: 'pool',
                 type: 'address'
+            },
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'user',
+                type: 'address'
+            },
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'ethAmount',
+                type: 'uint256'
+            }
+        ],
+        name: 'DepositForLottery',
+        type: 'event'
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'pool',
+                type: 'address'
             }
         ],
         name: 'FailPool',
@@ -240,6 +290,50 @@ export const ROCKET_EVM_ABI = [
             }
         ],
         name: 'Initialized',
+        type: 'event'
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'pool',
+                type: 'address'
+            }
+        ],
+        name: 'LotteryCompleted',
+        type: 'event'
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'pool',
+                type: 'address'
+            },
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'winner',
+                type: 'address'
+            },
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'batchesWon',
+                type: 'uint256'
+            },
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'ethAmount',
+                type: 'uint256'
+            }
+        ],
+        name: 'LotteryWinner',
         type: 'event'
     },
     {
@@ -449,94 +543,6 @@ export const ROCKET_EVM_ABI = [
         type: 'function'
     },
     {
-        inputs: [],
-        name: 'MINIMUM_CAP',
-        outputs: [
-            {
-                internalType: 'uint256',
-                name: '',
-                type: 'uint256'
-            }
-        ],
-        stateMutability: 'view',
-        type: 'function'
-    },
-    {
-        inputs: [
-            {
-                components: [
-                    {
-                        internalType: 'address',
-                        name: 'token',
-                        type: 'address'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'fixedCapETH',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'tokenForAirdrop',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'tokenForFarm',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'tokenForSale',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'tokenForAddLP',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'tokenPerPurchase',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'maxRepeatPurchase',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'startTime',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'minDurationSell',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
-                        name: 'maxDurationSell',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'string',
-                        name: 'metadata',
-                        type: 'string'
-                    }
-                ],
-                internalType: 'struct RocketBera.ActivePoolParams',
-                name: 'params',
-                type: 'tuple'
-            }
-        ],
-        name: 'activePool',
-        outputs: [],
-        stateMutability: 'payable',
-        type: 'function'
-    },
-    {
         inputs: [
             {
                 internalType: 'address',
@@ -620,7 +626,7 @@ export const ROCKET_EVM_ABI = [
                 type: 'address'
             }
         ],
-        name: 'caculateUnlockedPercent',
+        name: 'calculateUnlockedPercent',
         outputs: [
             {
                 internalType: 'uint256',
@@ -629,6 +635,19 @@ export const ROCKET_EVM_ABI = [
             }
         ],
         stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            }
+        ],
+        name: 'claimFundLottery',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function'
     },
     {
@@ -685,29 +704,24 @@ export const ROCKET_EVM_ABI = [
     {
         inputs: [
             {
-                internalType: 'string',
-                name: 'name',
-                type: 'string'
-            },
-            {
-                internalType: 'string',
-                name: 'symbol',
-                type: 'string'
-            },
-            {
-                internalType: 'uint8',
-                name: 'decimals',
-                type: 'uint8'
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
             },
             {
                 internalType: 'uint256',
-                name: 'totalSupply',
+                name: 'amountETH',
                 type: 'uint256'
+            },
+            {
+                internalType: 'address',
+                name: 'referrer',
+                type: 'address'
             }
         ],
-        name: 'createRocketToken',
+        name: 'depositForLottery',
         outputs: [],
-        stateMutability: 'nonpayable',
+        stateMutability: 'payable',
         type: 'function'
     },
     {
@@ -808,6 +822,49 @@ export const ROCKET_EVM_ABI = [
     {
         inputs: [
             {
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            }
+        ],
+        name: 'fundLottery',
+        outputs: [
+            {
+                internalType: 'uint256',
+                name: '',
+                type: 'uint256'
+            }
+        ],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'uint256',
+                name: 'max',
+                type: 'uint256'
+            },
+            {
+                internalType: 'uint256',
+                name: 'seed',
+                type: 'uint256'
+            }
+        ],
+        name: 'generateRandomIndexAlt',
+        outputs: [
+            {
+                internalType: 'uint256',
+                name: '',
+                type: 'uint256'
+            }
+        ],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
                 internalType: 'uint256',
                 name: 'amountOut',
                 type: 'uint256'
@@ -867,6 +924,44 @@ export const ROCKET_EVM_ABI = [
         inputs: [
             {
                 internalType: 'address',
+                name: 'user',
+                type: 'address'
+            }
+        ],
+        name: 'getCreatedTokens',
+        outputs: [
+            {
+                internalType: 'address[]',
+                name: '',
+                type: 'address[]'
+            }
+        ],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            }
+        ],
+        name: 'getLotteryParticipants',
+        outputs: [
+            {
+                internalType: 'address[]',
+                name: '',
+                type: 'address[]'
+            }
+        ],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
                 name: 'poolAddress',
                 type: 'address'
             }
@@ -877,6 +972,25 @@ export const ROCKET_EVM_ABI = [
                 internalType: 'uint256',
                 name: '',
                 type: 'uint256'
+            }
+        ],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'user',
+                type: 'address'
+            }
+        ],
+        name: 'getPurchasedTokens',
+        outputs: [
+            {
+                internalType: 'address[]',
+                name: '',
+                type: 'address[]'
             }
         ],
         stateMutability: 'view',
@@ -896,6 +1010,47 @@ export const ROCKET_EVM_ABI = [
                 internalType: 'bytes32',
                 name: '',
                 type: 'bytes32'
+            }
+        ],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            },
+            {
+                internalType: 'address',
+                name: 'userAddress',
+                type: 'address'
+            }
+        ],
+        name: 'getUserLottery',
+        outputs: [
+            {
+                components: [
+                    {
+                        internalType: 'uint256',
+                        name: 'ethAmount',
+                        type: 'uint256'
+                    },
+                    {
+                        internalType: 'address',
+                        name: 'referrer',
+                        type: 'address'
+                    },
+                    {
+                        internalType: 'uint256',
+                        name: 'ethSurplus',
+                        type: 'uint256'
+                    }
+                ],
+                internalType: 'struct Rocket.UserLottery',
+                name: '',
+                type: 'tuple'
             }
         ],
         stateMutability: 'view',
@@ -967,11 +1122,6 @@ export const ROCKET_EVM_ABI = [
             },
             {
                 internalType: 'address',
-                name: '_airdropAddress',
-                type: 'address'
-            },
-            {
-                internalType: 'address',
                 name: '_routerV2',
                 type: 'address'
             },
@@ -979,6 +1129,16 @@ export const ROCKET_EVM_ABI = [
                 internalType: 'uint256',
                 name: '_blockInterval',
                 type: 'uint256'
+            },
+            {
+                internalType: 'uint256',
+                name: '_minCap',
+                type: 'uint256'
+            },
+            {
+                internalType: 'address',
+                name: '_rocketTokenFactory',
+                type: 'address'
             }
         ],
         name: 'initialize',
@@ -1081,7 +1241,7 @@ export const ROCKET_EVM_ABI = [
                         type: 'address'
                     }
                 ],
-                internalType: 'struct RocketBera.LaunchPoolParams',
+                internalType: 'struct Rocket.LaunchPoolParams',
                 name: 'params',
                 type: 'tuple'
             }
@@ -1089,6 +1249,30 @@ export const ROCKET_EVM_ABI = [
         name: 'launchPool',
         outputs: [],
         stateMutability: 'payable',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: '',
+                type: 'address'
+            }
+        ],
+        name: 'lotteries',
+        outputs: [
+            {
+                internalType: 'uint256',
+                name: 'fundDeposit',
+                type: 'uint256'
+            },
+            {
+                internalType: 'uint256',
+                name: 'fundSurplus',
+                type: 'uint256'
+            }
+        ],
+        stateMutability: 'view',
         type: 'function'
     },
     {
@@ -1297,7 +1481,7 @@ export const ROCKET_EVM_ABI = [
                 type: 'uint256'
             },
             {
-                internalType: 'enum RocketBera.StatusPool',
+                internalType: 'enum Rocket.StatusPool',
                 name: 'status',
                 type: 'uint8'
             },
@@ -1404,6 +1588,52 @@ export const ROCKET_EVM_ABI = [
             }
         ],
         name: 'setRocketTokenFactory',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: '_platformAddress',
+                type: 'address'
+            },
+            {
+                internalType: 'uint256',
+                name: '_platformFee',
+                type: 'uint256'
+            },
+            {
+                internalType: 'address',
+                name: '_feeAddress',
+                type: 'address'
+            },
+            {
+                internalType: 'uint256',
+                name: '_fee',
+                type: 'uint256'
+            },
+            {
+                internalType: 'uint256',
+                name: '_minCap',
+                type: 'uint256'
+            }
+        ],
+        name: 'setupAdmin',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            }
+        ],
+        name: 'spinLottery',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function'

@@ -69,7 +69,7 @@ export interface InvestPool {
 }
 export interface IMetaData {
     image: string;
-    
+
     tokenImageUrl?: string | null;
     description: any;
     website: string | null;
@@ -109,7 +109,7 @@ export interface IGetDetailPoolParams extends IGetAllQuery {
     chainId: number;
 }
 export interface IGetDetailHolderDistributionParams
-    extends Omit<IGetDetailPoolParams, 'userAddress'> { }
+    extends Omit<IGetDetailPoolParams, 'userAddress'> {}
 
 export interface IGetDetailDiscussionParams {
     chainId: string;
@@ -331,7 +331,7 @@ export interface IBuyPool {
     maxAmountETH: number;
 }
 
-export interface ISellPool extends IBuyPool { }
+export interface ISellPool extends IBuyPool {}
 
 export interface IDepositLottery {
     poolAddress: string;

@@ -52,7 +52,6 @@ export const useAuthTwitterLogin = (): AuthTwitterLoginType => {
 
     const handleTwitterCallback = useCallback(
         (event: MessageEvent) => {
-
             // Chấp nhận message từ cả API endpoint
             if (
                 event.origin === NEXT_PUBLIC_API_ENDPOINT ||

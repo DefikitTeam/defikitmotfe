@@ -23,8 +23,6 @@ interface Props {
 const { Text } = Typography;
 
 const ItemPool = (props: Props) => {
-
-
     const { isMobile } = useWindowSize();
 
     const { chainConfig } = useConfig();

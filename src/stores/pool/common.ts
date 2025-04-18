@@ -16,12 +16,11 @@ export const getReserves = (pool: IPoolDetail) => {
 const config = ConfigService.getInstance();
 export async function updateMetaDataWorker(
     id: string,
-    
+
     // metadataLink: string,
     chainId?: string
 ): Promise<any> {
     try {
-
         /**
          * 
          *
