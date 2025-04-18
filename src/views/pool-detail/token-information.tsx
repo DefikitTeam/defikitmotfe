@@ -11,6 +11,8 @@ import { PoolStatus } from '@/src/common/constant/constance';
 const StatusBadge = ({ status }: { status: string }) => {
     const getStatusConfig = () => {
         switch (status) {
+            case PoolStatus.UP_COMING:
+                return { color: 'warning' }
             case PoolStatus.ACTIVE:
                 return { color: 'success' };
             case PoolStatus.FULL:
@@ -88,8 +90,8 @@ const TokenInformation = () => {
                         </Tooltip>
                         {isMobile
                             ? shortWalletAddress(
-                                  pool ? pool.id.toLowerCase() : ''
-                              )
+                                pool ? pool.id.toLowerCase() : ''
+                            )
                             : pool?.id.toLowerCase()}
                     </div>
                 </div>
@@ -111,8 +113,8 @@ const TokenInformation = () => {
                         {formatCurrency(
                             pool
                                 ? new BigNumber(pool.totalSupplyToken)
-                                      .div(10 ** parseInt(pool.decimals))
-                                      .toFixed(0)
+                                    .div(10 ** parseInt(pool.decimals))
+                                    .toFixed(0)
                                 : '0'
                         )}
                     </div>
