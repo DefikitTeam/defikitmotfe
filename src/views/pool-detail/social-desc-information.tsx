@@ -1,21 +1,22 @@
 /* eslint-disable */
-import { randomDefaultPoolImage } from '@/src/common/utils/utils';
-import { usePoolDetail } from '@/src/stores/pool/hook';
-import { useState } from 'react';
-import ModalSocialScore from './modal-social-score';
-import Image from 'next/image';
-import { notification, Modal, Form, Input, Button, Tooltip } from 'antd';
-import { useAccount, useSignMessage } from 'wagmi';
-import { useTranslations } from 'next-intl';
 import {
     REGEX_DISCORD,
     REGEX_TELEGRAM,
     REGEX_TWITTER,
     REGEX_WEBSITE
 } from '@/src/common/constant/constance';
-import serviceUpload from '@/src/services/external-services/backend-server/upload';
-import { useParams } from 'next/navigation';
+import { randomDefaultPoolImage } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
+import serviceUpload from '@/src/services/external-services/backend-server/upload';
+import { usePoolDetail } from '@/src/stores/pool/hook';
+import { Button, Form, Input, Modal, notification, Tooltip } from 'antd';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import { useAccount, useSignMessage } from 'wagmi';
+import ModalSocialScore from './modal-social-score';
+// import Joyride, { Step } from 'react-joyride';
 
 const SocialDescInformation = () => {
     const [
@@ -51,6 +52,65 @@ const SocialDescInformation = () => {
         signMessageAsync,
         context
     } = useSignMessage();
+    // const [showHighlight, setShowHighlight] = useState(true);
+    // const [showTour, setShowTour] = useState(false);
+
+    // useEffect(() => {
+    //     // Auto hide highlight after 10s
+    //     const timer = setTimeout(() => {
+    //         setShowHighlight(false);
+    //     }, 10000);
+    //     return () => clearTimeout(timer);
+    // }, []);
+
+    // Steps cho tour guide
+    // const steps: Step[] = [
+    //     {
+    //         target: '.twitter-share-button',
+    //         content: (
+    //             <div className="!font-forza">
+    //                 <h3 className="text-lg font-bold mb-2">Share Your Token! 🚀</h3>
+    //                 <p>Great! Now that you've added your Twitter link, let's share your token with the community!</p>
+    //                 <p className="text-sm mt-2">Click here to automatically create a tweet with:</p>
+    //                 <ul className="list-disc list-inside text-sm mt-1">
+    //                     <li>Your token address</li>
+    //                     <li>Launch announcement</li>
+    //                     <li>Pool link</li>
+    //                     <li>Required hashtags</li>
+    //                 </ul>
+    //             </div>
+    //         ),
+    //         placement: 'right',
+    //         disableBeacon: true,
+    //         styles: {
+    //             options: {
+    //                 zIndex: 10000,
+    //             }
+    //         }
+    //     }
+    // ];
+
+    // // Theo dõi khi finalTwitterUrl thay đổi để show tour
+    // useEffect(() => {
+    //     if (finalTwitterUrl &&
+    //         isConnected &&
+    //         address &&
+    //         address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()
+    //     ) {
+    //         // Delay một chút để UI kịp render
+    //         setTimeout(() => {
+    //             setShowTour(true);
+    //         }, 500);
+    //     }
+    // }, [finalTwitterUrl, isConnected, address, poolStateDetail.pool?.owner]);
+
+    // Xử lý khi tour kết thúc
+    // const handleTourCallback = (data: any) => {
+    //     const { status } = data;
+    //     if (status === 'finished' || status === 'skipped') {
+    //         setShowTour(false);
+    //     }
+    // };
 
     const openInNewTab = (url: any | null) => {
         if (!isConnected || !address) {
@@ -238,6 +298,103 @@ const SocialDescInformation = () => {
         }
     };
 
+    const generateTwitterIntentUrl = (tokenAddress: string, poolUrl: string) => {
+        const text = `📬 Token address: ${tokenAddress}\n🚀 Just launched a new token on RocketLaunch.Fun\n🔗 Link: ${poolUrl}\n#RocketLaunch #Berachain  #crypto`;
+        return `https://x.com/intent/post?text=${encodeURIComponent(text)}`;
+    };
+
+    const handleTwitterClick = () => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+        if (isConnected &&
+            address &&
+            address.toLowerCase() ===
+            poolStateDetail.pool?.owner?.toLowerCase()) {
+
+            const poolUrl = `${window.location.origin}${window.location.pathname}`;
+            const twitterIntentUrl = generateTwitterIntentUrl(poolAddress, poolUrl);
+            window.open(twitterIntentUrl, '_blank', 'noopener,noreferrer');
+        } else {
+            notification.error({
+                message: 'Error',
+                description: 'You are not the owner of this pool',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+
+    };
+
+    const renderTwitterHighlight = () => {
+        if (!isConnected || !address || address.toLowerCase() !== poolStateDetail.pool?.owner?.toLowerCase()) {
+            return null;
+        }
+
+        if (!finalTwitterUrl) {
+            return (
+                <div className="relative group">
+                    <div className={`absolute -inset-2 bg-blue-500/20 rounded-full blur-sm transition-all duration-500 `}></div>
+                    <div className="relative">
+                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-blue-400 transition-all duration-300 hover:border-blue-500">
+                            <Image
+                                src="/icon/twitter.svg"
+                                alt="twitter"
+                                width={30}
+                                height={30}
+                                style={{ opacity: 0.7, cursor: 'pointer' }}
+                                onClick={() => setIsModalOpen(true)}
+                            />
+                        </div>
+                        
+                        
+                     
+
+
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="relative group">
+                <div className={`absolute -inset-2 bg-green-500/20 rounded-full blur-sm transition-all duration-500 `}></div>
+                <Tooltip
+                    title={
+                        address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase() ? (
+                            <div className="!font-forza">
+                                <p>Click to share on Twitter</p>
+                                <p className="text-yellow-300">Task: Post about your token with keyword {poolAddress}</p>
+                            </div>
+                        ) : null
+                    }
+                    overlayClassName="!font-forza"
+                >
+                    <div className="relative">
+                        <Image
+                            src="/icon/twitter.svg"
+                            alt="twitter"
+                            width={40}
+                            height={40}
+                            className="transition-transform duration-300 hover:scale-110"
+                            style={{ cursor: 'pointer' }}
+                            onClick={handleTwitterClick}
+                        />
+                       
+                    </div>
+                </Tooltip>
+            </div>
+        );
+    };
+
     return (
         <div className="relative flex flex-col gap-4  bg-white">
             <div className="flex h-full space-x-2">
@@ -279,48 +436,7 @@ const SocialDescInformation = () => {
                     }
                 /> */}
 
-                {finalTwitterUrl && (
-                    <Tooltip
-                        title={
-                            <div className="!font-forza">
-                                <p>Click to open Twitter</p>
-                                <p className="text-yellow-300">Task: Post about your token with keyword {poolAddress}</p>
-                            </div>
-                        }
-                        overlayClassName="!font-forza"
-                    >
-                        <Image
-                            src="/icon/twitter.svg"
-                            alt="twitter"
-                            width={40}
-                            height={40}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => openInNewTab(finalTwitterUrl)}
-                        />
-                    </Tooltip>
-                )}
-
-                {!finalTwitterUrl && isConnected && address && (address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()) && (
-                    <Tooltip
-                        title={
-                            <div className="!font-forza">
-                                <p className="text-yellow-300">Task: Complete metadata by adding Twitter link</p>
-                            </div>
-                        }
-                        overlayClassName="!font-forza"
-                    >
-                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
-                            <Image
-                                src="/icon/twitter.svg"
-                                alt="twitter"
-                                width={30}
-                                height={30}
-                                style={{ opacity: 0.5, cursor: 'pointer' }}
-                                onClick={() => setIsModalOpen(true)}
-                            />
-                        </div>
-                    </Tooltip>
-                )}
+                {renderTwitterHighlight()}
 
                 {finalTelegramUrl && (
                     <Image
