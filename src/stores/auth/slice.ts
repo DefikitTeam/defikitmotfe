@@ -8,9 +8,11 @@ import { EActionStatus, FetchError } from '../type';
 import {
     IAuthState,
     IDataUserLoginResponse,
+    ILoginDiscordResponse,
     ILoginRequest,
     ILoginResponse,
     ILoginTeleResponse,
+    ILoginTwitterResponse,
     ILoginWalletResponse,
     ISignature
 } from './type';
@@ -18,11 +20,15 @@ import {
 const initialState: IAuthState = {
     statusLoginWallet: EActionStatus.Idle,
     statusLoginTele: EActionStatus.Idle,
+    statusLoginTwitter: EActionStatus.Idle,
+    statusLoginDiscord: EActionStatus.Idle,
     errorMessage: '',
     errorCode: '',
     userInfo: serviceAuth.getUserInfoStorage(),
     userTele: serviceAuth.getUserTeleStorage(),
     userWallet: serviceAuth.getUserWalletStorage(),
+    userTwitter: serviceAuth.getUserTwitterStorage(),
+    userDiscord: serviceAuth.getUserDiscordStorage(),
     signature: '',
     accessToken: serviceAuth.getAccessTokenStorage(),
     refreshToken: '',
@@ -41,12 +47,29 @@ export const loginWallet = createAsyncThunk<
         const loginResponse: ILoginResponse =
             await serviceAuth.loginWallet(loginData);
 
-        const { user, tele, wallet, accessToken, refreshToken } = loginResponse;
+        const {
+            user,
+            tele,
+            wallet,
+            accessToken,
+            refreshToken,
+            twitter,
+            discord
+        } = loginResponse;
+
+        if (loginResponse) {
+        }
         if (!serviceAuth.getUserInfoStorage()) {
             serviceAuth.storeUserInfo(user as IDataUserLoginResponse);
         }
         if (!serviceAuth.getUserTeleStorage()) {
             serviceAuth.storeUserTele(tele as ILoginTeleResponse);
+        }
+        if (!serviceAuth.getUserTwitterStorage()) {
+            serviceAuth.storeUserTwitter(twitter as ILoginTwitterResponse);
+        }
+        if (!serviceAuth.getUserDiscordStorage()) {
+            serviceAuth.storeUserDiscord(discord as ILoginDiscordResponse);
         }
         if (!serviceAuth.getUserWalletStorage()) {
             serviceAuth.storeUserWallet(wallet as ILoginWalletResponse);
@@ -116,11 +139,32 @@ const authSlice = createSlice({
                 serviceAuth.storeAccessToken(null);
             }
         },
+        signOutTwitter: (state: IAuthState) => {
+            state.errorMessage = '';
+            state.errorCode = '';
+            state.statusLoginTwitter = EActionStatus.Idle;
+            state.userTwitter = null;
+            serviceAuth.storeUserTwitter(null);
+        },
+        signOutDiscord: (state: IAuthState) => {
+            state.errorMessage = '';
+            state.errorCode = '';
+            state.statusLoginDiscord = EActionStatus.Idle;
+            state.userDiscord = null;
+            serviceAuth.storeUserDiscord(null);
+        },
+
         resetStatusLoginTele: (state: IAuthState) => {
             state.statusLoginTele = EActionStatus.Idle;
         },
         resetStatusLoginWallet: (state: IAuthState) => {
             state.statusLoginWallet = EActionStatus.Idle;
+        },
+        resetStatusLoginTwitter: (state: IAuthState) => {
+            state.statusLoginTwitter = EActionStatus.Idle;
+        },
+        resetStatusLoginDiscord: (state: IAuthState) => {
+            state.statusLoginDiscord = EActionStatus.Idle;
         },
         updateSignature: (
             state: IAuthState,
@@ -161,6 +205,14 @@ const authSlice = createSlice({
                 if (action.payload.refreshToken) {
                     state.refreshToken = action.payload.refreshToken;
                 }
+                if (action.payload.twitter) {
+                    state.userTwitter = action.payload.twitter;
+                    state.statusLoginTwitter = EActionStatus.Succeeded;
+                }
+                if (action.payload.discord) {
+                    state.userDiscord = action.payload.discord;
+                    state.statusLoginDiscord = EActionStatus.Succeeded;
+                }
             }
         );
         builder.addCase(loginWallet.rejected, (state: IAuthState, action) => {
@@ -174,8 +226,12 @@ const authSlice = createSlice({
 export const {
     signOutTelegram,
     signOutWallet,
+    signOutTwitter,
+    signOutDiscord,
     resetStatusLoginTele,
     resetStatusLoginWallet,
+    resetStatusLoginTwitter,
+    resetStatusLoginDiscord,
     updateSignature,
     setOpenModalInviteBlocker
 } = authSlice.actions;

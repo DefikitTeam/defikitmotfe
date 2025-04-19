@@ -6,9 +6,13 @@ export interface IAuthState {
     signature: string | null;
     statusLoginWallet: EActionStatus;
     statusLoginTele: EActionStatus;
+    statusLoginTwitter: EActionStatus;
+    statusLoginDiscord: EActionStatus;
     userInfo: IDataUserLoginResponse | null;
     userTele: ILoginTeleResponse | null;
     userWallet: ILoginWalletResponse | null;
+    userTwitter: ILoginTwitterResponse | null;
+    userDiscord: ILoginDiscordResponse | null;
     accessToken: string | null;
     refreshToken: string | null;
     openModalInviteBlocker: boolean;
@@ -36,12 +40,21 @@ export interface ILoginRequest {
         signature: string | null;
         refId: string | null;
     };
-    // twitter?: {
-    //     twitterId: string;
-    //     twitterUsername: string;
-    //     twitterName: string;
-    //     twitterProfileImage: string;
-    // };
+    twitter?: {
+        twitterId: string | null;
+        twitterUsername: string | null;
+        twitterName: string | null;
+        twitterProfileImage: string | null;
+    };
+    discord?: {
+        discordId: string | null;
+        discordUsername: string | null;
+        discordEmail: string | null;
+        discordAvatar: string | null;
+        verified: boolean | null;
+        globalName: string | null;
+        locale: string | null;
+    };
     referralCode: string;
 }
 
@@ -49,6 +62,8 @@ export interface ILoginResponse {
     user?: IDataUserLoginResponse | null;
     tele?: ILoginTeleResponse | null;
     wallet?: ILoginWalletResponse | null;
+    twitter?: ILoginTwitterResponse | null;
+    discord?: ILoginDiscordResponse | null;
     accessToken: string | null;
     refreshToken: string | null;
 }
@@ -77,6 +92,20 @@ export interface ILoginWalletResponse {
     message: string | null;
     signature: string | null;
     refId: string | null;
+}
+
+export interface ILoginTwitterResponse {
+    twitterId: string | null;
+    twitterUsername: string | null;
+    twitterName: string | null;
+    twitterProfileImage: string | null;
+}
+
+export interface ILoginDiscordResponse {
+    discordId: string | null;
+    discordUsername: string | null;
+    discordEmail: string | null;
+    discordAvatar: string | null;
 }
 
 export interface ISignature {

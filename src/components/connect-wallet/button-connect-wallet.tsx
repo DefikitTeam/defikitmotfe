@@ -15,6 +15,7 @@ import XLoginButton from '../XLoginButton';
 import ConnectButtonWagmi from './connect-button-wagmi';
 
 import { UserOutlined } from '@ant-design/icons';
+import DiscordLoginButton from '../discord-login-button';
 
 const ButtonConnectWallet = () => {
     const t = useTranslations();
@@ -29,7 +30,12 @@ const ButtonConnectWallet = () => {
         logoutTelegramAction,
         logoutWalletAction,
         resetStatusLoginTeleAction,
-        resetStatusLoginWalletAction
+        resetStatusLoginWalletAction,
+        resetStatusLoginDiscordAction,
+        resetStatusLoginTwitterAction,
+        logoutDiscordAction,
+        logoutTwitterAction,
+
     } = useAuthLogin();
 
     let botName = 'MotherOfTokensMonadBot';
@@ -63,7 +69,7 @@ const ButtonConnectWallet = () => {
     useEffect(() => {
         (async () => {
             if (
-                authState.statusLoginWallet === EActionStatus.Succeeded &&
+                authState.statusLoginWallet === EActionStatus.Succeeded && authState.statusLoginDiscord === EActionStatus.Idle && authState.statusLoginTele === EActionStatus.Idle && authState.statusLoginTwitter === EActionStatus.Idle && 
                 authState.userWallet?.address === address
             ) {
                 await openNotification({
@@ -109,13 +115,60 @@ const ButtonConnectWallet = () => {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 resetStatusLoginTeleAction();
             }
+            if(authState.statusLoginDiscord === EActionStatus.Failed) {
+                if(authState.errorMessage) {
+                    await openNotification({
+                        message: authState.errorMessage,
+                        placement: 'topRight',
+                        type: 'error'
+                    });
+                }
+                logoutDiscordAction();
+            }
+
+            if(authState.statusLoginDiscord === EActionStatus.Succeeded && authState.userDiscord) {
+                await openNotification({
+                    message: t('LOGIN_DISCORD_SUCCESSFULLY'),
+                    placement: 'topRight',
+                    type: 'success'
+                });
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                resetStatusLoginDiscordAction();
+            }
+
+
+            if(authState.statusLoginTwitter === EActionStatus.Failed) {
+                if(authState.errorMessage) {
+                    await openNotification({
+                        message: authState.errorMessage,
+                        placement: 'topRight',
+                        type: 'error'
+                    });
+                }
+                logoutTwitterAction();
+            }
+
+            if(authState.statusLoginTwitter === EActionStatus.Succeeded && authState.userTwitter) {
+                await openNotification({
+                    message: t('LOGIN_TWITTER_SUCCESSFULLY'),
+                    placement: 'topRight',
+                    type: 'success'
+                });
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                resetStatusLoginTwitterAction();
+            }
+
         })();
-    }, [authState.statusLoginWallet, authState.statusLoginTele]);
+    }, [authState.statusLoginWallet, authState.statusLoginTele, authState.statusLoginDiscord, authState.statusLoginTwitter]);
 
     const socialItems = [
         {
             key: 'twitter',
             label: <XLoginButton />
+        },
+        {
+            key: 'discord',
+            label: <DiscordLoginButton />
         },
         {
             key: 'telegram',
@@ -151,27 +204,30 @@ const ButtonConnectWallet = () => {
             </div>
 
             {/* Social login dropdown on the right */}
-            <div className="flex-shrink-0">
-                <Dropdown
-                    menu={{ items: socialItems }}
-                    trigger={['hover']}
-                    placement="bottomRight"
-                    dropdownRender={dropdownRender}
-                    overlayStyle={{
-                        animationDuration: '0.2s',
-                        animationTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)'
-                    }}
-                >
-                    <button className="hover:border-primary-500 hover:text-primary-500 flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 transition-all duration-200 hover:shadow-sm">
-                        <UserOutlined className="text-lg" />
-                        <span
-                            className={`${isMobile ? 'text-sm' : 'text-base'} !font-forza`}
-                        >
-                            Social Login
-                        </span>
-                    </button>
-                </Dropdown>
-            </div>
+            {authState.userInfo?.connectedWallet && (
+                <div className="flex-shrink-0">
+                    <Dropdown
+                        menu={{ items: socialItems }}
+                        trigger={['hover']}
+                        placement="bottomRight"
+                        dropdownRender={dropdownRender}
+                        overlayStyle={{
+                            animationDuration: '0.2s',
+                            animationTimingFunction:
+                                'cubic-bezier(0.4, 0, 0.2, 1)'
+                        }}
+                    >
+                        <button className="hover:border-primary-500 hover:text-primary-500 flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 transition-all duration-200 hover:shadow-sm">
+                            <UserOutlined className="text-lg" />
+                            <span
+                                className={`${isMobile ? 'text-sm' : 'text-base'} !font-forza`}
+                            >
+                                Social Login
+                            </span>
+                        </button>
+                    </Dropdown>
+                </div>
+            )}
         </div>
     );
 };
