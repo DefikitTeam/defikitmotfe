@@ -70,17 +70,18 @@ const ConnectButtonWagmi = () => {
                     });
 
                     const refIdFromStorage = await servicePool.getReferId();
-                    const loginWalletData: ILoginRequest = {
-                        wallet: {
-                            chainId: chainConfig?.chainId!,
-                            address: address as `0x${string}`,
-                            message: message,
-                            signature: signature,
+                    const walletData = {
+                        chainId: chainConfig?.chainId!,
+                        address: address as `0x${string}`,
+                        message: message,
+                        signature: signature,
 
-                            refId: refIdFromStorage
-                                ? refIdFromStorage.refId
-                                : ''
-                        },
+                        refId: refIdFromStorage ? refIdFromStorage.refId : ''
+                    };
+
+
+                    const loginWalletData: ILoginRequest = {
+                        wallet: walletData,
                         referralCode: refCode ? refCode : ''
                     };
                     loginAction(loginWalletData);

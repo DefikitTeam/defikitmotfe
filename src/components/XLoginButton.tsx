@@ -5,6 +5,7 @@ import { LogoutOutlined } from '@ant-design/icons';
 import { Button, Spin } from 'antd';
 import Image from 'next/image';
 import { FC, useEffect } from 'react';
+import { useAuthLogin } from '../stores/auth/hook';
 
 export const XLoginButton: FC = () => {
     const {
@@ -16,12 +17,27 @@ export const XLoginButton: FC = () => {
         handleLogout
     } = useAuthTwitterLogin();
 
+
+    const {
+        authState,
+        logoutTwitterAction,
+        resetStatusLoginTwitterAction
+    } = useAuthLogin();
+
+
+
     // Listen for messages from popup
     useEffect(() => {
         window.addEventListener('message', handleTwitterCallback);
         return () =>
             window.removeEventListener('message', handleTwitterCallback);
     }, [handleTwitterCallback]);
+
+    const handleClickLogoutTwitter = ()=> {
+        logoutTwitterAction();
+        resetStatusLoginTwitterAction();
+        handleLogout()
+    }
 
     if (isLoading) {
         return (
@@ -54,7 +70,7 @@ export const XLoginButton: FC = () => {
         );
     }
 
-    if (twitterUser) {
+    if (twitterUser && authState.userWallet && !authState.userTwitter) {
         return (
             <div className="group relative w-full">
                 <div className="flex w-full items-center justify-between rounded-lg p-2 transition-all duration-200 hover:bg-gray-50">
@@ -74,7 +90,7 @@ export const XLoginButton: FC = () => {
                         </div>
                     </div>
                     <button
-                        onClick={handleLogout}
+                        onClick={handleClickLogoutTwitter}
                         className="flex items-center gap-1 rounded px-2 py-1 text-xs text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
                     >
                         <LogoutOutlined className="text-xs" />

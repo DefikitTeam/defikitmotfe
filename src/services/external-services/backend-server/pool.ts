@@ -339,10 +339,10 @@ const servicePool = {
                 `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}/social-score`
             );
         } catch (error) {
-            console.log(
-                '======= get social score info to server error: ',
-                error
-            );
+            // console.log(
+            //     '======= get social score info to server error: ',
+            //     error
+            // );
         }
         if (res && res.status === 200) {
             return res.data;
