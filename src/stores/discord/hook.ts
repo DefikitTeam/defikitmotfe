@@ -11,6 +11,7 @@ type AuthDiscordLoginType = {
     error: string | null;
     discordUser: DiscordUser | null;
     handleDiscordCallback: (event: MessageEvent) => void;
+    handleDiscordVerify: (event: MessageEvent) => void;
     handleDiscordLogin: () => void;
     handleLogout: () => void;
 };
@@ -52,16 +53,18 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
 
     const handleDiscordCallback = useCallback(
         (event: MessageEvent) => {
-            // Chấp nhận message từ cả API endpoint
+            // Accept messages from API endpoint
             if (
                 event.origin === NEXT_PUBLIC_API_ENDPOINT ||
                 event.origin === 'http://localhost:4000'
             ) {
                 const data = event.data;
 
+                // Handle login callback
                 if (data.success && data.discord) {
                     dispatch(setDiscordUser(data.discord));
                     dispatch(setLoading(false));
+                   
                 } else if (data.error) {
                     dispatch(setError(data.error));
                     dispatch(setLoading(false));
@@ -73,8 +76,49 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
                 );
             }
         },
-        [dispatch]
+        [dispatch, discordUser, cleanupPopup]
     );
+
+    const handleDiscordVerify = useCallback(
+        (event: MessageEvent) => {
+            // Accept messages from API endpoint
+            if (
+                event.origin === NEXT_PUBLIC_API_ENDPOINT ||
+                event.origin === 'http://localhost:4000'
+            ) {
+                const data = event.data;
+
+                // Handle verify callback
+                if (data.success && data.discord) {
+                    dispatch(setDiscordUser({
+                        ...discordUser!,
+                        verified: 'true'
+                    }));
+                    dispatch(setLoading(false));
+                    // Send message to parent window to open Discord link
+                    // window.opener?.postMessage({
+                    //     type: 'OPEN_DISCORD_INVITE',
+                    //     url: 'https://discord.gg/NJYkdvPZ'
+                    // }, '*');
+
+
+                    cleanupPopup();
+                } else if (data.error) {
+                    dispatch(setError(data.error));
+                    dispatch(setLoading(false));
+                }
+
+            } else {
+                console.warn(
+                    'Received message from unexpected origin:',
+                    event.origin
+                );
+            }
+        },
+        [dispatch, discordUser, cleanupPopup]
+    );
+
+
 
     useEffect(() => {
         window.addEventListener('message', handleDiscordCallback);
@@ -162,6 +206,7 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
         error,
         discordUser,
         handleDiscordCallback,
+        handleDiscordVerify,
         handleDiscordLogin,
         handleLogout
     };

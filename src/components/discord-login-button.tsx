@@ -1,14 +1,14 @@
 /* eslint-disable */
+import { LogoutOutlined } from '@ant-design/icons';
+import { Button, Spin } from 'antd';
 import axios from 'axios';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { NEXT_PUBLIC_API_ENDPOINT } from '../common/web3/constants/env';
-import { useAuthDiscordLogin } from '../stores/discord/hook';
-import { useEffect } from 'react';
-import { Button, Spin } from 'antd';
-import { LogoutOutlined } from '@ant-design/icons';
+import { REFCODE_INFO_STORAGE_KEY } from '../services/external-services/backend-server/auth';
 import { useAuthLogin } from '../stores/auth/hook';
 import { ILoginRequest } from '../stores/auth/type';
-import { REFCODE_INFO_STORAGE_KEY } from '../services/external-services/backend-server/auth';
+import { useAuthDiscordLogin } from '../stores/discord/hook';
 
 const DiscordLoginButton = () => {
     const {
@@ -16,6 +16,7 @@ const DiscordLoginButton = () => {
         error,
         discordUser,
         handleDiscordCallback,
+        handleDiscordVerify,
         // handleDiscordLogin,
         handleLogout
     } = useAuthDiscordLogin();
@@ -31,6 +32,7 @@ const DiscordLoginButton = () => {
         logoutDiscordAction,
         resetStatusLoginDiscordAction
     } = useAuthLogin();
+
 
     useEffect(() => {
         if (discordUser && authState.userWallet && !authState.userDiscord) {
@@ -64,11 +66,21 @@ const DiscordLoginButton = () => {
             window.removeEventListener('message', handleDiscordCallback);
     }, [handleDiscordCallback]);
 
+    useEffect(() => {
+        window.addEventListener('message', handleDiscordVerify);
+        return () =>
+            window.removeEventListener('message', handleDiscordVerify);
+    }, [handleDiscordVerify]);
+
+
+    useEffect(() => {
+        console.log('Discord user:', discordUser);
+        console.log('Verification status:', discordUser?.verified);
+    }, [discordUser?.verified]);
 
 
 
-
-    const handleClickLogoutDiscord = ()=> {
+    const handleClickLogoutDiscord = () => {
         logoutDiscordAction();
         // resetStatusLoginDiscordAction();
         handleLogout()
@@ -88,6 +100,30 @@ const DiscordLoginButton = () => {
         } catch (error) {
             console.error('Failed to login with Discord:', error);
         }
+    };
+
+
+
+
+
+    const handleVerifyDiscord = async () => {
+        try {
+            const response = await axios.get(
+                `${NEXT_PUBLIC_API_ENDPOINT}/auth/discord/verify/url`
+            );
+            const data = response.data;
+            const popup = window.open(
+                data.url,
+                'Discord Verify',
+                'width=600,height=700'
+            );
+        } catch (error) {
+            console.error('Failed to verify Discord:', error);
+        }
+    };
+
+    const handleJoinDiscord = () => {
+        window.open('https://discord.gg/NJYkdvPZ', '_blank', 'noopener,noreferrer');
     };
 
     if (isLoading) {
@@ -139,14 +175,34 @@ const DiscordLoginButton = () => {
                                         discordUser.discordUsername}
                                 </span>
                                 {discordUser.verified === 'true' && (
-                                    <svg
-                                        className="h-3.5 w-3.5 text-blue-500"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg"
+                                    <>
+                                        <svg
+                                            className="h-3.5 w-3.5 text-blue-500"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                                        </svg>
+                                        <Button
+                                            onClick={handleJoinDiscord}
+                                            type="primary"
+                                            size="small"
+                                            className="ml-2 flex items-center gap-1 bg-[#5865F2] text-xs hover:bg-[#4752C4]"
+                                        >
+                                            Join Discord
+                                        </Button>
+                                    </>
+                                )}
+                                {discordUser.verified === 'false' && (
+                                    <Button
+                                        onClick={handleVerifyDiscord}
+                                        type="primary"
+                                        size="small"
+                                        className="ml-2 flex items-center gap-1 bg-blue-500 text-xs hover:bg-blue-600"
                                     >
-                                        <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-                                    </svg>
+                                        Verify
+                                    </Button>
                                 )}
                             </div>
                             <span className="text-xs text-gray-500">
