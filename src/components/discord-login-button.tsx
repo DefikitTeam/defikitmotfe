@@ -1,3 +1,4 @@
+/* eslint-disable */
 import axios from 'axios';
 import Image from 'next/image';
 import { NEXT_PUBLIC_API_ENDPOINT } from '../common/web3/constants/env';

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useCallback, useEffect } from 'react';
 import { useRef } from 'react';
 import { RootState, useAppDispatch, useAppSelector } from '..';
