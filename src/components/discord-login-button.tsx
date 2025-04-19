@@ -73,10 +73,10 @@ const DiscordLoginButton = () => {
     }, [handleDiscordVerify]);
 
 
-    useEffect(() => {
-        console.log('Discord user:', discordUser);
-        console.log('Verification status:', discordUser?.verified);
-    }, [discordUser?.verified]);
+    // useEffect(() => {
+    //     console.log('Discord user:', discordUser);
+    //     console.log('Verification status:', discordUser?.verified);
+    // }, [discordUser?.verified]);
 
 
 

@@ -70,10 +70,10 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
                     dispatch(setLoading(false));
                 }
             } else {
-                console.warn(
-                    'Received message from unexpected origin:',
-                    event.origin
-                );
+                // console.warn(
+                //     'Received message from unexpected origin:',
+                //     event.origin
+                // );
             }
         },
         [dispatch, discordUser, cleanupPopup]
@@ -109,10 +109,10 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
                 }
 
             } else {
-                console.warn(
-                    'Received message from unexpected origin:',
-                    event.origin
-                );
+                // console.warn(
+                //     'Received message from unexpected origin:',
+                //     event.origin
+                // );
             }
         },
         [dispatch, discordUser, cleanupPopup]

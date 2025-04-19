@@ -67,10 +67,10 @@ export const useAuthTwitterLogin = (): AuthTwitterLoginType => {
                     dispatch(setLoading(false));
                 }
             } else {
-                console.warn(
-                    'Received message from unexpected origin:',
-                    event.origin
-                );
+                // console.warn(
+                //     'Received message from unexpected origin:',
+                //     event.origin
+                // );
             }
         },
         [dispatch]
