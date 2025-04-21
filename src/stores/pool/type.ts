@@ -184,6 +184,9 @@ export interface IDataDetailPoolFromServer {
 
     aiAgentId: string | null;
     aiAgentName: string | null;
+    isTwitterVerified: boolean | null;
+    verifiedTweetId: string | null;
+    verifiedTweetUrl: string | null;
 }
 export interface IDetailPoolResponseData {
     pool: IPoolDetail | undefined;

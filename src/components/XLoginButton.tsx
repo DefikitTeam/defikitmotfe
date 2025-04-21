@@ -17,14 +17,8 @@ export const XLoginButton: FC = () => {
         handleLogout
     } = useAuthTwitterLogin();
 
-
-    const {
-        authState,
-        logoutTwitterAction,
-        resetStatusLoginTwitterAction
-    } = useAuthLogin();
-
-
+    const { authState, logoutTwitterAction, resetStatusLoginTwitterAction } =
+        useAuthLogin();
 
     // Listen for messages from popup
     useEffect(() => {
@@ -33,11 +27,11 @@ export const XLoginButton: FC = () => {
             window.removeEventListener('message', handleTwitterCallback);
     }, [handleTwitterCallback]);
 
-    const handleClickLogoutTwitter = ()=> {
+    const handleClickLogoutTwitter = () => {
         logoutTwitterAction();
         resetStatusLoginTwitterAction();
-        handleLogout()
-    }
+        handleLogout();
+    };
 
     if (isLoading) {
         return (

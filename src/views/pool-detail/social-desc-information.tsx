@@ -30,7 +30,8 @@ const SocialDescInformation = () => {
         setOpenModalSocialScoreAction
     ] = usePoolDetail();
 
-    const { metaDataInfo, socialScoreInfo } = poolStateDetail;
+    const { metaDataInfo, socialScoreInfo, dataDetailPoolFromServer } =
+        poolStateDetail;
     const { isConnected, address } = useAccount();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
@@ -264,7 +265,8 @@ const SocialDescInformation = () => {
                 poolAddress,
                 address,
                 signature,
-                message
+                message,
+                poolStateDetail.pool?.owner
             );
 
             if (resData && resData.status === 'success') {
@@ -319,7 +321,9 @@ const SocialDescInformation = () => {
         if (
             isConnected &&
             address &&
-            address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()
+            address.toLowerCase() ===
+                poolStateDetail.pool?.owner?.toLowerCase() &&
+            !dataDetailPoolFromServer?.isTwitterVerified
         ) {
             const poolUrl = `${window.location.origin}${window.location.pathname}`;
             const twitterIntentUrl = generateTwitterIntentUrl(
@@ -327,6 +331,14 @@ const SocialDescInformation = () => {
                 poolUrl
             );
             window.open(twitterIntentUrl, '_blank', 'noopener,noreferrer');
+        } else if (
+            isConnected &&
+            address &&
+            address.toLowerCase() ===
+                poolStateDetail.pool?.owner?.toLowerCase() &&
+            dataDetailPoolFromServer?.isTwitterVerified
+        ) {
+            window.open(finalTwitterUrl, '_blank', 'noopener,noreferrer');
         } else {
             notification.error({
                 message: 'Error',
@@ -339,13 +351,13 @@ const SocialDescInformation = () => {
     };
 
     const renderTwitterHighlight = () => {
-        if (
-            !isConnected ||
-            !address ||
-            address.toLowerCase() !== poolStateDetail.pool?.owner?.toLowerCase()
-        ) {
-            return null;
-        }
+        // if (
+        //     !isConnected ||
+        //     !address ||
+        //     address.toLowerCase() !== poolStateDetail.pool?.owner?.toLowerCase()
+        // ) {
+        //     return null;
+        // }
 
         if (!finalTwitterUrl) {
             return (
@@ -369,6 +381,10 @@ const SocialDescInformation = () => {
             );
         }
 
+        // if (finalTwitterUrl) {
+
+        // }
+
         return (
             <div className="group relative">
                 <div
@@ -376,8 +392,9 @@ const SocialDescInformation = () => {
                 ></div>
                 <Tooltip
                     title={
-                        address.toLowerCase() ===
-                        poolStateDetail.pool?.owner?.toLowerCase() ? (
+                        address?.toLowerCase() ===
+                            poolStateDetail.pool?.owner?.toLowerCase() &&
+                        !dataDetailPoolFromServer?.isTwitterVerified ? (
                             <div className="!font-forza">
                                 <p>Click to share on Twitter</p>
                                 <p className="text-yellow-300">

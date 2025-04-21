@@ -48,14 +48,6 @@ const ConnectButtonWagmi = () => {
     };
 
     useEffect(() => {
-        // if(!show || !address || hasAttemptedSignature) return;
-
-        // const isMetaMaskBrowser = /MetaMask/i.test(navigator.userAgent);
-        // if (isMetaMaskBrowser) {
-        //     console.log('chay vao metamask');
-        //     return;
-        // }
-
         const handleSignMessage = async () => {
             if (!authState.userWallet) {
                 const message = address as `0x${string}`;
@@ -78,7 +70,6 @@ const ConnectButtonWagmi = () => {
 
                         refId: refIdFromStorage ? refIdFromStorage.refId : ''
                     };
-
 
                     const loginWalletData: ILoginRequest = {
                         wallet: walletData,

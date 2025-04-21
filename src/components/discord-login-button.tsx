@@ -21,7 +21,6 @@ const DiscordLoginButton = () => {
         handleLogout
     } = useAuthDiscordLogin();
 
-
     const {
         authState,
         loginAction,
@@ -32,7 +31,6 @@ const DiscordLoginButton = () => {
         logoutDiscordAction,
         resetStatusLoginDiscordAction
     } = useAuthLogin();
-
 
     useEffect(() => {
         if (discordUser && authState.userWallet && !authState.userDiscord) {
@@ -68,23 +66,14 @@ const DiscordLoginButton = () => {
 
     useEffect(() => {
         window.addEventListener('message', handleDiscordVerify);
-        return () =>
-            window.removeEventListener('message', handleDiscordVerify);
+        return () => window.removeEventListener('message', handleDiscordVerify);
     }, [handleDiscordVerify]);
-
-
-    // useEffect(() => {
-    //     console.log('Discord user:', discordUser);
-    //     console.log('Verification status:', discordUser?.verified);
-    // }, [discordUser?.verified]);
-
-
 
     const handleClickLogoutDiscord = () => {
         logoutDiscordAction();
         // resetStatusLoginDiscordAction();
-        handleLogout()
-    }
+        handleLogout();
+    };
     const handleDiscordLogin = async () => {
         try {
             const response = await axios.get(
@@ -101,10 +90,6 @@ const DiscordLoginButton = () => {
             console.error('Failed to login with Discord:', error);
         }
     };
-
-
-
-
 
     const handleVerifyDiscord = async () => {
         try {
@@ -123,7 +108,11 @@ const DiscordLoginButton = () => {
     };
 
     const handleJoinDiscord = () => {
-        window.open('https://discord.gg/NJYkdvPZ', '_blank', 'noopener,noreferrer');
+        window.open(
+            'https://discord.gg/NJYkdvPZ',
+            '_blank',
+            'noopener,noreferrer'
+        );
     };
 
     if (isLoading) {

@@ -61,6 +61,7 @@ const PoolDetail = () => {
         metaDataInfo,
         dataDetailPoolFromServer
     } = poolStateDetail;
+
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
     const { address } = useAccount();

@@ -64,7 +64,6 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
                 if (data.success && data.discord) {
                     dispatch(setDiscordUser(data.discord));
                     dispatch(setLoading(false));
-                   
                 } else if (data.error) {
                     dispatch(setError(data.error));
                     dispatch(setLoading(false));
@@ -90,10 +89,12 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
 
                 // Handle verify callback
                 if (data.success && data.discord) {
-                    dispatch(setDiscordUser({
-                        ...discordUser!,
-                        verified: 'true'
-                    }));
+                    dispatch(
+                        setDiscordUser({
+                            ...discordUser!,
+                            verified: 'true'
+                        })
+                    );
                     dispatch(setLoading(false));
                     // Send message to parent window to open Discord link
                     // window.opener?.postMessage({
@@ -101,13 +102,11 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
                     //     url: 'https://discord.gg/NJYkdvPZ'
                     // }, '*');
 
-
                     cleanupPopup();
                 } else if (data.error) {
                     dispatch(setError(data.error));
                     dispatch(setLoading(false));
                 }
-
             } else {
                 // console.warn(
                 //     'Received message from unexpected origin:',
@@ -117,8 +116,6 @@ export const useAuthDiscordLogin = (): AuthDiscordLoginType => {
         },
         [dispatch, discordUser, cleanupPopup]
     );
-
-
 
     useEffect(() => {
         window.addEventListener('message', handleDiscordCallback);

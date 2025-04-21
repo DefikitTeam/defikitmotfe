@@ -34,8 +34,7 @@ const ButtonConnectWallet = () => {
         resetStatusLoginDiscordAction,
         resetStatusLoginTwitterAction,
         logoutDiscordAction,
-        logoutTwitterAction,
-
+        logoutTwitterAction
     } = useAuthLogin();
 
     let botName = 'MotherOfTokensMonadBot';
@@ -69,7 +68,10 @@ const ButtonConnectWallet = () => {
     useEffect(() => {
         (async () => {
             if (
-                authState.statusLoginWallet === EActionStatus.Succeeded && authState.statusLoginDiscord === EActionStatus.Idle && authState.statusLoginTele === EActionStatus.Idle && authState.statusLoginTwitter === EActionStatus.Idle && 
+                authState.statusLoginWallet === EActionStatus.Succeeded &&
+                authState.statusLoginDiscord === EActionStatus.Idle &&
+                authState.statusLoginTele === EActionStatus.Idle &&
+                authState.statusLoginTwitter === EActionStatus.Idle &&
                 authState.userWallet?.address === address
             ) {
                 await openNotification({
@@ -115,8 +117,8 @@ const ButtonConnectWallet = () => {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 resetStatusLoginTeleAction();
             }
-            if(authState.statusLoginDiscord === EActionStatus.Failed) {
-                if(authState.errorMessage) {
+            if (authState.statusLoginDiscord === EActionStatus.Failed) {
+                if (authState.errorMessage) {
                     await openNotification({
                         message: authState.errorMessage,
                         placement: 'topRight',
@@ -126,7 +128,10 @@ const ButtonConnectWallet = () => {
                 logoutDiscordAction();
             }
 
-            if(authState.statusLoginDiscord === EActionStatus.Succeeded && authState.userDiscord) {
+            if (
+                authState.statusLoginDiscord === EActionStatus.Succeeded &&
+                authState.userDiscord
+            ) {
                 await openNotification({
                     message: t('LOGIN_DISCORD_SUCCESSFULLY'),
                     placement: 'topRight',
@@ -136,9 +141,8 @@ const ButtonConnectWallet = () => {
                 resetStatusLoginDiscordAction();
             }
 
-
-            if(authState.statusLoginTwitter === EActionStatus.Failed) {
-                if(authState.errorMessage) {
+            if (authState.statusLoginTwitter === EActionStatus.Failed) {
+                if (authState.errorMessage) {
                     await openNotification({
                         message: authState.errorMessage,
                         placement: 'topRight',
@@ -148,7 +152,10 @@ const ButtonConnectWallet = () => {
                 logoutTwitterAction();
             }
 
-            if(authState.statusLoginTwitter === EActionStatus.Succeeded && authState.userTwitter) {
+            if (
+                authState.statusLoginTwitter === EActionStatus.Succeeded &&
+                authState.userTwitter
+            ) {
                 await openNotification({
                     message: t('LOGIN_TWITTER_SUCCESSFULLY'),
                     placement: 'topRight',
@@ -157,9 +164,13 @@ const ButtonConnectWallet = () => {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 resetStatusLoginTwitterAction();
             }
-
         })();
-    }, [authState.statusLoginWallet, authState.statusLoginTele, authState.statusLoginDiscord, authState.statusLoginTwitter]);
+    }, [
+        authState.statusLoginWallet,
+        authState.statusLoginTele,
+        authState.statusLoginDiscord,
+        authState.statusLoginTwitter
+    ]);
 
     const socialItems = [
         {

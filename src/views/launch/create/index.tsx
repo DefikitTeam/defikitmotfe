@@ -304,7 +304,8 @@ const CreateLaunch = () => {
                 await serviceUpload.uploadMetadataToServerWithoutAddress(
                     metadataPayload,
                     chainConfig?.chainId.toString()!,
-                    signature
+                    signature,
+                    address as `0x${string}`
                 );
 
             let metaDataLink: string = '';
