@@ -6,6 +6,8 @@ import { Button, Spin } from 'antd';
 import Image from 'next/image';
 import { FC, useEffect } from 'react';
 import { useAuthLogin } from '../stores/auth/hook';
+import { ILoginRequest } from '../stores/auth/type';
+import { REFCODE_INFO_STORAGE_KEY } from '../services/external-services/backend-server/auth';
 
 export const XLoginButton: FC = () => {
     const {
@@ -17,8 +19,31 @@ export const XLoginButton: FC = () => {
         handleLogout
     } = useAuthTwitterLogin();
 
-    const { authState, logoutTwitterAction, resetStatusLoginTwitterAction } =
+    const { authState, loginAction, logoutTwitterAction, resetStatusLoginTwitterAction } =
         useAuthLogin();
+
+    useEffect(()=> {
+
+        if(twitterUser && authState.userWallet && !authState.userTwitter){
+            // Get the shared wallet data if available
+            const refCode = localStorage
+                .getItem(REFCODE_INFO_STORAGE_KEY)
+                ?.replace(/"/g, '');
+            const loginTwitterData: ILoginRequest = {
+                wallet: authState.userWallet!,
+                twitter: {
+                    twitterId: twitterUser.twitterId,
+                    twitterUsername: twitterUser.twitterUsername,
+                    twitterName: twitterUser.twitterName,
+                    twitterProfileImage: twitterUser.twitterProfileImage,
+                },
+                referralCode: refCode ? refCode : ''
+            };
+
+            // Use the login action to submit the data
+            loginAction(loginTwitterData);
+        }
+    }, [twitterUser, authState.userWallet, authState.userTwitter])    
 
     // Listen for messages from popup
     useEffect(() => {
@@ -29,7 +54,7 @@ export const XLoginButton: FC = () => {
 
     const handleClickLogoutTwitter = () => {
         logoutTwitterAction();
-        resetStatusLoginTwitterAction();
+        // resetStatusLoginTwitterAction();
         handleLogout();
     };
 
@@ -64,7 +89,7 @@ export const XLoginButton: FC = () => {
         );
     }
 
-    if (twitterUser && authState.userWallet && !authState.userTwitter) {
+    if (twitterUser && authState.userWallet && authState.userTwitter) {
         return (
             <div className="group relative w-full">
                 <div className="flex w-full items-center justify-between rounded-lg p-2 transition-all duration-200 hover:bg-gray-50">
