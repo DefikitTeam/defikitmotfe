@@ -7,9 +7,7 @@ import Loader from '@/src/components/loader';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import serviceAuth, {
-    REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { useInviteListReferPortfolio } from '@/src/stores/invite-code/hook';
@@ -23,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import SellToken from './sell-token';
 import Statistical from './statistical';
+import TaskList from './task-list';
 
 const Portfolio = () => {
     const { isMobile } = useWindowSize();
@@ -84,22 +83,6 @@ const Portfolio = () => {
     const { value: refCodeExisted, setValue: setRefCodeExisted } =
         useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
-    // useEffect(() => {
-    //     if (
-    //         Boolean(authState.userInfo?.connectedWallet) &&
-    //         Boolean(address) &&
-    //         authState.userInfo?.connectedWallet === address
-    //     ) {
-    //         setOpenModalInviteBlocker(false);
-    //         return;
-    //     }
-
-    //     if (!refCodeExisted) {
-    //         setOpenModalInviteBlocker(true);
-    //         disconnect();
-    //     }
-    // }, [refCodeExisted]);
-
     useEffect(() => {
         if (!(address as `0x${string}`) || !chainId) {
             notification.error({
@@ -154,7 +137,6 @@ const Portfolio = () => {
                             md={isAddressDifferent ? 24 : 16}
                             xl={isAddressDifferent ? 24 : 16}
                         >
-                            {/* <div className="max-h-[80vh] overflow-y-auto overflow-x-hidden px-2"> */}
                             <div className=" overflow-y-auto overflow-x-hidden px-2">
                                 <Statistical />
                             </div>
@@ -168,30 +150,21 @@ const Portfolio = () => {
                                 md={8}
                                 xl={8}
                             >
-                                <SellToken />
+                                {isMobile? (
+                                    <>
+                                    <SellToken />
+                                    <TaskList />
+                                    
+                                    </>
+                                ): (
+                                    <>
+                                    <TaskList />
+                                    <SellToken />
+
+                                    </>
+                                )}
                             </Col>
                         )}
-                        {/* <Col
-                            span={8}
-                            xs={24}
-                            sm={8}
-                            lg={8}
-                            md={8}
-                            xl={8}
-                        >
-                            <YourFriend />
-                        </Col> */}
-
-                        {/* <Col
-                            span={8}
-                            xs={24}
-                            sm={8}
-                            lg={8}
-                            md={8}
-                            xl={8}
-                        >
-                            <ListRefer />
-                        </Col> */}
                     </Row>
                 </div>
             </div>
