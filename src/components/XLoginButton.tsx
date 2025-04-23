@@ -1,13 +1,15 @@
+/* eslint-disable */
 'use client';
+
 
 import { useAuthTwitterLogin } from '@/src/stores/Twitter/hook';
 import { LogoutOutlined } from '@ant-design/icons';
 import { Button, Spin } from 'antd';
 import Image from 'next/image';
 import { FC, useEffect } from 'react';
+import { REFCODE_INFO_STORAGE_KEY } from '../services/external-services/backend-server/auth';
 import { useAuthLogin } from '../stores/auth/hook';
 import { ILoginRequest } from '../stores/auth/type';
-import { REFCODE_INFO_STORAGE_KEY } from '../services/external-services/backend-server/auth';
 
 export const XLoginButton: FC = () => {
     const {
@@ -19,12 +21,15 @@ export const XLoginButton: FC = () => {
         handleLogout
     } = useAuthTwitterLogin();
 
-    const { authState, loginAction, logoutTwitterAction, resetStatusLoginTwitterAction } =
-        useAuthLogin();
+    const {
+        authState,
+        loginAction,
+        logoutTwitterAction,
+        resetStatusLoginTwitterAction
+    } = useAuthLogin();
 
-    useEffect(()=> {
-
-        if(twitterUser && authState.userWallet && !authState.userTwitter){
+    useEffect(() => {
+        if (twitterUser && authState.userWallet && !authState.userTwitter) {
             // Get the shared wallet data if available
             const refCode = localStorage
                 .getItem(REFCODE_INFO_STORAGE_KEY)
@@ -35,7 +40,7 @@ export const XLoginButton: FC = () => {
                     twitterId: twitterUser.twitterId,
                     twitterUsername: twitterUser.twitterUsername,
                     twitterName: twitterUser.twitterName,
-                    twitterProfileImage: twitterUser.twitterProfileImage,
+                    twitterProfileImage: twitterUser.twitterProfileImage
                 },
                 referralCode: refCode ? refCode : ''
             };
@@ -43,7 +48,7 @@ export const XLoginButton: FC = () => {
             // Use the login action to submit the data
             loginAction(loginTwitterData);
         }
-    }, [twitterUser, authState.userWallet, authState.userTwitter])    
+    }, [twitterUser, authState.userWallet, authState.userTwitter]);
 
     // Listen for messages from popup
     useEffect(() => {

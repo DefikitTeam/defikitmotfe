@@ -25,7 +25,10 @@ export const useConfig = () => {
                 contractKey: keyof ChainConfig['addresses']
             ) => config.getContractAddress(chainId, contractKey),
             getContractAbi: (chainId: number) => config.getContractAbi(chainId),
-
+            getTrustPointAbi: (chainId: number) =>
+                config.getTrustPointAbi(chainId),
+            getTrustPointAddress: (chainId: number) =>
+                config.getTrustPointAddress(chainId),
             // Network related getters
             getRpcUrl: (chainId: number) => config.getRpcUrl(chainId),
             getExplorer: (chainId: number) => config.getExplorer(chainId),

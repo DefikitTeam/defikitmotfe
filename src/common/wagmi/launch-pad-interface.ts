@@ -9,15 +9,15 @@ import { Abi, BaseError, ContractFunctionRevertedError } from 'viem';
 import { UseWriteContractReturnType } from 'wagmi';
 import { ChainId } from '../constant/constance';
 
-export interface ContractStruct {
+export interface ContractInfo {
     address: `0x${string}`;
     abi: Abi;
     chainId: ChainId;
 }
 
 export class LaunchPadInterface {
-    _contractStruct: ContractStruct;
-    constructor(contractStruct: ContractStruct) {
+    _contractStruct: ContractInfo;
+    constructor(contractStruct: ContractInfo) {
         this._contractStruct = contractStruct;
     }
 
@@ -482,16 +482,27 @@ export class LaunchPadInterface {
                     value: ethers.parseEther(amount)
                 });
             }
-
-            // await watcher.writeContractAsync({
-            //     ...this._contractStruct,
-            //     functionName: 'depositForLottery',
-            //     args: [poolAddress, ethers.parseEther(amount), referrer],
-            //     gasPrice: adjustedGasPrice,
-            //     value: ethers.parseEther(amount)
-            // });
         } catch (err) {
             this.handleErrors(err);
         }
+    }
+
+    async mintWithSignature(
+        watcher: UseWriteContractReturnType,
+        params: {
+            id: string;
+            signature: string | number;
+        }
+    ) {
+        const { id, signature } = params;
+        if (!id || !signature) {
+            throw new Error('Invalid params when call mintWithSignature');
+        }
+
+        await watcher.writeContractAsync({
+            ...this._contractStruct,
+            functionName: 'mintWithSignature',
+            args: [id, signature]
+        });
     }
 }

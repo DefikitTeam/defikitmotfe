@@ -421,7 +421,19 @@ const Statistical = () => {
                 </>
             )}
 
-            <div className="mb-2 mt-2 !font-forza text-lg font-bold">
+            {address && !isAddressDifferent && (
+                <>
+                    <div className="mb-2 mt-2 !font-forza text-lg font-bold">
+                        {t('INVITE_LIST_REFER')}
+                    </div>
+
+                    <div className="mb-2 mt-2">
+                        <ListRefer />
+                    </div>
+                </>
+            )}
+
+            <div className="mt-3 !font-forza text-lg font-bold">
                 {t('ASSET')}
             </div>
             <Spin
@@ -437,18 +449,6 @@ const Statistical = () => {
                     scroll={{ x: 300 }}
                 />
             </Spin>
-
-            {address && !isAddressDifferent && (
-                <>
-                    <div className="mt-3 !font-forza text-lg font-bold">
-                        {t('INVITE_LIST_REFER')}
-                    </div>
-
-                    <div className="mb-2 mt-2">
-                        <ListRefer />
-                    </div>
-                </>
-            )}
         </div>
     );
 };

@@ -3,11 +3,8 @@ import { ChainConfig, EnvironmentConfig } from '../type';
 export class ConfigService {
     private static instance: ConfigService;
     private currentConfig: EnvironmentConfig;
-    // private environment: Environment;d
 
     private constructor() {
-        // this.environment =
-        //     (NEXT_PUBLIC_ENVIRONMENT as Environment) || 'development';
         this.currentConfig = this.loadConfig();
     }
 
@@ -19,15 +16,7 @@ export class ConfigService {
     }
 
     private loadConfig(): EnvironmentConfig {
-        // switch (this.environment) {
-        //     case 'production':
-        //         return productionConfig;
-        //     case 'staging':
         return developmentConfig;
-        //     case 'development':
-        //     default:
-        //         return developmentConfig;
-        // }
     }
 
     getChainConfig(chainId: number): ChainConfig | undefined {
@@ -58,6 +47,14 @@ export class ConfigService {
         contractKey: keyof ChainConfig['addresses']
     ): string | undefined {
         return this.getChainConfig(chainId)?.addresses[contractKey];
+    }
+
+    getTrustPointAddress(chainId: number): string | undefined {
+        return this.getChainConfig(chainId)?.trustPointAddress;
+    }
+
+    getTrustPointAbi(chainId: number): any {
+        return this.getChainConfig(chainId)?.trustPointAbis;
     }
 
     getSubgraphUri(chainId: number): string | undefined {

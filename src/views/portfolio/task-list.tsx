@@ -1,150 +1,281 @@
+/* eslint-disable */
+
+import { useTrustPointCaller } from '@/src/hooks/useTrustPointCaller';
+import serviceTrustPoint from '@/src/services/external-services/backend-server/trust-point';
+import { useTrustPoint } from '@/src/stores/trust-point/hook';
+import { EActionStatus } from '@/src/stores/type';
+import { CheckCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
 import {
-    ArrowRightOutlined,
-    CalendarOutlined,
-    CheckCircleFilled,
-    CheckSquareOutlined,
-    LoginOutlined,
-    ShoppingCartOutlined
-} from '@ant-design/icons';
-import { Button, Card, List, Spin, Tag, Typography } from 'antd';
+    Button,
+    Card,
+    List,
+    notification,
+    Spin,
+    Tag,
+    Tooltip,
+    Typography
+} from 'antd';
 import { useTranslations } from 'next-intl';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const { Title, Text } = Typography;
 
 interface Task {
     id: number;
-    descriptionKey: string; 
+    multiplier: number;
+    description: string;
+    trustPointType: string;
     completed: boolean;
-    icon?: React.ReactNode;
-    actionUrl?: string; 
+    claimed: boolean;
+    reason: string;
 }
-
-const taskIcons: { [key: number]: React.ReactNode } = {
-    1: <LoginOutlined />,
-    4: <CalendarOutlined />,
-    5: <ShoppingCartOutlined />,
-    6: <ShoppingCartOutlined />,
-    14: <CheckSquareOutlined />
-};
-
-const initialTasks: Task[] = [
-    { id: 1, descriptionKey: 'TASK_LOGIN_X', completed: false, icon: taskIcons[1] },
-    { id: 4, descriptionKey: 'TASK_DAILY_LOGIN', completed: false, icon: taskIcons[4] },
-    { id: 5, descriptionKey: 'TASK_PURCHASE_10', completed: false, icon: taskIcons[5] },
-    { id: 6, descriptionKey: 'TASK_PURCHASE_20', completed: false, icon: taskIcons[6] },
-    { id: 14, descriptionKey: 'TASK_VERIFY_DISCORD', completed: false, icon: taskIcons[14] },
-];
 
 const TaskList = () => {
     const t = useTranslations();
-    const [tasks, setTasks] = useState<Task[]>(initialTasks);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [hoveredTaskId, setHoveredTaskId] = useState<number | null>(null);
+    const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
+    const [tokenIdProcessClaimed, setTokenIdProcessClaimed] =
+        useState<number>(0);
+
+    const { useMintWithSignature } = useTrustPointCaller();
+    const [loadingMintWithSignature, setLoadingMintWithSignature] =
+        useState<boolean>(false);
 
     useEffect(() => {
-        const fetchTaskStatus = async () => {
-            setLoading(true);
-            try {
-                // --- Placeholder for API call ---
-                // Example: const userTaskStatus = await yourApi.getUserTaskStatus();
-                // const updatedTasks = initialTasks.map(task => ({
-                //     ...task,
-                //     completed: userTaskStatus[task.id] ?? false,
-                // }));
-                // setTasks(updatedTasks);
-                // --- End Placeholder ---
+        if (useMintWithSignature.isLoadingInitMintWithSignature) {
+            notification.info({
+                message: 'Transaction in Progress',
+                description:
+                    'Please wait while your transaction is being processed.',
+                duration: 1.3,
+                showProgress: true
+            });
+        }
+    }, [useMintWithSignature.isLoadingInitMintWithSignature]);
 
-                // Mock delay and setting some tasks as completed for demonstration
-                await new Promise(resolve => setTimeout(resolve, 1200));
-                setTasks(prevTasks => prevTasks.map(task =>
-                    (task.id === 1 || task.id === 4) ? { ...task, completed: true } : task
-                ));
+    useEffect(() => {
+        if (useMintWithSignature.isLoadingAgreedMintWithSignature) {
+            setLoadingMintWithSignature(true);
+            notification.info({
+                message: 'Transaction in Progress',
+                description: 'Please wait while minting your token.',
+                duration: 2,
+                showProgress: true
+            });
+        }
+    }, [useMintWithSignature.isLoadingAgreedMintWithSignature]);
 
-            } catch (error) {
-                console.error("Failed to fetch task status:", error);
-            } finally {
-                setLoading(false);
+    useEffect(() => {
+        if (useMintWithSignature.isConfirmed) {
+            setLoadingMintWithSignature(false);
+            notification.success({
+                message: 'Transaction Success',
+                description: 'Minting token successfully.',
+                duration: 1.2,
+                showProgress: true
+            });
+            setTokenIdProcessClaimed(0);
+
+            getTrustPointStatusAction();
+        }
+    }, [useMintWithSignature.isConfirmed]);
+
+    useEffect(() => {
+        if (useMintWithSignature.isError) {
+            setLoadingMintWithSignature(false);
+            setTokenIdProcessClaimed(0);
+            notification.error({
+                message: 'Transaction Failed',
+                duration: 3,
+                showProgress: true
+            });
+        }
+    }, [useMintWithSignature.isError]);
+
+    useEffect(() => {
+        getTrustPointStatusAction();
+    }, []);
+
+    const handleClaimClick = async (task: Task) => {
+        console.log(`Claiming task ...`, task);
+        setLoadingMintWithSignature(true);
+        setTokenIdProcessClaimed(task.id);
+        try {
+            const signature = await serviceTrustPoint.getSignatureTrustPoint(
+                task.id
+            );
+            if (signature) {
+                await useMintWithSignature.actionAsync({
+                    id: task.id.toString(),
+                    signature: signature.data.signature.toString()
+                });
             }
-        };
-
-        fetchTaskStatus();
-    }, []); 
-
-    const handleGoClick = (task: Task) => {
-        console.log(`Navigating or performing action for task ${task.id}...`, task.actionUrl);
+        } catch (err: any) {
+            notification.error({
+                message: 'Error',
+                description: err?.shortMessage || err?.message || 'Error',
+                showProgress: true
+            });
+            setLoadingMintWithSignature(false);
+            setTokenIdProcessClaimed(0);
+        } finally {
+            setLoadingMintWithSignature(false);
+            setTokenIdProcessClaimed(0);
+        }
     };
 
     const listItemStyle = {
-        transition: 'background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease',
-        padding: '12px 16px',
+        transition: 'all 0.3s ease',
+        padding: '16px 20px',
         cursor: 'pointer',
+        borderRadius: '8px',
+        marginBottom: '8px',
+        backgroundColor: '#ffffff'
     };
 
     const listItemHoverStyle = {
-        backgroundColor: 'rgba(0, 0, 0, 0.07)', 
-        transform: 'scale(1.01)', 
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)', 
+        backgroundColor: '#f8f9fa',
+        transform: 'translateY(-2px)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+    };
+
+    const getStatusTag = (task: Task) => {
+        if (task.claimed) {
+            return (
+                <Tag
+                    icon={<CheckCircleFilled />}
+                    color="success"
+                    className="m-0 !px-3 !py-1 !font-forza !text-sm"
+                >
+                    {t('CLAIMED')}
+                </Tag>
+            );
+        }
+
+        if (task.completed) {
+            return (
+                <Spin
+                    spinning={
+                        tokenIdProcessClaimed === task.id &&
+                        loadingMintWithSignature
+                    }
+                    delay={0}
+                >
+                    <Button
+                        type="primary"
+                        size="small"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleClaimClick(task);
+                        }}
+                        disabled={
+                            tokenIdProcessClaimed !== 0 &&
+                            tokenIdProcessClaimed === task.id
+                        }
+                        className="!h-auto !border-none !bg-[#1677ff] !px-6 !py-1 !font-forza hover:!bg-[#4096ff]"
+                    >
+                        {t('CLAIM')}
+                    </Button>
+                </Spin>
+            );
+        }
+
+        // Show "Not Completed" tag for incomplete tasks
+        return (
+            <Tag className="m-0 !border-[#ffa39e] !bg-[#fff1f0] !px-3 !py-1 !font-forza !text-sm !text-[#cf1322]">
+                {t('NOT_COMPLETED')}
+            </Tag>
+        );
     };
 
     return (
         <Card
-            title={<Title level={4} style={{ marginBottom: 0 }}>{t('WALLET_TRUST_POINTS_TASKS')}</Title>}
+            title={
+                <Title
+                    level={4}
+                    className="!mb-0 !font-forza"
+                >
+                    {t('WALLET_TRUST_POINTS_TASKS')}
+                </Title>
+            }
             style={{ marginBottom: '16px' }}
             bordered={true}
-            bodyStyle={{ padding: '0' }}
+            bodyStyle={{ padding: '16px' }}
+            className="!rounded-lg !border-0 !shadow-md"
         >
-            {loading ? (
+            {trustPointStatus.status === EActionStatus.Pending ? (
                 <div style={{ textAlign: 'center', padding: '30px 0' }}>
                     <Spin size="large" />
                 </div>
             ) : (
                 <List
                     itemLayout="horizontal"
-                    dataSource={tasks}
-                    renderItem={(task, index) => {
+                    dataSource={trustPointStatus.data}
+                    renderItem={(task: Task, index) => {
                         const [isHovered, setIsHovered] = useState(false);
                         return (
                             <List.Item
                                 style={{
                                     ...listItemStyle,
-                                    ...(isHovered ? listItemHoverStyle : {}),
-                                    borderBottom: index === tasks.length - 1 ? 'none' : undefined // Remove bottom border for last item
+                                    ...(isHovered ? listItemHoverStyle : {})
                                 }}
-                                onMouseEnter={() => setIsHovered(true)}
-                                onMouseLeave={() => setIsHovered(false)}
-                                actions={[
-                                    task.completed ? (
-                                        <Tag icon={<CheckCircleFilled />} color="success" className="!font-forza m-0">
-                                            {t('COMPLETED')}
-                                        </Tag>
-                                    ) : (
-                                        <Button
-                                            type="primary"
-                                            size="small"
-                                            icon={<ArrowRightOutlined />}
-                                            onClick={(e) => {
-                                                e.stopPropagation(); 
-                                                handleGoClick(task);
-                                            }}
-                                            className="mr-2 !font-forza"
-                                        >
-                                            {t('GO')}
-                                        </Button>
-                                    )
-                                ]}
+                                onMouseEnter={() => {
+                                    setIsHovered(true);
+                                    setHoveredTaskId(task.id);
+                                }}
+                                onMouseLeave={() => {
+                                    setIsHovered(false);
+                                    setHoveredTaskId(null);
+                                }}
+                                actions={[getStatusTag(task)]}
+                                className="!mb-4 !border-0"
                             >
                                 <List.Item.Meta
-                                    avatar={task.icon ? <span style={{ fontSize: '1.5em', marginRight: '8px' }}>{task.icon}</span> : null}
-                                    title={<Text strong className="!font-forza">{`NFT ${task.id}`}</Text>}
-                                    description={t(task.descriptionKey)}
+                                    title={
+                                        <div className="flex items-center gap-3">
+                                            <Text
+                                                strong
+                                                className="!font-forza !text-base"
+                                            >{`NFT ${task.id}`}</Text>
+                                            <Tag className="!m-0 !border-[#91caff] !bg-[#e6f4ff] !px-2 !py-0.5 !font-forza !text-sm !text-[#1677ff]">
+                                                x{task.multiplier}
+                                            </Tag>
+                                            {!task.completed && (
+                                                <Tooltip
+                                                    title={task.reason}
+                                                    placement="right"
+                                                >
+                                                    <InfoCircleOutlined className="text-[#1677ff] hover:text-[#4096ff]" />
+                                                </Tooltip>
+                                            )}
+                                        </div>
+                                    }
+                                    description={
+                                        <div>
+                                            <Text className="!mt-1 !font-forza !text-[#697586]">
+                                                {task.description}
+                                            </Text>
+                                            {!task.completed && (
+                                                <div className="mt-1">
+                                                    <Text
+                                                        type="secondary"
+                                                        className="!font-forza !text-sm"
+                                                    >
+                                                        {task.reason}
+                                                    </Text>
+                                                </div>
+                                            )}
+                                        </div>
+                                    }
                                 />
                             </List.Item>
                         );
                     }}
+                    className="!divide-y !divide-gray-100"
                 />
             )}
         </Card>
     );
 };
 
-export default TaskList; 
+export default TaskList;

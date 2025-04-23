@@ -7,9 +7,7 @@ import Loader from '@/src/components/loader';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import {
-    REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { useInviteListReferPortfolio } from '@/src/stores/invite-code/hook';
@@ -85,8 +83,6 @@ const Portfolio = () => {
     const { value: refCodeExisted, setValue: setRefCodeExisted } =
         useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
-
-
     useEffect(() => {
         if (!(address as `0x${string}`) || !chainId) {
             notification.error({
@@ -154,31 +150,21 @@ const Portfolio = () => {
                                 md={8}
                                 xl={8}
                             >
-                                <TaskList />
-                                <SellToken />
+                                {isMobile? (
+                                    <>
+                                    <SellToken />
+                                    <TaskList />
+                                    
+                                    </>
+                                ): (
+                                    <>
+                                    <TaskList />
+                                    <SellToken />
+
+                                    </>
+                                )}
                             </Col>
                         )}
-                        {/* <Col
-                            span={8}
-                            xs={24}
-                            sm={8}
-                            lg={8}
-                            md={8}
-                            xl={8}
-                        >
-                            <YourFriend />
-                        </Col> */}
-
-                        {/* <Col
-                            span={8}
-                            xs={24}
-                            sm={8}
-                            lg={8}
-                            md={8}
-                            xl={8}
-                        >
-                            <ListRefer />
-                        </Col> */}
                     </Row>
                 </div>
             </div>

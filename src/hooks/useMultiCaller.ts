@@ -4,6 +4,7 @@ import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { getContract } from '../common/blockchain/evm/contracts/utils/getContract';
 import MultiCaller from '../common/wagmi/MultiCaller';
 import { useConfig } from './useConfig';
+import { getTrustPointContract } from '../common/blockchain/evm/contracts/utils/getTrustPointContract';
 
 export function useMultiCaller() {
     const { chainConfig } = useConfig();
