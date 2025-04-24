@@ -1,7 +1,6 @@
 /* eslint-disable */
 'use client';
 
-
 import { useAuthTwitterLogin } from '@/src/stores/Twitter/hook';
 import { LogoutOutlined } from '@ant-design/icons';
 import { Button, Spin } from 'antd';

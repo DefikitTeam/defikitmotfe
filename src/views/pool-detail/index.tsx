@@ -9,9 +9,7 @@ import TradingViewChart from '@/src/components/common/tradingview';
 import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
-import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import servicePool, {
     REFERRAL_CODE_INFO_STORAGE_KEY
 } from '@/src/services/external-services/backend-server/pool';
@@ -37,6 +35,7 @@ import PoolPurchaseSummary from './pool-purchase-summary';
 import SocialDescInformation from './social-desc-information';
 import TokenInformation from './token-information';
 import TransactionList from './transaction-list';
+import TaskListOwnerToken from './task-list-owner-token';
 
 const PoolDetail = () => {
     const t = useTranslations();
@@ -64,7 +63,7 @@ const PoolDetail = () => {
 
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
-    const { address } = useAccount();
+    const { isConnected, address } = useAccount();
     const { disconnect } = useDisconnect();
     const [showAlert, setShowAlert] = useState(false);
     const chainData = useSelector((state: RootState) => state.chainData);
@@ -84,36 +83,6 @@ const PoolDetail = () => {
                 item.name.replace(/\s+/g, '').toLowerCase() === currentPath?.[2]
         );
     };
-
-    const { value: refCodeExisted, setValue: setRefCodeExisted } =
-        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
-
-    // useEffect(() => {
-    //     if (
-    //         Boolean(authState.userInfo?.connectedWallet) &&
-    //         Boolean(address) &&
-    //         authState.userInfo?.connectedWallet === address
-    //     ) {
-    //         setOpenModalInviteBlocker(false);
-    //         return;
-    //     }
-
-    //     if (!refCodeExisted) {
-    //         setOpenModalInviteBlocker(true);
-    //         disconnect();
-    //     }
-    // }, [refCodeExisted]);
-
-    // useEffect(() => {
-    //     if (refId) {
-    //         const chainInfo = getCurrentChainUrl();
-    //         if (chainInfo) {
-    //             dispatch(setChainData(chainInfo));
-    //             switchChain({ chainId: chainInfo.chainId });
-    //             // router.push(`${currentPath?.join('/')}?refId=${refId}`);
-    //         }
-    //     }
-    // }, [refId]);
 
     useEffect(() => {
         if (refId && !(address as `0x${string}`)) {
@@ -298,6 +267,12 @@ const PoolDetail = () => {
                             <div className="flex flex-col gap-1">
                                 <PoolPurchaseSummary />
                                 <HolderDistribution />
+                                {isConnected &&
+                                address &&
+                                address.toLowerCase() ===
+                                    poolStateDetail.pool?.owner?.toLowerCase() ? (
+                                    <TaskListOwnerToken />
+                                ) : null}
                                 {isMobile ? (
                                     <>
                                         <Affiliate />

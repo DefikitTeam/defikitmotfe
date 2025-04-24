@@ -15,6 +15,13 @@ export function useTrustPointCaller() {
         hash: mintWithSignatureWatcher.data
     });
 
+
+
+    const mintTokenWithSignatureWatcher = useWriteContract();
+    const mintTokenWithSignatureListener = useWaitForTransactionReceipt({
+        hash: mintTokenWithSignatureWatcher.data
+    });
+
     return {
         useMintWithSignature: {
             actionAsync: (params: {
@@ -33,6 +40,24 @@ export function useTrustPointCaller() {
             isError:
                 mintWithSignatureListener.isError ||
                 mintWithSignatureWatcher.isError
+        },
+
+        useMintTokenWithSignature: {
+            actionAsync: (params: {
+                id: string;
+                token: string;
+                signature: string | number;
+            }) => {
+                return trustPointCaller.mintTokenWithSignature(
+                    mintTokenWithSignatureWatcher,
+                    params
+                );
+            },
+            isConfirmed: mintTokenWithSignatureListener.isSuccess,
+            isLoadingAgreedMintTokenWithSignature: mintTokenWithSignatureListener.isLoading,
+            isLoadingInitMintTokenWithSignature: mintTokenWithSignatureWatcher.isPending,
+            isError: mintTokenWithSignatureListener.isError || mintTokenWithSignatureWatcher.isError
         }
     };
 }
+

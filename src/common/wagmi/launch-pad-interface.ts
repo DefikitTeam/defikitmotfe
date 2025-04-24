@@ -498,11 +498,37 @@ export class LaunchPadInterface {
         if (!id || !signature) {
             throw new Error('Invalid params when call mintWithSignature');
         }
+        console.log('params-------', params);
 
         await watcher.writeContractAsync({
             ...this._contractStruct,
             functionName: 'mintWithSignature',
             args: [id, signature]
+        });
+    }
+
+
+
+
+
+    async mintTokenWithSignature(
+        watcher: UseWriteContractReturnType,
+        params: {
+            id: string;
+            token: string;
+            signature: string | number;
+        }
+    ) {
+        const { id, token, signature } = params;
+        if (!id || !token || !signature) {
+            throw new Error('Invalid params when call mintTokenWithSignature');
+        }
+        console.log('params-------', params);
+
+        await watcher.writeContractAsync({
+            ...this._contractStruct,
+            functionName: 'mintTokenWithSignature',
+            args: [id, token, signature]
         });
     }
 }

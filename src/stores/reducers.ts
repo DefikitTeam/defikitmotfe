@@ -24,6 +24,7 @@ import depositLotteryReducer from '@/src/stores/pool/depositLotterySlice';
 import userReducer from '@/src/stores/Twitter/userSlice';
 import discordUserReducer from '@/src/stores/discord/userSlice';
 import getTrustPointReducer from '@/src/stores/trust-point/get-trust-point-status-slice';
+import getTrustPointTokenReducer from '@/src/stores/trust-point/get-trust-point-status-token-slice';
 const rootReducer = combineReducers({
     auth: authReducer,
     poolDetail: poolDetailReducer,
@@ -49,7 +50,8 @@ const rootReducer = combineReducers({
     depositLottery: depositLotteryReducer,
     user: userReducer,
     discordUser: discordUserReducer,
-    trustPoint: getTrustPointReducer
+    trustPoint: getTrustPointReducer,
+    trustPointToken: getTrustPointTokenReducer
 });
 
 export default rootReducer;

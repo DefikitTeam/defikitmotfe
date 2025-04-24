@@ -150,17 +150,15 @@ const Portfolio = () => {
                                 md={8}
                                 xl={8}
                             >
-                                {isMobile? (
+                                {isMobile ? (
                                     <>
-                                    <SellToken />
-                                    <TaskList />
-                                    
+                                        <SellToken />
+                                        <TaskList />
                                     </>
-                                ): (
+                                ) : (
                                     <>
-                                    <TaskList />
-                                    <SellToken />
-
+                                        <TaskList />
+                                        <SellToken />
                                     </>
                                 )}
                             </Col>
