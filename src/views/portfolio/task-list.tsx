@@ -93,8 +93,12 @@ const TaskList = () => {
     }, [useMintWithSignature.isError]);
 
     useEffect(() => {
+        
         getTrustPointStatusAction();
-    }, []);
+
+        
+   
+    }, []); 
 
     const handleClaimClick = async (task: Task) => {
         console.log(`Claiming task ...`, task);
@@ -198,10 +202,10 @@ const TaskList = () => {
                     {t('WALLET_TRUST_POINTS_TASKS')}
                 </Title>
             }
-            style={{ marginBottom: '16px' }}
+            // style={{ marginBottom: '16px' }}
             bordered={true}
             bodyStyle={{ padding: '16px' }}
-            className="!rounded-lg !border-0 !shadow-md"
+            className="!rounded-lg !border-0 !shadow-md "
         >
             {trustPointStatus.status === EActionStatus.Pending ? (
                 <div style={{ textAlign: 'center', padding: '30px 0' }}>

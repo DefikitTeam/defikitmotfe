@@ -10,7 +10,9 @@ import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import { TOKEN_STATUS } from '@/src/common/constant/constance';
 import { formatCurrency, shortWalletAddress } from '@/src/common/utils/utils';
+import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
@@ -19,12 +21,7 @@ import { useListPool } from '@/src/stores/pool/hook';
 import { useParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
-import CurrentCodeInvite from './current-vote-invite';
 import Investpool from './Investpool';
-import ModalListCurrentCode from './modal-list-current-code';
-import ListRefer from './list-refer';
-import { TOKEN_STATUS } from '@/src/common/constant/constance';
-import { useConfig } from '@/src/hooks/useConfig';
 
 export interface IAssetList {
     index: number;
@@ -408,9 +405,9 @@ const Statistical = () => {
                         : addressParams}
                 </p>
 
-                <ModalListCurrentCode />
+                {/* <ModalListCurrentCode /> */}
             </div>
-            {address && !isAddressDifferent && (
+            {/* {address && !isAddressDifferent && (
                 <>
                     <div className="mt-2 !font-forza text-lg font-bold">
                         {t('CURRENT_CODE_INVITE')}
@@ -419,9 +416,9 @@ const Statistical = () => {
                         <CurrentCodeInvite />
                     </div>
                 </>
-            )}
+            )} */}
 
-            {address && !isAddressDifferent && (
+            {/* {address && !isAddressDifferent && (
                 <>
                     <div className="mb-2 mt-2 !font-forza text-lg font-bold">
                         {t('INVITE_LIST_REFER')}
@@ -431,7 +428,7 @@ const Statistical = () => {
                         <ListRefer />
                     </div>
                 </>
-            )}
+            )} */}
 
             <div className="mt-3 !font-forza text-lg font-bold">
                 {t('ASSET')}

@@ -9,7 +9,7 @@ import {
     TelegramIcon,
     TelegramShareButton,
     TwitterIcon,
-    TwitterShareButton
+    TwitterShareButton,
 } from 'react-share';
 import { useAccount } from 'wagmi';
 
@@ -19,16 +19,7 @@ const ShareSocialAffiliate = () => {
     const { authState } = useAuthLogin();
     const [affiliate, setAffiliate] = useState('');
 
-    // useEffect(() => {
-    //     if (authState.userInfo?.refId) {
-    //         setAffiliate(
-    //             window.location.href + `?refId=${authState.userInfo?.refId}`
-    //         );
-    //     } else {
-    //         setAffiliate(window.location.href);
-    //     }
-    // }, [authState.userInfo?.refId]);
-
+ 
     useEffect(() => {
         if (authState.userInfo?.refId) {
             const url = new URL(window.location.href);

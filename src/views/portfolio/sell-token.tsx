@@ -350,9 +350,9 @@ const SellToken = () => {
     }, [isFetchingDataReader, estimateSellValueData, sliderPercent]);
 
     return (
-        <div className="h-full w-full ">
+        <div className="w-full  ">
             <Form layout="vertical">
-                <Row gutter={[0, 10]}>
+                <Row gutter={[0, 0]}>
                     <Col
                         xs={24}
                         sm={24}

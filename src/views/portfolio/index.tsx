@@ -157,8 +157,8 @@ const Portfolio = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <TaskList />
                                         <SellToken />
+                                        <TaskList />
                                     </>
                                 )}
                             </Col>
@@ -167,7 +167,7 @@ const Portfolio = () => {
                 </div>
             </div>
 
-            <ModalInviteBlocker />
+            {/* <ModalInviteBlocker /> */}
         </BoxArea>
     );
 };
