@@ -146,7 +146,7 @@ const Leaderboard: React.FC = () => {
                     transition={{ type: "spring", stiffness: 300 }}
                 >
                     <span className="font-mono">{address}</span>
-                    <Badge status="success" text="Active" />
+                    {/* <Badge status="success" text="Active" /> */}
                 </motion.div>
             ),
         },
@@ -171,26 +171,28 @@ const Leaderboard: React.FC = () => {
                 </motion.div>
             ),
         },
-        {
-            title: 'Est. Bera',
-            dataIndex: 'estimatedBera',
-            key: 'estimatedBera',
-            render: (bera: number) => (
-                <motion.div
-                    className="flex items-center space-x-2"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                >
-                    <motion.div
-                        animate={{ rotate: [0, 360] }}
-                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
-                    >
-                        <StarOutlined className="text-yellow-500" />
-                    </motion.div>
-                    <span className="font-bold">{formatNumber(bera)} BERA</span>
-                </motion.div>
-            ),
-        },
+
+        // {
+        //     title: 'Est. Bera',
+        //     dataIndex: 'estimatedBera',
+        //     key: 'estimatedBera',
+        //     render: (bera: number) => (
+        //         <motion.div
+        //             className="flex items-center space-x-2"
+        //             whileHover={{ scale: 1.05 }}
+        //             transition={{ type: "spring", stiffness: 300 }}
+        //         >
+        //             <motion.div
+        //                 animate={{ rotate: [0, 360] }}
+        //                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
+        //             >
+        //                 <StarOutlined className="text-yellow-500" />
+        //             </motion.div>
+        //             <span className="font-bold">{formatNumber(bera)} BERA</span>
+        //         </motion.div>
+        //     ),
+        // },
+
         {
             title: 'Activity Breakdown',
             key: 'breakdown',
@@ -266,85 +268,88 @@ const Leaderboard: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <Card className="w-full">
-                <motion.div
-                    className="mb-6"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                    <h1 className="text-2xl font-bold mb-2">Leaderboard</h1>
-                    <p className="text-gray-500">
-                        Track your ranking and earn BERA tokens based on your activity
-                    </p>
-                </motion.div>
-
-                <Tabs activeKey={activeTab} onChange={setActiveTab}>
-                    <TabPane tab="Daily Ranking" key="daily">
-                        {loading ? (
-                            <div className="flex justify-center items-center h-64">
-                                <Spin size="large" />
-                            </div>
-                        ) : (
-                            <AnimatePresence>
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                >
-                                    <Table
-                                        dataSource={data}
-                                        columns={columns}
-                                        rowKey="address"
-                                        pagination={{ pageSize: 10 }}
-                                        onRow={(record) => ({
-                                            onClick: () => record.rank === 1 && celebrateTopRank(record.address),
-                                            className: highlightedUser === record.address ? 'bg-yellow-50 transition-colors duration-300' : '',
-                                        })}
-                                    />
-                                </motion.div>
-                            </AnimatePresence>
-                        )}
-                    </TabPane>
-                    <TabPane tab="Weekly Retroactive" key="weekly">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <div className="bg-yellow-50 p-4 rounded-lg mb-4">
-                                <h3 className="text-lg font-semibold text-yellow-800">Weekly Retroactive Distribution</h3>
-                                <p className="text-yellow-700">
-                                    Rewards will be distributed every Sunday at 00:00 UTC
-                                </p>
-                            </div>
-                            <Table
-                                dataSource={data}
-                                columns={columns}
-                                rowKey="address"
-                                pagination={{ pageSize: 10 }}
-                            />
-                        </motion.div>
-                    </TabPane>
-                </Tabs>
-
-                <motion.div
-                    className="mt-6 p-4 bg-gray-50 rounded-lg"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    whileHover={{ scale: 1.01 }}
-                >
-                    <h3 className="text-lg font-semibold mb-2">Point Calculation Formula</h3>
-                    <div className="space-y-2">
-                        <p>Total Points = (Volume Invest × 0.4) + (Create Token × 0.3) + (Social Point × 0.3)</p>
-                        <p>Estimated BERA = Total Points × Conversion Rate</p>
-                        <p className="text-sm text-gray-500">
-                            * Final formula and conversion rates are subject to change
+            <Card className="w-full mt-3" bodyStyle={{ padding: 0 }}>
+                <div className="block md:flex md:justify-between md:items-start px-4 pt-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                        <h1 className="text-2xl font-bold mb-2">Leaderboard</h1>
+                        <p className="text-gray-500">
+                            Track your ranking and earn BERA tokens based on your activity
                         </p>
-                    </div>
-                </motion.div>
+                    </motion.div>
+
+                    <motion.div
+                        className="p-4 bg-gray-50 rounded-lg w-full md:w-1/3 mt-4 md:mt-0"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                        whileHover={{ scale: 1.01 }}
+                    >
+                        <h3 className="text-lg font-semibold mb-2">Point Calculation Formula</h3>
+                        <div className="space-y-2">
+                            <p>Total Points = (Volume Invest × 0.4) + (Create Token × 0.3) + (Social Point × 0.3)</p>
+                            <p>Estimated BERA = Total Points × Conversion Rate</p>
+                            <p className="text-sm text-gray-500">
+                                * Final formula and conversion rates are subject to change
+                            </p>
+                        </div>
+                    </motion.div>
+                </div>
+
+                <div className="px-4 pb-6">
+                    <Tabs activeKey={activeTab} onChange={setActiveTab}>
+                        <TabPane tab="Daily Ranking" key="daily">
+                            {loading ? (
+                                <div className="flex justify-center items-center h-64">
+                                    <Spin size="large" />
+                                </div>
+                            ) : (
+                                <AnimatePresence>
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <Table
+                                            dataSource={data}
+                                            columns={columns}
+                                            rowKey="address"
+                                            pagination={{ pageSize: 10 }}
+                                            onRow={(record) => ({
+                                                onClick: () => record.rank === 1 && celebrateTopRank(record.address),
+                                                className: highlightedUser === record.address ? 'bg-yellow-50 transition-colors duration-300' : '',
+                                            })}
+                                        />
+                                    </motion.div>
+                                </AnimatePresence>
+                            )}
+                        </TabPane>
+                        <TabPane tab="Weekly Retroactive" key="weekly">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <div className="bg-yellow-50 p-4 rounded-lg mb-4">
+                                    <h3 className="text-lg font-semibold text-yellow-800">Weekly Retroactive Distribution</h3>
+                                    <p className="text-yellow-700">
+                                        Rewards will be distributed every Sunday at 00:00 UTC
+                                    </p>
+                                </div>
+                                <Table
+                                    dataSource={data}
+                                    columns={columns}
+                                    rowKey="address"
+                                    pagination={{ pageSize: 10 }}
+                                />
+                            </motion.div>
+                        </TabPane>
+                    </Tabs>
+                </div>
             </Card>
         </motion.div>
     );
