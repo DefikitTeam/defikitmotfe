@@ -17,6 +17,8 @@ import {
 } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useConfig } from '@/src/hooks/useConfig';
 
 const { Title, Text } = Typography;
 
@@ -32,10 +34,13 @@ interface Task {
 
 const TaskList = () => {
     const t = useTranslations();
+    const { chainConfig } = useConfig();
+
     const [hoveredTaskId, setHoveredTaskId] = useState<number | null>(null);
     const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
     const [tokenIdProcessClaimed, setTokenIdProcessClaimed] =
         useState<number>(0);
+    const router = useRouter();
 
     const { useMintWithSignature } = useTrustPointCaller();
     const [loadingMintWithSignature, setLoadingMintWithSignature] =
@@ -181,10 +186,52 @@ const TaskList = () => {
             );
         }
 
-        return (
+        const notCompletedTag = (
             <Tag className="m-0 !border-[#ffa39e] !bg-[#fff1f0] !px-3 !py-1 !font-forza !text-sm !text-[#cf1322]">
                 {t('NOT_COMPLETED')}
             </Tag>
+        );
+
+        let actionButton = null;
+        if (task.id === 2) {
+            actionButton = (
+                <Button
+                    type="primary"
+                    size="small"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(
+                            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
+                        );
+                    }}
+                    className="ml-2 !h-auto !border-none !bg-[#1890ff] !px-6 !py-1 !font-forza hover:!bg-[#40a9ff]"
+                >
+                    {t('GO')}
+                </Button>
+            );
+        } else if (task.id === 3) {
+            actionButton = (
+                <Button
+                    type="primary"
+                    size="small"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(
+                            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/`
+                        );
+                    }}
+                    className="ml-2 !h-auto !border-none !bg-[#1890ff] !px-6 !py-1 !font-forza hover:!bg-[#40a9ff]"
+                >
+                    {t('GO')}
+                </Button>
+            );
+        }
+
+        return (
+            <div className="flex items-center">
+                {notCompletedTag}
+                {actionButton}
+            </div>
         );
     };
 

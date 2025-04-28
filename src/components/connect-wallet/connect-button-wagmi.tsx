@@ -38,7 +38,17 @@ const ConnectButtonWagmi = () => {
 
     const { chainConfig, defaultChain, supportedChains } = useConfig();
 
-    const { authState, loginAction } = useAuthLogin();
+    const {
+        authState,
+        loginAction,
+        setOpenModalInviteBlocker,
+        resetStatusLoginWalletAction,
+        logoutWalletAction,
+        logoutTelegramAction,
+        logoutDiscordAction,
+        logoutTwitterAction,
+        resetStatusLoginTeleAction
+    } = useAuthLogin();
     const { disconnect } = useDisconnect();
 
     const [show, setShow] = useState<boolean>(false);
@@ -75,10 +85,16 @@ const ConnectButtonWagmi = () => {
                         wallet: walletData,
                         referralCode: refCode ? refCode : ''
                     };
+                    logoutDiscordAction();
+                    logoutTwitterAction();
+                    logoutTelegramAction();
                     loginAction(loginWalletData);
                 } catch (error) {
                     console.error('User rejected the signature:', error);
                     disconnect();
+                    logoutTelegramAction();
+                    logoutDiscordAction();
+                    logoutTwitterAction();
                     // prevAddress.current = null;
                 }
             }

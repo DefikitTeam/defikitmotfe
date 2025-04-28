@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import { useConfig } from '@/src/hooks/useConfig';
 import { useTrustPointCaller } from '@/src/hooks/useTrustPointCaller';
 import serviceTrustPoint from '@/src/services/external-services/backend-server/trust-point';
 import { usePoolDetail } from '@/src/stores/pool/hook';
@@ -17,6 +18,7 @@ import {
     Typography
 } from 'antd';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
@@ -37,6 +39,8 @@ const TaskListOwnerToken = () => {
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
     const { isConnected, address } = useAccount();
+    const router = useRouter();
+    const { chainConfig } = useConfig();
     const [
         { poolStateDetail },
         fetchPoolDetail,
@@ -60,6 +64,7 @@ const TaskListOwnerToken = () => {
     const [hoveredTaskId, setHoveredTaskId] = useState<number | null>(null);
 
     const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
+
     const [tokenIdProcessClaimed, setTokenIdProcessClaimed] =
         useState<number>(0);
 
@@ -234,10 +239,41 @@ const TaskListOwnerToken = () => {
             );
         }
 
-        return (
+        const notCompletedTag = (
             <Tag className="m-0 !border-[#ffa39e] !bg-[#fff1f0] !px-3 !py-1 !font-forza !text-sm !text-[#cf1322]">
                 {t('NOT_COMPLETED')}
             </Tag>
+        );
+        let actionButton = null;
+        if (task.id === 13) {
+            actionButton = (
+                <Button
+                    type="primary"
+                    size="small"
+                    onClick={(e) => {
+                        e.stopPropagation();
+
+                        window.open(
+                            'https://ai-cms.alex-defikit.workers.dev/',
+                            '_blank',
+                            'noopener,noreferrer'
+                        );
+                        // router.push(
+                        //     `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
+                        // );
+                    }}
+                    className="ml-2 !h-auto !border-none !bg-[#1890ff] !px-6 !py-1 !font-forza hover:!bg-[#40a9ff]"
+                >
+                    {t('GO')}
+                </Button>
+            );
+        }
+
+        return (
+            <div className="flex items-center">
+                {notCompletedTag}
+                {actionButton}
+            </div>
         );
     };
 

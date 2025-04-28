@@ -16,6 +16,10 @@ import ConnectButtonWagmi from './connect-button-wagmi';
 
 import { UserOutlined } from '@ant-design/icons';
 import DiscordLoginButton from '../discord-login-button';
+import {
+    useTrustPoint,
+    useTrustPointToken
+} from '@/src/stores/trust-point/hook';
 
 const ButtonConnectWallet = () => {
     const t = useTranslations();
@@ -36,7 +40,8 @@ const ButtonConnectWallet = () => {
         logoutDiscordAction,
         logoutTwitterAction
     } = useAuthLogin();
-
+    const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
+    const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
     let botName = 'MotherOfTokensMonadBot';
 
     const handleLoginWithTelegram = async (user: any) => {
@@ -61,6 +66,9 @@ const ButtonConnectWallet = () => {
         if (!(address as `0x${string}`)) {
             if (isMobile) return;
             disconnect();
+            logoutTelegramAction();
+            logoutDiscordAction();
+            logoutTwitterAction();
             logoutWalletAction();
         }
     }, [address]);
@@ -70,6 +78,10 @@ const ButtonConnectWallet = () => {
             if (authState.statusLoginWallet === EActionStatus.Succeeded) {
                 if (authState.userWallet?.address === address) {
                     resetStatusLoginWalletAction();
+                    setTimeout(() => {
+                        getTrustPointStatusAction();
+                        // getTrustPointTokenAction();
+                    }, 500);
                 }
             } else if (authState.statusLoginWallet === EActionStatus.Failed) {
                 if (authState.errorMessage) {
@@ -118,6 +130,10 @@ const ButtonConnectWallet = () => {
             if (authState.statusLoginDiscord === EActionStatus.Succeeded) {
                 if (authState.userDiscord) {
                     resetStatusLoginDiscordAction();
+                    setTimeout(() => {
+                        getTrustPointStatusAction();
+                        // getTrustPointTokenAction();
+                    }, 500);
                     await openNotification({
                         message: t('LOGIN_DISCORD_SUCCESSFULLY'),
                         placement: 'topRight',
@@ -146,6 +162,10 @@ const ButtonConnectWallet = () => {
             if (authState.statusLoginTwitter === EActionStatus.Succeeded) {
                 if (authState.userTwitter) {
                     resetStatusLoginTwitterAction();
+                    setTimeout(() => {
+                        getTrustPointStatusAction();
+                        // getTrustPointTokenAction();
+                    }, 500);
                     await openNotification({
                         message: t('LOGIN_TWITTER_SUCCESSFULLY'),
                         placement: 'topRight',

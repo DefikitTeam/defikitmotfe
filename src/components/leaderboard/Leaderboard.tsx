@@ -321,7 +321,7 @@ const Leaderboard: React.FC = () => {
                 className="mt-3 w-full"
                 bodyStyle={{ padding: 0 }}
             >
-                <div className="block px-4 pt-6 mt-2">
+                <div className="mt-2 block px-4 pt-6">
                     <Row gutter={[10, 10]}>
                         <Col
                             xs={24}
@@ -361,18 +361,23 @@ const Leaderboard: React.FC = () => {
                                 whileHover={{ scale: 1.01 }}
                             >
                                 <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold">
-                                    <CalculatorOutlined /> Point Calculation Formula
+                                    <CalculatorOutlined /> Point Calculation
+                                    Formula
                                 </h3>
 
                                 <div className="space-y-3 rounded-md border border-gray-200 bg-white p-3 shadow-sm">
                                     <div className="flex items-start gap-2">
                                         <WalletOutlined className="mt-1 text-blue-500" />
                                         <div>
-                                            <span className="font-medium">Wallet Trust Points (TP)</span> =
+                                            <span className="font-medium">
+                                                Wallet Trust Points (TP)
+                                            </span>{' '}
+                                            =
                                             <code className="ml-1 rounded bg-blue-50 px-1 py-0.5 text-blue-700">
                                                 Multiplier (Wallet)
-                                            </code> ×
-                                            <code className="ml-1 rounded bg-green-50 px-1 py-0.5 text-green-700">
+                                            </code>{' '}
+                                            ×
+                                            <code className="bg-green-50 text-green-700 ml-1 rounded px-1 py-0.5">
                                                 Invested Volume
                                             </code>
                                         </div>
@@ -380,24 +385,29 @@ const Leaderboard: React.FC = () => {
                                     <div className="flex items-start gap-2">
                                         <DollarCircleOutlined className="mt-1 text-purple-500" />
                                         <div>
-                                            <span className="font-medium">Token Trust Points (TP)</span> =
+                                            <span className="font-medium">
+                                                Token Trust Points (TP)
+                                            </span>{' '}
+                                            =
                                             <code className="ml-1 rounded bg-purple-50 px-1 py-0.5 text-purple-700">
                                                 Multiplier (Token)
-                                            </code> × Σ (
+                                            </code>{' '}
+                                            × Σ (
                                             <code className="ml-1 rounded bg-red-50 px-1 py-0.5 text-red-700">
                                                 Transaction Volume
-                                            </code> ×
+                                            </code>{' '}
+                                            ×
                                             <code className="ml-1 rounded bg-blue-50 px-1 py-0.5 text-blue-700">
                                                 Multiplier (Wallet)
-                                            </code>)
+                                            </code>
+                                            )
                                         </div>
                                     </div>
                                     <p className="!mt-4 border-t border-gray-100 pt-3 text-xs text-gray-500">
-                                        * Multipliers and specific calculation details may vary.
+                                        * Multipliers and specific calculation
+                                        details may vary.
                                     </p>
                                 </div>
-
-
                             </motion.div>
                         </Col>
                     </Row>
@@ -438,7 +448,7 @@ const Leaderboard: React.FC = () => {
                                                     ),
                                                 className:
                                                     highlightedUser ===
-                                                        record.address
+                                                    record.address
                                                         ? 'bg-yellow-50 transition-colors duration-300'
                                                         : ''
                                             })}

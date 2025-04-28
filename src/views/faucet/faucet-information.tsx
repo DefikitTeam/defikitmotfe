@@ -37,6 +37,8 @@ const FaucetInformation = () => {
         loginAction,
         logoutTelegramAction,
         logoutWalletAction,
+        logoutDiscordAction,
+        logoutTwitterAction,
         resetStatusLoginTeleAction,
         resetStatusLoginWalletAction
     } = useAuthLogin();
@@ -179,6 +181,9 @@ const FaucetInformation = () => {
             if (isMobile) return;
             disconnect();
             logoutWalletAction();
+            logoutTelegramAction();
+            logoutDiscordAction();
+            logoutTwitterAction();
         }
     }, [address]);
 

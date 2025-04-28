@@ -16,6 +16,7 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useAccount, useSignMessage } from 'wagmi';
 import ModalSocialScore from './modal-social-score';
+import { useTrustPointToken } from '@/src/stores/trust-point/hook';
 // import Joyride, { Step } from 'react-joyride';
 
 const SocialDescInformation = () => {
@@ -53,6 +54,8 @@ const SocialDescInformation = () => {
         signMessageAsync,
         context
     } = useSignMessage();
+    const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
+
     // const [showHighlight, setShowHighlight] = useState(true);
     // const [showTour, setShowTour] = useState(false);
 
@@ -276,6 +279,14 @@ const SocialDescInformation = () => {
                     duration: 3,
                     showProgress: true
                 });
+                if (
+                    isConnected &&
+                    address &&
+                    address.toLowerCase() ===
+                        poolStateDetail.pool?.owner?.toLowerCase()
+                ) {
+                    getTrustPointTokenAction(poolAddress);
+                }
                 setIsModalOpen(false);
                 setIsLoading(false);
             }
