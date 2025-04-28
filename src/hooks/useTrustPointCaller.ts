@@ -15,8 +15,6 @@ export function useTrustPointCaller() {
         hash: mintWithSignatureWatcher.data
     });
 
-
-
     const mintTokenWithSignatureWatcher = useWriteContract();
     const mintTokenWithSignatureListener = useWaitForTransactionReceipt({
         hash: mintTokenWithSignatureWatcher.data
@@ -54,10 +52,13 @@ export function useTrustPointCaller() {
                 );
             },
             isConfirmed: mintTokenWithSignatureListener.isSuccess,
-            isLoadingAgreedMintTokenWithSignature: mintTokenWithSignatureListener.isLoading,
-            isLoadingInitMintTokenWithSignature: mintTokenWithSignatureWatcher.isPending,
-            isError: mintTokenWithSignatureListener.isError || mintTokenWithSignatureWatcher.isError
+            isLoadingAgreedMintTokenWithSignature:
+                mintTokenWithSignatureListener.isLoading,
+            isLoadingInitMintTokenWithSignature:
+                mintTokenWithSignatureWatcher.isPending,
+            isError:
+                mintTokenWithSignatureListener.isError ||
+                mintTokenWithSignatureWatcher.isError
         }
     };
 }
-

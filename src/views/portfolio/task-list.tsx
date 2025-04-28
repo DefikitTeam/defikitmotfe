@@ -76,7 +76,9 @@ const TaskList = () => {
             });
             setTokenIdProcessClaimed(0);
 
-            getTrustPointStatusAction();
+            setTimeout(() => {
+                getTrustPointStatusAction();
+            }, 1_000);
         }
     }, [useMintWithSignature.isConfirmed]);
 
@@ -93,15 +95,10 @@ const TaskList = () => {
     }, [useMintWithSignature.isError]);
 
     useEffect(() => {
-        
         getTrustPointStatusAction();
-
-        
-   
-    }, []); 
+    }, []);
 
     const handleClaimClick = async (task: Task) => {
-        console.log(`Claiming task ...`, task);
         setLoadingMintWithSignature(true);
         setTokenIdProcessClaimed(task.id);
         try {
@@ -184,7 +181,6 @@ const TaskList = () => {
             );
         }
 
-        // Show "Not Completed" tag for incomplete tasks
         return (
             <Tag className="m-0 !border-[#ffa39e] !bg-[#fff1f0] !px-3 !py-1 !font-forza !text-sm !text-[#cf1322]">
                 {t('NOT_COMPLETED')}
@@ -202,7 +198,6 @@ const TaskList = () => {
                     {t('WALLET_TRUST_POINTS_TASKS')}
                 </Title>
             }
-            // style={{ marginBottom: '16px' }}
             bordered={true}
             bodyStyle={{ padding: '16px' }}
             className="!rounded-lg !border-0 !shadow-md "

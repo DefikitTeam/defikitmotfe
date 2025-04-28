@@ -1,7 +1,6 @@
 'use client';
 
-import Leaderboard from "@/src/components/leaderboard/Leaderboard";
-
+import Leaderboard from '@/src/components/leaderboard/Leaderboard';
 
 const LeaderboardView = () => {
     return (
@@ -10,6 +9,5 @@ const LeaderboardView = () => {
         </div>
     );
 };
-
 
 export default LeaderboardView;

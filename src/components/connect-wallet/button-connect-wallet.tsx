@@ -5,7 +5,7 @@ import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backe
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { ILoginRequest } from '@/src/stores/auth/type';
 import { EActionStatus } from '@/src/stores/type';
-import { Button, Dropdown } from 'antd';
+import { Dropdown } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
@@ -67,35 +67,40 @@ const ButtonConnectWallet = () => {
 
     useEffect(() => {
         (async () => {
-            if (
-                authState.statusLoginWallet === EActionStatus.Succeeded &&
-                authState.statusLoginDiscord === EActionStatus.Idle &&
-                authState.statusLoginTele === EActionStatus.Idle &&
-                authState.statusLoginTwitter === EActionStatus.Idle &&
-                authState.userWallet?.address === address
-            ) {
-                await openNotification({
-                    message: t('LOGIN_WALLET_SUCCESSFULLY'),
-                    placement: 'topRight',
-                    type: 'success'
-                });
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                resetStatusLoginWalletAction();
-            }
-
-            if (authState.statusLoginWallet === EActionStatus.Failed) {
+            if (authState.statusLoginWallet === EActionStatus.Succeeded) {
+                if (authState.userWallet?.address === address) {
+                    resetStatusLoginWalletAction();
+                }
+            } else if (authState.statusLoginWallet === EActionStatus.Failed) {
                 if (authState.errorMessage) {
+                    resetStatusLoginWalletAction();
                     await openNotification({
                         message: authState.errorMessage,
                         placement: 'topRight',
                         type: 'error'
                     });
                 }
-                disconnect();
-                logoutWalletAction();
             }
+        })();
+    }, [
+        authState.statusLoginWallet,
+        authState.userWallet,
+        address,
+        authState.errorMessage
+    ]);
 
-            if (authState.statusLoginTele === EActionStatus.Failed) {
+    useEffect(() => {
+        (async () => {
+            if (authState.statusLoginTele === EActionStatus.Succeeded) {
+                if (authState.userTele) {
+                    resetStatusLoginTeleAction();
+                    await openNotification({
+                        message: t('LOGIN_TELE_SUCCESSFULLY'),
+                        placement: 'topRight',
+                        type: 'success'
+                    });
+                }
+            } else if (authState.statusLoginTele === EActionStatus.Failed) {
                 if (authState.errorMessage) {
                     await openNotification({
                         message: authState.errorMessage,
@@ -105,19 +110,21 @@ const ButtonConnectWallet = () => {
                 }
                 logoutTelegramAction();
             }
-            if (
-                authState.statusLoginTele === EActionStatus.Succeeded &&
-                authState.userTele
-            ) {
-                await openNotification({
-                    message: t('LOGIN_TELE_SUCCESSFULLY'),
-                    placement: 'topRight',
-                    type: 'success'
-                });
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                resetStatusLoginTeleAction();
-            }
-            if (authState.statusLoginDiscord === EActionStatus.Failed) {
+        })();
+    }, [authState.statusLoginTele, authState.userTele, authState.errorMessage]);
+
+    useEffect(() => {
+        (async () => {
+            if (authState.statusLoginDiscord === EActionStatus.Succeeded) {
+                if (authState.userDiscord) {
+                    resetStatusLoginDiscordAction();
+                    await openNotification({
+                        message: t('LOGIN_DISCORD_SUCCESSFULLY'),
+                        placement: 'topRight',
+                        type: 'success'
+                    });
+                }
+            } else if (authState.statusLoginDiscord === EActionStatus.Failed) {
                 if (authState.errorMessage) {
                     await openNotification({
                         message: authState.errorMessage,
@@ -127,21 +134,25 @@ const ButtonConnectWallet = () => {
                 }
                 logoutDiscordAction();
             }
+        })();
+    }, [
+        authState.statusLoginDiscord,
+        authState.userDiscord,
+        authState.errorMessage
+    ]);
 
-            if (
-                authState.statusLoginDiscord === EActionStatus.Succeeded &&
-                authState.userDiscord
-            ) {
-                await openNotification({
-                    message: t('LOGIN_DISCORD_SUCCESSFULLY'),
-                    placement: 'topRight',
-                    type: 'success'
-                });
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                resetStatusLoginDiscordAction();
-            }
-
-            if (authState.statusLoginTwitter === EActionStatus.Failed) {
+    useEffect(() => {
+        (async () => {
+            if (authState.statusLoginTwitter === EActionStatus.Succeeded) {
+                if (authState.userTwitter) {
+                    resetStatusLoginTwitterAction();
+                    await openNotification({
+                        message: t('LOGIN_TWITTER_SUCCESSFULLY'),
+                        placement: 'topRight',
+                        type: 'success'
+                    });
+                }
+            } else if (authState.statusLoginTwitter === EActionStatus.Failed) {
                 if (authState.errorMessage) {
                     await openNotification({
                         message: authState.errorMessage,
@@ -151,25 +162,11 @@ const ButtonConnectWallet = () => {
                 }
                 logoutTwitterAction();
             }
-
-            if (
-                authState.statusLoginTwitter === EActionStatus.Succeeded &&
-                authState.userTwitter
-            ) {
-                await openNotification({
-                    message: t('LOGIN_TWITTER_SUCCESSFULLY'),
-                    placement: 'topRight',
-                    type: 'success'
-                });
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                resetStatusLoginTwitterAction();
-            }
         })();
     }, [
-        authState.statusLoginWallet,
-        authState.statusLoginTele,
-        authState.statusLoginDiscord,
-        authState.statusLoginTwitter
+        authState.statusLoginTwitter,
+        authState.userTwitter,
+        authState.errorMessage
     ]);
 
     const socialItems = [

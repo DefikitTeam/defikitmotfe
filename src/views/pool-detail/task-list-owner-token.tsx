@@ -1,4 +1,3 @@
-
 /* eslint-disable */
 
 import { useTrustPointCaller } from '@/src/hooks/useTrustPointCaller';
@@ -64,7 +63,8 @@ const TaskListOwnerToken = () => {
     const [tokenIdProcessClaimed, setTokenIdProcessClaimed] =
         useState<number>(0);
 
-    const { useMintWithSignature, useMintTokenWithSignature } = useTrustPointCaller();
+    const { useMintWithSignature, useMintTokenWithSignature } =
+        useTrustPointCaller();
     const [loadingMintWithSignature, setLoadingMintWithSignature] =
         useState<boolean>(false);
     const [taskList, setTaskList] = useState<Task[]>([]);
@@ -110,7 +110,9 @@ const TaskListOwnerToken = () => {
                 address.toLowerCase() ===
                     poolStateDetail.pool?.owner?.toLowerCase()
             ) {
-                getTrustPointTokenAction(poolAddress);
+                setTimeout(() => {
+                    getTrustPointTokenAction(poolAddress);
+                }, 1_000);
             }
         }
     }, [useMintTokenWithSignature.isConfirmed]);
@@ -148,7 +150,6 @@ const TaskListOwnerToken = () => {
     }, [trustPointToken.data]);
 
     const handleClaimClick = async (task: Task) => {
-        // console.log(`Claiming task ...`, task);
         setLoadingMintWithSignature(true);
         setTokenIdProcessClaimed(task.id);
         try {
@@ -157,7 +158,6 @@ const TaskListOwnerToken = () => {
                     poolAddress,
                     task.id
                 );
-            // console.log('signature-------', signature);
             if (signature) {
                 await useMintTokenWithSignature.actionAsync({
                     id: task.id.toString(),

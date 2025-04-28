@@ -10,8 +10,7 @@ import {
     TelegramShareButton,
     TwitterIcon,
     TwitterShareButton,
-    XIcon,
-
+    XIcon
 } from 'react-share';
 import { useAccount } from 'wagmi';
 
@@ -20,7 +19,6 @@ const ShareSocialAffiliate = () => {
 
     const { authState } = useAuthLogin();
     const [affiliate, setAffiliate] = useState('');
-
 
     useEffect(() => {
         if (authState.userInfo?.refId) {
@@ -129,7 +127,7 @@ const ShareSocialAffiliate = () => {
                             <span>
                                 <FacebookShareButton
                                     url={affiliate}
-                                // title={t('TITLE_SHARE_TELEGRAM_AFFILIATE')}
+                                    // title={t('TITLE_SHARE_TELEGRAM_AFFILIATE')}
                                 >
                                     <FacebookIcon
                                         size={30}
@@ -226,7 +224,7 @@ const ShareSocialAffiliate = () => {
                     md={24}
                     lg={24}
                     xl={24}
-                // className="font-forza"
+                    // className="font-forza"
                 >
                     <div>
                         <Input

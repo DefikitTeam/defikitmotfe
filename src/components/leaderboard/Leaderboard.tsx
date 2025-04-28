@@ -1,6 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Tabs, Badge, Tooltip, Progress, Spin } from 'antd';
-import { TrophyOutlined, FireOutlined, StarOutlined, HistoryOutlined, RiseOutlined, FallOutlined } from '@ant-design/icons';
+import {
+    Card,
+    Table,
+    Tabs,
+    Badge,
+    Tooltip,
+    Progress,
+    Spin,
+    Row,
+    Col
+} from 'antd';
+import {
+    TrophyOutlined,
+    FireOutlined,
+    StarOutlined,
+    HistoryOutlined,
+    RiseOutlined,
+    FallOutlined,
+    WalletOutlined,
+    DollarCircleOutlined,
+    CalculatorOutlined
+} from '@ant-design/icons';
 import { formatNumber } from '@/src/common/utils/format';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -59,7 +79,7 @@ const Leaderboard: React.FC = () => {
             socialPoint: 500,
             lastUpdated: '2024-04-08',
             rankChange: 0
-        },
+        }
         // Thêm mock data khác...
     ];
 
@@ -103,9 +123,10 @@ const Leaderboard: React.FC = () => {
             dataIndex: 'rank',
             key: 'rank',
             width: 80,
+            className: '!font-forza',
             render: (rank: number, record: LeaderboardEntry) => (
                 <motion.div
-                    className="flex items-center justify-center"
+                    className="flex items-center justify-center !font-forza"
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.3 }}
@@ -114,62 +135,82 @@ const Leaderboard: React.FC = () => {
                     {rank <= 3 ? (
                         <motion.div
                             animate={{ rotate: [0, 10, -10, 0] }}
-                            transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 5 }}
+                            transition={{
+                                duration: 0.5,
+                                repeat: Infinity,
+                                repeatDelay: 5
+                            }}
                         >
-                            <TrophyOutlined className={`text-${rank === 1 ? 'yellow' : rank === 2 ? 'gray' : 'orange'}-500 text-xl`} />
+                            <TrophyOutlined
+                                className={`text-${rank === 1 ? 'yellow' : rank === 2 ? 'gray' : 'orange'}-500 text-xl`}
+                            />
                         </motion.div>
                     ) : (
                         <span className="font-bold">{rank}</span>
                     )}
-                    {record.rankChange !== undefined && record.rankChange !== 0 && (
-                        <motion.div
-                            className={`ml-2 ${record.rankChange > 0 ? 'text-green-500' : 'text-red-500'}`}
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {record.rankChange > 0 ? <RiseOutlined /> : <FallOutlined />}
-                            <span className="ml-1">{Math.abs(record.rankChange)}</span>
-                        </motion.div>
-                    )}
+                    {record.rankChange !== undefined &&
+                        record.rankChange !== 0 && (
+                            <motion.div
+                                className={`ml-2 ${record.rankChange > 0 ? 'text-green-500' : 'text-red-500'}`}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                {record.rankChange > 0 ? (
+                                    <RiseOutlined />
+                                ) : (
+                                    <FallOutlined />
+                                )}
+                                <span className="ml-1">
+                                    {Math.abs(record.rankChange)}
+                                </span>
+                            </motion.div>
+                        )}
                 </motion.div>
-            ),
+            )
         },
         {
             title: 'Address',
             dataIndex: 'address',
             key: 'address',
+            className: '!font-forza',
             render: (address: string) => (
                 <motion.div
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-2 !font-forza"
                     whileHover={{ x: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                 >
                     <span className="font-mono">{address}</span>
                     {/* <Badge status="success" text="Active" /> */}
                 </motion.div>
-            ),
+            )
         },
         {
             title: 'Points',
             dataIndex: 'points',
             key: 'points',
-            sorter: (a: LeaderboardEntry, b: LeaderboardEntry) => a.points - b.points,
+            className: '!font-forza',
+            sorter: (a: LeaderboardEntry, b: LeaderboardEntry) =>
+                a.points - b.points,
             render: (points: number) => (
                 <motion.div
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-2 !font-forza  "
                     whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                 >
                     <motion.div
                         animate={{ rotate: [0, 15, -15, 0] }}
-                        transition={{ duration: 1, repeat: Infinity, repeatDelay: 3 }}
+                        transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            repeatDelay: 3
+                        }}
                     >
                         <FireOutlined className="text-orange-500" />
                     </motion.div>
                     <span className="font-bold">{formatNumber(points)}</span>
                 </motion.div>
-            ),
+            )
         },
 
         // {
@@ -196,6 +237,7 @@ const Leaderboard: React.FC = () => {
         {
             title: 'Activity Breakdown',
             key: 'breakdown',
+            className: '!font-forza',
             render: (record: LeaderboardEntry) => (
                 <motion.div
                     className="space-y-2"
@@ -206,10 +248,12 @@ const Leaderboard: React.FC = () => {
                     <Tooltip title="Volume Invest">
                         <motion.div
                             whileHover={{ scale: 1.02 }}
-                            transition={{ type: "spring", stiffness: 300 }}
+                            transition={{ type: 'spring', stiffness: 300 }}
                         >
                             <Progress
-                                percent={Math.round((record.volumeInvest / 100000) * 100)}
+                                percent={Math.round(
+                                    (record.volumeInvest / 100000) * 100
+                                )}
                                 size="small"
                                 strokeColor="#52c41a"
                                 strokeLinecap="round"
@@ -219,10 +263,12 @@ const Leaderboard: React.FC = () => {
                     <Tooltip title="Create Token">
                         <motion.div
                             whileHover={{ scale: 1.02 }}
-                            transition={{ type: "spring", stiffness: 300 }}
+                            transition={{ type: 'spring', stiffness: 300 }}
                         >
                             <Progress
-                                percent={Math.round((record.createToken / 5) * 100)}
+                                percent={Math.round(
+                                    (record.createToken / 5) * 100
+                                )}
                                 size="small"
                                 strokeColor="#1890ff"
                                 strokeLinecap="round"
@@ -232,10 +278,12 @@ const Leaderboard: React.FC = () => {
                     <Tooltip title="Social Points">
                         <motion.div
                             whileHover={{ scale: 1.02 }}
-                            transition={{ type: "spring", stiffness: 300 }}
+                            transition={{ type: 'spring', stiffness: 300 }}
                         >
                             <Progress
-                                percent={Math.round((record.socialPoint / 1000) * 100)}
+                                percent={Math.round(
+                                    (record.socialPoint / 1000) * 100
+                                )}
                                 size="small"
                                 strokeColor="#722ed1"
                                 strokeLinecap="round"
@@ -243,23 +291,24 @@ const Leaderboard: React.FC = () => {
                         </motion.div>
                     </Tooltip>
                 </motion.div>
-            ),
+            )
         },
         {
             title: 'Last Updated',
             dataIndex: 'lastUpdated',
             key: 'lastUpdated',
+            className: '!font-forza',
             render: (date: string) => (
                 <motion.div
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-2 !font-forza"
                     whileHover={{ x: 5 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                 >
                     <HistoryOutlined />
                     <span>{date}</span>
                 </motion.div>
-            ),
-        },
+            )
+        }
     ];
 
     return (
@@ -268,42 +317,104 @@ const Leaderboard: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <Card className="w-full mt-3" bodyStyle={{ padding: 0 }}>
-                <div className="block md:flex md:justify-between md:items-start px-4 pt-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                    >
-                        <h1 className="text-2xl font-bold mb-2">Leaderboard</h1>
-                        <p className="text-gray-500">
-                            Track your ranking and earn BERA tokens based on your activity
-                        </p>
-                    </motion.div>
+            <Card
+                className="mt-3 w-full"
+                bodyStyle={{ padding: 0 }}
+            >
+                <div className="block px-4 pt-6 mt-2">
+                    <Row gutter={[10, 10]}>
+                        <Col
+                            xs={24}
+                            sm={24}
+                            lg={12}
+                            md={12}
+                            xxl={12}
+                            className="!font-forza"
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                            >
+                                <h1 className="mb-2 text-2xl font-bold">
+                                    Leaderboard
+                                </h1>
+                                <p className="text-gray-500">
+                                    Track your ranking and earn BERA tokens
+                                    based on your activity
+                                </p>
+                            </motion.div>
+                        </Col>
+                        <Col
+                            xs={24}
+                            sm={24}
+                            lg={12}
+                            md={12}
+                            xxl={12}
+                            className="!font-forza"
+                        >
+                            <motion.div
+                                className="mt-4 w-full rounded-lg bg-gray-50 p-4"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.4 }}
+                                whileHover={{ scale: 1.01 }}
+                            >
+                                <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold">
+                                    <CalculatorOutlined /> Point Calculation Formula
+                                </h3>
 
-                    <motion.div
-                        className="p-4 bg-gray-50 rounded-lg w-full md:w-1/3 mt-4 md:mt-0"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
-                        whileHover={{ scale: 1.01 }}
-                    >
-                        <h3 className="text-lg font-semibold mb-2">Point Calculation Formula</h3>
-                        <div className="space-y-2">
-                            <p>Total Points = (Volume Invest × 0.4) + (Create Token × 0.3) + (Social Point × 0.3)</p>
-                            <p>Estimated BERA = Total Points × Conversion Rate</p>
-                            <p className="text-sm text-gray-500">
-                                * Final formula and conversion rates are subject to change
-                            </p>
-                        </div>
-                    </motion.div>
+                                <div className="space-y-3 rounded-md border border-gray-200 bg-white p-3 shadow-sm">
+                                    <div className="flex items-start gap-2">
+                                        <WalletOutlined className="mt-1 text-blue-500" />
+                                        <div>
+                                            <span className="font-medium">Wallet Trust Points (TP)</span> =
+                                            <code className="ml-1 rounded bg-blue-50 px-1 py-0.5 text-blue-700">
+                                                Multiplier (Wallet)
+                                            </code> ×
+                                            <code className="ml-1 rounded bg-green-50 px-1 py-0.5 text-green-700">
+                                                Invested Volume
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-2">
+                                        <DollarCircleOutlined className="mt-1 text-purple-500" />
+                                        <div>
+                                            <span className="font-medium">Token Trust Points (TP)</span> =
+                                            <code className="ml-1 rounded bg-purple-50 px-1 py-0.5 text-purple-700">
+                                                Multiplier (Token)
+                                            </code> × Σ (
+                                            <code className="ml-1 rounded bg-red-50 px-1 py-0.5 text-red-700">
+                                                Transaction Volume
+                                            </code> ×
+                                            <code className="ml-1 rounded bg-blue-50 px-1 py-0.5 text-blue-700">
+                                                Multiplier (Wallet)
+                                            </code>)
+                                        </div>
+                                    </div>
+                                    <p className="!mt-4 border-t border-gray-100 pt-3 text-xs text-gray-500">
+                                        * Multipliers and specific calculation details may vary.
+                                    </p>
+                                </div>
+
+
+                            </motion.div>
+                        </Col>
+                    </Row>
                 </div>
 
                 <div className="px-4 pb-6">
-                    <Tabs activeKey={activeTab} onChange={setActiveTab}>
-                        <TabPane tab="Daily Ranking" key="daily">
+                    <Tabs
+                        activeKey={activeTab}
+                        onChange={setActiveTab}
+                    >
+                        <TabPane
+                            tab="Daily Ranking"
+                            key="daily"
+                            className="!font-forza"
+                        >
                             {loading ? (
-                                <div className="flex justify-center items-center h-64">
+                                <div className="flex h-64 items-center justify-center">
                                     <Spin size="large" />
                                 </div>
                             ) : (
@@ -318,33 +429,48 @@ const Leaderboard: React.FC = () => {
                                             dataSource={data}
                                             columns={columns}
                                             rowKey="address"
-                                            pagination={{ pageSize: 10 }}
+                                            pagination={false}
                                             onRow={(record) => ({
-                                                onClick: () => record.rank === 1 && celebrateTopRank(record.address),
-                                                className: highlightedUser === record.address ? 'bg-yellow-50 transition-colors duration-300' : '',
+                                                onClick: () =>
+                                                    record.rank === 1 &&
+                                                    celebrateTopRank(
+                                                        record.address
+                                                    ),
+                                                className:
+                                                    highlightedUser ===
+                                                        record.address
+                                                        ? 'bg-yellow-50 transition-colors duration-300'
+                                                        : ''
                                             })}
                                         />
                                     </motion.div>
                                 </AnimatePresence>
                             )}
                         </TabPane>
-                        <TabPane tab="Weekly Retroactive" key="weekly">
+                        <TabPane
+                            tab="Weekly Retroactive"
+                            key="weekly"
+                            className="!font-forza"
+                        >
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                <div className="bg-yellow-50 p-4 rounded-lg mb-4">
-                                    <h3 className="text-lg font-semibold text-yellow-800">Weekly Retroactive Distribution</h3>
+                                <div className="mb-4 rounded-lg bg-yellow-50 p-4">
+                                    <h3 className="text-lg font-semibold text-yellow-800">
+                                        Weekly Retroactive Distribution
+                                    </h3>
                                     <p className="text-yellow-700">
-                                        Rewards will be distributed every Sunday at 00:00 UTC
+                                        Rewards will be distributed every Sunday
+                                        at 00:00 UTC
                                     </p>
                                 </div>
                                 <Table
                                     dataSource={data}
                                     columns={columns}
                                     rowKey="address"
-                                    pagination={{ pageSize: 10 }}
+                                    pagination={false}
                                 />
                             </motion.div>
                         </TabPane>
@@ -355,4 +481,4 @@ const Leaderboard: React.FC = () => {
     );
 };
 
-export default Leaderboard; 
+export default Leaderboard;

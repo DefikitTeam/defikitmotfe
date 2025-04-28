@@ -334,21 +334,26 @@ export class LaunchPadInterface {
                 //         .toFixed(0)
                 // )
 
-                value: maxAmountETH ? BigInt(
-                    new BigNumber(
-                        chainConfig.getPlatformFee(this._contractStruct.chainId)
-                    )
-                        .times(1e18)
-                        .plus(new BigNumber(maxAmountETH))
-                        .toFixed(0)
-                ) : BigInt(
-                    new BigNumber(
-                        chainConfig.getPlatformFee(this._contractStruct.chainId)
-                    )
-                        .times(1e18)
-                        .toFixed(0)
-                )
-
+                value: maxAmountETH
+                    ? BigInt(
+                          new BigNumber(
+                              chainConfig.getPlatformFee(
+                                  this._contractStruct.chainId
+                              )
+                          )
+                              .times(1e18)
+                              .plus(new BigNumber(maxAmountETH))
+                              .toFixed(0)
+                      )
+                    : BigInt(
+                          new BigNumber(
+                              chainConfig.getPlatformFee(
+                                  this._contractStruct.chainId
+                              )
+                          )
+                              .times(1e18)
+                              .toFixed(0)
+                      )
             });
         } catch (err) {
             this.handleErrors(err);
@@ -506,7 +511,6 @@ export class LaunchPadInterface {
         if (!id || !signature) {
             throw new Error('Invalid params when call mintWithSignature');
         }
-        console.log('params-------', params);
 
         await watcher.writeContractAsync({
             ...this._contractStruct,
@@ -514,10 +518,6 @@ export class LaunchPadInterface {
             args: [id, signature]
         });
     }
-
-
-
-
 
     async mintTokenWithSignature(
         watcher: UseWriteContractReturnType,
@@ -531,7 +531,6 @@ export class LaunchPadInterface {
         if (!id || !token || !signature) {
             throw new Error('Invalid params when call mintTokenWithSignature');
         }
-        console.log('params-------', params);
 
         await watcher.writeContractAsync({
             ...this._contractStruct,
