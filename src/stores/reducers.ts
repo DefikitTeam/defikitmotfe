@@ -25,6 +25,8 @@ import userReducer from '@/src/stores/Twitter/userSlice';
 import discordUserReducer from '@/src/stores/discord/userSlice';
 import getTrustPointReducer from '@/src/stores/trust-point/get-trust-point-status-slice';
 import getTrustPointTokenReducer from '@/src/stores/trust-point/get-trust-point-status-token-slice';
+import trustPointDailyWalletTokenReducer from '@/src/stores/trust-point/trust-point-daily-wallet-token-slice';
+import trustPointWeeklyWalletTokenReducer from '@/src/stores/trust-point/trust-point-weekly-wallet-token-slice';
 const rootReducer = combineReducers({
     auth: authReducer,
     poolDetail: poolDetailReducer,
@@ -51,7 +53,9 @@ const rootReducer = combineReducers({
     user: userReducer,
     discordUser: discordUserReducer,
     trustPoint: getTrustPointReducer,
-    trustPointToken: getTrustPointTokenReducer
+    trustPointToken: getTrustPointTokenReducer,
+    trustPointDailyWalletToken: trustPointDailyWalletTokenReducer,
+    trustPointWeeklyWalletToken: trustPointWeeklyWalletTokenReducer
 });
 
 export default rootReducer;

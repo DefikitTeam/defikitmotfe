@@ -37,3 +37,56 @@ export interface IGetSignatureTrustPointState {
     errorCode: string;
     data: IGetSignatureTrustPointResponseItem;
 }
+
+export interface ITrustPointDailyWalltTokenState {
+    status: EActionStatus;
+    errorMessage: string;
+    errorCode: string;
+    data: {
+        userTrustScoreDailies: IUserTrustPointScoreDailyItem[];
+        poolTrustScoreDailies: IPoolTrustPointScoreDailyItem[];
+    };
+}
+
+export interface ITrustPointWeeklyWalletTokenState {
+    status: EActionStatus;
+    errorMessage: string;
+    errorCode: string;
+    data: {
+        userTrustScoreWeeklies: IUserTrustPointScoreWeeklyItem[];
+        poolTrustScoreWeeklies: IPoolTrustPointScoreWeeklyItem[];
+    };
+}
+
+export interface IUserTrustPointScoreDailyItem {
+    id: string;
+    user: {
+        id: string;
+        multiplier: string;
+    };
+    dayStartUnix: number;
+    trustScore: string;
+    volume: string;
+}
+
+export interface IUserTrustPointScoreWeeklyItem
+    extends Omit<IUserTrustPointScoreDailyItem, 'dayStartUnix'> {
+    weekStartUnix: number;
+}
+
+export interface IPoolTrustPointScoreWeeklyItem
+    extends Omit<IPoolTrustPointScoreDailyItem, 'dayStartUnix'> {
+    weekStartUnix: number;
+}
+
+export interface IPoolTrustPointScoreDailyItem {
+    id: string;
+    pool: {
+        id: string;
+        multiplier: string;
+    };
+    dayStartUnix: number;
+    tokenTrustPoint: string;
+    trustScore: string;
+    volume: string;
+}
