@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Col, Input, notification, Row, Tooltip } from 'antd';
@@ -8,7 +10,6 @@ import {
     FacebookShareButton,
     TelegramIcon,
     TelegramShareButton,
-    TwitterIcon,
     TwitterShareButton,
     XIcon
 } from 'react-share';

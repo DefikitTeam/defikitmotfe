@@ -8,6 +8,12 @@ import {
 } from '@/src/common/constant/constance';
 import { IPoolDetail } from '@/src/services/response.type';
 import { EActionStatus, FetchError } from '../type';
+import {
+    IPoolTrustPointScoreDailyItem,
+    IPoolTrustPointScoreWeeklyItem,
+    IUserTrustPointScoreDailyItem,
+    IUserTrustPointScoreWeeklyItem
+} from '../trust-point/type';
 
 export interface ITransaction {
     id: string;
@@ -532,4 +538,30 @@ export interface ICreateLaunchPoolParams {
     decimals: string;
     totalSupply: string;
     address: string;
+}
+
+export interface IGetTop100TrustPointWalletAndTokenQuery {
+    first?: number;
+    orderBy?: string;
+    orderDirection?: string;
+    dayStartUnix: number;
+    chainId: number;
+}
+
+export interface IGetTop100TrustPointWalletAndTokenWeeklyQuery
+    extends Omit<IGetTop100TrustPointWalletAndTokenQuery, 'dayStartUnix'> {
+    weekStartUnix: number;
+}
+export interface IGetTop100TrustPointWalletAndTokenResponse {
+    data: {
+        userTrustScoreDailies: IUserTrustPointScoreDailyItem[];
+        poolTrustScoreDailies: IPoolTrustPointScoreDailyItem[];
+    };
+}
+
+export interface IGetTop100TrustPointWalletAndTokenWeeklyResponse {
+    data: {
+        userTrustScoreWeeklies: IUserTrustPointScoreWeeklyItem[];
+        poolTrustScoreWeeklies: IPoolTrustPointScoreWeeklyItem[];
+    };
 }

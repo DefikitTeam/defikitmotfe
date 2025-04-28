@@ -9,6 +9,8 @@ import {
     IGetDetailHolderDistributionParams,
     IGetDetailPoolParams,
     IGetPoolInfoRewardParams,
+    IGetTop100TrustPointWalletAndTokenQuery,
+    IGetTop100TrustPointWalletAndTokenWeeklyQuery,
     IGetTransactionByPoolAndSenderParams,
     IGetUserPoolParams,
     IGetUserTopRewardByPoolParams,
@@ -17,7 +19,11 @@ import {
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { querySubGraph } from '../fetcher';
-import { getQueryByStatus } from './query';
+import {
+    getQueryByStatus,
+    getTop100TPDailyCombinedQuery,
+    getTop100TPWeeklyCombinedQuery
+} from './query';
 export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
 // const currentHostName = useCurrentHostNameInformation();
 // const isProd =
@@ -391,6 +397,26 @@ const servicePool = {
             return res.data;
         }
         return [];
+    },
+
+    getTop100TrustPointWalletAndToken: ({
+        dayStartUnix,
+        chainId
+    }: IGetTop100TrustPointWalletAndTokenQuery) => {
+        const payload = {
+            query: getTop100TPDailyCombinedQuery({ dayStartUnix })
+        };
+        return querySubGraph(payload, chainId);
+    },
+
+    getTop100TrustPointWalletAndTokenWeekly: ({
+        weekStartUnix,
+        chainId
+    }: IGetTop100TrustPointWalletAndTokenWeeklyQuery) => {
+        const payload = {
+            query: getTop100TPWeeklyCombinedQuery({ weekStartUnix })
+        };
+        return querySubGraph(payload, chainId);
     }
 };
 
