@@ -1,8 +1,5 @@
 /* eslint-disable */
-import {
-    NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD
-} from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import {
     ICheckAccessTokenResponse,
     IDataUserLoginResponse,
@@ -15,7 +12,6 @@ import {
 import { IRefCode } from '@/src/stores/pool/type';
 import { Cookies } from 'react-cookie';
 import { post } from '../fetcher';
-import { ConfigService } from '@/src/config/services/config-service';
 const cookies = new Cookies();
 const USER_INFO_STORAGE_KEY = 'usr_if';
 const USER_WALLET_STORAGE_KEY = 'usr_wallet_if';

@@ -66,10 +66,10 @@ const ButtonConnectWallet = () => {
         if (!(address as `0x${string}`)) {
             if (isMobile) return;
             disconnect();
+            logoutWalletAction();
             logoutTelegramAction();
             logoutDiscordAction();
             logoutTwitterAction();
-            logoutWalletAction();
         }
     }, [address]);
 

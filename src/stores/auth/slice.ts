@@ -106,6 +106,7 @@ const authSlice = createSlice({
                 state.userInfo = null;
                 state.accessToken = null;
                 serviceAuth.storeAccessToken(null);
+                serviceAuth.storeRefreshToken(null);
             }
 
             state.userTele = null;
@@ -123,22 +124,43 @@ const authSlice = createSlice({
             state.errorCode = '';
             state.statusLoginWallet = EActionStatus.Idle;
 
-            if (!state.userTele) {
-                state.userInfo = null;
-                state.accessToken = null;
-                serviceAuth.storeAccessToken(null);
-            }
+            // if (!state.userTele) {
+            //     state.userInfo = null;
+            //     state.accessToken = null;
+            //     serviceAuth.storeAccessToken(null);
+            //     serviceAuth.storeRefreshToken(null);
+            // }
+            
+            state.userInfo = null;
             state.userWallet = null;
+            state.userTele = null;
+            state.userTwitter = null;
+            state.userDiscord = null;
+            state.accessToken = null;
+            state.refreshToken = null;
             state.signature = '';
-            servicePool.storeReferId(null);
+           
+            
+            serviceAuth.storeUserInfo(null);
             serviceAuth.storeUserWallet(null);
-            if (!serviceAuth.getUserTeleStorage()) {
-                serviceAuth.storeUserInfo(null);
-            }
-            if (!serviceAuth.getAccessTokenStorage()) {
-                serviceAuth.storeAccessToken(null);
-            }
+            serviceAuth.storeUserTele(null);
+            serviceAuth.storeUserTwitter(null);
+            serviceAuth.storeUserDiscord(null);
+            serviceAuth.storeAccessToken(null);
+            serviceAuth.storeRefreshToken(null); // Clear refresh token from storage
+            servicePool.storeReferId(null);
+
+
+            state.statusLoginTele = EActionStatus.Idle;
+            state.statusLoginTwitter = EActionStatus.Idle;
+            state.statusLoginDiscord = EActionStatus.Idle;
+           
+            
         },
+
+
+
+
         signOutTwitter: (state: IAuthState) => {
             state.errorMessage = '';
             state.errorCode = '';
