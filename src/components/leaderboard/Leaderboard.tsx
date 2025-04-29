@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { getTimeKey } from '@/src/common/utils/get-time-key';
 import { useConfig } from '@/src/hooks/useConfig';
 import {
     useTrustPointDailyWalletToken,
@@ -8,8 +7,14 @@ import {
 } from '@/src/stores/trust-point/hook';
 import BigNumber from 'bignumber.js';
 
+import {
+    calculateDayStartUnixForDate,
+    calculateMonthStartUnixForDate_Inaccurate,
+    calculateWeekStartUnixForDate
+} from '@/src/common/utils/get-time-key';
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { EActionStatus } from '@/src/stores/type';
 import {
     CalculatorOutlined,
     DollarCircleOutlined,
@@ -18,13 +23,19 @@ import {
     TrophyOutlined,
     WalletOutlined
 } from '@ant-design/icons';
-import { Card, Col, message, Row, Spin, Table, Tabs } from 'antd';
+import { Card, Col, DatePicker, message, Row, Spin, Table, Tabs } from 'antd';
 import confetti from 'canvas-confetti';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
+
+dayjs.extend(utc);
+dayjs.extend(weekOfYear);
 
 const { TabPane } = Tabs;
 
@@ -45,9 +56,9 @@ interface PoolLeaderboardEntry {
     volume: string;
     multiplier?: string;
     lastUpdated: number;
-    nameAndSymbol: string
+    nameAndSymbol: string;
     // image: string
-    changePrice24h: string
+    changePrice24h: string;
 }
 
 const Leaderboard = () => {
@@ -55,9 +66,13 @@ const Leaderboard = () => {
     const [activeTab, setActiveTab] = useState('daily');
     const { isMobile } = useWindowSize();
 
-    const [activeDailySubTab, setActiveDailySubTab] = useState('wallet'); // State cho sub-tab
-    const [activeWeeklySubTab, setActiveWeeklySubTab] = useState('wallet'); // State cho sub-tab weekly
-    const [activeMonthlySubTab, setActiveMonthlySubTab] = useState('wallet'); // State cho sub-tab monthly
+    const [selectedDate, setSelectedDate] = useState(dayjs.utc());
+    const [selectedWeek, setSelectedWeek] = useState(dayjs.utc());
+    const [selectedMonth, setSelectedMonth] = useState(dayjs.utc());
+
+    const [activeDailySubTab, setActiveDailySubTab] = useState('wallet');
+    const [activeWeeklySubTab, setActiveWeeklySubTab] = useState('wallet');
+    const [activeMonthlySubTab, setActiveMonthlySubTab] = useState('wallet');
     const [loading, setLoading] = useState(true);
     const [loadingWeekly, setLoadingWeekly] = useState(false);
     const [loadingMonthly, setLoadingMonthly] = useState(false);
@@ -69,16 +84,16 @@ const Leaderboard = () => {
     );
     const [userWeeklyData, setUserWeeklyData] = useState<
         UserLeaderboardEntry[]
-    >([]); // State cho weekly user data
+    >([]);
     const [poolWeeklyData, setPoolWeeklyData] = useState<
         PoolLeaderboardEntry[]
-    >([]); // State cho weekly pool data
+    >([]);
     const [userMonthlyData, setUserMonthlyData] = useState<
         UserLeaderboardEntry[]
-    >([]); // State cho monthly user data
+    >([]);
     const [poolMonthlyData, setPoolMonthlyData] = useState<
         PoolLeaderboardEntry[]
-    >([]); // State cho monthly pool data
+    >([]);
     const { isConnected, address } = useAccount();
 
     const router = useRouter();
@@ -109,218 +124,199 @@ const Leaderboard = () => {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            if (!chainConfig?.chainId) {
-                console.error('Chain ID not configured.');
-                setLoading(false);
-                return;
-            }
-            try {
-                setLoading(true);
-                const { dayKey } = await getTimeKey();
-                await getTrustPointDailyWalletTokenAction({
-                    chainId: chainConfig.chainId,
-                    dayStartUnix: dayKey
-                });
+        if (!chainConfig?.chainId || !selectedDate) {
+            console.warn(
+                'Cannot fetch daily data: Chain ID or Selected Date not available.'
+            );
+            return;
+        }
 
-                if (trustPointDailyWalletToken) {
-                    const processedUserData = (
-                        trustPointDailyWalletToken.data.userTrustScoreDailies ||
-                        []
-                    ).map((item, index) => ({
-                        rank: index + 1,
-                        address: item.user.id,
-                        points: new BigNumber(item.trustScore)
-                            .div(1e18)
-                            .toFixed(7),
-                        volume: new BigNumber(item.volume).div(1e18).toFixed(7),
-                        multiplier: item.user.multiplier,
-                        lastUpdated: item.dayStartUnix
-                    }));
-                    setUserDailyData(processedUserData);
+        const dayStartUnix = calculateDayStartUnixForDate(selectedDate);
 
-                    const processedPoolData = (
-                        trustPointDailyWalletToken.data.poolTrustScoreDailies ||
-                        []
-                    ).map((item, index) => ({
-                        rank: index + 1,
-                        poolId: item.pool.id,
-                        tokenTrustPoint: item.tokenTrustPoint,
-                        trustScore: new BigNumber(item.trustScore)
-                            .div(1e18)
-                            .toFixed(7),
-                        volume: new BigNumber(item.volume).div(1e18).toFixed(7),
-                        multiplier: item.pool.multiplier,
-                        lastUpdated: item.dayStartUnix,
-                        nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
-                        changePrice24h: new BigNumber(item.pool.changePrice24h).toFixed(2) + '%',
-                        // new BigNumber(pool.changePrice24h).toFixed(2) + '%',
-                    }));
-                    setPoolDailyData(processedPoolData);
-                }
-            } catch (error) {
-                console.error('Error fetching leaderboard data:', error);
-                message.error('Failed to load leaderboard data.');
+        getTrustPointDailyWalletTokenAction({
+            chainId: chainConfig.chainId,
+            dayStartUnix: dayStartUnix
+        });
+    }, [chainConfig?.chainId, selectedDate]);
+
+    useEffect(() => {
+        if (trustPointDailyWalletToken.status === EActionStatus.Pending) {
+            setLoading(true);
+        } else {
+            setLoading(false);
+
+            if (
+                trustPointDailyWalletToken.status === EActionStatus.Succeeded &&
+                trustPointDailyWalletToken
+            ) {
+                const processedUserData = (
+                    trustPointDailyWalletToken.data.userTrustScoreDailies || []
+                ).map((item, index) => ({
+                    rank: index + 1,
+                    address: item.user.id,
+                    points: new BigNumber(item.trustScore).div(1e18).toFixed(7),
+                    volume: new BigNumber(item.volume).div(1e18).toFixed(7),
+                    multiplier: item.user.multiplier,
+                    lastUpdated: item.dayStartUnix
+                }));
+                setUserDailyData(processedUserData);
+
+                const processedPoolData = (
+                    trustPointDailyWalletToken.data.poolTrustScoreDailies || []
+                ).map((item, index) => ({
+                    rank: index + 1,
+                    poolId: item.pool.id,
+                    tokenTrustPoint: item.tokenTrustPoint,
+                    trustScore: new BigNumber(item.trustScore)
+                        .div(1e18)
+                        .toFixed(7),
+                    volume: new BigNumber(item.volume).div(1e18).toFixed(7),
+                    multiplier: item.pool.multiplier,
+                    lastUpdated: item.dayStartUnix,
+                    nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
+                    changePrice24h:
+                        new BigNumber(item.pool.changePrice24h).toFixed(2) + '%'
+                }));
+                setPoolDailyData(processedPoolData);
+            } else {
                 setUserDailyData([]);
                 setPoolDailyData([]);
-            } finally {
-                setLoading(false);
+                if (
+                    trustPointDailyWalletToken.status === EActionStatus.Failed
+                ) {
+                    message.error('Failed to load daily leaderboard data.');
+                }
             }
-        };
-
-        fetchData();
-    }, [chainConfig?.chainId]);
+        }
+    }, [trustPointDailyWalletToken.status, trustPointDailyWalletToken]);
 
     useEffect(() => {
-        const fetchWeeklyData = async () => {
-            if (activeTab !== 'weekly' || !chainConfig?.chainId) {
-                return; // Chỉ fetch khi tab weekly active và có chainId
-            }
-            // Chỉ fetch nếu chưa có dữ liệu weekly (tránh fetch lại mỗi khi click tab)
-            if (userWeeklyData.length > 0 || poolWeeklyData.length > 0) {
-                return;
-            }
+        if (activeTab !== 'weekly' || !chainConfig?.chainId || !selectedWeek) {
+            return;
+        }
 
-            try {
-                setLoadingWeekly(true);
-                const { weekKey } = await getTimeKey();
-                await getTrustPointWeeklyWalletTokenAction({
-                    chainId: chainConfig.chainId,
-                    weekStartUnix: weekKey
-                });
-                if (trustPointWeeklyWalletToken) {
-                    const processedUserData = (
-                        trustPointWeeklyWalletToken.data
-                            .userTrustScoreWeeklies || []
-                    ).map((item, index) => ({
-                        rank: index + 1,
-                        address: item.user.id,
-                        points: new BigNumber(item.trustScore)
-                            .div(1e18)
-                            .toFixed(7),
-                        volume: new BigNumber(item.volume).div(1e18).toFixed(7),
-                        multiplier: item.user.multiplier,
-                        lastUpdated: item.weekStartUnix
-                    }));
-                    setUserWeeklyData(processedUserData);
+        const weekStartUnix = calculateWeekStartUnixForDate(selectedWeek);
 
-                    const processedPoolData = (
-                        trustPointWeeklyWalletToken.data
-                            .poolTrustScoreWeeklies || []
-                    ).map((item, index) => ({
-                        rank: index + 1,
-                        poolId: item.pool.id,
-                        tokenTrustPoint: new BigNumber(
-                            item.tokenTrustPoint || '0'
-                        )
-                            .div(1e18)
-                            .toFixed(7),
-                        trustScore: new BigNumber(item.trustScore)
-                            .div(1e18)
-                            .toFixed(7),
-                        volume: new BigNumber(item.volume).div(1e18).toFixed(7),
-                        multiplier: item.pool.multiplier,
-                        lastUpdated: item.weekStartUnix,
-                        nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
-                        changePrice24h: new BigNumber(item.pool.changePrice24h).toFixed(2) + '%',
-                        // new BigNumber(pool.changePrice24h).toFixed(2) + '%',
-                    }));
-                    setPoolWeeklyData(processedPoolData);
-                }
-            } catch (error) {
-                console.error('Error fetching weekly leaderboard data:', error);
-                message.error('Failed to load weekly leaderboard data.');
+        getTrustPointWeeklyWalletTokenAction({
+            chainId: chainConfig.chainId,
+            weekStartUnix: weekStartUnix
+        });
+    }, [chainConfig?.chainId, activeTab, selectedWeek]);
+
+    useEffect(() => {
+        if (trustPointWeeklyWalletToken.status === EActionStatus.Pending) {
+            setLoadingWeekly(true);
+        } else {
+            setLoadingWeekly(false);
+            if (
+                trustPointWeeklyWalletToken.status ===
+                    EActionStatus.Succeeded &&
+                trustPointWeeklyWalletToken
+            ) {
+                const processedUserData = (
+                    trustPointWeeklyWalletToken.data.userTrustScoreWeeklies ||
+                    []
+                ).map((item, index) => ({
+                    rank: index + 1,
+                    address: item.user.id,
+                    points: new BigNumber(item.trustScore).div(1e18).toFixed(7),
+                    volume: new BigNumber(item.volume).div(1e18).toFixed(7),
+                    multiplier: item.user.multiplier,
+                    lastUpdated: item.weekStartUnix
+                }));
+                setUserWeeklyData(processedUserData);
+
+                const processedPoolData = (
+                    trustPointWeeklyWalletToken.data.poolTrustScoreWeeklies ||
+                    []
+                ).map((item, index) => ({
+                    rank: index + 1,
+                    poolId: item.pool.id,
+                    tokenTrustPoint: new BigNumber(item.tokenTrustPoint || '0')
+                        .div(1e18)
+                        .toFixed(7),
+                    trustScore: new BigNumber(item.trustScore)
+                        .div(1e18)
+                        .toFixed(7),
+                    volume: new BigNumber(item.volume).div(1e18).toFixed(7),
+                    multiplier: item.pool.multiplier,
+                    lastUpdated: item.weekStartUnix,
+                    nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
+                    changePrice24h:
+                        new BigNumber(item.pool.changePrice24h).toFixed(2) + '%'
+                }));
+                setPoolWeeklyData(processedPoolData);
+            } else {
                 setUserWeeklyData([]);
                 setPoolWeeklyData([]);
-            } finally {
-                setLoadingWeekly(false);
             }
-        };
-
-        fetchWeeklyData();
-    }, [
-        activeTab,
-        chainConfig?.chainId,
-        getTrustPointWeeklyWalletTokenAction,
-        userWeeklyData.length,
-        poolWeeklyData.length,
-        trustPointWeeklyWalletToken
-    ]);
+        }
+    }, [trustPointWeeklyWalletToken.status, trustPointWeeklyWalletToken]);
 
     useEffect(() => {
-        const fetchMonthlyData = async () => {
-            if (activeTab !== 'monthly' || !chainConfig?.chainId) {
-                return; // Chỉ fetch khi tab monthly active và có chainId
-            }
-            // Chỉ fetch nếu chưa có dữ liệu monthly (tránh fetch lại mỗi khi click tab)
-            if (userMonthlyData.length > 0 || poolMonthlyData.length > 0) {
-                return;
-            }
+        if (
+            activeTab !== 'monthly' ||
+            !chainConfig?.chainId ||
+            !selectedMonth
+        ) {
+            return;
+        }
 
-            try {
-                setLoadingMonthly(true);
-                const { monthKey } = await getTimeKey();
-                await getTrustPointMonthlyWalletTokenAction({
-                    chainId: chainConfig.chainId,
-                    monthStartUnix: monthKey
-                });
-                if (trustPointMonthlyWalletToken) {
-                    const processedUserData = (
-                        trustPointMonthlyWalletToken.data
-                            .userTrustScoreMonthlies || []
-                    ).map((item, index) => ({
-                        rank: index + 1,
-                        address: item.user.id,
-                        points: new BigNumber(item.trustScore)
-                            .div(1e18)
-                            .toFixed(7),
-                        volume: new BigNumber(item.volume).div(1e18).toFixed(7),
-                        multiplier: item.user.multiplier,
-                        lastUpdated: item.monthStartUnix
-                    }));
-                    setUserMonthlyData(processedUserData);
+        const monthStartUnix =
+            calculateMonthStartUnixForDate_Inaccurate(selectedMonth);
 
-                    const processedPoolData = (
-                        trustPointMonthlyWalletToken.data
-                            .poolTrustScoreMonthlies || []
-                    ).map((item, index) => ({
-                        rank: index + 1,
-                        poolId: item.pool.id,
-                        tokenTrustPoint: new BigNumber(
-                            item.tokenTrustPoint || '0'
-                        )
-                            .div(1e18)
-                            .toFixed(7),
-                        trustScore: new BigNumber(item.trustScore)
-                            .div(1e18)
-                            .toFixed(7),
-                        volume: new BigNumber(item.volume).div(1e18).toFixed(7),
-                        multiplier: item.pool.multiplier,
-                        lastUpdated: item.monthStartUnix,
-                        nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
-                        changePrice24h: new BigNumber(item.pool.changePrice24h).toFixed(2) + '%',
-                    }));
-                    setPoolMonthlyData(processedPoolData);
-                }
-            } catch (error) {
-                console.error('Error fetching monthly leaderboard data:', error);
-                message.error('Failed to load monthly leaderboard data.');
-                setUserMonthlyData([]);
-                setPoolMonthlyData([]);
-            } finally {
-                setLoadingMonthly(false);
+        getTrustPointMonthlyWalletTokenAction({
+            chainId: chainConfig.chainId,
+            monthStartUnix: monthStartUnix
+        });
+    }, [activeTab, chainConfig?.chainId, selectedMonth]);
+
+    useEffect(() => {
+        if (trustPointMonthlyWalletToken.status === EActionStatus.Pending) {
+            setLoadingMonthly(true);
+        } else {
+            setLoadingMonthly(false);
+            if (
+                trustPointMonthlyWalletToken.status ===
+                    EActionStatus.Succeeded &&
+                trustPointMonthlyWalletToken
+            ) {
+                const processedUserData = (
+                    trustPointMonthlyWalletToken.data.userTrustScoreMonthlies ||
+                    []
+                ).map((item, index) => ({
+                    rank: index + 1,
+                    address: item.user.id,
+                    points: new BigNumber(item.trustScore).div(1e18).toFixed(7),
+                    volume: new BigNumber(item.volume).div(1e18).toFixed(7),
+                    multiplier: item.user.multiplier,
+                    lastUpdated: item.monthStartUnix
+                }));
+                setUserMonthlyData(processedUserData);
+
+                const processedPoolData = (
+                    trustPointMonthlyWalletToken.data.poolTrustScoreMonthlies ||
+                    []
+                ).map((item, index) => ({
+                    rank: index + 1,
+                    poolId: item.pool.id,
+                    tokenTrustPoint: new BigNumber(item.tokenTrustPoint || '0')
+                        .div(1e18)
+                        .toFixed(7),
+                    trustScore: new BigNumber(item.trustScore)
+                        .div(1e18)
+                        .toFixed(7),
+                    volume: new BigNumber(item.volume).div(1e18).toFixed(7),
+                    multiplier: item.pool.multiplier,
+                    lastUpdated: item.monthStartUnix,
+                    nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
+                    changePrice24h:
+                        new BigNumber(item.pool.changePrice24h).toFixed(2) + '%'
+                }));
+                setPoolMonthlyData(processedPoolData);
             }
-        };
-
-        fetchMonthlyData();
-    }, [
-        activeTab,
-        chainConfig?.chainId,
-        getTrustPointMonthlyWalletTokenAction,
-        userMonthlyData.length,
-        poolMonthlyData.length,
-        trustPointMonthlyWalletToken
-    ]);
+        }
+    }, [trustPointMonthlyWalletToken.status, trustPointMonthlyWalletToken]);
 
     const celebrateTopRank = (address: string) => {
         confetti({
@@ -330,10 +326,13 @@ const Leaderboard = () => {
         });
         setHighlightedUser(address);
 
-        // Reset highlight sau 3 giây
         setTimeout(() => {
             setHighlightedUser(null);
         }, 3000);
+    };
+
+    const disabledDateGreaterThanCurrent = (current: any) => {
+        return current && current.isAfter(dayjs(), 'day');
     };
 
     const userColumns = [
@@ -426,30 +425,8 @@ const Leaderboard = () => {
             render: (volume: string) => (
                 <span className="!font-forza">{volume || '0'}</span>
             )
-        },
-        // {
-        //     title: 'Last Updated',
-        //     dataIndex: 'lastUpdated',
-        //     key: 'lastUpdated',
-        //     width: '25%',
-
-        //     className: '!font-forza',
-        //     render: (timestamp: number) => (
-        //         <motion.div
-        //             className="flex items-center space-x-2 !font-forza"
-        //             whileHover={{ x: 5 }}
-        //             transition={{ type: 'spring', stiffness: 300 }}
-        //         >
-        //             <HistoryOutlined />
-        //             <span>
-        //                 {new Date(timestamp * 1000).toLocaleDateString()}
-        //             </span>
-        //         </motion.div>
-        //     )
-        // }
+        }
     ];
-
-    // Định nghĩa columns cho Pool (Token) Leaderboard
 
     const poolColumns = [
         {
@@ -554,34 +531,15 @@ const Leaderboard = () => {
             key: 'changePrice24h',
             className: '!font-forza',
             sorter: (a: PoolLeaderboardEntry, b: PoolLeaderboardEntry) => {
-                // Remove '%' and convert to Number for comparison
                 const valA = Number((a.changePrice24h || '0').replace('%', ''));
                 const valB = Number((b.changePrice24h || '0').replace('%', ''));
-                return valA - valB; // Simple subtraction works for sorting numbers
+                return valA - valB;
             },
 
             render: (changePrice24h: string) => (
                 <span className="font-forza">{changePrice24h || '0'}</span>
             )
-        },
-        // {
-        //     title: 'Last Updated',
-        //     dataIndex: 'lastUpdated',
-        //     key: 'lastUpdated',
-        //     className: '!font-forza',
-        //     render: (timestamp: number) => (
-        //         <motion.div
-        //             className="flex items-center space-x-2 !font-forza"
-        //             whileHover={{ x: 5 }}
-        //             transition={{ type: 'spring', stiffness: 300 }}
-        //         >
-        //             <HistoryOutlined />
-        //             <span>
-        //                 {new Date(timestamp * 1000).toLocaleDateString()}
-        //             </span>
-        //         </motion.div>
-        //     )
-        // }
+        }
     ];
 
     return (
@@ -613,7 +571,7 @@ const Leaderboard = () => {
                                     Leaderboard
                                 </h1>
                                 <p className="text-gray-500">
-                                    Track your ranking and earn BERA tokens
+                                    Track your ranking and earn {chainConfig?.currency} tokens
                                     based on your activity
                                 </p>
                             </motion.div>
@@ -696,6 +654,19 @@ const Leaderboard = () => {
                             key="daily"
                             className="!font-forza"
                         >
+                            <div className="mb-4 flex justify-end">
+                                <DatePicker
+                                    value={selectedDate}
+                                    className="!font-forza text-base"
+                                    onChange={(date) =>
+                                        setSelectedDate(date || dayjs.utc())
+                                    }
+                                    allowClear={false}
+                                    disabledDate={
+                                        disabledDateGreaterThanCurrent
+                                    }
+                                />
+                            </div>
                             <Tabs
                                 activeKey={activeDailySubTab}
                                 onChange={setActiveDailySubTab}
@@ -735,7 +706,7 @@ const Leaderboard = () => {
                                                             ),
                                                         className:
                                                             highlightedUser ===
-                                                                record.address
+                                                            record.address
                                                                 ? 'bg-yellow-50 transition-colors duration-300'
                                                                 : ''
                                                     })}
@@ -781,20 +752,25 @@ const Leaderboard = () => {
                             key="weekly"
                             className="!font-forza"
                         >
+                            <div className="mb-4 flex justify-end">
+                                <DatePicker
+                                    picker="week"
+                                    value={selectedWeek}
+                                    className="!font-forza text-base"
+                                    onChange={(date) =>
+                                        setSelectedWeek(date || dayjs.utc())
+                                    }
+                                    allowClear={false}
+                                    disabledDate={
+                                        disabledDateGreaterThanCurrent
+                                    }
+                                />
+                            </div>
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                {/* <div className="mb-4 rounded-lg bg-yellow-50 p-4">
-                                    <h3 className="text-lg font-semibold text-yellow-800">
-                                        Weekly Retroactive Distribution
-                                    </h3>
-                                    <p className="text-yellow-700">
-                                        Rewards will be distributed every Sunday
-                                        at 00:00 UTC
-                                    </p>
-                                </div> */}
                                 <Tabs
                                     activeKey={activeWeeklySubTab}
                                     onChange={setActiveWeeklySubTab}
@@ -877,20 +853,25 @@ const Leaderboard = () => {
                             key="monthly"
                             className="!font-forza"
                         >
+                            <div className="mb-4 flex justify-end">
+                                <DatePicker
+                                    picker="month"
+                                    value={selectedMonth}
+                                    className="!font-forza text-base"
+                                    onChange={(date) =>
+                                        setSelectedMonth(date || dayjs.utc())
+                                    }
+                                    allowClear={false}
+                                    disabledDate={
+                                        disabledDateGreaterThanCurrent
+                                    }
+                                />
+                            </div>
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.3 }}
                             >
-                                {/* Optional: Add specific info for monthly if needed */}
-                                {/* <div className="mb-4 rounded-lg bg-blue-50 p-4">
-                                    <h3 className="text-lg font-semibold text-blue-800">
-                                        Monthly Retroactive Distribution
-                                    </h3>
-                                    <p className="text-blue-700">
-                                        Rewards details for monthly cycle...
-                                    </p>
-                                </div> */}
                                 <Tabs
                                     activeKey={activeMonthlySubTab}
                                     onChange={setActiveMonthlySubTab}

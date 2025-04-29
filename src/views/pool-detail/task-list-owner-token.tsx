@@ -113,7 +113,7 @@ const TaskListOwnerToken = () => {
                 isConnected &&
                 address &&
                 address.toLowerCase() ===
-                poolStateDetail.pool?.owner?.toLowerCase()
+                    poolStateDetail.pool?.owner?.toLowerCase()
             ) {
                 setTimeout(() => {
                     getTrustPointTokenAction(poolAddress);
@@ -304,7 +304,9 @@ const TaskListOwnerToken = () => {
                         <List.Item
                             style={{
                                 ...listItemStyle,
-                                ...(hoveredTaskId === task.id ? listItemHoverStyle : {})
+                                ...(hoveredTaskId === task.id
+                                    ? listItemHoverStyle
+                                    : {})
                             }}
                             onMouseEnter={() => setHoveredTaskId(task.id)}
                             onMouseLeave={() => setHoveredTaskId(null)}

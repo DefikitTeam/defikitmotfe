@@ -49,7 +49,7 @@ export const getTop100TPMonthlyWalletAndToken = createAsyncThunk<
             });
         }
     }
-);  
+);
 
 export const trustPointMonthlyWalletTokenSlice = createSlice({
     name: 'trustPointMonthlyWalletTokenSlice',

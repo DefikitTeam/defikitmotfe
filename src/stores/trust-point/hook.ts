@@ -119,9 +119,7 @@ type TrustPointMonthlyWalletTokenType = {
     getTrustPointMonthlyWalletTokenAction: (
         params: IGetTop100TrustPointWalletAndTokenMonthlyQuery
     ) => void;
-};  
-
-
+};
 
 export function useTrustPointMonthlyWalletToken(): TrustPointMonthlyWalletTokenType {
     const dispatch = useAppDispatch();
@@ -141,4 +139,3 @@ export function useTrustPointMonthlyWalletToken(): TrustPointMonthlyWalletTokenT
         getTrustPointMonthlyWalletTokenAction
     };
 }
-

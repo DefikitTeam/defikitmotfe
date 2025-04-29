@@ -555,7 +555,6 @@ export interface IGetTop100TrustPointWalletAndTokenWeeklyQuery
     weekStartUnix: number;
 }
 
-
 export interface IGetTop100TrustPointWalletAndTokenMonthlyQuery
     extends Omit<IGetTop100TrustPointWalletAndTokenQuery, 'dayStartUnix'> {
     monthStartUnix: number;

@@ -57,7 +57,11 @@ const SocialDescInformation = () => {
     const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
 
     const checkIsOwner = useMemo(() => {
-        if (isConnected && address && address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()) {
+        if (
+            isConnected &&
+            address &&
+            address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()
+        ) {
             return true;
         }
         return false;
@@ -242,22 +246,22 @@ const SocialDescInformation = () => {
                         : metaDataInfo?.description,
                 website:
                     values.websiteLink &&
-                        !values.websiteLink.startsWith('https://')
+                    !values.websiteLink.startsWith('https://')
                         ? `https://${values.websiteLink}`
                         : values.websiteLink,
                 telegram:
                     values.telegramLink &&
-                        !values.telegramLink.startsWith('https://')
+                    !values.telegramLink.startsWith('https://')
                         ? `https://${values.telegramLink}`
                         : values.telegramLink,
                 twitter:
                     values.twitterLink &&
-                        !values.twitterLink.startsWith('https://')
+                    !values.twitterLink.startsWith('https://')
                         ? `https://${values.twitterLink}`
                         : values.twitterLink,
                 discord:
                     values.discordLink &&
-                        !values.discordLink.startsWith('https://')
+                    !values.discordLink.startsWith('https://')
                         ? `https://${values.discordLink}`
                         : values.discordLink
             };
@@ -331,10 +335,7 @@ const SocialDescInformation = () => {
             });
             return;
         }
-        if (
-            checkIsOwner &&
-            !dataDetailPoolFromServer?.isTwitterVerified
-        ) {
+        if (checkIsOwner && !dataDetailPoolFromServer?.isTwitterVerified) {
             const poolUrl = `${window.location.origin}${window.location.pathname}`;
             const twitterIntentUrl = generateTwitterIntentUrl(
                 poolAddress,
@@ -396,7 +397,7 @@ const SocialDescInformation = () => {
                 <Tooltip
                     title={
                         checkIsOwner &&
-                            !dataDetailPoolFromServer?.isTwitterVerified ? (
+                        !dataDetailPoolFromServer?.isTwitterVerified ? (
                             <div className="!font-forza">
                                 <p>Click to share on Twitter</p>
                                 <p className="text-yellow-300">
@@ -478,31 +479,30 @@ const SocialDescInformation = () => {
                     />
                 )}
 
-                {!finalTelegramUrl &&
-                    checkIsOwner && (
-                        <Tooltip
-                            title={
-                                <div className="!font-forza">
-                                    <p className="text-yellow-300">
-                                        Task: Complete metadata by adding
-                                        Telegram group
-                                    </p>
-                                </div>
-                            }
-                            overlayClassName="!font-forza"
-                        >
-                            <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
-                                <Image
-                                    src="/icon/telegram.svg"
-                                    alt="telegram"
-                                    width={30}
-                                    height={30}
-                                    style={{ opacity: 0.5, cursor: 'pointer' }}
-                                    onClick={() => setIsModalOpen(true)}
-                                />
+                {!finalTelegramUrl && checkIsOwner && (
+                    <Tooltip
+                        title={
+                            <div className="!font-forza">
+                                <p className="text-yellow-300">
+                                    Task: Complete metadata by adding Telegram
+                                    group
+                                </p>
                             </div>
-                        </Tooltip>
-                    )}
+                        }
+                        overlayClassName="!font-forza"
+                    >
+                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
+                            <Image
+                                src="/icon/telegram.svg"
+                                alt="telegram"
+                                width={30}
+                                height={30}
+                                style={{ opacity: 0.5, cursor: 'pointer' }}
+                                onClick={() => setIsModalOpen(true)}
+                            />
+                        </div>
+                    </Tooltip>
+                )}
 
                 {finalWebsiteUrl && (
                     <Image
@@ -515,31 +515,30 @@ const SocialDescInformation = () => {
                     />
                 )}
 
-                {!finalWebsiteUrl &&
-                    checkIsOwner && (
-                        <Tooltip
-                            title={
-                                <div className="!font-forza">
-                                    <p className="text-yellow-300">
-                                        Task: Complete metadata by adding
-                                        Website link
-                                    </p>
-                                </div>
-                            }
-                            overlayClassName="!font-forza"
-                        >
-                            <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
-                                <Image
-                                    src="/icon/web.svg"
-                                    alt="website"
-                                    width={30}
-                                    height={30}
-                                    style={{ opacity: 0.5, cursor: 'pointer' }}
-                                    onClick={() => setIsModalOpen(true)}
-                                />
+                {!finalWebsiteUrl && checkIsOwner && (
+                    <Tooltip
+                        title={
+                            <div className="!font-forza">
+                                <p className="text-yellow-300">
+                                    Task: Complete metadata by adding Website
+                                    link
+                                </p>
                             </div>
-                        </Tooltip>
-                    )}
+                        }
+                        overlayClassName="!font-forza"
+                    >
+                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
+                            <Image
+                                src="/icon/web.svg"
+                                alt="website"
+                                width={30}
+                                height={30}
+                                style={{ opacity: 0.5, cursor: 'pointer' }}
+                                onClick={() => setIsModalOpen(true)}
+                            />
+                        </div>
+                    </Tooltip>
+                )}
 
                 {finalDiscordUrl && (
                     <Image
@@ -552,60 +551,58 @@ const SocialDescInformation = () => {
                     />
                 )}
 
-                {!finalDiscordUrl &&
-                    checkIsOwner && (
-                        <Tooltip
-                            title={
-                                <div className="!font-forza">
-                                    <p className="text-yellow-300">
-                                        Task: Complete metadata by adding
-                                        Discord server
-                                    </p>
-                                </div>
-                            }
-                            overlayClassName="!font-forza"
-                        >
-                            <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
-                                <Image
-                                    src="/icon/discord.svg"
-                                    alt="discord"
-                                    width={30}
-                                    height={30}
-                                    style={{ opacity: 0.5, cursor: 'pointer' }}
-                                    onClick={() => setIsModalOpen(true)}
-                                />
+                {!finalDiscordUrl && checkIsOwner && (
+                    <Tooltip
+                        title={
+                            <div className="!font-forza">
+                                <p className="text-yellow-300">
+                                    Task: Complete metadata by adding Discord
+                                    server
+                                </p>
                             </div>
-                        </Tooltip>
-                    )}
-
-                {isConnected &&
-                    checkIsOwner && (
-                        <Tooltip
-                            title="Update social media links"
-                            overlayClassName="!font-forza"
-                        >
-                            <Button
-                                type="primary"
-                                loading={isLoading}
-                                className="bg-green-500 hover:bg-green-600 flex h-[40px] w-[40px] items-center justify-center rounded-full shadow-lg"
+                        }
+                        overlayClassName="!font-forza"
+                    >
+                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gray-400">
+                            <Image
+                                src="/icon/discord.svg"
+                                alt="discord"
+                                width={30}
+                                height={30}
+                                style={{ opacity: 0.5, cursor: 'pointer' }}
                                 onClick={() => setIsModalOpen(true)}
+                            />
+                        </div>
+                    </Tooltip>
+                )}
+
+                {isConnected && checkIsOwner && (
+                    <Tooltip
+                        title="Update social media links"
+                        overlayClassName="!font-forza"
+                    >
+                        <Button
+                            type="primary"
+                            loading={isLoading}
+                            className="bg-green-500 hover:bg-green-600 flex h-[40px] w-[40px] items-center justify-center rounded-full shadow-lg"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="white"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                             >
-                                <svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="white"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                </svg>
-                            </Button>
-                        </Tooltip>
-                    )}
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                        </Button>
+                    </Tooltip>
+                )}
 
                 {/* Add AI Agent tooltip */}
                 {isConnected &&

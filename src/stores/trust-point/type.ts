@@ -103,10 +103,10 @@ export interface IPoolTrustPointScoreDailyItem {
     pool: {
         id: string;
         multiplier: string;
-        name: string
-        symbol: string
-        metadata: string
-        changePrice24h: string
+        name: string;
+        symbol: string;
+        metadata: string;
+        changePrice24h: string;
     };
     dayStartUnix: number;
     tokenTrustPoint: string;
