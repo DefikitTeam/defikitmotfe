@@ -33,7 +33,6 @@ export const getTop100TPDailyWalletAndToken = createAsyncThunk<
             const data =
                 await servicePool.getTop100TrustPointWalletAndToken(params);
             const listTPDaily = await data.json();
-            console.log('listTPDaily----------', listTPDaily);
             return {
                 data: listTPDaily.data
             };

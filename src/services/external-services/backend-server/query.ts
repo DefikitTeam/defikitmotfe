@@ -173,6 +173,10 @@ const poolTrustScoreDailyEntities = ` {
     pool {
       id
       multiplier
+      name
+      symbol
+      metadata
+      changePrice24h
     }
     dayStartUnix
     tokenTrustPoint
@@ -186,6 +190,10 @@ id
     pool {
       id
       multiplier
+      name
+      symbol
+      metadata
+      changePrice24h
     }
     weekStartUnix
     tokenTrustPoint

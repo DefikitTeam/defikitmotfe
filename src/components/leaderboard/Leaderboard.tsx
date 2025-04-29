@@ -14,7 +14,6 @@ import {
     CalculatorOutlined,
     DollarCircleOutlined,
     FireOutlined,
-    HistoryOutlined,
     StarOutlined,
     TrophyOutlined,
     WalletOutlined
@@ -22,6 +21,7 @@ import {
 import { Card, Col, message, Row, Spin, Table, Tabs } from 'antd';
 import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
@@ -44,9 +44,13 @@ interface PoolLeaderboardEntry {
     volume: string;
     multiplier?: string;
     lastUpdated: number;
+    nameAndSymbol: string
+    // image: string
+    changePrice24h: string
 }
 
 const Leaderboard = () => {
+    const t = useTranslations();
     const [activeTab, setActiveTab] = useState('daily');
     const { isMobile } = useWindowSize();
 
@@ -133,7 +137,10 @@ const Leaderboard = () => {
                             .toFixed(7),
                         volume: new BigNumber(item.volume).div(1e18).toFixed(7),
                         multiplier: item.pool.multiplier,
-                        lastUpdated: item.dayStartUnix
+                        lastUpdated: item.dayStartUnix,
+                        nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
+                        changePrice24h: new BigNumber(item.pool.changePrice24h).toFixed(2) + '%',
+                        // new BigNumber(pool.changePrice24h).toFixed(2) + '%',
                     }));
                     setPoolDailyData(processedPoolData);
                 }
@@ -199,7 +206,10 @@ const Leaderboard = () => {
                             .toFixed(7),
                         volume: new BigNumber(item.volume).div(1e18).toFixed(7),
                         multiplier: item.pool.multiplier,
-                        lastUpdated: item.weekStartUnix
+                        lastUpdated: item.weekStartUnix,
+                        nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
+                        changePrice24h: new BigNumber(item.pool.changePrice24h).toFixed(2) + '%',
+                        // new BigNumber(pool.changePrice24h).toFixed(2) + '%',
                     }));
                     setPoolWeeklyData(processedPoolData);
                 }
@@ -328,26 +338,26 @@ const Leaderboard = () => {
                 <span className="!font-forza">{volume || '0'}</span>
             )
         },
-        {
-            title: 'Last Updated',
-            dataIndex: 'lastUpdated',
-            key: 'lastUpdated',
-            width: '25%',
+        // {
+        //     title: 'Last Updated',
+        //     dataIndex: 'lastUpdated',
+        //     key: 'lastUpdated',
+        //     width: '25%',
 
-            className: '!font-forza',
-            render: (timestamp: number) => (
-                <motion.div
-                    className="flex items-center space-x-2 !font-forza"
-                    whileHover={{ x: 5 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                >
-                    <HistoryOutlined />
-                    <span>
-                        {new Date(timestamp * 1000).toLocaleDateString()}
-                    </span>
-                </motion.div>
-            )
-        }
+        //     className: '!font-forza',
+        //     render: (timestamp: number) => (
+        //         <motion.div
+        //             className="flex items-center space-x-2 !font-forza"
+        //             whileHover={{ x: 5 }}
+        //             transition={{ type: 'spring', stiffness: 300 }}
+        //         >
+        //             <HistoryOutlined />
+        //             <span>
+        //                 {new Date(timestamp * 1000).toLocaleDateString()}
+        //             </span>
+        //         </motion.div>
+        //     )
+        // }
     ];
 
     // Định nghĩa columns cho Pool (Token) Leaderboard
@@ -384,6 +394,15 @@ const Leaderboard = () => {
                         <span className="font-forza">{rank}</span>
                     )}
                 </motion.div>
+            )
+        },
+        {
+            title: t('SYMBOL/NAME'),
+            dataIndex: 'nameAndSymbol',
+            key: 'nameAndSymbol',
+            className: '!font-forza',
+            render: (nameAndSymbol: string) => (
+                <span className="font-forza">{nameAndSymbol}</span>
             )
         },
         {
@@ -441,23 +460,39 @@ const Leaderboard = () => {
             )
         },
         {
-            title: 'Last Updated',
-            dataIndex: 'lastUpdated',
-            key: 'lastUpdated',
+            title: '24H(%)',
+            dataIndex: 'changePrice24h',
+            key: 'changePrice24h',
             className: '!font-forza',
-            render: (timestamp: number) => (
-                <motion.div
-                    className="flex items-center space-x-2 !font-forza"
-                    whileHover={{ x: 5 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                >
-                    <HistoryOutlined />
-                    <span>
-                        {new Date(timestamp * 1000).toLocaleDateString()}
-                    </span>
-                </motion.div>
+            sorter: (a: PoolLeaderboardEntry, b: PoolLeaderboardEntry) => {
+                // Remove '%' and convert to Number for comparison
+                const valA = Number((a.changePrice24h || '0').replace('%', ''));
+                const valB = Number((b.changePrice24h || '0').replace('%', ''));
+                return valA - valB; // Simple subtraction works for sorting numbers
+            },
+
+            render: (changePrice24h: string) => (
+                <span className="font-forza">{changePrice24h || '0'}</span>
             )
-        }
+        },
+        // {
+        //     title: 'Last Updated',
+        //     dataIndex: 'lastUpdated',
+        //     key: 'lastUpdated',
+        //     className: '!font-forza',
+        //     render: (timestamp: number) => (
+        //         <motion.div
+        //             className="flex items-center space-x-2 !font-forza"
+        //             whileHover={{ x: 5 }}
+        //             transition={{ type: 'spring', stiffness: 300 }}
+        //         >
+        //             <HistoryOutlined />
+        //             <span>
+        //                 {new Date(timestamp * 1000).toLocaleDateString()}
+        //             </span>
+        //         </motion.div>
+        //     )
+        // }
     ];
 
     return (
