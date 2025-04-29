@@ -1,9 +1,9 @@
-
 /* eslint-disable */
 import { getTimeKey } from '@/src/common/utils/get-time-key';
 import { useConfig } from '@/src/hooks/useConfig';
 import {
     useTrustPointDailyWalletToken,
+    useTrustPointMonthlyWalletToken,
     useTrustPointWeeklyWalletToken
 } from '@/src/stores/trust-point/hook';
 import BigNumber from 'bignumber.js';
@@ -39,6 +39,7 @@ interface UserLeaderboardEntry {
 
 interface PoolLeaderboardEntry {
     rank: number;
+    poolId: string;
     tokenTrustPoint: string;
     trustScore: string;
     volume: string;
@@ -56,8 +57,10 @@ const Leaderboard = () => {
 
     const [activeDailySubTab, setActiveDailySubTab] = useState('wallet'); // State cho sub-tab
     const [activeWeeklySubTab, setActiveWeeklySubTab] = useState('wallet'); // State cho sub-tab weekly
+    const [activeMonthlySubTab, setActiveMonthlySubTab] = useState('wallet'); // State cho sub-tab monthly
     const [loading, setLoading] = useState(true);
     const [loadingWeekly, setLoadingWeekly] = useState(false);
+    const [loadingMonthly, setLoadingMonthly] = useState(false);
     const [userDailyData, setUserDailyData] = useState<UserLeaderboardEntry[]>(
         []
     );
@@ -70,6 +73,12 @@ const Leaderboard = () => {
     const [poolWeeklyData, setPoolWeeklyData] = useState<
         PoolLeaderboardEntry[]
     >([]); // State cho weekly pool data
+    const [userMonthlyData, setUserMonthlyData] = useState<
+        UserLeaderboardEntry[]
+    >([]); // State cho monthly user data
+    const [poolMonthlyData, setPoolMonthlyData] = useState<
+        PoolLeaderboardEntry[]
+    >([]); // State cho monthly pool data
     const { isConnected, address } = useAccount();
 
     const router = useRouter();
@@ -82,6 +91,11 @@ const Leaderboard = () => {
         getTrustPointWeeklyWalletTokenAction,
         trustPointWeeklyWalletToken
     } = useTrustPointWeeklyWalletToken();
+    const {
+        getTrustPointMonthlyWalletTokenAction,
+        trustPointMonthlyWalletToken
+    } = useTrustPointMonthlyWalletToken();
+
     const handleClickAddress = (address: string) => {
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
@@ -231,7 +245,82 @@ const Leaderboard = () => {
         userWeeklyData.length,
         poolWeeklyData.length,
         trustPointWeeklyWalletToken
-    ]); 
+    ]);
+
+    useEffect(() => {
+        const fetchMonthlyData = async () => {
+            if (activeTab !== 'monthly' || !chainConfig?.chainId) {
+                return; // Chỉ fetch khi tab monthly active và có chainId
+            }
+            // Chỉ fetch nếu chưa có dữ liệu monthly (tránh fetch lại mỗi khi click tab)
+            if (userMonthlyData.length > 0 || poolMonthlyData.length > 0) {
+                return;
+            }
+
+            try {
+                setLoadingMonthly(true);
+                const { monthKey } = await getTimeKey();
+                await getTrustPointMonthlyWalletTokenAction({
+                    chainId: chainConfig.chainId,
+                    monthStartUnix: monthKey
+                });
+                if (trustPointMonthlyWalletToken) {
+                    const processedUserData = (
+                        trustPointMonthlyWalletToken.data
+                            .userTrustScoreMonthlies || []
+                    ).map((item, index) => ({
+                        rank: index + 1,
+                        address: item.user.id,
+                        points: new BigNumber(item.trustScore)
+                            .div(1e18)
+                            .toFixed(7),
+                        volume: new BigNumber(item.volume).div(1e18).toFixed(7),
+                        multiplier: item.user.multiplier,
+                        lastUpdated: item.monthStartUnix
+                    }));
+                    setUserMonthlyData(processedUserData);
+
+                    const processedPoolData = (
+                        trustPointMonthlyWalletToken.data
+                            .poolTrustScoreMonthlies || []
+                    ).map((item, index) => ({
+                        rank: index + 1,
+                        poolId: item.pool.id,
+                        tokenTrustPoint: new BigNumber(
+                            item.tokenTrustPoint || '0'
+                        )
+                            .div(1e18)
+                            .toFixed(7),
+                        trustScore: new BigNumber(item.trustScore)
+                            .div(1e18)
+                            .toFixed(7),
+                        volume: new BigNumber(item.volume).div(1e18).toFixed(7),
+                        multiplier: item.pool.multiplier,
+                        lastUpdated: item.monthStartUnix,
+                        nameAndSymbol: `${item.pool.name}/${item.pool.symbol}`,
+                        changePrice24h: new BigNumber(item.pool.changePrice24h).toFixed(2) + '%',
+                    }));
+                    setPoolMonthlyData(processedPoolData);
+                }
+            } catch (error) {
+                console.error('Error fetching monthly leaderboard data:', error);
+                message.error('Failed to load monthly leaderboard data.');
+                setUserMonthlyData([]);
+                setPoolMonthlyData([]);
+            } finally {
+                setLoadingMonthly(false);
+            }
+        };
+
+        fetchMonthlyData();
+    }, [
+        activeTab,
+        chainConfig?.chainId,
+        getTrustPointMonthlyWalletTokenAction,
+        userMonthlyData.length,
+        poolMonthlyData.length,
+        trustPointMonthlyWalletToken
+    ]);
 
     const celebrateTopRank = (address: string) => {
         confetti({
@@ -427,7 +516,7 @@ const Leaderboard = () => {
                 </motion.div>
             )
         },
-       
+
         {
             title: 'Pool Score',
             dataIndex: 'trustScore',
@@ -646,7 +735,7 @@ const Leaderboard = () => {
                                                             ),
                                                         className:
                                                             highlightedUser ===
-                                                            record.address
+                                                                record.address
                                                                 ? 'bg-yellow-50 transition-colors duration-300'
                                                                 : ''
                                                     })}
@@ -767,6 +856,102 @@ const Leaderboard = () => {
                                                     <Table
                                                         dataSource={
                                                             poolWeeklyData
+                                                        }
+                                                        columns={poolColumns}
+                                                        rowKey="poolId"
+                                                        pagination={false}
+                                                        scroll={{
+                                                            x: 'max-content'
+                                                        }}
+                                                    />
+                                                </motion.div>
+                                            </AnimatePresence>
+                                        )}
+                                    </TabPane>
+                                </Tabs>
+                            </motion.div>
+                        </TabPane>
+
+                        <TabPane
+                            tab="Monthly Retroactive"
+                            key="monthly"
+                            className="!font-forza"
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                {/* Optional: Add specific info for monthly if needed */}
+                                {/* <div className="mb-4 rounded-lg bg-blue-50 p-4">
+                                    <h3 className="text-lg font-semibold text-blue-800">
+                                        Monthly Retroactive Distribution
+                                    </h3>
+                                    <p className="text-blue-700">
+                                        Rewards details for monthly cycle...
+                                    </p>
+                                </div> */}
+                                <Tabs
+                                    activeKey={activeMonthlySubTab}
+                                    onChange={setActiveMonthlySubTab}
+                                    type="card"
+                                    size="small"
+                                    className="mb-4"
+                                >
+                                    <TabPane
+                                        tab="Wallet Ranking"
+                                        key="wallet"
+                                    >
+                                        {loadingMonthly ? (
+                                            <div className="flex h-64 items-center justify-center">
+                                                <Spin size="large" />
+                                            </div>
+                                        ) : (
+                                            <AnimatePresence>
+                                                <motion.div
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{
+                                                        duration: 0.3
+                                                    }}
+                                                >
+                                                    <Table
+                                                        dataSource={
+                                                            userMonthlyData
+                                                        }
+                                                        columns={userColumns}
+                                                        rowKey="address"
+                                                        pagination={false}
+                                                        scroll={{
+                                                            x: 'max-content'
+                                                        }}
+                                                    />
+                                                </motion.div>
+                                            </AnimatePresence>
+                                        )}
+                                    </TabPane>
+                                    <TabPane
+                                        tab="Token Ranking"
+                                        key="token"
+                                    >
+                                        {loadingMonthly ? (
+                                            <div className="flex h-64 items-center justify-center">
+                                                <Spin size="large" />
+                                            </div>
+                                        ) : (
+                                            <AnimatePresence>
+                                                <motion.div
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{
+                                                        duration: 0.3
+                                                    }}
+                                                >
+                                                    <Table
+                                                        dataSource={
+                                                            poolMonthlyData
                                                         }
                                                         columns={poolColumns}
                                                         rowKey="poolId"

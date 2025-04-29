@@ -27,6 +27,7 @@ import getTrustPointReducer from '@/src/stores/trust-point/get-trust-point-statu
 import getTrustPointTokenReducer from '@/src/stores/trust-point/get-trust-point-status-token-slice';
 import trustPointDailyWalletTokenReducer from '@/src/stores/trust-point/trust-point-daily-wallet-token-slice';
 import trustPointWeeklyWalletTokenReducer from '@/src/stores/trust-point/trust-point-weekly-wallet-token-slice';
+import trustPointMonthlyWalletTokenReducer from '@/src/stores/trust-point/trust-point-monthly-wallet-token-slice';
 const rootReducer = combineReducers({
     auth: authReducer,
     poolDetail: poolDetailReducer,
@@ -55,7 +56,8 @@ const rootReducer = combineReducers({
     trustPoint: getTrustPointReducer,
     trustPointToken: getTrustPointTokenReducer,
     trustPointDailyWalletToken: trustPointDailyWalletTokenReducer,
-    trustPointWeeklyWalletToken: trustPointWeeklyWalletTokenReducer
+    trustPointWeeklyWalletToken: trustPointWeeklyWalletTokenReducer,
+    trustPointMonthlyWalletToken: trustPointMonthlyWalletTokenReducer
 });
 
 export default rootReducer;

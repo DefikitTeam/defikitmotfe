@@ -10,8 +10,10 @@ import { IPoolDetail } from '@/src/services/response.type';
 import { EActionStatus, FetchError } from '../type';
 import {
     IPoolTrustPointScoreDailyItem,
+    IPoolTrustPointScoreMonthlyItem,
     IPoolTrustPointScoreWeeklyItem,
     IUserTrustPointScoreDailyItem,
+    IUserTrustPointScoreMonthlyItem,
     IUserTrustPointScoreWeeklyItem
 } from '../trust-point/type';
 
@@ -552,6 +554,13 @@ export interface IGetTop100TrustPointWalletAndTokenWeeklyQuery
     extends Omit<IGetTop100TrustPointWalletAndTokenQuery, 'dayStartUnix'> {
     weekStartUnix: number;
 }
+
+
+export interface IGetTop100TrustPointWalletAndTokenMonthlyQuery
+    extends Omit<IGetTop100TrustPointWalletAndTokenQuery, 'dayStartUnix'> {
+    monthStartUnix: number;
+}
+
 export interface IGetTop100TrustPointWalletAndTokenResponse {
     data: {
         userTrustScoreDailies: IUserTrustPointScoreDailyItem[];
@@ -563,5 +572,12 @@ export interface IGetTop100TrustPointWalletAndTokenWeeklyResponse {
     data: {
         userTrustScoreWeeklies: IUserTrustPointScoreWeeklyItem[];
         poolTrustScoreWeeklies: IPoolTrustPointScoreWeeklyItem[];
+    };
+}
+
+export interface IGetTop100TrustPointWalletAndTokenMonthlyResponse {
+    data: {
+        userTrustScoreMonthlies: IUserTrustPointScoreMonthlyItem[];
+        poolTrustScoreMonthlies: IPoolTrustPointScoreMonthlyItem[];
     };
 }

@@ -9,6 +9,7 @@ import {
     IGetDetailHolderDistributionParams,
     IGetDetailPoolParams,
     IGetPoolInfoRewardParams,
+    IGetTop100TrustPointWalletAndTokenMonthlyQuery,
     IGetTop100TrustPointWalletAndTokenQuery,
     IGetTop100TrustPointWalletAndTokenWeeklyQuery,
     IGetTransactionByPoolAndSenderParams,
@@ -22,6 +23,7 @@ import { querySubGraph } from '../fetcher';
 import {
     getQueryByStatus,
     getTop100TPDailyCombinedQuery,
+    getTop100TPMonthlyCombinedQuery,
     getTop100TPWeeklyCombinedQuery
 } from './query';
 export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
@@ -415,6 +417,16 @@ const servicePool = {
     }: IGetTop100TrustPointWalletAndTokenWeeklyQuery) => {
         const payload = {
             query: getTop100TPWeeklyCombinedQuery({ weekStartUnix })
+        };
+        return querySubGraph(payload, chainId);
+    },
+
+    getTop100TrustPointWalletAndTokenMonthly: ({
+        monthStartUnix,
+        chainId
+    }: IGetTop100TrustPointWalletAndTokenMonthlyQuery) => {
+        const payload = {
+            query: getTop100TPMonthlyCombinedQuery({ monthStartUnix })
         };
         return querySubGraph(payload, chainId);
     }

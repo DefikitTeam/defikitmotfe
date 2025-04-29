@@ -58,6 +58,16 @@ export interface ITrustPointWeeklyWalletTokenState {
     };
 }
 
+export interface ITrustPointMonthlyWalletTokenState {
+    status: EActionStatus;
+    errorMessage: string;
+    errorCode: string;
+    data: {
+        userTrustScoreMonthlies: IUserTrustPointScoreMonthlyItem[];
+        poolTrustScoreMonthlies: IPoolTrustPointScoreMonthlyItem[];
+    };
+}
+
 export interface IUserTrustPointScoreDailyItem {
     id: string;
     user: {
@@ -79,6 +89,15 @@ export interface IPoolTrustPointScoreWeeklyItem
     weekStartUnix: number;
 }
 
+export interface IUserTrustPointScoreMonthlyItem
+    extends Omit<IUserTrustPointScoreWeeklyItem, 'weekStartUnix'> {
+    monthStartUnix: number;
+}
+
+export interface IPoolTrustPointScoreMonthlyItem
+    extends Omit<IPoolTrustPointScoreWeeklyItem, 'weekStartUnix'> {
+    monthStartUnix: number;
+}
 export interface IPoolTrustPointScoreDailyItem {
     id: string;
     pool: {

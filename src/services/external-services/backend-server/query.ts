@@ -139,6 +139,12 @@ export interface IWeeklyQueryParams
     weekStartUnix: number; // Unix timestamp for the start of the week
 }
 
+export interface IMonthlyQueryParams
+    extends Omit<IWeeklyQueryParams, 'weekStartUnix'> {
+    monthStartUnix: number; // Unix timestamp for the start of the month
+}
+
+
 const userTrustScoreDailyEntities = ` {
     id
     user {
@@ -165,6 +171,25 @@ const userTrustScoreWeeklyEntities = `
 
 }
 
+
+`;
+
+
+const userTrustScoreMonthlyEntities = `
+
+{
+      id
+      user {
+        id
+        multiplier
+      }
+      monthStartUnix
+      trustScore
+      volume
+
+
+
+}
 
 `;
 
@@ -207,6 +232,32 @@ id
 
 `;
 
+const poolTrustScoreMonthlyEntities = `
+
+
+{
+id
+    pool {
+      id
+      multiplier
+      name
+      symbol
+      metadata
+      changePrice24h
+    }
+    monthStartUnix
+    tokenTrustPoint
+    trustScore
+    volume
+
+
+
+}
+
+
+`;
+
+
 function buildDailyQuery(
     entityType: 'userTrustScoreDailies' | 'poolTrustScoreDailies',
     params: IDailyQueryParams,
@@ -242,6 +293,8 @@ function buildWeeklyQuery(
         orderDirection = 'desc',
         weekStartUnix
     } = params;
+
+
     const whereClause = `{ weekStartUnix: ${weekStartUnix} }`;
 
     return `
@@ -254,60 +307,37 @@ function buildWeeklyQuery(
     `;
 }
 
-// /**
-//  * Generates a GraphQL query string to fetch the top 100 daily trust scores for users.
-//  * @param params - Parameters containing the dayStartUnix timestamp.
-//  * @returns The GraphQL query string.
-//  */
-// export const getTop100TPDailyWalletQuery = (params: { dayStartUnix: number }) => {
-//   const queryParams: IDailyQueryParams = {
-//     ...params,
-//     first: 100,
-//     orderBy: 'trustScore',
-//     orderDirection: 'desc'
-//   };
-//   return `query top100TPDailyWallet {
-//       ${buildDailyQuery('userTrustScoreDailies', queryParams, userTrustScoreDailyEntities)}
-//     }`;
-// };
 
-// /**
-//  * Generates a GraphQL query string to fetch the top 100 daily trust scores for pools (tokens).
-//  * @param params - Parameters containing the dayStartUnix timestamp.
-//  * @returns The GraphQL query string.
-//  */
-// export const getTop100TPDailyTokenQuery = (params: { dayStartUnix: number }) => {
-//   const queryParams: IDailyQueryParams = {
-//     ...params,
-//     first: 100,
-//     orderBy: 'trustScore',
-//     orderDirection: 'desc'
-//   };
-//   return `query top100TPDailyToken {
-//       ${buildDailyQuery('poolTrustScoreDailies', queryParams, poolTrustScoreDailyEntities)}
-//     }`;
-// };
 
-// /**
-//  * Generates a general GraphQL query string for daily trust scores (user or pool).
-//  * @param type - Specifies whether to query for 'user' or 'pool'.
-//  * @param params - Query parameters like filtering, sorting, and pagination.
-//  * @returns The GraphQL query string.
-//  */
-// export const getDailyTrustScoreQuery = (
-//   type: 'user' | 'pool',
-//   params: IDailyQueryParams
-// ) => {
-//   if (type === 'user') {
-//     return `query GetUserTrustScoreDailies {
-//         ${buildDailyQuery('userTrustScoreDailies', params, userTrustScoreDailyEntities)}
-//       }`;
-//   } else {
-//     return `query GetPoolTrustScoreDailies {
-//         ${buildDailyQuery('poolTrustScoreDailies', params, poolTrustScoreDailyEntities)}
-//       }`;
-//   }
-// };
+function buildMonthlyQuery(
+    entityType: 'userTrustScoreMonthlies' | 'poolTrustScoreMonthlies',
+    params: IMonthlyQueryParams,
+    entities: string
+) {   
+    const {
+        first = 100,
+        orderBy = 'trustScore',
+        orderDirection = 'desc',
+        monthStartUnix
+    } = params;
+
+    const whereClause = `{ monthStartUnix: ${monthStartUnix} }`;
+
+    return `
+      ${entityType}(
+        first: ${first} 
+        orderBy: ${orderBy}
+        orderDirection: ${orderDirection}
+        where: ${whereClause}
+      ) ${entities}
+    `;
+
+}
+
+
+
+
+
 
 /**
  * Generates a combined GraphQL query string to fetch the top 100 daily trust scores
@@ -363,6 +393,37 @@ export const getTop100TPWeeklyCombinedQuery = (params: {
     );
 
     return `query top100TPWeekly {
+      ${userQueryPart}
+      ${poolQueryPart}
+    }`;
+};
+
+
+
+
+
+export const getTop100TPMonthlyCombinedQuery = (params: {
+    monthStartUnix: number;
+}) => {
+    const queryParams: IMonthlyQueryParams = {
+        ...params,
+        first: 100,
+        orderBy: 'trustScore',
+        orderDirection: 'desc'
+    };
+
+    const userQueryPart = buildMonthlyQuery(
+        'userTrustScoreMonthlies',
+        queryParams,
+        userTrustScoreMonthlyEntities
+    );
+    const poolQueryPart = buildMonthlyQuery(
+        'poolTrustScoreMonthlies',
+        queryParams,
+        poolTrustScoreMonthlyEntities       
+    );
+
+    return `query top100TPMonthly {
       ${userQueryPart}
       ${poolQueryPart}
     }`;

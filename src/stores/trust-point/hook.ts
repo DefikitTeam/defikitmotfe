@@ -4,15 +4,18 @@ import { getTrustPoint } from './get-trust-point-status-slice';
 import {
     IGetTrustPointStatusState,
     ITrustPointDailyWalltTokenState,
+    ITrustPointMonthlyWalletTokenState,
     ITrustPointWeeklyWalletTokenState
 } from './type';
 import { getTrustPointToken } from './get-trust-point-status-token-slice';
 import {
+    IGetTop100TrustPointWalletAndTokenMonthlyQuery,
     IGetTop100TrustPointWalletAndTokenQuery,
     IGetTop100TrustPointWalletAndTokenWeeklyQuery
 } from '../pool/type';
 import { getTop100TPDailyWalletAndToken } from './trust-point-daily-wallet-token-slice';
 import { getTop100TPWeeklyWalletAndToken } from './trust-point-weekly-wallet-token-slice';
+import { getTop100TPMonthlyWalletAndToken } from './trust-point-monthly-wallet-token-slice';
 
 type TrustPointType = {
     trustPointStatus: IGetTrustPointStatusState;
@@ -110,3 +113,32 @@ export function useTrustPointWeeklyWalletToken(): TrustPointWeeklyWalletTokenTyp
         getTrustPointWeeklyWalletTokenAction
     };
 }
+
+type TrustPointMonthlyWalletTokenType = {
+    trustPointMonthlyWalletToken: ITrustPointMonthlyWalletTokenState;
+    getTrustPointMonthlyWalletTokenAction: (
+        params: IGetTop100TrustPointWalletAndTokenMonthlyQuery
+    ) => void;
+};  
+
+
+
+export function useTrustPointMonthlyWalletToken(): TrustPointMonthlyWalletTokenType {
+    const dispatch = useAppDispatch();
+    const trustPointMonthlyWalletToken = useAppSelector(
+        (state: RootState) => state.trustPointMonthlyWalletToken
+    );
+
+    const getTrustPointMonthlyWalletTokenAction = useCallback(
+        (params: IGetTop100TrustPointWalletAndTokenMonthlyQuery) => {
+            dispatch(getTop100TPMonthlyWalletAndToken(params));
+        },
+        [dispatch]
+    );
+
+    return {
+        trustPointMonthlyWalletToken,
+        getTrustPointMonthlyWalletTokenAction
+    };
+}
+
