@@ -13,7 +13,7 @@ import { Button, Form, Input, Modal, notification, Tooltip } from 'antd';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAccount, useSignMessage } from 'wagmi';
 import ModalSocialScore from './modal-social-score';
 import { useTrustPointToken } from '@/src/stores/trust-point/hook';
@@ -55,6 +55,13 @@ const SocialDescInformation = () => {
         context
     } = useSignMessage();
     const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
+
+    const checkIsOwner = useMemo(() => {
+        if (isConnected && address && address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()) {
+            return true;
+        }
+        return false;
+    }, [isConnected, address, poolStateDetail.pool?.owner]);
 
     // const [showHighlight, setShowHighlight] = useState(true);
     // const [showTour, setShowTour] = useState(false);
@@ -235,22 +242,22 @@ const SocialDescInformation = () => {
                         : metaDataInfo?.description,
                 website:
                     values.websiteLink &&
-                    !values.websiteLink.startsWith('https://')
+                        !values.websiteLink.startsWith('https://')
                         ? `https://${values.websiteLink}`
                         : values.websiteLink,
                 telegram:
                     values.telegramLink &&
-                    !values.telegramLink.startsWith('https://')
+                        !values.telegramLink.startsWith('https://')
                         ? `https://${values.telegramLink}`
                         : values.telegramLink,
                 twitter:
                     values.twitterLink &&
-                    !values.twitterLink.startsWith('https://')
+                        !values.twitterLink.startsWith('https://')
                         ? `https://${values.twitterLink}`
                         : values.twitterLink,
                 discord:
                     values.discordLink &&
-                    !values.discordLink.startsWith('https://')
+                        !values.discordLink.startsWith('https://')
                         ? `https://${values.discordLink}`
                         : values.discordLink
             };
@@ -279,12 +286,7 @@ const SocialDescInformation = () => {
                     duration: 3,
                     showProgress: true
                 });
-                if (
-                    isConnected &&
-                    address &&
-                    address.toLowerCase() ===
-                        poolStateDetail.pool?.owner?.toLowerCase()
-                ) {
+                if (checkIsOwner) {
                     getTrustPointTokenAction(poolAddress);
                 }
                 setIsModalOpen(false);
@@ -330,10 +332,7 @@ const SocialDescInformation = () => {
             return;
         }
         if (
-            isConnected &&
-            address &&
-            address.toLowerCase() ===
-                poolStateDetail.pool?.owner?.toLowerCase() &&
+            checkIsOwner &&
             !dataDetailPoolFromServer?.isTwitterVerified
         ) {
             const poolUrl = `${window.location.origin}${window.location.pathname}`;
@@ -343,10 +342,7 @@ const SocialDescInformation = () => {
             );
             window.open(twitterIntentUrl, '_blank', 'noopener,noreferrer');
         } else if (
-            isConnected &&
-            address &&
-            address.toLowerCase() ===
-                poolStateDetail.pool?.owner?.toLowerCase() &&
+            checkIsOwner &&
             dataDetailPoolFromServer?.isTwitterVerified
         ) {
             window.open(finalTwitterUrl, '_blank', 'noopener,noreferrer');
@@ -362,13 +358,9 @@ const SocialDescInformation = () => {
     };
 
     const renderTwitterHighlight = () => {
-        // if (
-        //     !isConnected ||
-        //     !address ||
-        //     address.toLowerCase() !== poolStateDetail.pool?.owner?.toLowerCase()
-        // ) {
-        //     return null;
-        // }
+        if (!checkIsOwner) {
+            return null;
+        }
 
         if (!finalTwitterUrl) {
             return (
@@ -403,9 +395,8 @@ const SocialDescInformation = () => {
                 ></div>
                 <Tooltip
                     title={
-                        address?.toLowerCase() ===
-                            poolStateDetail.pool?.owner?.toLowerCase() &&
-                        !dataDetailPoolFromServer?.isTwitterVerified ? (
+                        checkIsOwner &&
+                            !dataDetailPoolFromServer?.isTwitterVerified ? (
                             <div className="!font-forza">
                                 <p>Click to share on Twitter</p>
                                 <p className="text-yellow-300">
@@ -488,10 +479,7 @@ const SocialDescInformation = () => {
                 )}
 
                 {!finalTelegramUrl &&
-                    isConnected &&
-                    address &&
-                    address.toLowerCase() ===
-                        poolStateDetail.pool?.owner?.toLowerCase() && (
+                    checkIsOwner && (
                         <Tooltip
                             title={
                                 <div className="!font-forza">
@@ -528,10 +516,7 @@ const SocialDescInformation = () => {
                 )}
 
                 {!finalWebsiteUrl &&
-                    isConnected &&
-                    address &&
-                    address.toLowerCase() ===
-                        poolStateDetail.pool?.owner?.toLowerCase() && (
+                    checkIsOwner && (
                         <Tooltip
                             title={
                                 <div className="!font-forza">
@@ -568,10 +553,7 @@ const SocialDescInformation = () => {
                 )}
 
                 {!finalDiscordUrl &&
-                    isConnected &&
-                    address &&
-                    address.toLowerCase() ===
-                        poolStateDetail.pool?.owner?.toLowerCase() && (
+                    checkIsOwner && (
                         <Tooltip
                             title={
                                 <div className="!font-forza">
@@ -597,9 +579,7 @@ const SocialDescInformation = () => {
                     )}
 
                 {isConnected &&
-                    address &&
-                    address.toLowerCase() ===
-                        poolStateDetail.pool?.owner?.toLowerCase() && (
+                    checkIsOwner && (
                         <Tooltip
                             title="Update social media links"
                             overlayClassName="!font-forza"
@@ -629,9 +609,7 @@ const SocialDescInformation = () => {
 
                 {/* Add AI Agent tooltip */}
                 {isConnected &&
-                    address &&
-                    address.toLowerCase() ===
-                        poolStateDetail.pool?.owner?.toLowerCase() &&
+                    checkIsOwner &&
                     poolStateDetail.dataDetailPoolFromServer?.aiAgentId && (
                         <Tooltip
                             title={

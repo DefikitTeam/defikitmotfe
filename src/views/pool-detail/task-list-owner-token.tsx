@@ -113,7 +113,7 @@ const TaskListOwnerToken = () => {
                 isConnected &&
                 address &&
                 address.toLowerCase() ===
-                    poolStateDetail.pool?.owner?.toLowerCase()
+                poolStateDetail.pool?.owner?.toLowerCase()
             ) {
                 setTimeout(() => {
                     getTrustPointTokenAction(poolAddress);
@@ -300,66 +300,57 @@ const TaskListOwnerToken = () => {
                 <List
                     itemLayout="horizontal"
                     dataSource={taskList}
-                    renderItem={(task: Task, index) => {
-                        const [isHovered, setIsHovered] = useState(false);
-                        return (
-                            <List.Item
-                                style={{
-                                    ...listItemStyle,
-                                    ...(isHovered ? listItemHoverStyle : {})
-                                }}
-                                onMouseEnter={() => {
-                                    setIsHovered(true);
-                                    setHoveredTaskId(task.id);
-                                }}
-                                onMouseLeave={() => {
-                                    setIsHovered(false);
-                                    setHoveredTaskId(null);
-                                }}
-                                actions={[getStatusTag(task)]}
-                                className="!mb-4 !border-0"
-                            >
-                                <List.Item.Meta
-                                    title={
-                                        <div className="flex items-center gap-3">
-                                            <Text
-                                                strong
-                                                className="!font-forza !text-base"
-                                            >{`NFT ${task.id}`}</Text>
-                                            <Tag className="!m-0 !border-[#91caff] !bg-[#e6f4ff] !px-2 !py-0.5 !font-forza !text-sm !text-[#1677ff]">
-                                                x{task.multiplier}
-                                            </Tag>
-                                            {!task.completed && (
-                                                <Tooltip
-                                                    title={task.reason}
-                                                    placement="right"
+                    renderItem={(task: Task, index) => (
+                        <List.Item
+                            style={{
+                                ...listItemStyle,
+                                ...(hoveredTaskId === task.id ? listItemHoverStyle : {})
+                            }}
+                            onMouseEnter={() => setHoveredTaskId(task.id)}
+                            onMouseLeave={() => setHoveredTaskId(null)}
+                            actions={[getStatusTag(task)]}
+                            className="!mb-4 !border-0"
+                        >
+                            <List.Item.Meta
+                                title={
+                                    <div className="flex items-center gap-3">
+                                        <Text
+                                            strong
+                                            className="!font-forza !text-base"
+                                        >{`NFT ${task.id}`}</Text>
+                                        <Tag className="!m-0 !border-[#91caff] !bg-[#e6f4ff] !px-2 !py-0.5 !font-forza !text-sm !text-[#1677ff]">
+                                            x{task.multiplier}
+                                        </Tag>
+                                        {!task.completed && (
+                                            <Tooltip
+                                                title={task.reason}
+                                                placement="right"
+                                            >
+                                                <InfoCircleOutlined className="text-[#1677ff] hover:text-[#4096ff]" />
+                                            </Tooltip>
+                                        )}
+                                    </div>
+                                }
+                                description={
+                                    <div>
+                                        <Text className="!mt-1 !font-forza !text-[#697586]">
+                                            {task.description}
+                                        </Text>
+                                        {!task.completed && (
+                                            <div className="mt-1">
+                                                <Text
+                                                    type="secondary"
+                                                    className="!font-forza !text-sm"
                                                 >
-                                                    <InfoCircleOutlined className="text-[#1677ff] hover:text-[#4096ff]" />
-                                                </Tooltip>
-                                            )}
-                                        </div>
-                                    }
-                                    description={
-                                        <div>
-                                            <Text className="!mt-1 !font-forza !text-[#697586]">
-                                                {task.description}
-                                            </Text>
-                                            {!task.completed && (
-                                                <div className="mt-1">
-                                                    <Text
-                                                        type="secondary"
-                                                        className="!font-forza !text-sm"
-                                                    >
-                                                        {task.reason}
-                                                    </Text>
-                                                </div>
-                                            )}
-                                        </div>
-                                    }
-                                />
-                            </List.Item>
-                        );
-                    }}
+                                                    {task.reason}
+                                                </Text>
+                                            </div>
+                                        )}
+                                    </div>
+                                }
+                            />
+                        </List.Item>
+                    )}
                     className="!divide-y !divide-gray-100"
                 />
             )}
