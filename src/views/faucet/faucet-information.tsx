@@ -61,8 +61,6 @@ const FaucetInformation = () => {
         }
     }, [address]);
 
-
-
     const onChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
@@ -99,7 +97,6 @@ const FaucetInformation = () => {
     const handleClickFollowRocketLaunch = () => {
         window.open(t('ROCKET_LAUNCH_LINK'), '_blank', 'noopener,noreferrer');
         setIsClickFollow(true);
-     
     };
     const handleClickCreateRocketLaunch = () => {
         if (isConnected && address) {
@@ -145,7 +142,6 @@ const FaucetInformation = () => {
         } finally {
             setIsLoadingFaucet(false);
         }
-        
     };
 
     useEffect(() => {

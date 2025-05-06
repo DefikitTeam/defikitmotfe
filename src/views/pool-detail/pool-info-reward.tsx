@@ -30,6 +30,7 @@ const PoolInfoReward = () => {
         userAddress: address as `0x${string}`,
         chainId: chainConfig?.chainId as number
     });
+
     const estimateYourReward = dataReader ? dataReader[5] : undefined;
 
     useEffect(() => {

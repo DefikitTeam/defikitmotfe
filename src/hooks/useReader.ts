@@ -63,6 +63,10 @@ export function useReader({
             {
                 functionName: 'fundLottery',
                 args: [poolAddress]
+            },
+            {
+                functionName: 'getUserLottery',
+                args: [poolAddress, userAddress]
             }
         ]
     };

@@ -59,6 +59,11 @@ export function useMultiCaller() {
         hash: depositForLotteryWatcher.data
     });
 
+    const withdrawFundLotteryWatcher = useWriteContract();
+    const withdrawFundLotteryListener = useWaitForTransactionReceipt({
+        hash: withdrawFundLotteryWatcher.data
+    });
+
     return {
         /*=======================MULTI=======================*/
 
@@ -140,7 +145,7 @@ export function useMultiCaller() {
                 tokenForAddLP: string | number;
                 // batch purchase
                 tokenPerPurchase: string | number;
-                maxRepeatPurchase: string | number;
+                // maxRepeatPurchase: string | number;
                 // limit time
                 startTime: string | number;
                 minDurationSell: string | number;
@@ -229,6 +234,26 @@ export function useMultiCaller() {
             error:
                 depositForLotteryListener.error ||
                 depositForLotteryWatcher.error
+        },
+
+        useWithdrawFundLottery: {
+            actionAsync: (params: {
+                poolAddress: string;
+                amountETH: string;
+            }) => {
+                return multiCaller.withdrawFundLottery(
+                    withdrawFundLotteryWatcher,
+                    params
+                );
+            },
+            isConfirmed: withdrawFundLotteryListener.isSuccess,
+            isLoadingAgreedWithdrawFundLottery:
+                withdrawFundLotteryListener.isLoading,
+            isLoadingInitWithdrawFundLottery:
+                withdrawFundLotteryWatcher.isPending,
+            isError:
+                withdrawFundLotteryListener.isError ||
+                withdrawFundLotteryWatcher.isError
         }
     };
 }

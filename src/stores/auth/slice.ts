@@ -130,7 +130,7 @@ const authSlice = createSlice({
             //     serviceAuth.storeAccessToken(null);
             //     serviceAuth.storeRefreshToken(null);
             // }
-            
+
             state.userInfo = null;
             state.userWallet = null;
             state.userTele = null;
@@ -139,8 +139,7 @@ const authSlice = createSlice({
             state.accessToken = null;
             state.refreshToken = null;
             state.signature = '';
-           
-            
+
             serviceAuth.storeUserInfo(null);
             serviceAuth.storeUserWallet(null);
             serviceAuth.storeUserTele(null);
@@ -150,16 +149,10 @@ const authSlice = createSlice({
             serviceAuth.storeRefreshToken(null); // Clear refresh token from storage
             servicePool.storeReferId(null);
 
-
             state.statusLoginTele = EActionStatus.Idle;
             state.statusLoginTwitter = EActionStatus.Idle;
             state.statusLoginDiscord = EActionStatus.Idle;
-           
-            
         },
-
-
-
 
         signOutTwitter: (state: IAuthState) => {
             state.errorMessage = '';

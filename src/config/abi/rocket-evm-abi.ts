@@ -127,31 +127,6 @@ export const ROCKET_EVM_ABI = [
             {
                 indexed: false,
                 internalType: 'uint256',
-                name: 'ethAmount',
-                type: 'uint256'
-            }
-        ],
-        name: 'ClaimFundLottery',
-        type: 'event'
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'pool',
-                type: 'address'
-            },
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'user',
-                type: 'address'
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
                 name: 'amount',
                 type: 'uint256'
             }
@@ -341,37 +316,6 @@ export const ROCKET_EVM_ABI = [
         inputs: [
             {
                 indexed: true,
-                internalType: 'address',
-                name: 'pool',
-                type: 'address'
-            },
-            {
-                indexed: true,
-                internalType: 'address',
-                name: 'buyer',
-                type: 'address'
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'amount',
-                type: 'uint256'
-            },
-            {
-                indexed: false,
-                internalType: 'uint256',
-                name: 'receivedETH',
-                type: 'uint256'
-            }
-        ],
-        name: 'Refund',
-        type: 'event'
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
                 internalType: 'bytes32',
                 name: 'role',
                 type: 'bytes32'
@@ -471,6 +415,31 @@ export const ROCKET_EVM_ABI = [
             }
         ],
         name: 'Sold',
+        type: 'event'
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'pool',
+                type: 'address'
+            },
+            {
+                indexed: true,
+                internalType: 'address',
+                name: 'user',
+                type: 'address'
+            },
+            {
+                indexed: false,
+                internalType: 'uint256',
+                name: 'ethAmount',
+                type: 'uint256'
+            }
+        ],
+        name: 'WithdrawFundLottery',
         type: 'event'
     },
     {
@@ -635,19 +604,6 @@ export const ROCKET_EVM_ABI = [
             }
         ],
         stateMutability: 'view',
-        type: 'function'
-    },
-    {
-        inputs: [
-            {
-                internalType: 'address',
-                name: 'poolAddress',
-                type: 'address'
-            }
-        ],
-        name: 'claimFundLottery',
-        outputs: [],
-        stateMutability: 'nonpayable',
         type: 'function'
     },
     {
@@ -1202,11 +1158,6 @@ export const ROCKET_EVM_ABI = [
                     },
                     {
                         internalType: 'uint256',
-                        name: 'maxRepeatPurchase',
-                        type: 'uint256'
-                    },
-                    {
-                        internalType: 'uint256',
                         name: 'startTime',
                         type: 'uint256'
                     },
@@ -1428,11 +1379,6 @@ export const ROCKET_EVM_ABI = [
             {
                 internalType: 'uint256',
                 name: 'tokenPerPurchase',
-                type: 'uint256'
-            },
-            {
-                internalType: 'uint256',
-                name: 'maxRepeatPurchase',
                 type: 'uint256'
             },
             {
@@ -1761,6 +1707,24 @@ export const ROCKET_EVM_ABI = [
             }
         ],
         stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            },
+            {
+                internalType: 'uint256',
+                name: 'amountETH',
+                type: 'uint256'
+            }
+        ],
+        name: 'withdrawFundLottery',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function'
     },
     {
