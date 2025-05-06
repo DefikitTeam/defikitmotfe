@@ -224,7 +224,7 @@ export class LaunchPadInterface {
             tokenForAddLP: string | number;
             // batch purchase
             tokenPerPurchase: string | number;
-            maxRepeatPurchase: string | number;
+            // maxRepeatPurchase: string | number;
             // limit time
             startTime: string | number;
             minDurationSell: string | number;
@@ -249,7 +249,7 @@ export class LaunchPadInterface {
                 tokenForSale,
                 tokenForAddLP,
                 tokenPerPurchase,
-                maxRepeatPurchase,
+                // maxRepeatPurchase,
                 startTime,
                 minDurationSell,
                 maxDurationSell,
@@ -270,7 +270,7 @@ export class LaunchPadInterface {
                 tokenForSale,
                 tokenForAddLP,
                 tokenPerPurchase,
-                maxRepeatPurchase,
+                // maxRepeatPurchase,
                 startTime,
                 minDurationSell,
                 maxDurationSell,
@@ -309,7 +309,7 @@ export class LaunchPadInterface {
                         tokenForSale,
                         tokenForAddLP,
                         tokenPerPurchase,
-                        maxRepeatPurchase,
+                        // maxRepeatPurchase,
                         startTime,
                         minDurationSell,
                         maxDurationSell,
@@ -537,5 +537,28 @@ export class LaunchPadInterface {
             functionName: 'mintTokenWithSignature',
             args: [id, token, signature]
         });
+    }
+
+    async withdrawFundLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+            amountETH: string;
+        }
+    ) {
+        try {
+            const { poolAddress, amountETH } = params;
+            if (!poolAddress || !amountETH) {
+                throw new Error('Invalid params when call withdrawFundLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'withdrawFundLottery',
+                args: [poolAddress, amountETH]
+            });
+        } catch (err) {
+            this.handleErrors(err);
+        }
     }
 }

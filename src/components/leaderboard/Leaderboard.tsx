@@ -571,8 +571,9 @@ const Leaderboard = () => {
                                     Leaderboard
                                 </h1>
                                 <p className="text-gray-500">
-                                    Track your ranking and earn {chainConfig?.currency} tokens
-                                    based on your activity
+                                    Track your ranking and earn{' '}
+                                    {chainConfig?.currency} tokens based on your
+                                    activity
                                 </p>
                             </motion.div>
                         </Col>

@@ -355,9 +355,9 @@ const CreateLaunch = () => {
                         .times(10 ** Number(data.decimal))
                         .div(data.totalBatch)
                         .toFixed(0),
-                    maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
-                        .times(10 ** Number(data.decimal))
-                        .toFixed(0),
+                    // maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
+                    //     .times(10 ** Number(data.decimal))
+                    //     .toFixed(0),
                     startTime: data.startTime,
                     minDurationSell: data.minDurationSell * 3600,
                     maxDurationSell: maxDurationSell,
@@ -395,9 +395,9 @@ const CreateLaunch = () => {
                         .times(10 ** Number(data.decimal))
                         .div(data.totalBatch)
                         .toFixed(0),
-                    maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
-                        .times(10 ** Number(data.decimal))
-                        .toFixed(0),
+                    // maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
+                    //     .times(10 ** Number(data.decimal))
+                    //     .toFixed(0),
                     startTime: data.startTime,
                     minDurationSell: data.minDurationSell * 3600,
                     maxDurationSell: maxDurationSell,
