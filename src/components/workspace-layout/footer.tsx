@@ -163,8 +163,7 @@ const Footer = () => {
                         onClick={handleClickCommunity}
                     >
                         <a
-                            // href={'https://discord.com/invite/jQCFDYMrU9'}
-                            href="https://linktr.ee/rocket.launch"
+                            href="https://linktr.ee/RocketLaunch_DeFiKit"
                             target="_blank"
                             className={`group inline-flex flex-col items-center justify-center border-gray-200 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800`}
                         >
