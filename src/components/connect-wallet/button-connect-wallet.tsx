@@ -44,7 +44,7 @@ const ButtonConnectWallet = () => {
     
     const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
     const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
-    let botName = 'MotherOfTokensMonadBot';
+    let botName = 'MotherOfTokensStgBot';
 
     const handleLoginWithTelegram = async (user: any) => {
         if (user) {
@@ -108,11 +108,11 @@ const ButtonConnectWallet = () => {
             if (authState.statusLoginTele === EActionStatus.Succeeded) {
                 if (authState.userTele) {
                     resetStatusLoginTeleAction();
-                    await openNotification({
-                        message: t('LOGIN_TELE_SUCCESSFULLY'),
-                        placement: 'topRight',
-                        type: 'success'
-                    });
+                    // await openNotification({
+                    //     message: t('LOGIN_TELE_SUCCESSFULLY'),
+                    //     placement: 'topRight',
+                    //     type: 'success'
+                    // });
                 }
             } else if (authState.statusLoginTele === EActionStatus.Failed) {
                 if (authState.errorMessage) {
@@ -136,11 +136,12 @@ const ButtonConnectWallet = () => {
                         getTrustPointStatusAction();
                         // getTrustPointTokenAction();
                     }, 500);
-                    await openNotification({
-                        message: t('LOGIN_DISCORD_SUCCESSFULLY'),
-                        placement: 'topRight',
-                        type: 'success'
-                    });
+
+                    // await openNotification({
+                    //     message: t('LOGIN_DISCORD_SUCCESSFULLY'),
+                    //     placement: 'topRight',
+                    //     type: 'success'
+                    // });
                 }
             } else if (authState.statusLoginDiscord === EActionStatus.Failed) {
                 if (authState.errorMessage) {
@@ -170,11 +171,11 @@ const ButtonConnectWallet = () => {
                         getTrustPointStatusAction();
                         // getTrustPointTokenAction();
                     }, 500);
-                    await openNotification({
-                        message: t('LOGIN_TWITTER_SUCCESSFULLY'),
-                        placement: 'topRight',
-                        type: 'success'
-                    });
+                    // await openNotification({
+                    //     message: t('LOGIN_TWITTER_SUCCESSFULLY'),
+                    //     placement: 'topRight',
+                    //     type: 'success'
+                    // });
                 }
             } else if (authState.statusLoginTwitter === EActionStatus.Failed) {
                 if (authState.errorMessage) {
