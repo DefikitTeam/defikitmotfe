@@ -8,7 +8,9 @@ import {
 import { randomDefaultPoolImage } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import serviceUpload from '@/src/services/external-services/backend-server/upload';
+import serviceVerify from '@/src/services/external-services/backend-server/verify';
 import { usePoolDetail } from '@/src/stores/pool/hook';
+import { useTrustPointToken } from '@/src/stores/trust-point/hook';
 import { Button, Form, Input, Modal, notification, Tooltip } from 'antd';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
@@ -16,7 +18,7 @@ import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useAccount, useSignMessage } from 'wagmi';
 import ModalSocialScore from './modal-social-score';
-import { useTrustPointToken } from '@/src/stores/trust-point/hook';
+import { useAuthLogin } from '@/src/stores/auth/hook';
 // import Joyride, { Step } from 'react-joyride';
 
 const SocialDescInformation = () => {
@@ -30,6 +32,10 @@ const SocialDescInformation = () => {
         ,
         setOpenModalSocialScoreAction
     ] = usePoolDetail();
+    const {
+        authState,
+    } = useAuthLogin();
+
 
     const { metaDataInfo, socialScoreInfo, dataDetailPoolFromServer } =
         poolStateDetail;
@@ -67,65 +73,6 @@ const SocialDescInformation = () => {
         return false;
     }, [isConnected, address, poolStateDetail.pool?.owner]);
 
-    // const [showHighlight, setShowHighlight] = useState(true);
-    // const [showTour, setShowTour] = useState(false);
-
-    // useEffect(() => {
-    //     // Auto hide highlight after 10s
-    //     const timer = setTimeout(() => {
-    //         setShowHighlight(false);
-    //     }, 10000);
-    //     return () => clearTimeout(timer);
-    // }, []);
-
-    // Steps cho tour guide
-    // const steps: Step[] = [
-    //     {
-    //         target: '.twitter-share-button',
-    //         content: (
-    //             <div className="!font-forza">
-    //                 <h3 className="text-lg font-bold mb-2">Share Your Token! 🚀</h3>
-    //                 <p>Great! Now that you've added your Twitter link, let's share your token with the community!</p>
-    //                 <p className="text-sm mt-2">Click here to automatically create a tweet with:</p>
-    //                 <ul className="list-disc list-inside text-sm mt-1">
-    //                     <li>Your token address</li>
-    //                     <li>Launch announcement</li>
-    //                     <li>Pool link</li>
-    //                     <li>Required hashtags</li>
-    //                 </ul>
-    //             </div>
-    //         ),
-    //         placement: 'right',
-    //         disableBeacon: true,
-    //         styles: {
-    //             options: {
-    //                 zIndex: 10000,
-    //             }
-    //         }
-    //     }
-    // ];
-
-    // // Theo dõi khi finalTwitterUrl thay đổi để show tour
-    // useEffect(() => {
-    //     if (finalTwitterUrl &&
-    //         isConnected &&
-    //         address &&
-    //         address.toLowerCase() === poolStateDetail.pool?.owner?.toLowerCase()
-    //     ) {
-    //         // Delay một chút để UI kịp render
-    //         setTimeout(() => {
-    //             setShowTour(true);
-    //         }, 500);
-    //     }
-    // }, [finalTwitterUrl, isConnected, address, poolStateDetail.pool?.owner]);
-
-    // Xử lý khi tour kết thúc
-    // const handleTourCallback = (data: any) => {
-    //     const { status } = data;
-    //     if (status === 'finished' || status === 'skipped') {
-    //         setShowTour(false);
-    //     }
-    // };
 
     const openInNewTab = (url: any | null) => {
         if (!isConnected || !address) {
@@ -246,22 +193,22 @@ const SocialDescInformation = () => {
                         : metaDataInfo?.description,
                 website:
                     values.websiteLink &&
-                    !values.websiteLink.startsWith('https://')
+                        !values.websiteLink.startsWith('https://')
                         ? `https://${values.websiteLink}`
                         : values.websiteLink,
                 telegram:
                     values.telegramLink &&
-                    !values.telegramLink.startsWith('https://')
+                        !values.telegramLink.startsWith('https://')
                         ? `https://${values.telegramLink}`
                         : values.telegramLink,
                 twitter:
                     values.twitterLink &&
-                    !values.twitterLink.startsWith('https://')
+                        !values.twitterLink.startsWith('https://')
                         ? `https://${values.twitterLink}`
                         : values.twitterLink,
                 discord:
                     values.discordLink &&
-                    !values.discordLink.startsWith('https://')
+                        !values.discordLink.startsWith('https://')
                         ? `https://${values.discordLink}`
                         : values.discordLink
             };
@@ -358,6 +305,93 @@ const SocialDescInformation = () => {
         }
     };
 
+    // Add verification handler
+    const [verifying, setVerifying] = useState(false);
+
+    const handleVerifyTwitterShare = async () => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+        if (!checkIsOwner) {
+            notification.error({
+                message: 'Error',
+                description: 'You are not the owner of this pool',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+        if (!finalTwitterUrl) {
+            notification.error({
+                message: 'Error',
+                description: 'Please add your Twitter link first',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+        setVerifying(true);
+        try {
+            // Use finalTwitterUrl to verify Twitter share
+            const res = await serviceVerify.verifyTwitterShare(
+                address,
+                poolAddress,
+                chainConfig?.chainId.toString()!,
+                finalTwitterUrl
+            );
+
+
+            // @ts-ignore
+            if (res && res.verified === true) {
+                notification.success({
+                    message: 'Success',
+                    description: `Twitter share verified successfully!`,
+                    duration: 3,
+                    showProgress: true
+                });
+                // Refresh pool details to update UI
+                fetchPoolDetail({
+                    page: poolStateDetail.pageTransaction,
+                    limit: poolStateDetail.limitTransaction,
+                    poolAddress: poolAddress,
+                    chainId: chainConfig?.chainId as number
+                });
+                if (checkIsOwner) {
+                    getTrustPointTokenAction(poolAddress);
+                }
+
+            } else {
+                notification.error({
+                    message: 'Verification Failed',
+                    description: res.data.message || 'Could not verify your Twitter share. Please make sure you have shared the token with the correct address.',
+                    duration: 5,
+                    showProgress: true
+                });
+            }
+
+        } catch (error) {
+            notification.error({
+                message: 'Error',
+                description: 'Failed to verify Twitter share',
+                duration: 3,
+                showProgress: true
+            });
+
+
+        } finally {
+            setVerifying(false);
+        }
+    };
+
     const renderTwitterHighlight = () => {
         if (!checkIsOwner) {
             return null;
@@ -385,49 +419,113 @@ const SocialDescInformation = () => {
             );
         }
 
-        // if (finalTwitterUrl) {
-
-        // }
-
+        // Display Twitter verification section
         return (
             <div className="group relative">
                 <div
-                    className={`bg-green-500/20 absolute -inset-2 rounded-full blur-sm transition-all duration-500 `}
+                    className={`${dataDetailPoolFromServer?.isTwitterVerified ? 'bg-green-500/20' : 'bg-yellow-500/20'} absolute -inset-2 rounded-full blur-sm transition-all duration-500 `}
                 ></div>
-                <Tooltip
-                    title={
-                        checkIsOwner &&
-                        !dataDetailPoolFromServer?.isTwitterVerified ? (
-                            <div className="!font-forza">
-                                <p>Click to share on Twitter</p>
-                                <p className="text-yellow-300">
-                                    Task: Post about your token with keyword{' '}
-                                    {poolAddress}
-                                </p>
-                            </div>
-                        ) : null
-                    }
-                    overlayClassName="!font-forza"
-                >
-                    <div className="relative">
-                        <Image
-                            src="/icon/twitter.svg"
-                            alt="twitter"
-                            width={40}
-                            height={40}
-                            className="transition-transform duration-300 hover:scale-110"
-                            style={{ cursor: 'pointer' }}
-                            onClick={handleTwitterClick}
-                        />
-                    </div>
-                </Tooltip>
+                <div className="relative flex items-center">
+                    <Tooltip
+                        title={
+                            checkIsOwner &&
+                                !dataDetailPoolFromServer?.isTwitterVerified ? (
+                                <div className="!font-forza">
+                                    <p>Click to share on Twitter</p>
+                                    <p className="text-yellow-300">
+                                        Task: Post about your token with keyword{' '}
+                                        {poolAddress}
+                                    </p>
+                                </div>
+                            ) : dataDetailPoolFromServer?.isTwitterVerified ? (
+                                <div className="!font-forza">
+                                    <p className="text-green-300">✓ Twitter share verified!</p>
+                                </div>
+                            ) : null
+                        }
+                        overlayClassName="!font-forza"
+                    >
+                        <div className="relative">
+                            <Image
+                                src="/icon/twitter.svg"
+                                alt="twitter"
+                                width={40}
+                                height={40}
+                                className={`transition-transform duration-300 hover:scale-110 twitter-share-button ${dataDetailPoolFromServer?.isTwitterVerified ? 'ring-2 ring-green-500 ring-offset-2 rounded-full' : ''}`}
+                                style={{ cursor: 'pointer' }}
+                                onClick={handleTwitterClick}
+                            />
+                            {dataDetailPoolFromServer?.isTwitterVerified && (
+                                <div className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-lg animate-bounce">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
+                    </Tooltip>
+
+                    {/* Verification button */}
+                    {checkIsOwner &&
+                        finalTwitterUrl &&
+                        !dataDetailPoolFromServer?.isTwitterVerified && (
+                            <Tooltip title="Verify your Twitter share" overlayClassName="!font-forza">
+                                <Button
+                                    type="primary"
+                                    loading={verifying}
+                                    onClick={handleVerifyTwitterShare}
+                                    className="ml-2 h-8 bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center rounded-full shadow-lg"
+                                    size="small"
+                                >
+                                    <div className="flex items-center px-1">
+                                        <svg
+                                            width="14"
+                                            height="14"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="white"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            className="mr-1"
+                                        >
+                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                            <polyline points="22 4 12 14.01 9 11.01" />
+                                        </svg>
+                                        <span className="text-xs whitespace-nowrap">Verify</span>
+                                    </div>
+                                </Button>
+                            </Tooltip>
+                        )}
+
+                    {/* Display verified indicator for verified tokens */}
+                    {dataDetailPoolFromServer?.isTwitterVerified && (
+                        <div className="ml-2 flex items-center bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium animate-fadeIn">
+                            <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="mr-1"
+                            >
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                            Verified
+                        </div>
+                    )}
+                </div>
             </div>
         );
     };
 
     return (
-        <div className="relative flex flex-col gap-4  bg-white">
-            <div className="flex h-full space-x-2">
+        <div className="relative flex flex-col gap-4 bg-white">
+            <div className="flex flex-wrap items-center gap-2 md:gap-0 md:space-x-2">
                 <img
                     src={
                         !finalImageUrl
@@ -446,25 +544,6 @@ const SocialDescInformation = () => {
                         )
                     }
                 />
-
-                {/* <Image
-                    src={
-                        !finalImageUrl
-                            ? randomDefaultPoolImage()
-                            : finalImageUrl
-                    }
-                    alt="Token image"
-                    width={45}
-                    height={45}
-                    className="cursor-pointer rounded-full"
-                    onClick={() =>
-                        handleImageClick(
-                            !finalImageUrl
-                                ? randomDefaultPoolImage()
-                                : finalImageUrl
-                        )
-                    }
-                /> */}
 
                 {renderTwitterHighlight()}
 
