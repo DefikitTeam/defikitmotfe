@@ -17,8 +17,8 @@ export class ConfigService {
     }
 
     private loadConfig(): EnvironmentConfig {
-        return developmentConfig;
-        // return productionConfig;
+        // return developmentConfig;
+        return productionConfig;
     }
 
     getChainConfig(chainId: number): ChainConfig | undefined {
