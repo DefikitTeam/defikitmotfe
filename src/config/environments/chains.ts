@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { baseSepolia, berachain, Chain } from 'viem/chains';
+import { baseSepolia, berachain, berachainBepolia, Chain } from 'viem/chains';
 const unichainSepoliaTestnet: Chain = {
     id: 1301,
     name: 'Unichain Sepolia Testnet',
@@ -42,8 +42,8 @@ const somniaTestnet: Chain = {
 
 export const CHAIN_CONFIG = {
     // production: {
-    defaultChain: berachain,
-    supportedChains: [berachain]
+    defaultChain: berachainBepolia,
+    supportedChains: [berachainBepolia]
     // },
     // staging: {
     // defaultChain: baseSepolia,

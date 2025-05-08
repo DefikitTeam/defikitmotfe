@@ -1,9 +1,9 @@
 /* eslint-disable */
-import { ContractStruct } from '@/src/common/wagmi/launch-pad-interface';
+import { ContractInfo } from '@/src/common/wagmi/launch-pad-interface';
 import { useConfig } from '@/src/hooks/useConfig';
 import { Abi } from 'viem';
 
-export const getContract = (chainId: number): ContractStruct => {
+export const getContract = (chainId: number): ContractInfo => {
     let address: string = '';
 
     const { chainConfig, getContractAbi } = useConfig();

@@ -37,18 +37,18 @@ const FaucetInformation = () => {
         loginAction,
         logoutTelegramAction,
         logoutWalletAction,
+        logoutDiscordAction,
+        logoutTwitterAction,
         resetStatusLoginTeleAction,
         resetStatusLoginWalletAction
     } = useAuthLogin();
     const [isDoneFaucet, setIsDoneFaucet] = useState<boolean>(false);
 
-    // const checkIsSaveInfoUserWithTelegram = serviceAuth.getInfoStorage();
     const checkIsSaveInfoUserWithTelegram = authState.userTele;
     const isUserInfoSavedWithTelegram =
         checkIsSaveInfoUserWithTelegram &&
         authState.userInfo &&
         authState.userInfo?.connectedWallet === address &&
-        // checkIsSaveInfoUserWithTelegram?.wallet.address === address &&
         authState.userInfo?.chainId === chainId;
 
     useEffect(() => {
@@ -60,17 +60,6 @@ const FaucetInformation = () => {
             setWalletAddress(address as string);
         }
     }, [address]);
-
-    // useEffect(() => {
-    //     if (
-    //         (address as `0x${string}`) &&
-    //         isUserInfoSavedWithTelegram &&
-    //         isClickFollow &&
-    //         !isDoneFaucet
-    //     ) {
-    //         setIsDoneFaucet(true);
-    //     }
-    // }, [address, isUserInfoSavedWithTelegram]);
 
     const onChange = (
         event:
@@ -106,18 +95,8 @@ const FaucetInformation = () => {
         });
     };
     const handleClickFollowRocketLaunch = () => {
-        // if (isConnected && address) {
         window.open(t('ROCKET_LAUNCH_LINK'), '_blank', 'noopener,noreferrer');
         setIsClickFollow(true);
-        // } else {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
     };
     const handleClickCreateRocketLaunch = () => {
         if (isConnected && address) {
@@ -163,15 +142,6 @@ const FaucetInformation = () => {
         } finally {
             setIsLoadingFaucet(false);
         }
-        // } else {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
     };
 
     useEffect(() => {
@@ -179,6 +149,9 @@ const FaucetInformation = () => {
             if (isMobile) return;
             disconnect();
             logoutWalletAction();
+            logoutTelegramAction();
+            logoutDiscordAction();
+            logoutTwitterAction();
         }
     }, [address]);
 

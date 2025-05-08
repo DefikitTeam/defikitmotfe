@@ -5,8 +5,12 @@ import {
     resetStatusLoginTele,
     resetStatusLoginWallet,
     setOpenModalInviteBlocker,
+    signOutDiscord,
+    signOutTwitter,
     signOutTelegram,
-    signOutWallet
+    signOutWallet,
+    resetStatusLoginTwitter,
+    resetStatusLoginDiscord
 } from './slice';
 import { IAuthState, ILoginRequest } from './type';
 
@@ -18,12 +22,19 @@ type AuthLoginType = {
     // eslint-disable-next-line
     logoutWalletAction: () => void;
     // eslint-disable-next-line
+    logoutTwitterAction: () => void;
+    // eslint-disable-next-line
+    logoutDiscordAction: () => void;
+    // eslint-disable-next-line
     logoutTelegramAction: () => void;
     // eslint-disable-next-line
     resetStatusLoginWalletAction: () => void;
     // eslint-disable-next-line
     resetStatusLoginTeleAction: () => void;
 
+    resetStatusLoginTwitterAction: () => void;
+    // eslint-disable-next-line
+    resetStatusLoginDiscordAction: () => void;
     // eslint-disable-next-line
     setOpenModalInviteBlocker: (isOpenModalInviteBlocker: boolean) => void;
 };
@@ -60,6 +71,23 @@ export const useAuthLogin = (): AuthLoginType => {
         },
         [dispatch]
     );
+
+    const logoutTwitterAction = useCallback(() => {
+        dispatch(signOutTwitter());
+    }, [dispatch]);
+
+    const logoutDiscordAction = useCallback(() => {
+        dispatch(signOutDiscord());
+    }, [dispatch]);
+
+    const resetStatusLoginTwitterAction = useCallback(() => {
+        dispatch(resetStatusLoginTwitter());
+    }, [dispatch]);
+
+    const resetStatusLoginDiscordAction = useCallback(() => {
+        dispatch(resetStatusLoginDiscord());
+    }, [dispatch]);
+
     return {
         authState,
         loginAction,
@@ -67,6 +95,10 @@ export const useAuthLogin = (): AuthLoginType => {
         logoutTelegramAction,
         resetStatusLoginWalletAction,
         resetStatusLoginTeleAction,
-        setOpenModalInviteBlocker: setOpenModalInviteBlockerAction
+        setOpenModalInviteBlocker: setOpenModalInviteBlockerAction,
+        logoutTwitterAction,
+        logoutDiscordAction,
+        resetStatusLoginTwitterAction,
+        resetStatusLoginDiscordAction
     };
 };

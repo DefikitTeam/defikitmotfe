@@ -10,7 +10,7 @@ const serviceNotification = {
                 `${config.getApiConfig().baseUrl}/c/${chainId}/notification/t/${address}`
             );
         } catch (error) {
-            console.log('=========== GET faucet error: ', error);
+            // console.log('=========== GET faucet error: ', error);
         }
         if (res && res.status === 200) {
             return res.data;
@@ -24,7 +24,7 @@ const serviceNotification = {
                 `${config.getApiConfig().baseUrl}/c/${chainId}/n/${notificationId}`
             );
         } catch (error) {
-            console.log('=========== GET faucet error: ', error);
+            // console.log('=========== GET faucet error: ', error);
         }
         if (res && res.status === 200) {
             return res.data;
@@ -38,7 +38,7 @@ const serviceNotification = {
                 `${config.getApiConfig().baseUrl}/c/${chainId}/notification/t/${address}`
             );
         } catch (error) {
-            console.log('=========== GET faucet error: ', error);
+            // console.log('=========== GET faucet error: ', error);
         }
         if (res && res.status === 200) {
             return res.data;

@@ -11,6 +11,8 @@ import { PoolStatus } from '@/src/common/constant/constance';
 const StatusBadge = ({ status }: { status: string }) => {
     const getStatusConfig = () => {
         switch (status) {
+            case PoolStatus.UP_COMING:
+                return { color: 'warning' };
             case PoolStatus.ACTIVE:
                 return { color: 'success' };
             case PoolStatus.FULL:
@@ -27,7 +29,10 @@ const StatusBadge = ({ status }: { status: string }) => {
     };
 
     return (
-        <Tag {...getStatusConfig()} className="!px-3 !py-1 !text-sm !font-medium !rounded-full">
+        <Tag
+            {...getStatusConfig()}
+            className="!rounded-full !px-3 !py-1 !text-sm !font-medium"
+        >
             {status}
         </Tag>
     );
@@ -65,7 +70,7 @@ const TokenInformation = () => {
 
     return (
         <div className="bg-white pt-2 font-forza text-base">
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4 flex items-center justify-between">
                 <h3 className="font-bold">Token:</h3>
                 {pool?.status && <StatusBadge status={pool.status} />}
             </div>

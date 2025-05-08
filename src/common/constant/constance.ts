@@ -13,7 +13,8 @@ export enum ChainId {
     IOTA = 8822,
     BERACHAIN_MAINNET = 80094,
     MONAD = 10143,
-    SOMNIA = 50312
+    SOMNIA = 50312,
+    BERACHAIN_BEPOLIA = 80069
 }
 
 export enum DexName {
@@ -175,6 +176,14 @@ export const chains = [
         explorerUrl: 'https://shannon-explorer.somnia.network/',
         rpcUrl: 'https://dream-rpc.somnia.network/',
         onFaucet: false
+    },
+    {
+        chainId: 80069,
+        name: 'Berachain Bepolia',
+        currency: 'BERA',
+        explorerUrl: 'https://bepolia.beratrail.io',
+        rpcUrl: 'https://bepolia.rpc.berachain.com',
+        onFaucet: false
     }
 ];
 
@@ -207,8 +216,12 @@ export const markCreatePoolSlider = {
 };
 
 export const socialMediaOptions: { value: string; label: string }[] = [
-    { value: 'twitter', label: 'Twitter' }
-    // { value: 'telegram', label: 'Telegram' }
+    { value: 'twitter', label: 'Twitter' },
+    { value: 'telegram', label: 'Telegram' },
+    { value: 'discord', label: 'Discord' },
+    { value: 'fascaster', label: 'Fascaster' },
+    { value: 'lens', label: 'Lens' },
+    { value: 'slack', label: 'Slack' }
 ];
 
 export const epochTimeChecked = 1717135267;

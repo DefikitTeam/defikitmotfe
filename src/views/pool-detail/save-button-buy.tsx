@@ -20,12 +20,14 @@ import { useAccount } from 'wagmi';
 
 const SaveButtonBuy = ({
     text,
+    label,
     isLoading,
     disableBtnBuy,
     clearForm,
     isTradeBex
 }: {
     text: string;
+    label: string;
     isLoading: boolean;
     disableBtnBuy: boolean;
     clearForm?: () => void;
@@ -253,7 +255,7 @@ const SaveButtonBuy = ({
                             )}
                         </div>
                     ) : (
-                        `Buy ${text}`
+                        `${label} ${text}`
                     )}
                 </Button>
             </div>

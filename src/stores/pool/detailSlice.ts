@@ -75,7 +75,10 @@ const initialState: IDetailPoolState = {
         startTime: '',
         discussionId: '',
         aiAgentId: '',
-        aiAgentName: ''
+        aiAgentName: '',
+        isTwitterVerified: false,
+        verifiedTweetId: '',
+        verifiedTweetUrl: ''
     },
     // linkDiscussionTelegram: '',
     holderDistribution: []
@@ -163,7 +166,8 @@ export const getPoolDetail = createAsyncThunk<
         ] = await Promise.all([
             updateMetaDataWorker(
                 poolDetailData.data.pool.id,
-                poolDetailData.data.pool.metadata
+                // poolDetailData.data.pool.metadata
+                chainId.toString()
             ),
             servicePool.getTransaction(
                 Number(params.page),
@@ -300,6 +304,8 @@ export const poolDetailSlice = createSlice({
                 state.totalHolderDistribution = action.payload.totalHolder;
                 state.totalTopReward = action.payload.totalReferrer;
                 state.socialScoreInfo = action.payload.socialScoreInfo;
+                state.dataDetailPoolFromServer =
+                    action.payload.dataDetailPoolFromServer;
             }
         );
         builder
@@ -322,6 +328,8 @@ export const poolDetailSlice = createSlice({
                     state.priceNative = action.payload.priceNative;
                     state.totalTransaction = action.payload.transactions.length;
                     state.socialScoreInfo = action.payload.socialScoreInfo;
+                    state.dataDetailPoolFromServer =
+                        action.payload.dataDetailPoolFromServer;
                 }
             );
         builder

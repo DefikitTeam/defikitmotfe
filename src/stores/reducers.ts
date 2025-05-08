@@ -21,6 +21,14 @@ import topRefByVolReducer from '@/src/stores/top-ref-by-vol/slice';
 import inviteListReferReducer from '@/src/stores/invite-code/list-refer-slice';
 import getInviteCodeReducer from '@/src/stores/invite-code/get-invite-code';
 import depositLotteryReducer from '@/src/stores/pool/depositLotterySlice';
+import userReducer from '@/src/stores/Twitter/userSlice';
+import discordUserReducer from '@/src/stores/discord/userSlice';
+import getTrustPointReducer from '@/src/stores/trust-point/get-trust-point-status-slice';
+import getTrustPointTokenReducer from '@/src/stores/trust-point/get-trust-point-status-token-slice';
+import trustPointDailyWalletTokenReducer from '@/src/stores/trust-point/trust-point-daily-wallet-token-slice';
+import trustPointWeeklyWalletTokenReducer from '@/src/stores/trust-point/trust-point-weekly-wallet-token-slice';
+import trustPointMonthlyWalletTokenReducer from '@/src/stores/trust-point/trust-point-monthly-wallet-token-slice';
+import createAiAgentReducer from '@/src/stores/pool/createAiAgent';
 const rootReducer = combineReducers({
     auth: authReducer,
     poolDetail: poolDetailReducer,
@@ -43,7 +51,15 @@ const rootReducer = combineReducers({
     // checkInviteCode: checkInviteCodeReducer,
     inviteListRefer: inviteListReferReducer,
     getInviteCode: getInviteCodeReducer,
-    depositLottery: depositLotteryReducer
+    depositLottery: depositLotteryReducer,
+    user: userReducer,
+    discordUser: discordUserReducer,
+    trustPoint: getTrustPointReducer,
+    trustPointToken: getTrustPointTokenReducer,
+    trustPointDailyWalletToken: trustPointDailyWalletTokenReducer,
+    trustPointWeeklyWalletToken: trustPointWeeklyWalletTokenReducer,
+    trustPointMonthlyWalletToken: trustPointMonthlyWalletTokenReducer,
+    createAiAgent: createAiAgentReducer
 });
 
 export default rootReducer;

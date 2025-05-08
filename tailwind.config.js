@@ -75,6 +75,11 @@ module.exports = {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
         },
+        bounce: {
+          '0%, 20%, 50%, 80%, 100%': { transform: 'translateY(0)' },
+          '40%': { transform: 'translateY(-10px)' },
+          '60%': { transform: 'translateY(-5px)' },
+        },
         kingTitle: {
           '0%, 100%': { transform: 'scale(1)', opacity: '1' },
           '50%': { transform: 'scale(1.1)', opacity: '0.8' },
@@ -128,6 +133,7 @@ module.exports = {
         bubbleUp: 'bubbleUp 1s linear infinite',
         moveDiagonally: 'moveDiagonally 2s ease-in-out infinite',
         fadeIn: 'fadeIn 1.5s ease-out forwards',
+        bounce: 'bounce 0.5s ease-in-out',
         'king-title': 'kingTitle 2s infinite',
         'king-pool': 'kingPool 3s infinite',
         'king-text': 'kingText 1.5s infinite',

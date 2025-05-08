@@ -79,12 +79,19 @@ const Footer = () => {
         // }
     };
 
+    const handleClickLeaderboard = () => {
+        router.push(
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/leaderboard`
+        );
+    };
+
     return (
         <div>
             <div className="h-20 bg-white"></div>
+
             <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
                 <div
-                    className={` mx-auto grid h-full max-w-lg cursor-pointer grid-cols-4 font-medium`}
+                    className={` mx-auto grid h-full max-w-lg cursor-pointer grid-cols-5 font-medium`}
                 >
                     <div
                         className="group inline-flex flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
@@ -156,8 +163,7 @@ const Footer = () => {
                         onClick={handleClickCommunity}
                     >
                         <a
-                            // href={'https://discord.com/invite/jQCFDYMrU9'}
-                            href="https://linktr.ee/rocket.launch"
+                            href="https://linktr.ee/RocketLaunch_DeFiKit"
                             target="_blank"
                             className={`group inline-flex flex-col items-center justify-center border-gray-200 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800`}
                         >
@@ -178,6 +184,25 @@ const Footer = () => {
                                 Community
                             </span>
                         </a>
+                    </div>
+
+                    <div
+                        className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+                        onClick={handleClickLeaderboard}
+                    >
+                        <svg
+                            className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path d="M15.75 3.75a1.5 1.5 0 00-1.5 1.5v10.5a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5V5.25a1.5 1.5 0 00-1.5-1.5h-.75zM9.75 8.25a1.5 1.5 0 00-1.5 1.5v6a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5v-6a1.5 1.5 0 00-1.5-1.5h-.75zM3.75 12.75a1.5 1.5 0 00-1.5 1.5v1.5a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5v-1.5a1.5 1.5 0 00-1.5-1.5h-.75z" />
+                        </svg>
+
+                        <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
+                            Leaderboard
+                        </span>
                     </div>
 
                     {/* {chainData.onFaucet && (

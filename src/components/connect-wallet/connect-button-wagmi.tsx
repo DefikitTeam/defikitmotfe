@@ -38,7 +38,17 @@ const ConnectButtonWagmi = () => {
 
     const { chainConfig, defaultChain, supportedChains } = useConfig();
 
-    const { authState, loginAction } = useAuthLogin();
+    const {
+        authState,
+        loginAction,
+        setOpenModalInviteBlocker,
+        resetStatusLoginWalletAction,
+        logoutWalletAction,
+        logoutTelegramAction,
+        logoutDiscordAction,
+        logoutTwitterAction,
+        resetStatusLoginTeleAction
+    } = useAuthLogin();
     const { disconnect } = useDisconnect();
 
     const [show, setShow] = useState<boolean>(false);
@@ -48,14 +58,6 @@ const ConnectButtonWagmi = () => {
     };
 
     useEffect(() => {
-        // if(!show || !address || hasAttemptedSignature) return;
-
-        // const isMetaMaskBrowser = /MetaMask/i.test(navigator.userAgent);
-        // if (isMetaMaskBrowser) {
-        //     console.log('chay vao metamask');
-        //     return;
-        // }
-
         const handleSignMessage = async () => {
             if (!authState.userWallet) {
                 const message = address as `0x${string}`;
@@ -70,23 +72,29 @@ const ConnectButtonWagmi = () => {
                     });
 
                     const refIdFromStorage = await servicePool.getReferId();
-                    const loginWalletData: ILoginRequest = {
-                        wallet: {
-                            chainId: chainConfig?.chainId!,
-                            address: address as `0x${string}`,
-                            message: message,
-                            signature: signature,
+                    const walletData = {
+                        chainId: chainConfig?.chainId!,
+                        address: address as `0x${string}`,
+                        message: message,
+                        signature: signature,
 
-                            refId: refIdFromStorage
-                                ? refIdFromStorage.refId
-                                : ''
-                        },
+                        refId: refIdFromStorage ? refIdFromStorage.refId : ''
+                    };
+
+                    const loginWalletData: ILoginRequest = {
+                        wallet: walletData,
                         referralCode: refCode ? refCode : ''
                     };
+                    logoutDiscordAction();
+                    logoutTwitterAction();
+                    logoutTelegramAction();
                     loginAction(loginWalletData);
                 } catch (error) {
                     console.error('User rejected the signature:', error);
                     disconnect();
+                    logoutTelegramAction();
+                    logoutDiscordAction();
+                    logoutTwitterAction();
                     // prevAddress.current = null;
                 }
             }

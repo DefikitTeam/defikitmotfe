@@ -1,23 +1,23 @@
 /* eslint-disable */
-import {
-    NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_API_ENDPOINT_PROD
-} from '@/src/common/web3/constants/env';
+import { ConfigService } from '@/src/config/services/config-service';
 import {
     ICheckAccessTokenResponse,
     IDataUserLoginResponse,
+    ILoginDiscordResponse,
     ILoginRequest,
     ILoginTeleResponse,
+    ILoginTwitterResponse,
     ILoginWalletResponse
 } from '@/src/stores/auth/type';
 import { IRefCode } from '@/src/stores/pool/type';
 import { Cookies } from 'react-cookie';
 import { post } from '../fetcher';
-import { ConfigService } from '@/src/config/services/config-service';
 const cookies = new Cookies();
 const USER_INFO_STORAGE_KEY = 'usr_if';
 const USER_WALLET_STORAGE_KEY = 'usr_wallet_if';
 const USER_TELE_STORAGE_KEY = 'usr_tele_if';
+const USER_TWITTER_STORAGE_KEY = 'usr_twitter_if';
+const USER_DISCORD_STORAGE_KEY = 'usr_discord_if';
 export const REFCODE_INFO_STORAGE_KEY = 'refCode';
 const USER_TOKEN_STORAGE_KEY = 'usr_tk';
 
@@ -60,6 +60,25 @@ const serviceAuth = {
         }
         cookies.remove(USER_TELE_STORAGE_KEY, { path: '/' });
     },
+    storeUserTwitter: (twitter: ILoginTwitterResponse | null) => {
+        if (twitter) {
+            cookies.set(USER_TWITTER_STORAGE_KEY, JSON.stringify(twitter), {
+                path: '/'
+            });
+            return;
+        }
+        cookies.remove(USER_TWITTER_STORAGE_KEY, { path: '/' });
+    },
+    storeUserDiscord: (discord: ILoginDiscordResponse | null) => {
+        if (discord) {
+            cookies.set(USER_DISCORD_STORAGE_KEY, JSON.stringify(discord), {
+                path: '/'
+            });
+            return;
+        }
+        cookies.remove(USER_DISCORD_STORAGE_KEY, { path: '/' });
+    },
+
     getUserInfoStorage: (): IDataUserLoginResponse | null => {
         const userInfo = cookies.get(USER_INFO_STORAGE_KEY);
         return userInfo ? userInfo : null;
@@ -71,6 +90,14 @@ const serviceAuth = {
     getUserTeleStorage: (): ILoginTeleResponse | null => {
         const teleInfo = cookies.get(USER_TELE_STORAGE_KEY);
         return teleInfo ? teleInfo : null;
+    },
+    getUserTwitterStorage: (): ILoginTwitterResponse | null => {
+        const twitterInfo = cookies.get(USER_TWITTER_STORAGE_KEY);
+        return twitterInfo ? twitterInfo : null;
+    },
+    getUserDiscordStorage: (): ILoginDiscordResponse | null => {
+        const discordInfo = cookies.get(USER_DISCORD_STORAGE_KEY);
+        return discordInfo ? discordInfo : null;
     },
 
     storeAccessToken: (token: string | null) => {
@@ -131,7 +158,7 @@ const serviceAuth = {
                     JSON.stringify(refCode)
                 );
             } else {
-                console.log('refCode đã tồn tại:', existingRefCode);
+                // console.log('refCode đã tồn tại:', existingRefCode);
             }
         }
     },

@@ -18,7 +18,17 @@ const TelegramInfo = ({ name }: { name: string }) => {
     };
 
     let botName = '';
+    // switch (environment) {
+    //     case 'staging':
     botName = 'motheroftokens_bot';
+    //         break;
+    //     case 'development':
+    //         botName = 'MotherOfTokensDevBot';
+    //         break;
+    //     case 'production':
+    //         botName = 'motheroftokens_bot';
+    //         break;
+    // }
 
     const items: MenuProps['items'] = [
         {

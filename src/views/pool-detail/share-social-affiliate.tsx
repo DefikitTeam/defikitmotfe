@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Col, Input, notification, Row, Tooltip } from 'antd';
@@ -8,8 +10,8 @@ import {
     FacebookShareButton,
     TelegramIcon,
     TelegramShareButton,
-    TwitterIcon,
-    TwitterShareButton
+    TwitterShareButton,
+    XIcon
 } from 'react-share';
 import { useAccount } from 'wagmi';
 
@@ -18,16 +20,6 @@ const ShareSocialAffiliate = () => {
 
     const { authState } = useAuthLogin();
     const [affiliate, setAffiliate] = useState('');
-
-    // useEffect(() => {
-    //     if (authState.userInfo?.refId) {
-    //         setAffiliate(
-    //             window.location.href + `?refId=${authState.userInfo?.refId}`
-    //         );
-    //     } else {
-    //         setAffiliate(window.location.href);
-    //     }
-    // }, [authState.userInfo?.refId]);
 
     useEffect(() => {
         if (authState.userInfo?.refId) {
@@ -152,7 +144,7 @@ const ShareSocialAffiliate = () => {
                                     // title="kienkien"
                                     title={t('TITLE_SHARE_TELEGRAM_AFFILIATE')}
                                 >
-                                    <TwitterIcon
+                                    <XIcon
                                         size={30}
                                         round
                                     />

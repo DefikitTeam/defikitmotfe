@@ -34,8 +34,11 @@ const ModalInviteBlocker = () => {
         resetStatusLoginWalletAction,
         logoutWalletAction,
         logoutTelegramAction,
+        logoutDiscordAction,
+        logoutTwitterAction,
         resetStatusLoginTeleAction
     } = useAuthLogin();
+
     const { openNotification, contextHolder } = useNotification();
     const { disconnect } = useDisconnect();
     const router = useRouter();
@@ -94,6 +97,9 @@ const ModalInviteBlocker = () => {
                 }
                 disconnect();
                 logoutWalletAction();
+                logoutTelegramAction();
+                logoutDiscordAction();
+                logoutTwitterAction();
                 // logoutAction();
             }
         })();

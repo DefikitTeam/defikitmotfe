@@ -10,7 +10,7 @@ const serviceTopRefByVol = {
                 `${config.getApiConfig().baseUrl}/c/${chainId}/top-referrer`
             );
         } catch (error) {
-            console.log('=========== GET faucet error: ', error);
+            // console.log('=========== GET faucet error: ', error);
         }
         if (res && res.status === 200) {
             return res.data;

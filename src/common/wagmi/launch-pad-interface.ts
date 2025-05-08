@@ -9,15 +9,15 @@ import { Abi, BaseError, ContractFunctionRevertedError } from 'viem';
 import { UseWriteContractReturnType } from 'wagmi';
 import { ChainId } from '../constant/constance';
 
-export interface ContractStruct {
+export interface ContractInfo {
     address: `0x${string}`;
     abi: Abi;
     chainId: ChainId;
 }
 
 export class LaunchPadInterface {
-    _contractStruct: ContractStruct;
-    constructor(contractStruct: ContractStruct) {
+    _contractStruct: ContractInfo;
+    constructor(contractStruct: ContractInfo) {
         this._contractStruct = contractStruct;
     }
 
@@ -224,7 +224,7 @@ export class LaunchPadInterface {
             tokenForAddLP: string | number;
             // batch purchase
             tokenPerPurchase: string | number;
-            maxRepeatPurchase: string | number;
+            // maxRepeatPurchase: string | number;
             // limit time
             startTime: string | number;
             minDurationSell: string | number;
@@ -249,7 +249,7 @@ export class LaunchPadInterface {
                 tokenForSale,
                 tokenForAddLP,
                 tokenPerPurchase,
-                maxRepeatPurchase,
+                // maxRepeatPurchase,
                 startTime,
                 minDurationSell,
                 maxDurationSell,
@@ -270,7 +270,7 @@ export class LaunchPadInterface {
                 tokenForSale,
                 tokenForAddLP,
                 tokenPerPurchase,
-                maxRepeatPurchase,
+                // maxRepeatPurchase,
                 startTime,
                 minDurationSell,
                 maxDurationSell,
@@ -309,7 +309,7 @@ export class LaunchPadInterface {
                         tokenForSale,
                         tokenForAddLP,
                         tokenPerPurchase,
-                        maxRepeatPurchase,
+                        // maxRepeatPurchase,
                         startTime,
                         minDurationSell,
                         maxDurationSell,
@@ -334,13 +334,26 @@ export class LaunchPadInterface {
                 //         .toFixed(0)
                 // )
 
-                value: BigInt(
-                    new BigNumber(
-                        chainConfig.getPlatformFee(this._contractStruct.chainId)
-                    )
-                        .times(1e18)
-                        .toFixed(0)
-                )
+                value: maxAmountETH
+                    ? BigInt(
+                          new BigNumber(
+                              chainConfig.getPlatformFee(
+                                  this._contractStruct.chainId
+                              )
+                          )
+                              .times(1e18)
+                              .plus(new BigNumber(maxAmountETH))
+                              .toFixed(0)
+                      )
+                    : BigInt(
+                          new BigNumber(
+                              chainConfig.getPlatformFee(
+                                  this._contractStruct.chainId
+                              )
+                          )
+                              .times(1e18)
+                              .toFixed(0)
+                      )
             });
         } catch (err) {
             this.handleErrors(err);
@@ -482,14 +495,68 @@ export class LaunchPadInterface {
                     value: ethers.parseEther(amount)
                 });
             }
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
 
-            // await watcher.writeContractAsync({
-            //     ...this._contractStruct,
-            //     functionName: 'depositForLottery',
-            //     args: [poolAddress, ethers.parseEther(amount), referrer],
-            //     gasPrice: adjustedGasPrice,
-            //     value: ethers.parseEther(amount)
-            // });
+    async mintWithSignature(
+        watcher: UseWriteContractReturnType,
+        params: {
+            id: string;
+            signature: string | number;
+        }
+    ) {
+        const { id, signature } = params;
+        if (!id || !signature) {
+            throw new Error('Invalid params when call mintWithSignature');
+        }
+
+        await watcher.writeContractAsync({
+            ...this._contractStruct,
+            functionName: 'mintWithSignature',
+            args: [id, signature]
+        });
+    }
+
+    async mintTokenWithSignature(
+        watcher: UseWriteContractReturnType,
+        params: {
+            id: string;
+            token: string;
+            signature: string | number;
+        }
+    ) {
+        const { id, token, signature } = params;
+        if (!id || !token || !signature) {
+            throw new Error('Invalid params when call mintTokenWithSignature');
+        }
+
+        await watcher.writeContractAsync({
+            ...this._contractStruct,
+            functionName: 'mintTokenWithSignature',
+            args: [id, token, signature]
+        });
+    }
+
+    async withdrawFundLottery(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+            amountETH: string;
+        }
+    ) {
+        try {
+            const { poolAddress, amountETH } = params;
+            if (!poolAddress || !amountETH) {
+                throw new Error('Invalid params when call withdrawFundLottery');
+            }
+
+            await watcher.writeContractAsync({
+                ...this._contractStruct,
+                functionName: 'withdrawFundLottery',
+                args: [poolAddress, amountETH]
+            });
         } catch (err) {
             this.handleErrors(err);
         }

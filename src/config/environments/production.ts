@@ -3,12 +3,14 @@ import {
     NEXT_PUBLIC_API_ENDPOINT_PROD,
     NEXT_PUBLIC_BASE_CONTRACT_ADDRESS_PROD,
     NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_PROD,
+    NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_TRUST_POINT,
     NEXT_PUBLIC_IOTA_CONTRACT_ADDRESS_PROD
 } from '@/src/common/web3/constants/env';
 import { ROCKET_EVM_ABI } from '../abi/rocket-evm-abi';
 import { ROCKET_EVM_ABI_PROD } from '../abi/rocket-evm-abi-prod';
 import { EnvironmentConfig } from '../type';
 import { ROCKET_EVM_ABI_IOTA_PROD } from '../abi/rocket-evm-abi-iota-prod';
+import { ROCKET_EVM_ABI_MIN_NFT } from '../abi/rocket-evm-abi-min-nft';
 
 export const productionConfig: EnvironmentConfig = {
     environment: 'production',
@@ -82,6 +84,9 @@ export const productionConfig: EnvironmentConfig = {
             rpcUrl: 'https://rpc.berachain.com/',
             isTestnet: false,
             contractAbis: ROCKET_EVM_ABI,
+            trustPointAbis: ROCKET_EVM_ABI_MIN_NFT,
+            trustPointAddress:
+                NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_TRUST_POINT as string,
             dex: {
                 name: DexName.KODIAK,
                 linkSwap: 'https://app.kodiak.finance/#/swap?outputCurrency='

@@ -863,7 +863,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                     </span>
                                 }
                             >
-                                <StyleCommunication />
+                                <StyleCommunication mode={'launch-pool'} />
                             </Form.Item>
                         </Col>
 
@@ -893,7 +893,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                     </span>
                                 }
                             >
-                                <MessageReplyByAgent />
+                                <MessageReplyByAgent mode={'launch-pool'} />
                             </Form.Item>
                         </Col>
                     </Row>

@@ -28,17 +28,25 @@ import {
     Row,
     Slider,
     Tooltip,
-    Typography
+    Typography,
+    Button
 } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAccount } from 'wagmi';
+import {
+    useAccount,
+    useContractRead,
+    useContractWrite,
+    useWaitForTransactionReceipt,
+    useWriteContract
+} from 'wagmi';
 import DepositLotteryButton from './deposit-lottery-button';
 import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
 import SpinLotteryButton from './spin-lottery-button';
+import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 const { Text, Title } = Typography;
 
 const PoolPurchaseSummary = () => {
@@ -46,6 +54,7 @@ const PoolPurchaseSummary = () => {
     const [{ poolStateDetail }, fetchPoolDetail, fetchPoolDetailBackground] =
         usePoolDetail();
     const { pool, analystData, priceNative, status } = poolStateDetail;
+
     const { chainId, address, isConnected } = useAccount();
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
@@ -76,6 +85,7 @@ const PoolPurchaseSummary = () => {
     const [raisedEth, setRaisedEth] = useState('0');
     const [showInitial, setShowInitial] = useState('0');
 
+    const [buyButtonText, setBuyButtonText] = useState(() => t('BUY'));
     const [buyAmountBtn, setBuyAmountBtn] = useState('');
     const [isTradeBex, setIsTradeBex] = useState<boolean>(false);
     const { setOpenModalActiviti } = useActivities();
@@ -86,6 +96,44 @@ const PoolPurchaseSummary = () => {
             helperText: ''
         }
     });
+
+    const [userLotteryFunds, setUserLotteryFunds] = useState('0');
+    const [withdrawAmount, setWithdrawAmount] = useState('');
+    const [disableBtnWithdraw, setDisableBtnWithdraw] = useState(true);
+    const [isWithdrawing, setIsWithdrawing] = useState(false);
+
+    const {
+        dataReader: userLotteryData,
+        isFetchingDataReader: isFetchingUserLotteryData,
+        reFetchDataReader: reFetchUserLotteryData
+    } = useReader({
+        contractAddAndAbi: multiCallerContract,
+        poolAddress: pool?.id as string,
+        userAddress: address as `0x${string}`,
+        chainId: chainConfig?.chainId as number
+    });
+
+    const userLottery = userLotteryData ? userLotteryData[8] : undefined;
+    const userLotteryValue = userLottery?.result;
+
+    useEffect(() => {
+        if (isFetchingUserLotteryData === false && userLotteryValue) {
+            const ethAmountValue = userLotteryValue.ethAmount;
+            const lotteryAmount = new BigNumber(ethAmountValue.toString())
+                .div(1e18)
+                .toFixed(6);
+            setUserLotteryFunds(
+                parseFloat(lotteryAmount) > 0 ? lotteryAmount.toString() : '0'
+            );
+        }
+    }, [userLotteryValue, isFetchingUserLotteryData]);
+
+    // const withdrawLotteryWatcher = useWriteContract();
+    // const withdrawLotteryListener = useWaitForTransactionReceipt({
+    //     hash: withdrawLotteryWatcher.data
+    // });
+
+    const { useWithdrawFundLottery } = useMultiCaller();
 
     const handleKeyPressDeposit = (event: any) => {
         const pattern = /^[0-9.]$/;
@@ -131,9 +179,13 @@ const PoolPurchaseSummary = () => {
         let validateInputHelperText = '';
 
         if (value) {
-            if (Number(value) > 100) {
+            if (Number(value) > Number(pool?.batchAvailable ?? 0)) {
                 validateInputError = true;
-                validateInputHelperText = t('MAXIMUM_BOND_AMOUNT');
+                validateInputHelperText = t('MAXIMUM_BOND_EXCEEDED', {
+                    max: pool?.batchAvailable ?? 'N/A'
+                });
+
+                // return;
             } else {
                 validateInputError = false;
                 validateInputHelperText = '';
@@ -146,6 +198,14 @@ const PoolPurchaseSummary = () => {
                     helperText: validateInputHelperText
                 }
             });
+
+            // setValidateInput({
+            //     ...validateInput,
+            //     bondAmount: {
+            //         error: validateInputError,
+            //         helperText: validateInputHelperText
+            //     }
+            // });
             if (!validateInputError) {
                 setData({
                     ...data,
@@ -159,6 +219,12 @@ const PoolPurchaseSummary = () => {
                     setDisableBtnBuy(false);
                 }
                 setSliderPercent(Number(value));
+
+                if (Number(value) > Number(bondAvailableCurrent)) {
+                    setBuyButtonText(t('BUY_AND_DEPOSIT_LOTTERY'));
+                } else {
+                    setBuyButtonText(t('BUY'));
+                }
             }
         } else {
             setDisableBtnBuy(true);
@@ -166,6 +232,7 @@ const PoolPurchaseSummary = () => {
             setMaxAmountETH(0);
             setBondAmountValue('');
             setSliderPercent(0);
+            setBuyButtonText(t('BUY'));
         }
     };
 
@@ -175,6 +242,7 @@ const PoolPurchaseSummary = () => {
         setBuyAmountBtn('');
         setBondAmountValue('');
         setMaxAmountETH(0);
+        setBuyButtonText(t('BUY'));
     };
 
     const debounceTimeoutRef = useRef<NodeJS.Timeout>();
@@ -220,6 +288,7 @@ const PoolPurchaseSummary = () => {
         if (pool) {
             getPoolInformation();
             getUserPoolInfo(pool.id);
+            // getUserLotteryFunds();
         }
     }, [pool.id, chainConfig?.chainId, status, pool.soldBatch, address]);
 
@@ -364,6 +433,10 @@ const PoolPurchaseSummary = () => {
     }, [pool?.soldBatch, pool?.batchAvailable, endTime.seconds]);
 
     useEffect(() => {
+        reFetchUserLotteryData();
+    }, [pool?.soldBatch, pool?.batchAvailable, endTime.seconds]);
+
+    useEffect(() => {
         const intervalId = setInterval(() => {
             fetchPoolDetailBackground({
                 page: poolStateDetail.pageTransaction,
@@ -464,6 +537,7 @@ const PoolPurchaseSummary = () => {
                 const lotteryAmount = new BigNumber(funLottery?.result)
                     .div(1e18)
                     .toFixed(3);
+
                 setFunLotteryAvailable(
                     parseFloat(lotteryAmount) > 0
                         ? lotteryAmount.toString()
@@ -517,24 +591,84 @@ const PoolPurchaseSummary = () => {
 
     const shouldShowDeposit =
         pool.status !== PoolStatus.FAIL &&
-        pool.status !== PoolStatus.COMPLETED && pool.status !== PoolStatus.FINISHED && (
-
-            (!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
-            Number(bondAvailableCurrent) === 0
-        );
+        pool.status !== PoolStatus.COMPLETED &&
+        ((!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
+            Number(bondAvailableCurrent) === 0);
 
     const shouldShowSpin =
         pool.status !== PoolStatus.FAIL &&
-        pool.status !== PoolStatus.COMPLETED && pool.status !== PoolStatus.FINISHED && 
+        pool.status !== PoolStatus.COMPLETED &&
         !isForceShowBuyButton &&
         Number(funLotteryAvailable) > 0 &&
         Number(bondAvailableCurrent) > 0;
 
     const shouldShowBuyButton =
         pool.status !== PoolStatus.FAIL &&
-        (
-            isForceShowBuyButton || (!shouldShowDeposit && !shouldShowSpin)
+        (isForceShowBuyButton || (!shouldShowDeposit && !shouldShowSpin));
+
+    const handleKeyPressWithdraw = (event: any) => {
+        const pattern = /^[0-9.]$/;
+        if (!pattern.test(event.key)) {
+            event.preventDefault();
+        }
+    };
+
+    const handleOnChangeWithdraw = (
+        event:
+            | React.ChangeEvent<HTMLInputElement>
+            | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+        const { value } = event.target;
+        setWithdrawAmount(value.toString());
+        setDisableBtnWithdraw(
+            !value ||
+                Number(value) <= 0 ||
+                Number(value) > Number(userLotteryFunds)
         );
+    };
+
+    const withdrawLotteryFunds = async () => {
+        if (!address || !isConnected || !withdrawAmount) {
+            notification.error({
+                message: 'Error',
+                description:
+                    'Please connect your wallet and enter an amount to withdraw',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
+        try {
+            setIsWithdrawing(true);
+
+            await useWithdrawFundLottery.actionAsync({
+                poolAddress: pool.id,
+                amountETH: withdrawAmount
+            });
+
+            notification.success({
+                message: 'Success',
+                description: `Successfully withdrew ${withdrawAmount} ${chainConfig?.currency}`,
+                duration: 3,
+                showProgress: true
+            });
+
+            // Reset input
+            setWithdrawAmount('');
+            // Data will refresh automatically through hooks
+        } catch (error) {
+            console.error('Error withdrawing lottery funds:', error);
+            notification.error({
+                message: 'Error',
+                description: 'Failed to withdraw lottery funds',
+                duration: 3,
+                showProgress: true
+            });
+        } finally {
+            setIsWithdrawing(false);
+        }
+    };
 
     return (
         <div className="h-full w-full">
@@ -739,6 +873,7 @@ const PoolPurchaseSummary = () => {
                             }}
                         />
                     </Col>
+
                     <Col
                         xs={24}
                         sm={24}
@@ -750,7 +885,11 @@ const PoolPurchaseSummary = () => {
                             <span className="!font-forza text-base">
                                 <Text className="text-lg text-red-500">* </Text>
                                 {t('BOND_AMOUNT')}
-                                <Tooltip title={t('MAXIMUM_BOND_AMOUNT')}>
+                                <Tooltip
+                                    title={t('MAXIMUM_BOND_AMOUNT_AVAILABLE', {
+                                        max: pool?.batchAvailable ?? 'N/A'
+                                    })}
+                                >
                                     <QuestionCircleOutlined
                                         style={{ marginLeft: '8px' }}
                                     />
@@ -761,7 +900,7 @@ const PoolPurchaseSummary = () => {
                                 type="number"
                                 placeholder={t('ENTER_NUMBER_BOND')}
                                 name="numberBatch"
-                                max={maxSlider}
+                                max={Number(pool?.batchAvailable ?? 0)}
                                 min={0}
                                 // style={{ width: '100%' }}
                                 value={bondAmountValue}
@@ -790,7 +929,8 @@ const PoolPurchaseSummary = () => {
                             {t('YOUR_BALANCE')}: {balanceOfUser} {t('BONDS')}
                         </div>
                     </Col>
-                    <Col
+
+                    {/* <Col
                         xs={24}
                         sm={24}
                         lg={24}
@@ -821,136 +961,233 @@ const PoolPurchaseSummary = () => {
                                     : 0
                             }
                         />
-                    </Col>
-                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && pool.status !== PoolStatus.FINISHED && (
-                        <Col
-                            xs={24}
-                            sm={24}
-                            lg={24}
-                            md={24}
-                            xxl={24}
-                            className="mb-0 mt-0"
-                        >
-                            <Row
-                                gutter={[16, 12]}
-                                className="mb-6 rounded-lg bg-gray-50 p-2 shadow-md"
-                                justify="space-between"
+                    </Col> */}
+
+                    {pool.status != PoolStatus.FAIL &&
+                        pool.status != PoolStatus.COMPLETED && (
+                            <Col
+                                xs={24}
+                                sm={24}
+                                lg={24}
+                                md={24}
+                                xxl={24}
+                                className="mb-0 mt-0"
                             >
-
-                                <Col
-                                    xs={12}
-                                    sm={12}
-                                    md={12}
-                                    lg={12}
-                                    xxl={12}
-                                    className="flex items-center"
+                                <Row
+                                    gutter={[16, 12]}
+                                    className="mb-6 rounded-lg bg-gray-50 p-2 shadow-md"
+                                    justify="space-between"
                                 >
-                                    <div className="flex flex-col">
-                                        <span className="font-forza text-base">
-                                            {t('BOND_AVAILABLE')}
-                                        </span>
-                                        <span className="text-2xl font-bold text-blue-600">
-                                            {Number(bondAvailableCurrent)}{' '}
-                                            {t('BONDS')}
-                                        </span>
-                                    </div>
-                                </Col>
-                                <Col
-                                    xs={12}
-                                    sm={12}
-                                    md={12}
-                                    lg={12}
-                                    xxl={12}
-                                    className="flex items-center"
+                                    <Col
+                                        xs={12}
+                                        sm={12}
+                                        md={12}
+                                        lg={12}
+                                        xxl={12}
+                                        className="flex items-center"
+                                    >
+                                        <div className="flex flex-col">
+                                            <span className="font-forza text-base">
+                                                {t('BOND_AVAILABLE')}
+                                            </span>
+                                            <span className="text-2xl font-bold text-blue-600">
+                                                {Number(bondAvailableCurrent)}{' '}
+                                                {t('BONDS')}
+                                            </span>
+                                        </div>
+                                    </Col>
+                                    <Col
+                                        xs={12}
+                                        sm={12}
+                                        md={12}
+                                        lg={12}
+                                        xxl={12}
+                                        className="flex items-center"
+                                    >
+                                        <div className="flex flex-col">
+                                            <span className="font-forza text-base">
+                                                {t('FUND_LOTTERY_AVAILABLE')}
+                                            </span>
+                                            <span className="text-2xl font-bold text-blue-600">
+                                                {Number(funLotteryAvailable)}{' '}
+                                                {`${chainConfig?.currency}`}
+                                            </span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        )}
+
+                    {pool.status != PoolStatus.FAIL &&
+                        pool.status != PoolStatus.COMPLETED &&
+                        isConnected && (
+                            <Col
+                                xs={24}
+                                sm={24}
+                                lg={24}
+                                md={24}
+                                xxl={24}
+                                className="mb-6"
+                            >
+                                <Row
+                                    gutter={[16, 12]}
+                                    className="rounded-lg bg-gray-50 p-2 shadow-md"
+                                    justify="space-between"
                                 >
-                                    <div className="flex flex-col">
-                                        <span className="font-forza text-base">
-                                            {t('FUND_LOTTERY_AVAILABLE')}
-                                        </span>
-                                        <span className="text-2xl font-bold text-blue-600">
-                                            {Number(funLotteryAvailable)}{' '}
-                                            {`${chainConfig?.currency}`}
-                                        </span>
-                                    </div>
-                                </Col>
-                            </Row>
-                        </Col>
-                    )}
+                                    <Col
+                                        span={24}
+                                        className="flex items-center"
+                                    >
+                                        <div className="flex w-full flex-col">
+                                            <span className="font-forza text-base">
+                                                {t('YOUR_LOTTERY_FUNDS')}
+                                            </span>
+                                            <span className="text-2xl font-bold text-blue-600">
+                                                {Number(userLotteryFunds)}{' '}
+                                                {`${chainConfig?.currency}`}
+                                            </span>
+                                        </div>
+                                    </Col>
 
+                                    {Number(userLotteryFunds) > 0 && (
+                                        <>
+                                            <Col
+                                                span={24}
+                                                className="mt-2"
+                                            >
+                                                <div className="mb-0">
+                                                    <span className="!font-forza text-base">
+                                                        <Text className="text-lg text-red-500">
+                                                            *{' '}
+                                                        </Text>
+                                                        {`${t('WITHDRAW_AMOUNT')} ${chainConfig?.currency}`}
+                                                    </span>
+                                                    <Input
+                                                        type="text"
+                                                        placeholder={`Please enter ${chainConfig?.currency} amount to withdraw`}
+                                                        name="withdrawAmount"
+                                                        value={withdrawAmount}
+                                                        onKeyPress={
+                                                            handleKeyPressWithdraw
+                                                        }
+                                                        onChange={
+                                                            handleOnChangeWithdraw
+                                                        }
+                                                        className="!font-forza text-base"
+                                                        style={{
+                                                            color: '#000000',
+                                                            width: '100%'
+                                                        }}
+                                                    />
+                                                </div>
+                                            </Col>
+                                            <Col
+                                                span={24}
+                                                className="mt-2"
+                                            >
+                                                <Button
+                                                    type="primary"
+                                                    className="h-auto w-full bg-blue-600 py-2 !font-forza text-base hover:bg-blue-700"
+                                                    onClick={
+                                                        withdrawLotteryFunds
+                                                    }
+                                                    disabled={
+                                                        disableBtnWithdraw ||
+                                                        useWithdrawFundLottery.isLoadingInitWithdrawFundLottery
+                                                    }
+                                                    loading={
+                                                        isWithdrawing ||
+                                                        useWithdrawFundLottery.isLoadingInitWithdrawFundLottery
+                                                    }
+                                                >
+                                                    {t(
+                                                        'WITHDRAW_LOTTERY_FUNDS'
+                                                    )}
+                                                </Button>
+                                            </Col>
+                                        </>
+                                    )}
+                                </Row>
+                            </Col>
+                        )}
 
+                    {pool.status != PoolStatus.FAIL &&
+                        pool.status != PoolStatus.COMPLETED &&
+                        shouldShowBuyButton && (
+                            <Col
+                                xs={24}
+                                sm={24}
+                                lg={24}
+                                md={24}
+                                xxl={24}
+                            >
+                                <div className="mb-0">
+                                    <span className="!font-forza text-base">
+                                        {t('MAX_AMOUNT')}{' '}
+                                        {`${chainConfig?.currency}`}
+                                    </span>
 
+                                    <Input
+                                        size="large"
+                                        disabled={true}
+                                        value={
+                                            maxAmountETH
+                                                ? new BigNumber(maxAmountETH)
+                                                      .div(1e18)
+                                                      .toFixed(6)
+                                                : 0
+                                        }
+                                        className="!font-forza text-base"
+                                        style={{
+                                            backgroundColor: '#CCCCCC',
+                                            color: '#7E7E97'
+                                        }}
+                                    />
+                                </div>
+                            </Col>
+                        )}
 
-                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && pool.status !== PoolStatus.FINISHED && shouldShowBuyButton && (
-                        <Col
-                            xs={24}
-                            sm={24}
-                            lg={24}
-                            md={24}
-                            xxl={24}
-                        >
-                            <div className="mb-0">
-                                <span className="!font-forza text-base">
-                                    {t('MAX_AMOUNT')}{' '}
-                                    {`${chainConfig?.currency}`}
-                                </span>
-
-                                <Input
-                                    size="large"
-                                    disabled={true}
-                                    value={
-                                        maxAmountETH
-                                            ? new BigNumber(maxAmountETH)
-                                                .div(1e18)
-                                                .toFixed(6)
-                                            : 0
-                                    }
-                                    className="!font-forza text-base"
-                                    style={{
-                                        backgroundColor: '#CCCCCC',
-                                        color: '#7E7E97'
-                                    }}
-                                />
-                            </div>
-                        </Col>
-                    )}
-
-                    {pool.status != PoolStatus.FAIL && pool.status != PoolStatus.COMPLETED && pool.status !== PoolStatus.FINISHED && shouldShowDeposit && (
-                        <Col
-                            xs={24}
-                            sm={24}
-                            lg={24}
-                            md={24}
-                            xxl={24}
-                        >
-                            <div className="mb-0">
-                                <span className="!font-forza text-base">
-                                    <Text className="text-lg text-red-500">
-                                        *{' '}
-                                    </Text>
-                                    {`${t('DEPOSIT_AMOUNT')} ${chainConfig?.currency}`}
-                                    {/* <Tooltip
+                    {pool.status != PoolStatus.FAIL &&
+                        pool.status != PoolStatus.COMPLETED &&
+                        shouldShowDeposit && (
+                            <Col
+                                xs={24}
+                                sm={24}
+                                lg={24}
+                                md={24}
+                                xxl={24}
+                            >
+                                <div className="mb-0">
+                                    <span className="!font-forza text-base">
+                                        <Text className="text-lg text-red-500">
+                                            *{' '}
+                                        </Text>
+                                        {`${t('DEPOSIT_AMOUNT')} ${chainConfig?.currency}`}
+                                        {/* <Tooltip
                                         title={t('DEPOSIT_AMOUNT_TOOLTIP')}
                                     >
                                         <QuestionCircleOutlined
                                             style={{ marginLeft: '8px' }}
                                         />
                                     </Tooltip> */}
-                                </span>
+                                    </span>
 
-                                <Input
-                                    type="text"
-                                    placeholder={`Please enter ${chainConfig?.currency} amount`}
-                                    name="depositAmount"
-                                    value={depositAmountValue}
-                                    onKeyPress={handleKeyPressDeposit}
-                                    onChange={handleOnChangeDeposit}
-                                    className="!font-forza text-base"
-                                    style={{ color: '#000000', width: '100%' }}
-                                />
-                            </div>
-                        </Col>
-                    )}
-
+                                    <Input
+                                        type="text"
+                                        placeholder={`Please enter ${chainConfig?.currency} amount`}
+                                        name="depositAmount"
+                                        value={depositAmountValue}
+                                        onKeyPress={handleKeyPressDeposit}
+                                        onChange={handleOnChangeDeposit}
+                                        className="!font-forza text-base"
+                                        style={{
+                                            color: '#000000',
+                                            width: '100%'
+                                        }}
+                                    />
+                                </div>
+                            </Col>
+                        )}
                 </Row>
 
                 <Row
@@ -968,6 +1205,7 @@ const PoolPurchaseSummary = () => {
                         {shouldShowBuyButton ? (
                             <SaveButtonBuy
                                 text={buyAmountBtn}
+                                label={buyButtonText}
                                 isLoading={isLoading}
                                 disableBtnBuy={disableBtnBuy}
                                 clearForm={clearForm}

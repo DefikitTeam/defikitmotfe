@@ -33,6 +33,8 @@ export interface ChainConfig {
         error: string;
     };
     onFaucet?: boolean;
+    trustPointAbis?: any;
+    trustPointAddress?: string;
 }
 
 export interface EnvironmentConfig {

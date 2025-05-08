@@ -4,6 +4,7 @@ import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { getContract } from '../common/blockchain/evm/contracts/utils/getContract';
 import MultiCaller from '../common/wagmi/MultiCaller';
 import { useConfig } from './useConfig';
+import { getTrustPointContract } from '../common/blockchain/evm/contracts/utils/getTrustPointContract';
 
 export function useMultiCaller() {
     const { chainConfig } = useConfig();
@@ -56,6 +57,11 @@ export function useMultiCaller() {
     const depositForLotteryWatcher = useWriteContract();
     const depositForLotteryListener = useWaitForTransactionReceipt({
         hash: depositForLotteryWatcher.data
+    });
+
+    const withdrawFundLotteryWatcher = useWriteContract();
+    const withdrawFundLotteryListener = useWaitForTransactionReceipt({
+        hash: withdrawFundLotteryWatcher.data
     });
 
     return {
@@ -139,7 +145,7 @@ export function useMultiCaller() {
                 tokenForAddLP: string | number;
                 // batch purchase
                 tokenPerPurchase: string | number;
-                maxRepeatPurchase: string | number;
+                // maxRepeatPurchase: string | number;
                 // limit time
                 startTime: string | number;
                 minDurationSell: string | number;
@@ -228,6 +234,26 @@ export function useMultiCaller() {
             error:
                 depositForLotteryListener.error ||
                 depositForLotteryWatcher.error
+        },
+
+        useWithdrawFundLottery: {
+            actionAsync: (params: {
+                poolAddress: string;
+                amountETH: string;
+            }) => {
+                return multiCaller.withdrawFundLottery(
+                    withdrawFundLotteryWatcher,
+                    params
+                );
+            },
+            isConfirmed: withdrawFundLotteryListener.isSuccess,
+            isLoadingAgreedWithdrawFundLottery:
+                withdrawFundLotteryListener.isLoading,
+            isLoadingInitWithdrawFundLottery:
+                withdrawFundLotteryWatcher.isPending,
+            isError:
+                withdrawFundLotteryListener.isError ||
+                withdrawFundLotteryWatcher.isError
         }
     };
 }

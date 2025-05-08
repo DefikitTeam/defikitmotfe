@@ -45,14 +45,22 @@ const serviceUpload = {
     uploadMetadataToServer: async (
         metadata: any,
         chainId: string,
-        tokenAddress: string
+        tokenAddress: string,
+        address?: string,
+        signature?: string,
+        message?: string,
+        ownerAddress?: string
     ) => {
         let res;
         try {
             res = await axios.post(
                 `${config.getApiConfig().baseUrl}/c/${chainId}/t/${tokenAddress}/metadata`,
                 {
-                    body: metadata
+                    body: metadata,
+                    address,
+                    signature,
+                    message,
+                    ownerAddress
                 }
             );
         } catch (error) {
@@ -68,14 +76,16 @@ const serviceUpload = {
     uploadMetadataToServerWithoutAddress: async (
         metadata: any,
         chainId: string,
-        signature: string
+        signature: string,
+        ownerAddress?: string
     ) => {
         let res;
         try {
             res = await axios.post(
                 `${config.getApiConfig().baseUrl}/c/${chainId}/t/${signature}/metadata`,
                 {
-                    body: metadata
+                    body: metadata,
+                    ownerAddress
                 }
             );
         } catch (error) {

@@ -89,3 +89,13 @@ export interface IGetAllInviteListReferResponse {
     perPage: number;
     data: any[];
 }
+
+export interface IVerifyTwitterShareResponse {
+    data: {
+        success: boolean;
+        verified: boolean;
+        message: string;
+        tweetId: string;
+        tweetUrl: string;
+    };
+}

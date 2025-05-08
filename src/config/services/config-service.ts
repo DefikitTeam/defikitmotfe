@@ -1,3 +1,4 @@
+import { developmentConfig } from '../environments/development';
 import { productionConfig } from '../environments/production';
 import { ChainConfig, EnvironmentConfig } from '../type';
 export class ConfigService {
@@ -16,7 +17,8 @@ export class ConfigService {
     }
 
     private loadConfig(): EnvironmentConfig {
-        return productionConfig;
+        return developmentConfig;
+        // return productionConfig;
     }
 
     getChainConfig(chainId: number): ChainConfig | undefined {
@@ -43,6 +45,14 @@ export class ConfigService {
         contractKey: keyof ChainConfig['addresses']
     ): string | undefined {
         return this.getChainConfig(chainId)?.addresses[contractKey];
+    }
+
+    getTrustPointAddress(chainId: number): string | undefined {
+        return this.getChainConfig(chainId)?.trustPointAddress;
+    }
+
+    getTrustPointAbi(chainId: number): any {
+        return this.getChainConfig(chainId)?.trustPointAbis;
     }
 
     getSubgraphUri(chainId: number): string | undefined {

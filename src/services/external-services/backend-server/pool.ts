@@ -9,6 +9,9 @@ import {
     IGetDetailHolderDistributionParams,
     IGetDetailPoolParams,
     IGetPoolInfoRewardParams,
+    IGetTop100TrustPointWalletAndTokenMonthlyQuery,
+    IGetTop100TrustPointWalletAndTokenQuery,
+    IGetTop100TrustPointWalletAndTokenWeeklyQuery,
     IGetTransactionByPoolAndSenderParams,
     IGetUserPoolParams,
     IGetUserTopRewardByPoolParams,
@@ -17,7 +20,12 @@ import {
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { querySubGraph } from '../fetcher';
-import { getQueryByStatus } from './query';
+import {
+    getQueryByStatus,
+    getTop100TPDailyCombinedQuery,
+    getTop100TPMonthlyCombinedQuery,
+    getTop100TPWeeklyCombinedQuery
+} from './query';
 export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
 // const currentHostName = useCurrentHostNameInformation();
 // const isProd =
@@ -139,9 +147,9 @@ const servicePool = {
         return querySubGraph(payload, chainId!);
     },
 
-    getPoolMetadata: async (poolId: string, metadataLink: string) => {
+    getPoolMetadata: async (poolId: string, chainId: string) => {
         try {
-            const response = await updateMetaDataWorker(poolId, metadataLink);
+            const response = await updateMetaDataWorker(poolId, chainId);
 
             return response;
         } catch (error) {
@@ -339,10 +347,10 @@ const servicePool = {
                 `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}/social-score`
             );
         } catch (error) {
-            console.log(
-                '======= get social score info to server error: ',
-                error
-            );
+            // console.log(
+            //     '======= get social score info to server error: ',
+            //     error
+            // );
         }
         if (res && res.status === 200) {
             return res.data;
@@ -391,6 +399,36 @@ const servicePool = {
             return res.data;
         }
         return [];
+    },
+
+    getTop100TrustPointWalletAndToken: ({
+        dayStartUnix,
+        chainId
+    }: IGetTop100TrustPointWalletAndTokenQuery) => {
+        const payload = {
+            query: getTop100TPDailyCombinedQuery({ dayStartUnix })
+        };
+        return querySubGraph(payload, chainId);
+    },
+
+    getTop100TrustPointWalletAndTokenWeekly: ({
+        weekStartUnix,
+        chainId
+    }: IGetTop100TrustPointWalletAndTokenWeeklyQuery) => {
+        const payload = {
+            query: getTop100TPWeeklyCombinedQuery({ weekStartUnix })
+        };
+        return querySubGraph(payload, chainId);
+    },
+
+    getTop100TrustPointWalletAndTokenMonthly: ({
+        monthStartUnix,
+        chainId
+    }: IGetTop100TrustPointWalletAndTokenMonthlyQuery) => {
+        const payload = {
+            query: getTop100TPMonthlyCombinedQuery({ monthStartUnix })
+        };
+        return querySubGraph(payload, chainId);
     }
 };
 

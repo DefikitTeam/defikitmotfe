@@ -47,6 +47,7 @@ const CreateLaunch = () => {
     // const [form] = useForm<IPoolCreatForm>();
     const [form] = Form.useForm();
     const [isLoadingCreateLaunch, setIsLoadingCreateLaunch] = useState(false);
+
     const [maxAmountETHResult, setMaxAmountETHResult] = useState<string>('0');
     const { resetPassData } = usePassData();
     const {
@@ -304,8 +305,10 @@ const CreateLaunch = () => {
                 await serviceUpload.uploadMetadataToServerWithoutAddress(
                     metadataPayload,
                     chainConfig?.chainId.toString()!,
-                    signature
+                    signature,
+                    address as `0x${string}`
                 );
+
             let metaDataLink: string = '';
             if (resData && resData.status === 'success') {
                 metaDataLink = `${config.getApiConfig().baseUrl}/c/${chainConfig?.chainId}/t/${signature}/metadata`;
@@ -353,9 +356,9 @@ const CreateLaunch = () => {
                         .times(10 ** Number(data.decimal))
                         .div(data.totalBatch)
                         .toFixed(0),
-                    maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
-                        .times(10 ** Number(data.decimal))
-                        .toFixed(0),
+                    // maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
+                    //     .times(10 ** Number(data.decimal))
+                    //     .toFixed(0),
                     startTime: data.startTime,
                     minDurationSell: data.minDurationSell * 3600,
                     maxDurationSell: maxDurationSell,
@@ -393,9 +396,9 @@ const CreateLaunch = () => {
                         .times(10 ** Number(data.decimal))
                         .div(data.totalBatch)
                         .toFixed(0),
-                    maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
-                        .times(10 ** Number(data.decimal))
-                        .toFixed(0),
+                    // maxRepeatPurchase: new BigNumber(data.maxRepeatPurdchase)
+                    //     .times(10 ** Number(data.decimal))
+                    //     .toFixed(0),
                     startTime: data.startTime,
                     minDurationSell: data.minDurationSell * 3600,
                     maxDurationSell: maxDurationSell,

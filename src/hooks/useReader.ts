@@ -1,10 +1,10 @@
 /* eslint-disable */
 import { useReadContracts } from 'wagmi';
 import { ContractFunction } from '../common/utils/caller';
-import { ContractStruct } from '../common/wagmi/launch-pad-interface';
+import { ContractInfo } from '../common/wagmi/launch-pad-interface';
 
 export interface UseReaderParam {
-    contractAddAndAbi: ContractStruct;
+    contractAddAndAbi: ContractInfo;
     poolAddress?: string;
     userAddress?: string;
     chainId: number;
@@ -29,7 +29,7 @@ export function useReader({
     reserveIn,
     reserveOut
 }: UseReaderParam): any {
-    const readInfo: { contract: ContractStruct; func: ContractFunction[] } = {
+    const readInfo: { contract: ContractInfo; func: ContractFunction[] } = {
         contract: contractAddAndAbi,
         func: [
             {
@@ -63,6 +63,10 @@ export function useReader({
             {
                 functionName: 'fundLottery',
                 args: [poolAddress]
+            },
+            {
+                functionName: 'getUserLottery',
+                args: [poolAddress, userAddress]
             }
         ]
     };

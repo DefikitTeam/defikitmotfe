@@ -8,6 +8,14 @@ import {
 } from '@/src/common/constant/constance';
 import { IPoolDetail } from '@/src/services/response.type';
 import { EActionStatus, FetchError } from '../type';
+import {
+    IPoolTrustPointScoreDailyItem,
+    IPoolTrustPointScoreMonthlyItem,
+    IPoolTrustPointScoreWeeklyItem,
+    IUserTrustPointScoreDailyItem,
+    IUserTrustPointScoreMonthlyItem,
+    IUserTrustPointScoreWeeklyItem
+} from '../trust-point/type';
 
 export interface ITransaction {
     id: string;
@@ -69,6 +77,7 @@ export interface InvestPool {
 }
 export interface IMetaData {
     image: string;
+
     tokenImageUrl?: string | null;
     description: any;
     website: string | null;
@@ -85,6 +94,7 @@ export interface IFormData {
 export interface IResponseMetadata {
     data: {
         image: IFormData;
+        imageAiAgent: IFormData;
         description: IFormData;
         website: IFormData;
         telegram: IFormData;
@@ -182,6 +192,9 @@ export interface IDataDetailPoolFromServer {
 
     aiAgentId: string | null;
     aiAgentName: string | null;
+    isTwitterVerified: boolean | null;
+    verifiedTweetId: string | null;
+    verifiedTweetUrl: string | null;
 }
 export interface IDetailPoolResponseData {
     pool: IPoolDetail | undefined;
@@ -307,7 +320,8 @@ export interface IGetAllPoolBackgroundQuery {
 
 export interface IGetMetadataPoolParams {
     id: string;
-    metadataLink: string;
+    // metadataLink: string;
+    chainId?: string;
 }
 export interface IGetAllPoolQueryByAddress {
     poolAddress: string;
@@ -424,6 +438,7 @@ export interface ICreateAiAgent {
     people?: string[];
     topics?: string[];
     style?: IStyleAiAgentCommunity;
+    isOpenModalCreateAiAgent?: boolean;
 }
 export interface ICreatePoolLaunch {
     token?: string;
@@ -526,4 +541,43 @@ export interface ICreateLaunchPoolParams {
     decimals: string;
     totalSupply: string;
     address: string;
+}
+
+export interface IGetTop100TrustPointWalletAndTokenQuery {
+    first?: number;
+    orderBy?: string;
+    orderDirection?: string;
+    dayStartUnix: number;
+    chainId: number;
+}
+
+export interface IGetTop100TrustPointWalletAndTokenWeeklyQuery
+    extends Omit<IGetTop100TrustPointWalletAndTokenQuery, 'dayStartUnix'> {
+    weekStartUnix: number;
+}
+
+export interface IGetTop100TrustPointWalletAndTokenMonthlyQuery
+    extends Omit<IGetTop100TrustPointWalletAndTokenQuery, 'dayStartUnix'> {
+    monthStartUnix: number;
+}
+
+export interface IGetTop100TrustPointWalletAndTokenResponse {
+    data: {
+        userTrustScoreDailies: IUserTrustPointScoreDailyItem[];
+        poolTrustScoreDailies: IPoolTrustPointScoreDailyItem[];
+    };
+}
+
+export interface IGetTop100TrustPointWalletAndTokenWeeklyResponse {
+    data: {
+        userTrustScoreWeeklies: IUserTrustPointScoreWeeklyItem[];
+        poolTrustScoreWeeklies: IPoolTrustPointScoreWeeklyItem[];
+    };
+}
+
+export interface IGetTop100TrustPointWalletAndTokenMonthlyResponse {
+    data: {
+        userTrustScoreMonthlies: IUserTrustPointScoreMonthlyItem[];
+        poolTrustScoreMonthlies: IPoolTrustPointScoreMonthlyItem[];
+    };
 }
