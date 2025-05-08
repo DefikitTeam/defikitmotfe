@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ICreateAiAgent } from './type';
 

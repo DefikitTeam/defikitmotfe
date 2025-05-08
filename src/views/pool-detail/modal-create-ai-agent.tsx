@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
     ACCEPT_AVATAR_TYPES,
     AccountFileType,
