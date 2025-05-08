@@ -42,8 +42,8 @@ const somniaTestnet: Chain = {
 
 export const CHAIN_CONFIG = {
     // production: {
-    defaultChain: berachainBepolia,
-    supportedChains: [berachainBepolia]
+    defaultChain: berachain,
+    supportedChains: [berachain]
     // },
     // staging: {
     // defaultChain: baseSepolia,
