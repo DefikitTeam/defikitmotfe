@@ -1,20 +1,28 @@
-/* eslint-disable */
-
+import {
+    ACCEPT_AVATAR_TYPES,
+    AccountFileType,
+    KeyValueObj,
+    MAX_AVATAR_FILE_SIZE,
+    socialMediaOptions
+} from '@/src/common/constant/constance';
 import { base64ToFile } from '@/src/common/lib/utils';
 import { mapMessageExamples } from '@/src/common/utils/map-example-message';
 import MessageReplyByAgent from '@/src/components/common/message-reply-by-agent';
 import StyleCommunication from '@/src/components/common/style-communication';
+import { useConfig } from '@/src/hooks/useConfig';
+import serviceAiAgent from '@/src/services/external-services/backend-server/ai-agent';
 import serviceAiGenerate from '@/src/services/external-services/backend-server/ai-generate';
+import serviceUpload from '@/src/services/external-services/backend-server/upload';
 import { IGenerateDataAiAgentResponse } from '@/src/services/response.type';
-import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hook';
+import {
+    useCreateAiAgentInformation,
+    usePoolDetail
+} from '@/src/stores/pool/hook';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
     Button,
     Col,
-    Collapse,
-    CollapseProps,
     Form,
-    FormInstance,
     Input,
     Modal,
     notification,
@@ -25,29 +33,16 @@ import {
     Typography,
     Upload,
     UploadFile,
-    UploadProps
+    UploadProps,
+    Collapse
 } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { RcFile } from 'antd/es/upload';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { IPoolCreatForm } from '.';
-import {
-    ACCEPT_AVATAR_TYPES,
-    AccountFileType,
-    KeyValueObj,
-    MAX_AVATAR_FILE_SIZE,
-    socialMediaOptions
-} from '@/src/common/constant/constance';
-interface PoolInforProps {
-    form: FormInstance<IPoolCreatForm>;
-    getFileAiAgentAvatar: (a: {
-        file: string | Blob | RcFile;
-        flag: boolean;
-    }) => void;
-}
 
 const getBase64 = (file: RcFile): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -58,45 +53,68 @@ const getBase64 = (file: RcFile): Promise<string> =>
     });
 
 const { Text } = Typography;
+const ModalCreateAiAgent = () => {
+    const params = useParams();
+    const poolAddress = params?.poolAddress as string;
+    const [
+        { poolStateDetail },
+        fetchPoolDetail,
+        ,
+        ,
+        ,
+        ,
+        ,
+        setOpenModalSocialScoreAction
+    ] = usePoolDetail();
+    const { metaDataInfo, socialScoreInfo, dataDetailPoolFromServer } =
+        poolStateDetail;
 
-const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
+    const { chainConfig } = useConfig();
+    const [form] = Form.useForm();
+    const [
+        data,
+        setCreateAiAgentInformationAction,
+        resetDataAction,
+        setOpenModalCreateAiAgentAction
+    ] = useCreateAiAgentInformation();
+
     const t = useTranslations();
-    const [data, setData, , resetDataAiAgent] =
-        useCreatePoolLaunchInformation();
+    const { address, isConnected } = useAccount();
     const [technologyOptions, setTechnologyOptions] = useState<KeyValueObj[]>(
         []
     );
+    const [loadingPromptGenerateImage, setLoadingPromptGenerateImage] =
+        useState(false);
+
+    const [loadingGenDataAiAgent, setLoadingGenDataAiAgent] =
+        useState<boolean>(false);
+    const handleClose = () => {
+        setOpenModalCreateAiAgentAction(false);
+    };
+
+    const [isLoadingCreateAiAgent, setIsLoadingCreateAiAgent] =
+        useState<boolean>(false);
 
     const [selectedItemsTech, setSelectedItemsTech] = useState<string[]>([]);
     const [selectedItemsSocial, setSelectedItemsSocial] = useState<string[]>(
         []
     );
 
-    const [loadingPromptGenerateImage, setLoadingPromptGenerateImage] =
-        useState(false);
-
-    const [loadingImage, setLoadingImage] = useState(false);
-    const [image, setImage] = useState<string>('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [run, setRun] = useState(true);
-    const [promptGenerateImage, setPromptGenerateImage] = useState('');
-
     // upload image
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [loadingImage, setLoadingImage] = useState(false);
+    const [image, setImage] = useState<string>('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { address, isConnected } = useAccount();
+    const [promptGenerateImage, setPromptGenerateImage] = useState('');
+    const [avatarAiGentInfo, setAvatarAiAgentInfo] = useState<{
+        file: string | Blob | RcFile | File;
+        flag: boolean;
+    }>();
 
-    const onChangePromptGenerateImage = (
-        event:
-            | React.ChangeEvent<HTMLInputElement>
-            | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-        const { value } = event.target;
-        setPromptGenerateImage(value);
-    };
     const generateImages = async (prompt: string) => {
         try {
             setLoadingImage(true);
@@ -114,92 +132,34 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
         }
     };
 
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
+    const onChange = (
+        event:
+            | React.ChangeEvent<HTMLInputElement>
+            | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+        const { name, value } = event.target;
 
-    const handleOk = () => {
-        setIsModalOpen(false);
-        generateImages(promptGenerateImage);
-    };
-
-    const handleCancelModal = () => {
-        setIsModalOpen(false);
-    };
-    const handleCancel = () => setPreviewOpen(false);
-
-    const beforeUpload = (file: RcFile) => {
-        const extension = file?.name.split('.').slice(-1)[0];
-
-        if (!ACCEPT_AVATAR_TYPES.split(',').includes(`.${extension}`)) {
-            setCheckFileData({
-                ...checkFileData,
-                errorWrongFileType: true
-            });
-            return false;
-        }
-        if (file.size > Number(MAX_AVATAR_FILE_SIZE) * (1024 * 1024)) {
-            setCheckFileData({
-                ...checkFileData,
-                errorFileSize: true
-            });
-            return false;
-        }
-        return true;
-    };
-
-    const handleImageClick = async (image: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
-        const newFile: UploadFile = {
-            uid: `rc-upload-${new Date().getTime()}`,
-            type: 'image/jpeg',
-            status: 'done',
-            percent: 0,
-            url: `data:image/jpeg;base64,${image}`,
-            name: `${new Date().getTime()}.jpeg`,
-            lastModified: Date.now(),
-            preview: `data:image/jpeg;base64,${image}`,
-            lastModifiedDate: new Date(),
-            originFileObj: {
-                uid: `rc-upload-${new Date().getTime()}`,
-                lastModified: Date.now(),
-                lastModifiedDate: new Date(),
-                name: `${new Date().getTime()}.jpeg`,
-                type: 'image/jpeg',
-                webkitRelativePath: ''
-            } as RcFile
-        };
-
-        setFileList([newFile]);
-        setPreviewImage(image);
-        setPreviewTitle('image.jpeg');
-
-        setCheckFileData({
-            ...checkFileData,
-            errorNoValue: false,
-            errorFileSize: false,
-            errorWrongFileType: false
-        });
-
-        getFileAiAgentAvatar({
-            file: base64ToFile(
-                image,
-                `${new Date().getTime()}.jpeg`,
-                'image/jpeg'
-            ),
-            flag: true
+        setCreateAiAgentInformationAction({
+            ...data,
+            [name]: value
         });
     };
 
+    const handleKeyPress = (event: any) => {
+        const pattern = /^[a-zA-Z\s]*$/;
+        if (!pattern.test(event.key)) {
+            event.preventDefault();
+        }
+    };
+
+    const onChangePromptGenerateImage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement>
+            | React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
+        const { value } = event.target;
+        setPromptGenerateImage(value);
+    };
     const generatePromptGenerateImage = async (name: string) => {
         if (!isConnected || !address) {
             notification.error({
@@ -230,79 +190,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
         }
     };
 
-    const onUpload =
-        (name: 'avatarAccount', fileType: AccountFileType) =>
-        async ({ file }: RcCustomRequestOptions) => {
-            setCheckFileData({
-                ...checkFileData,
-                errorNoValue: false
-            });
-            getFileAiAgentAvatar({ file: file, flag: true });
-        };
-
-    const handleFileChange: UploadProps['onChange'] = (info) => {
-        const { fileList: newFileList } = info;
-        if (newFileList.length === 0) {
-            setCheckFileData({
-                ...checkFileData,
-                errorNoValue: true
-            });
-            setFileList(newFileList);
-        } else {
-            if (newFileList[0].status !== 'error') {
-                setFileList([
-                    {
-                        ...newFileList[0],
-                        status: 'done'
-                    }
-                ]);
-                setCheckFileData({
-                    ...checkFileData,
-                    errorNoValue: false
-                });
-            } else {
-                setFileList([]);
-                setCheckFileData({
-                    ...checkFileData,
-                    errorNoValue: true
-                });
-            }
-        }
-
-        if (info.file.status === 'removed') {
-            setCheckFileData({
-                ...checkFileData,
-
-                errorFileSize: false,
-                errorWrongFileType: false
-            });
-        }
-    };
-
-    useEffect(() => {
-        if (fileList.length == 0) {
-            setCheckFileData({
-                ...checkFileData,
-                errorNoValue: true
-            });
-            getFileAiAgentAvatar({ file: '', flag: false });
-        }
-    }, [JSON.stringify(fileList)]);
-
-    const [checkFileData, setCheckFileData] = useState<{
-        fileList: UploadFile[];
-        errorWrongFileType?: boolean;
-        errorFileSize: boolean;
-        errorNoValue: boolean;
-    }>({
-        fileList: [],
-        errorWrongFileType: false,
-        errorFileSize: false,
-        errorNoValue: false
-    });
-
-    const [loadingGenDataAiAgent, setLoadingGenDataAiAgent] =
-        useState<boolean>(false);
+    // console.log('data line184-----', data)
 
     const generateDataAiAgent = async () => {
         if (!isConnected || !address) {
@@ -317,9 +205,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
 
         setLoadingGenDataAiAgent(true);
         const response: IGenerateDataAiAgentResponse =
-            await serviceAiGenerate.generateDataAiAgent(
-                data?.aiAgent?.name ?? ''
-            );
+            await serviceAiGenerate.generateDataAiAgent(data?.name ?? '');
 
         const formattedData = {
             system: response.system?.[0]?.replace(/\"/g, '').trim() || '',
@@ -334,7 +220,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
 
             messageExamples: mapMessageExamples(
                 response.messageExamples ?? [],
-                data?.aiAgent?.name ?? ''
+                data?.name ?? ''
             ),
 
             postExamples:
@@ -385,6 +271,8 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
             }
         };
 
+        console.log('formattedData line 264-----', formattedData);
+
         try {
             setTechnologyOptions(
                 formattedData.topics.map((item, index) => ({
@@ -393,17 +281,14 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                 }))
             );
 
-            setData({
+            setCreateAiAgentInformationAction({
                 ...data,
-                aiAgent: {
-                    ...data.aiAgent,
-                    system: formattedData.system,
-                    bio: formattedData.bio,
-                    lore: formattedData.lore,
-                    messageExamples: formattedData.messageExamples,
-                    postExamples: formattedData.postExamples,
-                    adjectives: formattedData.adjectives
-                }
+                system: formattedData.system,
+                bio: formattedData.bio,
+                lore: formattedData.lore,
+                messageExamples: formattedData.messageExamples,
+                postExamples: formattedData.postExamples,
+                adjectives: formattedData.adjectives
             });
         } catch (error) {
             notification.error({
@@ -418,6 +303,95 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
         }
     };
 
+    const handleCancel = () => setPreviewOpen(false);
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        setIsModalOpen(false);
+        generateImages(promptGenerateImage);
+    };
+
+    const [checkFileData, setCheckFileData] = useState<{
+        fileList: UploadFile[];
+        errorWrongFileType?: boolean;
+        errorFileSize: boolean;
+        errorNoValue: boolean;
+    }>({
+        fileList: [],
+        errorWrongFileType: false,
+        errorFileSize: false,
+        errorNoValue: false
+    });
+    const handleFileChange: UploadProps['onChange'] = (info) => {
+        const { fileList: newFileList } = info;
+        if (newFileList.length === 0) {
+            setCheckFileData({
+                ...checkFileData,
+                errorNoValue: true
+            });
+            setFileList(newFileList);
+        } else {
+            if (newFileList[0].status !== 'error') {
+                setFileList([
+                    {
+                        ...newFileList[0],
+                        status: 'done'
+                    }
+                ]);
+                setCheckFileData({
+                    ...checkFileData,
+                    errorNoValue: false
+                });
+            } else {
+                setFileList([]);
+                setCheckFileData({
+                    ...checkFileData,
+                    errorNoValue: true
+                });
+            }
+        }
+
+        if (info.file.status === 'removed') {
+            setCheckFileData({
+                ...checkFileData,
+
+                errorFileSize: false,
+                errorWrongFileType: false
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (fileList.length == 0) {
+            setCheckFileData({
+                ...checkFileData,
+                errorNoValue: true
+            });
+            setAvatarAiAgentInfo({ file: '', flag: false });
+        }
+    }, [JSON.stringify(fileList)]);
+
+    const beforeUpload = (file: RcFile) => {
+        const extension = file?.name.split('.').slice(-1)[0];
+
+        if (!ACCEPT_AVATAR_TYPES.split(',').includes(`.${extension}`)) {
+            setCheckFileData({
+                ...checkFileData,
+                errorWrongFileType: true
+            });
+            return false;
+        }
+        if (file.size > Number(MAX_AVATAR_FILE_SIZE) * (1024 * 1024)) {
+            setCheckFileData({
+                ...checkFileData,
+                errorFileSize: true
+            });
+            return false;
+        }
+        return true;
+    };
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as RcFile);
@@ -428,7 +402,18 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
             file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1)
         );
     };
-
+    const onUpload =
+        (name: 'avatarAccount', fileType: AccountFileType) =>
+        async ({ file }: RcCustomRequestOptions) => {
+            setCheckFileData({
+                ...checkFileData,
+                errorNoValue: false
+            });
+            setAvatarAiAgentInfo({ file: file, flag: true });
+        };
+    const handleCancelModal = () => {
+        setIsModalOpen(false);
+    };
     const uploadButton = (
         <div>
             <PlusOutlined />
@@ -441,81 +426,205 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
         </div>
     );
 
-    useEffect(() => {
-        if (data.aiAgent?.bio) {
-            form.setFieldsValue({
-                bio: data.aiAgent?.bio
+    const handleImageClick = async (image: string) => {
+        if (!isConnected || !address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
             });
+            return;
         }
-    }, [data.aiAgent?.bio]);
 
-    useEffect(() => {
-        if (selectedItemsTech && selectedItemsTech.length > 0) {
-            setData({
-                ...data,
-                aiAgent: {
-                    ...data.aiAgent,
-                    topics: selectedItemsTech
-                }
-            });
-        }
-    }, [selectedItemsTech]);
+        const newFile: UploadFile = {
+            uid: `rc-upload-${new Date().getTime()}`,
+            type: 'image/jpeg',
+            status: 'done',
+            percent: 0,
+            url: `data:image/jpeg;base64,${image}`,
+            name: `${new Date().getTime()}.jpeg`,
+            lastModified: Date.now(),
+            preview: `data:image/jpeg;base64,${image}`,
+            lastModifiedDate: new Date(),
+            originFileObj: {
+                uid: `rc-upload-${new Date().getTime()}`,
+                lastModified: Date.now(),
+                lastModifiedDate: new Date(),
+                name: `${new Date().getTime()}.jpeg`,
+                type: 'image/jpeg',
+                webkitRelativePath: ''
+            } as RcFile
+        };
 
-    useEffect(() => {
-        if (selectedItemsSocial && selectedItemsSocial.length > 0) {
-            setData({
-                ...data,
-                aiAgent: {
-                    ...data.aiAgent,
-                    clients: selectedItemsSocial
-                }
-            });
-        }
-    }, [selectedItemsSocial]);
+        setFileList([newFile]);
+        setPreviewImage(image);
+        setPreviewTitle('image.jpeg');
 
-    const onChange = (
-        event:
-            | React.ChangeEvent<HTMLInputElement>
-            | React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-        const { name, value } = event.target;
+        setCheckFileData({
+            ...checkFileData,
+            errorNoValue: false,
+            errorFileSize: false,
+            errorWrongFileType: false
+        });
 
-        setData({
-            ...data,
-            aiAgent: {
-                ...data.aiAgent,
-                [name]: value.trim()
-            }
+        setAvatarAiAgentInfo({
+            file: base64ToFile(
+                image,
+                `${new Date().getTime()}.jpeg`,
+                'image/jpeg'
+            ),
+            flag: true
         });
     };
 
-    const handleKeyPress = (event: any) => {
-        const pattern = /^[a-zA-Z\s]*$/;
-        if (!pattern.test(event.key)) {
-            event.preventDefault();
-        }
-    };
-
     useEffect(() => {
-        if (!data.aiAgent?.name) {
-            resetDataAiAgent();
+        if (!data?.name) {
+            resetDataAction();
             setTechnologyOptions([]);
             setSelectedItemsTech([]);
             setSelectedItemsSocial([]);
             form.setFieldsValue({
                 topics: [],
                 bio: '',
-                clients: []
+                clients: [],
+                name: ''
             });
         }
-    }, [data.aiAgent?.name]);
+    }, [data.name]);
 
-    const items: CollapseProps['items'] = [
-        {
-            key: '1',
-            label: '',
-            children: (
-                <div className="">
+    useEffect(() => {
+        if (data.bio) {
+            form.setFieldsValue({
+                bio: data.bio
+            });
+        }
+    }, [data.bio]);
+
+    useEffect(() => {
+        if (selectedItemsTech && selectedItemsTech.length > 0) {
+            setCreateAiAgentInformationAction({
+                ...data,
+
+                topics: selectedItemsTech
+            });
+        }
+    }, [selectedItemsTech]);
+
+    useEffect(() => {
+        if (selectedItemsSocial && selectedItemsSocial.length > 0) {
+            setCreateAiAgentInformationAction({
+                ...data,
+
+                clients: selectedItemsSocial
+            });
+        }
+    }, [selectedItemsSocial]);
+
+    // Effect to update form when data changes
+    useEffect(() => {
+        form.setFieldsValue({
+            name: data.name,
+            bio: data.bio,
+            topics: selectedItemsTech,
+            clientsAgent: selectedItemsSocial
+        });
+    }, [data, selectedItemsTech, selectedItemsSocial]);
+
+    const onFinish = async () => {
+        let urlAiGentAvatar: string = '';
+        setIsLoadingCreateAiAgent(true);
+        let createAiAgentRes: any;
+        try {
+            if (avatarAiGentInfo?.flag) {
+                const res = await serviceUpload.getPresignedUrlAvatar(
+                    avatarAiGentInfo?.file as File,
+                    poolAddress,
+
+                    chainConfig?.chainId.toString()!
+                );
+                urlAiGentAvatar = res;
+            }
+
+
+            const metadata = {
+                ...metaDataInfo,
+                imageAiAgent: urlAiGentAvatar
+            };
+
+            // const metadataPayload = JSON.stringify(data);
+
+            createAiAgentRes =
+                await serviceAiAgent.createAiAgentAfterLaunchPool(
+                    data,
+                    poolAddress,
+                    address as `0x${string}`,
+                    chainConfig?.chainId.toString()!
+                );
+
+            //    @ts-ignore
+            if (createAiAgentRes.status === 'success') {
+                notification.success({
+                    message: 'Success',
+                    description: 'AI Agent created successfully',
+                    duration: 3,
+                    showProgress: true
+                });
+                resetDataAction();
+                setOpenModalCreateAiAgentAction(false);
+                setIsModalOpen(false);
+                setTechnologyOptions([]);
+                setSelectedItemsTech([]);
+                setSelectedItemsSocial([]);
+                form.setFieldsValue({
+                    topics: [],
+                    bio: '',
+                    clientsAgent: [],
+                    name: ''
+                });
+            }
+        } catch (error) {
+            notification.error({
+                message: 'Error',
+                description: createAiAgentRes.message,
+                duration: 3,
+                showProgress: true
+            });
+        }
+    };
+
+    return (
+        <Modal
+            title={
+                <span className="!font-forza text-lg font-bold">
+                    {t('AI_AGENT')}
+                </span>
+            }
+            open={data.isOpenModalCreateAiAgent}
+            footer={
+                <div className="flex justify-end gap-2">
+                    <Button onClick={() => resetDataAction()}>
+                        {t('CANCEL')}
+                    </Button>
+                    <Button
+                        type="primary"
+                        onClick={() => form.submit()}
+                        loading={isLoadingCreateAiAgent}
+                    >
+                        {t('SUBMIT')}
+                    </Button>
+                </div>
+            }
+            onCancel={handleClose}
+            maskClosable={true}
+            centered
+        >
+            <div className="max-h-[70vh] w-full overflow-y-auto pr-4">
+                <Form
+                    form={form}
+                    onFinish={onFinish}
+                    layout="vertical"
+                >
                     <Row gutter={[4, 8]}>
                         <Col
                             xs={24}
@@ -532,21 +641,22 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                     </span>
                                 }
                                 className="mb-0"
-                                initialValue={data?.aiAgent?.name}
+                                initialValue={data?.name}
                             >
                                 <Input
                                     name="name"
                                     size="large"
-                                    value={data?.aiAgent?.name}
+                                    value={data?.name}
                                     placeholder={t('AI_AGENT_NAME')}
                                     onChange={onChange}
                                     onKeyPress={handleKeyPress}
                                     className="!font-forza text-base"
                                 />
+
                                 {loadingGenDataAiAgent ? (
                                     <Spin className="absolute bottom-2 right-2" />
                                 ) : (
-                                    data?.aiAgent?.name &&
+                                    data?.name &&
                                     address && (
                                         <Tooltip title="Click to generate data AI Agent">
                                             <Button
@@ -600,12 +710,13 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                     </span>
                                 }
                                 className="mb-0"
-                                initialValue={data.aiAgent?.bio}
+                                initialValue={data.bio}
                             >
                                 <Input
                                     size="large"
                                     className="!font-forza text-base"
                                     name="bio"
+                                    value={data.bio}
                                     onChange={onChange}
                                     onKeyPress={handleKeyPress}
                                 />
@@ -659,7 +770,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                         />
                                     ) : null}
 
-                                    {!loadingImage && data.aiAgent?.name && (
+                                    {!loadingImage && data.name && (
                                         <>
                                             <Button
                                                 className="bg-[#297fd6] !font-forza text-sm text-white"
@@ -699,9 +810,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                                             className="absolute bottom-2 right-2 cursor-pointer"
                                                             onClick={() =>
                                                                 generatePromptGenerateImage(
-                                                                    data
-                                                                        ?.aiAgent
-                                                                        ?.name ??
+                                                                    data?.name ??
                                                                         ''
                                                                 )
                                                             }
@@ -822,7 +931,6 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                             >
                                 <Select
                                     mode="multiple"
-                                    // placeholder={t('type')}
                                     value={selectedItemsTech}
                                     onChange={setSelectedItemsTech}
                                     style={{ width: '100%' }}
@@ -863,7 +971,9 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                     </span>
                                 }
                             >
-                                <StyleCommunication mode={'launch-pool'} />
+                                <StyleCommunication
+                                    mode={'create-ai-agent-after-launch-pool'}
+                                />
                             </Form.Item>
                         </Col>
 
@@ -893,24 +1003,16 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                                     </span>
                                 }
                             >
-                                <MessageReplyByAgent mode={'launch-pool'} />
+                                <MessageReplyByAgent
+                                    mode={'create-ai-agent-after-launch-pool'}
+                                />
                             </Form.Item>
                         </Col>
                     </Row>
-                </div>
-            )
-        }
-    ];
-
-    return (
-        <>
-            <Collapse
-                // onChange={onChange}
-                // defaultActiveKey={['1']}
-                items={items}
-            />
-        </>
+                </Form>
+            </div>
+        </Modal>
     );
 };
 
-export default AdditionalAgent;
+export default ModalCreateAiAgent;

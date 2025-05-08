@@ -32,13 +32,11 @@ const SocialDescInformation = () => {
         ,
         setOpenModalSocialScoreAction
     ] = usePoolDetail();
-    const {
-        authState,
-    } = useAuthLogin();
-
+    const { authState } = useAuthLogin();
 
     const { metaDataInfo, socialScoreInfo, dataDetailPoolFromServer } =
         poolStateDetail;
+
     const { isConnected, address } = useAccount();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
@@ -72,7 +70,6 @@ const SocialDescInformation = () => {
         }
         return false;
     }, [isConnected, address, poolStateDetail.pool?.owner]);
-
 
     const openInNewTab = (url: any | null) => {
         if (!isConnected || !address) {
@@ -193,22 +190,22 @@ const SocialDescInformation = () => {
                         : metaDataInfo?.description,
                 website:
                     values.websiteLink &&
-                        !values.websiteLink.startsWith('https://')
+                    !values.websiteLink.startsWith('https://')
                         ? `https://${values.websiteLink}`
                         : values.websiteLink,
                 telegram:
                     values.telegramLink &&
-                        !values.telegramLink.startsWith('https://')
+                    !values.telegramLink.startsWith('https://')
                         ? `https://${values.telegramLink}`
                         : values.telegramLink,
                 twitter:
                     values.twitterLink &&
-                        !values.twitterLink.startsWith('https://')
+                    !values.twitterLink.startsWith('https://')
                         ? `https://${values.twitterLink}`
                         : values.twitterLink,
                 discord:
                     values.discordLink &&
-                        !values.discordLink.startsWith('https://')
+                    !values.discordLink.startsWith('https://')
                         ? `https://${values.discordLink}`
                         : values.discordLink
             };
@@ -349,7 +346,6 @@ const SocialDescInformation = () => {
                 finalTwitterUrl
             );
 
-
             // @ts-ignore
             if (res && res.verified === true) {
                 notification.success({
@@ -368,16 +364,16 @@ const SocialDescInformation = () => {
                 if (checkIsOwner) {
                     getTrustPointTokenAction(poolAddress);
                 }
-
             } else {
                 notification.error({
                     message: 'Verification Failed',
-                    description: res.data.message || 'Could not verify your Twitter share. Please make sure you have shared the token with the correct address.',
+                    description:
+                        res.data.message ||
+                        'Could not verify your Twitter share. Please make sure you have shared the token with the correct address.',
                     duration: 5,
                     showProgress: true
                 });
             }
-
         } catch (error) {
             notification.error({
                 message: 'Error',
@@ -385,8 +381,6 @@ const SocialDescInformation = () => {
                 duration: 3,
                 showProgress: true
             });
-
-
         } finally {
             setVerifying(false);
         }
@@ -429,7 +423,7 @@ const SocialDescInformation = () => {
                     <Tooltip
                         title={
                             checkIsOwner &&
-                                !dataDetailPoolFromServer?.isTwitterVerified ? (
+                            !dataDetailPoolFromServer?.isTwitterVerified ? (
                                 <div className="!font-forza">
                                     <p>Click to share on Twitter</p>
                                     <p className="text-yellow-300">
@@ -439,7 +433,9 @@ const SocialDescInformation = () => {
                                 </div>
                             ) : dataDetailPoolFromServer?.isTwitterVerified ? (
                                 <div className="!font-forza">
-                                    <p className="text-green-300">✓ Twitter share verified!</p>
+                                    <p className="text-green-300">
+                                        ✓ Twitter share verified!
+                                    </p>
                                 </div>
                             ) : null
                         }
@@ -451,13 +447,22 @@ const SocialDescInformation = () => {
                                 alt="twitter"
                                 width={40}
                                 height={40}
-                                className={`transition-transform duration-300 hover:scale-110 twitter-share-button ${dataDetailPoolFromServer?.isTwitterVerified ? 'ring-2 ring-green-500 ring-offset-2 rounded-full' : ''}`}
+                                className={`twitter-share-button transition-transform duration-300 hover:scale-110 ${dataDetailPoolFromServer?.isTwitterVerified ? 'ring-green-500 rounded-full ring-2 ring-offset-2' : ''}`}
                                 style={{ cursor: 'pointer' }}
                                 onClick={handleTwitterClick}
                             />
                             {dataDetailPoolFromServer?.isTwitterVerified && (
-                                <div className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white shadow-lg animate-bounce">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <div className="bg-green-500 absolute -right-1 -top-1 flex h-6 w-6 animate-bounce items-center justify-center rounded-full text-white shadow-lg">
+                                    <svg
+                                        width="14"
+                                        height="14"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
                                         <path d="M20 6L9 17l-5-5" />
                                     </svg>
                                 </div>
@@ -469,12 +474,15 @@ const SocialDescInformation = () => {
                     {checkIsOwner &&
                         finalTwitterUrl &&
                         !dataDetailPoolFromServer?.isTwitterVerified && (
-                            <Tooltip title="Verify your Twitter share" overlayClassName="!font-forza">
+                            <Tooltip
+                                title="Verify your Twitter share"
+                                overlayClassName="!font-forza"
+                            >
                                 <Button
                                     type="primary"
                                     loading={verifying}
                                     onClick={handleVerifyTwitterShare}
-                                    className="ml-2 h-8 bg-yellow-500 hover:bg-yellow-600 flex items-center justify-center rounded-full shadow-lg"
+                                    className="ml-2 flex h-8 items-center justify-center rounded-full bg-yellow-500 shadow-lg hover:bg-yellow-600"
                                     size="small"
                                 >
                                     <div className="flex items-center px-1">
@@ -492,7 +500,9 @@ const SocialDescInformation = () => {
                                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                                             <polyline points="22 4 12 14.01 9 11.01" />
                                         </svg>
-                                        <span className="text-xs whitespace-nowrap">Verify</span>
+                                        <span className="whitespace-nowrap text-xs">
+                                            Verify
+                                        </span>
                                     </div>
                                 </Button>
                             </Tooltip>
@@ -500,7 +510,7 @@ const SocialDescInformation = () => {
 
                     {/* Display verified indicator for verified tokens */}
                     {dataDetailPoolFromServer?.isTwitterVerified && (
-                        <div className="ml-2 flex items-center bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium animate-fadeIn">
+                        <div className="bg-green-100 text-green-800 ml-2 flex animate-fadeIn items-center rounded-full px-2 py-1 text-xs font-medium">
                             <svg
                                 width="12"
                                 height="12"

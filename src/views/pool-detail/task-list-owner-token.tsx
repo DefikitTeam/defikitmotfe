@@ -3,7 +3,10 @@
 import { useConfig } from '@/src/hooks/useConfig';
 import { useTrustPointCaller } from '@/src/hooks/useTrustPointCaller';
 import serviceTrustPoint from '@/src/services/external-services/backend-server/trust-point';
-import { usePoolDetail } from '@/src/stores/pool/hook';
+import {
+    useCreateAiAgentInformation,
+    usePoolDetail
+} from '@/src/stores/pool/hook';
 import { useTrustPointToken } from '@/src/stores/trust-point/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { CheckCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
@@ -15,13 +18,22 @@ import {
     Spin,
     Tag,
     Tooltip,
-    Typography
+    Typography,
+    Modal,
+    Form,
+    UploadFile
 } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
+import AdditionalAgent from '../launch/create/additional-agent';
+import { RcFile } from 'antd/es/upload';
+import ModalCreateAiAgent from './modal-create-ai-agent';
+
+// Simple interface that matches the expected structure from the create launch flow
+interface IPoolCreatForm {}
 
 const { Title, Text } = Typography;
 interface Task {
@@ -35,12 +47,20 @@ interface Task {
 }
 
 const TaskListOwnerToken = () => {
+    const [
+        data,
+        setCreateAiAgentInformationAction,
+        resetDataAction,
+        setOpenModalCreateAiAgentAction
+    ] = useCreateAiAgentInformation();
+
     const t = useTranslations();
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
     const { isConnected, address } = useAccount();
-    const router = useRouter();
-    const { chainConfig } = useConfig();
+    // const router = useRouter();
+    // const { chainConfig } = useConfig();
+    // const [form] = Form.useForm<IPoolCreatForm>();
     const [
         { poolStateDetail },
         fetchPoolDetail,
@@ -252,15 +272,7 @@ const TaskListOwnerToken = () => {
                     size="small"
                     onClick={(e) => {
                         e.stopPropagation();
-
-                        window.open(
-                            'https://ai-cms.alex-defikit.workers.dev/',
-                            '_blank',
-                            'noopener,noreferrer'
-                        );
-                        // router.push(
-                        //     `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
-                        // );
+                        setOpenModalCreateAiAgentAction(true);
                     }}
                     className="ml-2 !h-auto !border-none !bg-[#1890ff] !px-6 !py-1 !font-forza hover:!bg-[#40a9ff]"
                 >
@@ -278,85 +290,89 @@ const TaskListOwnerToken = () => {
     };
 
     return (
-        <Card
-            title={
-                <Title
-                    level={4}
-                    className="!mb-0 !font-forza"
-                >
-                    {t('TOKEN_TRUST_POINTS_TASKS')}
-                </Title>
-            }
-            style={{ marginBottom: '16px' }}
-            bordered={true}
-            bodyStyle={{ padding: '16px' }}
-            className="!rounded-lg !border-0 !shadow-md"
-        >
-            {trustPointToken.status === EActionStatus.Pending ? (
-                <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                    <Spin size="large" />
-                </div>
-            ) : (
-                <List
-                    itemLayout="horizontal"
-                    dataSource={taskList}
-                    renderItem={(task: Task, index) => (
-                        <List.Item
-                            style={{
-                                ...listItemStyle,
-                                ...(hoveredTaskId === task.id
-                                    ? listItemHoverStyle
-                                    : {})
-                            }}
-                            onMouseEnter={() => setHoveredTaskId(task.id)}
-                            onMouseLeave={() => setHoveredTaskId(null)}
-                            actions={[getStatusTag(task)]}
-                            className="!mb-4 !border-0"
-                        >
-                            <List.Item.Meta
-                                title={
-                                    <div className="flex items-center gap-3">
-                                        <Text
-                                            strong
-                                            className="!font-forza !text-base"
-                                        >{`NFT ${task.id}`}</Text>
-                                        <Tag className="!m-0 !border-[#91caff] !bg-[#e6f4ff] !px-2 !py-0.5 !font-forza !text-sm !text-[#1677ff]">
-                                            x{task.multiplier}
-                                        </Tag>
-                                        {!task.completed && (
-                                            <Tooltip
-                                                title={task.reason}
-                                                placement="right"
-                                            >
-                                                <InfoCircleOutlined className="text-[#1677ff] hover:text-[#4096ff]" />
-                                            </Tooltip>
-                                        )}
-                                    </div>
-                                }
-                                description={
-                                    <div>
-                                        <Text className="!mt-1 !font-forza !text-[#697586]">
-                                            {task.description}
-                                        </Text>
-                                        {!task.completed && (
-                                            <div className="mt-1">
-                                                <Text
-                                                    type="secondary"
-                                                    className="!font-forza !text-sm"
+        <>
+            <Card
+                title={
+                    <Title
+                        level={4}
+                        className="!mb-0 !font-forza"
+                    >
+                        {t('TOKEN_TRUST_POINTS_TASKS')}
+                    </Title>
+                }
+                style={{ marginBottom: '16px' }}
+                bordered={true}
+                bodyStyle={{ padding: '16px' }}
+                className="!rounded-lg !border-0 !shadow-md"
+            >
+                {trustPointToken.status === EActionStatus.Pending ? (
+                    <div style={{ textAlign: 'center', padding: '30px 0' }}>
+                        <Spin size="large" />
+                    </div>
+                ) : (
+                    <List
+                        itemLayout="horizontal"
+                        dataSource={taskList}
+                        renderItem={(task: Task, index) => (
+                            <List.Item
+                                style={{
+                                    ...listItemStyle,
+                                    ...(hoveredTaskId === task.id
+                                        ? listItemHoverStyle
+                                        : {})
+                                }}
+                                onMouseEnter={() => setHoveredTaskId(task.id)}
+                                onMouseLeave={() => setHoveredTaskId(null)}
+                                actions={[getStatusTag(task)]}
+                                className="!mb-4 !border-0"
+                            >
+                                <List.Item.Meta
+                                    title={
+                                        <div className="flex items-center gap-3">
+                                            <Text
+                                                strong
+                                                className="!font-forza !text-base"
+                                            >{`NFT ${task.id}`}</Text>
+                                            <Tag className="!m-0 !border-[#91caff] !bg-[#e6f4ff] !px-2 !py-0.5 !font-forza !text-sm !text-[#1677ff]">
+                                                x{task.multiplier}
+                                            </Tag>
+                                            {!task.completed && (
+                                                <Tooltip
+                                                    title={task.reason}
+                                                    placement="right"
                                                 >
-                                                    {task.reason}
-                                                </Text>
-                                            </div>
-                                        )}
-                                    </div>
-                                }
-                            />
-                        </List.Item>
-                    )}
-                    className="!divide-y !divide-gray-100"
-                />
-            )}
-        </Card>
+                                                    <InfoCircleOutlined className="text-[#1677ff] hover:text-[#4096ff]" />
+                                                </Tooltip>
+                                            )}
+                                        </div>
+                                    }
+                                    description={
+                                        <div>
+                                            <Text className="!mt-1 !font-forza !text-[#697586]">
+                                                {task.description}
+                                            </Text>
+                                            {!task.completed && (
+                                                <div className="mt-1">
+                                                    <Text
+                                                        type="secondary"
+                                                        className="!font-forza !text-sm"
+                                                    >
+                                                        {task.reason}
+                                                    </Text>
+                                                </div>
+                                            )}
+                                        </div>
+                                    }
+                                />
+                            </List.Item>
+                        )}
+                        className="!divide-y !divide-gray-100"
+                    />
+                )}
+            </Card>
+
+            <ModalCreateAiAgent />
+        </>
     );
 };
 

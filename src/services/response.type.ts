@@ -90,14 +90,12 @@ export interface IGetAllInviteListReferResponse {
     data: any[];
 }
 
-
 export interface IVerifyTwitterShareResponse {
     data: {
         success: boolean;
-        verified: boolean
+        verified: boolean;
         message: string;
-        tweetId: string
-        tweetUrl: string
+        tweetId: string;
+        tweetUrl: string;
     };
 }
-

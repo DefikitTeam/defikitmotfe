@@ -47,6 +47,7 @@ const CreateLaunch = () => {
     // const [form] = useForm<IPoolCreatForm>();
     const [form] = Form.useForm();
     const [isLoadingCreateLaunch, setIsLoadingCreateLaunch] = useState(false);
+
     const [maxAmountETHResult, setMaxAmountETHResult] = useState<string>('0');
     const { resetPassData } = usePassData();
     const {

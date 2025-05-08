@@ -41,7 +41,6 @@ const ButtonConnectWallet = () => {
         logoutTwitterAction
     } = useAuthLogin();
 
-    
     const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
     const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
     let botName = 'MotherOfTokensStgBot';
@@ -159,8 +158,6 @@ const ButtonConnectWallet = () => {
         authState.userDiscord,
         authState.errorMessage
     ]);
-
-
 
     useEffect(() => {
         (async () => {

@@ -216,8 +216,12 @@ export const markCreatePoolSlider = {
 };
 
 export const socialMediaOptions: { value: string; label: string }[] = [
-    { value: 'twitter', label: 'Twitter' }
-    // { value: 'telegram', label: 'Telegram' }
+    { value: 'twitter', label: 'Twitter' },
+    { value: 'telegram', label: 'Telegram' },
+    { value: 'discord', label: 'Discord' },
+    { value: 'fascaster', label: 'Fascaster' },
+    { value: 'lens', label: 'Lens' },
+    { value: 'slack', label: 'Slack' }
 ];
 
 export const epochTimeChecked = 1717135267;

@@ -438,6 +438,7 @@ export interface ICreateAiAgent {
     people?: string[];
     topics?: string[];
     style?: IStyleAiAgentCommunity;
+    isOpenModalCreateAiAgent?: boolean;
 }
 export interface ICreatePoolLaunch {
     token?: string;
