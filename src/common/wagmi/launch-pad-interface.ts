@@ -336,24 +336,24 @@ export class LaunchPadInterface {
 
                 value: maxAmountETH
                     ? BigInt(
-                          new BigNumber(
-                              chainConfig.getPlatformFee(
-                                  this._contractStruct.chainId
-                              )
-                          )
-                              .times(1e18)
-                              .plus(new BigNumber(maxAmountETH))
-                              .toFixed(0)
-                      )
+                        new BigNumber(
+                            chainConfig.getPlatformFee(
+                                this._contractStruct.chainId
+                            )
+                        )
+                            .times(1e18)
+                            .plus(new BigNumber(maxAmountETH))
+                            .toFixed(0)
+                    )
                     : BigInt(
-                          new BigNumber(
-                              chainConfig.getPlatformFee(
-                                  this._contractStruct.chainId
-                              )
-                          )
-                              .times(1e18)
-                              .toFixed(0)
-                      )
+                        new BigNumber(
+                            chainConfig.getPlatformFee(
+                                this._contractStruct.chainId
+                            )
+                        )
+                            .times(1e18)
+                            .toFixed(0)
+                    )
             });
         } catch (err) {
             this.handleErrors(err);
@@ -552,10 +552,15 @@ export class LaunchPadInterface {
                 throw new Error('Invalid params when call withdrawFundLottery');
             }
 
+            // Convert decimal amount to wei by multiplying with 1e18
+            const amountInWei = BigInt(
+                new BigNumber(amountETH).times(1e18).toFixed(0)
+            );
+
             await watcher.writeContractAsync({
                 ...this._contractStruct,
                 functionName: 'withdrawFundLottery',
-                args: [poolAddress, amountETH]
+                args: [poolAddress, amountInWei]
             });
         } catch (err) {
             this.handleErrors(err);

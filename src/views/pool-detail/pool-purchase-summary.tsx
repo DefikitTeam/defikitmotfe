@@ -47,6 +47,7 @@ import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
 import SpinLotteryButton from './spin-lottery-button';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
+import { ethers } from 'ethers';
 const { Text, Title } = Typography;
 
 const PoolPurchaseSummary = () => {
@@ -342,8 +343,8 @@ const PoolPurchaseSummary = () => {
             const raisedShow = marketCap.isEqualTo(0)
                 ? `0`
                 : marketCap.isLessThanOrEqualTo(0.001)
-                  ? `<0.001`
-                  : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
+                    ? `<0.001`
+                    : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
                         marketCap.times(priceNative)
                     )}`;
             setRaisedEth(raisedShow);
@@ -474,10 +475,10 @@ const PoolPurchaseSummary = () => {
                     const ethToBuy: number =
                         slippageState.slippage !== 0
                             ? Number(
-                                  new BigNumber(estimateBuyValueReal)
-                                      .times(1 + slippageState.slippage / 100)
-                                      .toFixed(0)
-                              )
+                                new BigNumber(estimateBuyValueReal)
+                                    .times(1 + slippageState.slippage / 100)
+                                    .toFixed(0)
+                            )
                             : Number(estimateBuyValueReal);
                     setMaxAmountETH(ethToBuy);
                     setData({
@@ -579,6 +580,19 @@ const PoolPurchaseSummary = () => {
         return () => clearTimeout(timer);
     });
 
+
+    useEffect(()=> {
+        if (useWithdrawFundLottery.isConfirmed){
+            notification.success({
+                message: 'Success',
+                description: `Successfully withdrew ${withdrawAmount} ${chainConfig?.currency}`,
+                duration: 3,
+                showProgress: true
+            });
+        }
+    }, [useWithdrawFundLottery.isConfirmed])
+
+
     // const funLotteryAvailableFake = 3;
     // const bondAvailableCurrentFake = 4;
     const currentTime = new Date();
@@ -622,8 +636,8 @@ const PoolPurchaseSummary = () => {
         setWithdrawAmount(value.toString());
         setDisableBtnWithdraw(
             !value ||
-                Number(value) <= 0 ||
-                Number(value) > Number(userLotteryFunds)
+            Number(value) <= 0 ||
+            Number(value) > Number(userLotteryFunds)
         );
     };
 
@@ -642,17 +656,15 @@ const PoolPurchaseSummary = () => {
         try {
             setIsWithdrawing(true);
 
+            // Convert decimal amount to wei (BigInt format)
+            const amountInWei = ethers.parseEther(withdrawAmount).toString();
+
             await useWithdrawFundLottery.actionAsync({
                 poolAddress: pool.id,
-                amountETH: withdrawAmount
+                amountETH: amountInWei
             });
 
-            notification.success({
-                message: 'Success',
-                description: `Successfully withdrew ${withdrawAmount} ${chainConfig?.currency}`,
-                duration: 3,
-                showProgress: true
-            });
+           
 
             // Reset input
             setWithdrawAmount('');
@@ -1133,8 +1145,8 @@ const PoolPurchaseSummary = () => {
                                         value={
                                             maxAmountETH
                                                 ? new BigNumber(maxAmountETH)
-                                                      .div(1e18)
-                                                      .toFixed(6)
+                                                    .div(1e18)
+                                                    .toFixed(6)
                                                 : 0
                                         }
                                         className="!font-forza text-base"
