@@ -1,3 +1,4 @@
+import { developmentConfig } from '../environments/development';
 import { productionConfig } from '../environments/production';
 import { ChainConfig, EnvironmentConfig } from '../type';
 export class ConfigService {
@@ -16,7 +17,8 @@ export class ConfigService {
     }
 
     private loadConfig(): EnvironmentConfig {
-        return productionConfig;
+        return developmentConfig;
+        // return productionConfig;
     }
 
     getChainConfig(chainId: number): ChainConfig | undefined {
