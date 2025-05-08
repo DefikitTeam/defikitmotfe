@@ -23,6 +23,7 @@ export interface IAiChatWidget {
 }
 
 const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId }) => {
+    console.log('agentId line 26-----', agentId);
     useEffect(() => {
         if (agentId && window.AIChatWidget) {
             window.AIChatWidget.init({

@@ -43,7 +43,7 @@ const ButtonConnectWallet = () => {
 
     const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
     const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
-    let botName = 'MotherOfTokensStgBot';
+    let botName = 'motheroftokens_bot';
 
     const handleLoginWithTelegram = async (user: any) => {
         if (user) {

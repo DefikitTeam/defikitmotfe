@@ -17,11 +17,10 @@ const TelegramInfo = ({ name }: { name: string }) => {
         logoutTelegramAction();
     };
 
-    // const environment = getEnvironment();
     let botName = '';
     // switch (environment) {
     //     case 'staging':
-    botName = 'MotStagingBerachainBepolia_bot';
+    botName = 'motheroftokens_bot';
     //         break;
     //     case 'development':
     //         botName = 'MotherOfTokensDevBot';
