@@ -552,15 +552,10 @@ export class LaunchPadInterface {
                 throw new Error('Invalid params when call withdrawFundLottery');
             }
 
-            // Convert decimal amount to wei by multiplying with 1e18
-            const amountInWei = BigInt(
-                new BigNumber(amountETH).times(1e18).toFixed(0)
-            );
-
             await watcher.writeContractAsync({
                 ...this._contractStruct,
                 functionName: 'withdrawFundLottery',
-                args: [poolAddress, amountInWei]
+                args: [poolAddress, amountETH]
             });
         } catch (err) {
             this.handleErrors(err);

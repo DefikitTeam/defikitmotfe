@@ -609,6 +609,8 @@ const PoolPurchaseSummary = () => {
         ((!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
             Number(bondAvailableCurrent) === 0);
 
+            
+
     const shouldShowSpin =
         pool.status !== PoolStatus.FAIL &&
         pool.status !== PoolStatus.COMPLETED &&
@@ -1099,17 +1101,26 @@ const PoolPurchaseSummary = () => {
                                             >
                                                 <Button
                                                     type="primary"
-                                                    className="h-auto w-full bg-blue-600 py-2 !font-forza text-base hover:bg-blue-700"
+                                                    className="h-auto w-full text-white bg-blue-600 py-2 !font-forza text-base hover:bg-blue-700"
                                                     onClick={
                                                         withdrawLotteryFunds
                                                     }
+                                                    style={{
+                                                        wordWrap: 'break-word',
+                                                        opacity:
+                                                            disableBtnWithdraw ||
+                                                            useWithdrawFundLottery.isLoadingInitWithdrawFundLottery || useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
+                                                                ? 0.6
+                                                                : 1,
+                                                    }}
                                                     disabled={
                                                         disableBtnWithdraw ||
-                                                        useWithdrawFundLottery.isLoadingInitWithdrawFundLottery
+                                                        useWithdrawFundLottery.isLoadingInitWithdrawFundLottery || useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
                                                     }
                                                     loading={
                                                         isWithdrawing ||
-                                                        useWithdrawFundLottery.isLoadingInitWithdrawFundLottery
+                                                        useWithdrawFundLottery.isLoadingInitWithdrawFundLottery ||
+                                                        useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
                                                     }
                                                 >
                                                     {t(
@@ -1161,7 +1172,7 @@ const PoolPurchaseSummary = () => {
 
                     {pool.status != PoolStatus.FAIL &&
                         pool.status != PoolStatus.COMPLETED &&
-                        shouldShowDeposit && (
+                        shouldShowDeposit  && (
                             <Col
                                 xs={24}
                                 sm={24}
