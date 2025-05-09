@@ -391,7 +391,7 @@ const PoolPurchaseSummary = () => {
     const { dataReader, isFetchingDataReader, reFetchDataReader } = useReader({
         contractAddAndAbi: multiCallerContract,
         poolAddress: pool?.id as string,
-        value: Number(bondAmountValue) >= 100 ? 100 : Number(bondAmountValue),
+        value: Number(bondAmountValue),
         chainId: chainConfig?.chainId as number
     });
 
