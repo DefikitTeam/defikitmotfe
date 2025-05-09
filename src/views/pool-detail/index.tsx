@@ -179,8 +179,8 @@ const PoolDetail = () => {
             metaDataInfo && metaDataInfo?.image
                 ? metaDataInfo?.image
                 : metaDataInfo?.tokenImageUrl
-                  ? metaDataInfo?.tokenImageUrl
-                  : randomDefaultPoolImage();
+                    ? metaDataInfo?.tokenImageUrl
+                    : randomDefaultPoolImage();
 
         let finalImageUrl: string;
         if (typeof image === 'object') {
@@ -271,8 +271,8 @@ const PoolDetail = () => {
                                 <PoolPurchaseSummary />
                                 <HolderDistribution />
                                 {isConnected &&
-                                address &&
-                                address.toLowerCase() ===
+                                    address &&
+                                    address.toLowerCase() ===
                                     poolStateDetail.pool?.owner?.toLowerCase() ? (
                                     <TaskListOwnerToken />
                                 ) : null}
