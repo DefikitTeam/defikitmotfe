@@ -1,3 +1,5 @@
+/* eslint-disable */
+'use client';
 import { formatCurrency, shortWalletAddress } from '@/src/common/utils/utils';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { usePoolDetail } from '@/src/stores/pool/hook';

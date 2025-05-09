@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import {
     REGEX_DISCORD,
     REGEX_TELEGRAM,
@@ -190,22 +191,22 @@ const SocialDescInformation = () => {
                         : metaDataInfo?.description,
                 website:
                     values.websiteLink &&
-                    !values.websiteLink.startsWith('https://')
+                        !values.websiteLink.startsWith('https://')
                         ? `https://${values.websiteLink}`
                         : values.websiteLink,
                 telegram:
                     values.telegramLink &&
-                    !values.telegramLink.startsWith('https://')
+                        !values.telegramLink.startsWith('https://')
                         ? `https://${values.telegramLink}`
                         : values.telegramLink,
                 twitter:
                     values.twitterLink &&
-                    !values.twitterLink.startsWith('https://')
+                        !values.twitterLink.startsWith('https://')
                         ? `https://${values.twitterLink}`
                         : values.twitterLink,
                 discord:
                     values.discordLink &&
-                    !values.discordLink.startsWith('https://')
+                        !values.discordLink.startsWith('https://')
                         ? `https://${values.discordLink}`
                         : values.discordLink
             };
@@ -336,6 +337,16 @@ const SocialDescInformation = () => {
             return;
         }
 
+        if (!authState.userTwitter) {
+            notification.error({
+                message: 'Error',
+                description: 'Please login your Twitter account first',
+                duration: 3,
+                showProgress: true
+            });
+            return;
+        }
+
         setVerifying(true);
         try {
             // Use finalTwitterUrl to verify Twitter share
@@ -374,10 +385,11 @@ const SocialDescInformation = () => {
                     showProgress: true
                 });
             }
-        } catch (error) {
+        } catch (error: any) {
+            console.error('Error verifying Twitter share:', error);
             notification.error({
                 message: 'Error',
-                description: 'Failed to verify Twitter share',
+                description: error.response?.data?.message || error.message || 'Failed to verify Twitter share',
                 duration: 3,
                 showProgress: true
             });
@@ -423,7 +435,7 @@ const SocialDescInformation = () => {
                     <Tooltip
                         title={
                             checkIsOwner &&
-                            !dataDetailPoolFromServer?.isTwitterVerified ? (
+                                !dataDetailPoolFromServer?.isTwitterVerified ? (
                                 <div className="!font-forza">
                                     <p>Click to share on Twitter</p>
                                     <p className="text-yellow-300">

@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import { formatCurrency, shortWalletAddress } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';

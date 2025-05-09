@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import { Button, Spin } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

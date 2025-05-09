@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import { useConfig } from '@/src/hooks/useConfig';
 import {
     useTrustPointDailyWalletToken,

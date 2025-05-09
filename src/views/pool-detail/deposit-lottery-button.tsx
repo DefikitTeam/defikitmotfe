@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { ADDRESS_NULL } from '@/src/common/constant/constance';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';

@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useInviteListReferPortfolio } from '@/src/stores/invite-code/hook';
 import { IInviteReferItem } from '@/src/stores/invite-code/type';

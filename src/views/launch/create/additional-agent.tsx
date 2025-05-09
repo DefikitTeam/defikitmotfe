@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { base64ToFile } from '@/src/common/lib/utils';
 import { mapMessageExamples } from '@/src/common/utils/map-example-message';
 import MessageReplyByAgent from '@/src/components/common/message-reply-by-agent';

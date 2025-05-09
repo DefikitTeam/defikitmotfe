@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { usePortfolio } from '@/src/stores/profile/hook';
 import { IYourFriendList } from '@/src/stores/profile/type';

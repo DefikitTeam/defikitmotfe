@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { useEffect } from 'react';
 interface AIChatWidgetConfig {
     agentId: string;
@@ -17,6 +17,7 @@ declare global {
         };
     }
 }
+
 
 export interface IAiChatWidget {
     agentId?: string;

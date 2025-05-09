@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';

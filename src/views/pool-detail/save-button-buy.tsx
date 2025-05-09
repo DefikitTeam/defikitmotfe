@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import { ADDRESS_NULL, ChainId } from '@/src/common/constant/constance';
 import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
