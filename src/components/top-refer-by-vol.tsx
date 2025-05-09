@@ -37,7 +37,7 @@ const TopReferByVol = () => {
             if (topRefByVolState.status !== EActionStatus.Pending) {
                 fetchTopRefByVol();
             }
-        }, 5000);
+        }, 30000);
         return () => clearInterval(intervalId);
     }, [chainConfig?.chainId, address]);
 

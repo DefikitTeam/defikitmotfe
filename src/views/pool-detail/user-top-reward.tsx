@@ -161,7 +161,7 @@ const UserTopReward = () => {
                 {t('TOP_REWARDS')}
             </div>
             <Table
-                rowKey="id"
+                rowKey="address"
                 dataSource={limitedData}
                 columns={columns}
                 className="!font-forza"
@@ -192,7 +192,7 @@ const UserTopReward = () => {
                 width={800}
             >
                 <Table
-                    rowKey="id"
+                    rowKey="address"
                     dataSource={userTopRewardByPoolTransformed}
                     columns={columns}
                     className="!font-forza"

@@ -93,7 +93,7 @@ const HolderDistribution = () => {
             </div> */}
 
             <Table
-                rowKey="id"
+                rowKey={(record) => record.user}
                 dataSource={holderDistribution}
                 columns={columns}
                 className="!font-forza"
