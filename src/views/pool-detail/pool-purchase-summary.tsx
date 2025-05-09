@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
-import { markSlider, PoolStatus } from '@/src/common/constant/constance';
+import { PoolStatus } from '@/src/common/constant/constance';
 import {
     calculateTimeLeft,
     currencyFormatter,
@@ -9,6 +9,7 @@ import {
 } from '@/src/common/utils/utils';
 import ModalSetMaxSlippage from '@/src/components/modal-set-max-slippage';
 import { useConfig } from '@/src/hooks/useConfig';
+import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { useReader } from '@/src/hooks/useReader';
 import servicePool from '@/src/services/external-services/backend-server/pool';
 import {
@@ -20,34 +21,28 @@ import {
 } from '@/src/stores/pool/hook';
 import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import {
+    Button,
     Col,
     Form,
     Input,
     notification,
     Progress,
     Row,
-    Slider,
     Tooltip,
-    Typography,
-    Button
+    Typography
 } from 'antd';
 import BigNumber from 'bignumber.js';
+import { ethers } from 'ethers';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    useAccount,
-    useContractRead,
-    useContractWrite,
-    useWaitForTransactionReceipt,
-    useWriteContract
+    useAccount
 } from 'wagmi';
 import DepositLotteryButton from './deposit-lottery-button';
 import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
 import SpinLotteryButton from './spin-lottery-button';
-import { useMultiCaller } from '@/src/hooks/useMultiCaller';
-import { ethers } from 'ethers';
 const { Text, Title } = Typography;
 
 const PoolPurchaseSummary = () => {
@@ -888,48 +883,58 @@ const PoolPurchaseSummary = () => {
                         />
                     </Col>
 
-                    <Col
-                        xs={24}
-                        sm={24}
-                        lg={24}
-                        md={24}
-                        xxl={24}
-                    >
-                        <div className="mb-0">
-                            <span className="!font-forza text-base">
-                                <Text className="text-lg text-red-500">* </Text>
-                                {t('BOND_AMOUNT')}
-                                <Tooltip
-                                    title={t('MAXIMUM_BOND_AMOUNT_AVAILABLE', {
-                                        max: pool?.batchAvailable ?? 'N/A'
-                                    })}
-                                >
-                                    <QuestionCircleOutlined
-                                        style={{ marginLeft: '8px' }}
-                                    />
-                                </Tooltip>
-                            </span>
 
-                            <Input
-                                type="number"
-                                placeholder={t('ENTER_NUMBER_BOND')}
-                                name="numberBatch"
-                                max={Number(pool?.batchAvailable ?? 0)}
-                                min={0}
-                                // style={{ width: '100%' }}
-                                value={bondAmountValue}
-                                onKeyPress={handleKeyPress}
-                                onChange={handleOnChange}
-                                className="!font-forza text-base"
-                                style={{ color: '#000000', width: '100%' }}
-                            />
-                            {validateInput.bondAmount.error === true && (
-                                <Text className="text-red-500">
-                                    {validateInput.bondAmount.helperText}
-                                </Text>
-                            )}
-                        </div>
-                    </Col>
+                    {pool.status != PoolStatus.FAIL &&
+                        pool.status != PoolStatus.COMPLETED &&
+                        !shouldShowDeposit && (
+
+                        <Col
+                            xs={24}
+                            sm={24}
+                            lg={24}
+                            md={24}
+                            xxl={24}
+                        >
+                            <div className="mb-0">
+                                <span className="!font-forza text-base">
+                                    <Text className="text-lg text-red-500">* </Text>
+                                    {t('BOND_AMOUNT')}
+                                    <Tooltip
+                                        title={t('MAXIMUM_BOND_AMOUNT_AVAILABLE', {
+                                            max: pool?.batchAvailable ?? 'N/A'
+                                        })}
+                                    >
+                                        <QuestionCircleOutlined
+                                            style={{ marginLeft: '8px' }}
+                                        />
+                                    </Tooltip>
+                                </span>
+
+                                <Input
+                                    type="number"
+                                    placeholder={t('ENTER_NUMBER_BOND')}
+                                    name="numberBatch"
+                                    max={Number(pool?.batchAvailable ?? 0)}
+                                    min={0}
+                                    // style={{ width: '100%' }}
+                                    value={bondAmountValue}
+                                    onKeyPress={handleKeyPress}
+                                    onChange={handleOnChange}
+                                    className="!font-forza text-base"
+                                    style={{ color: '#000000', width: '100%' }}
+                                />
+                                {validateInput.bondAmount.error === true && (
+                                    <Text className="text-red-500">
+                                        {validateInput.bondAmount.helperText}
+                                    </Text>
+                                )}
+                            </div>
+                        </Col>
+
+                        )}
+
+
+                  
 
                     <Col
                         xs={24}
