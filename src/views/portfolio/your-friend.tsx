@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { usePortfolio } from '@/src/stores/profile/hook';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';

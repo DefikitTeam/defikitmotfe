@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Col, Input, notification, Row, Tooltip } from 'antd';

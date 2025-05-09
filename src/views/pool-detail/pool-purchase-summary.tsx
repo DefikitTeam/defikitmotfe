@@ -1,3 +1,5 @@
+"use client";
+
 /* eslint-disable */
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
 import { PoolStatus } from '@/src/common/constant/constance';
@@ -576,8 +578,8 @@ const PoolPurchaseSummary = () => {
     });
 
 
-    useEffect(()=> {
-        if (useWithdrawFundLottery.isConfirmed){
+    useEffect(() => {
+        if (useWithdrawFundLottery.isConfirmed) {
             notification.success({
                 message: 'Success',
                 description: `Successfully withdrew ${withdrawAmount} ${chainConfig?.currency}`,
@@ -604,7 +606,7 @@ const PoolPurchaseSummary = () => {
         ((!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
             Number(bondAvailableCurrent) === 0);
 
-            
+
 
     const shouldShowSpin =
         pool.status !== PoolStatus.FAIL &&
@@ -661,7 +663,7 @@ const PoolPurchaseSummary = () => {
                 amountETH: amountInWei
             });
 
-           
+
 
             // Reset input
             setWithdrawAmount('');
@@ -888,53 +890,53 @@ const PoolPurchaseSummary = () => {
                         pool.status != PoolStatus.COMPLETED &&
                         !shouldShowDeposit && (
 
-                        <Col
-                            xs={24}
-                            sm={24}
-                            lg={24}
-                            md={24}
-                            xxl={24}
-                        >
-                            <div className="mb-0">
-                                <span className="!font-forza text-base">
-                                    <Text className="text-lg text-red-500">* </Text>
-                                    {t('BOND_AMOUNT')}
-                                    <Tooltip
-                                        title={t('MAXIMUM_BOND_AMOUNT_AVAILABLE', {
-                                            max: pool?.batchAvailable ?? 'N/A'
-                                        })}
-                                    >
-                                        <QuestionCircleOutlined
-                                            style={{ marginLeft: '8px' }}
-                                        />
-                                    </Tooltip>
-                                </span>
+                            <Col
+                                xs={24}
+                                sm={24}
+                                lg={24}
+                                md={24}
+                                xxl={24}
+                            >
+                                <div className="mb-0">
+                                    <span className="!font-forza text-base">
+                                        <Text className="text-lg text-red-500">* </Text>
+                                        {t('BOND_AMOUNT')}
+                                        <Tooltip
+                                            title={t('MAXIMUM_BOND_AMOUNT_AVAILABLE', {
+                                                max: pool?.batchAvailable ?? 'N/A'
+                                            })}
+                                        >
+                                            <QuestionCircleOutlined
+                                                style={{ marginLeft: '8px' }}
+                                            />
+                                        </Tooltip>
+                                    </span>
 
-                                <Input
-                                    type="number"
-                                    placeholder={t('ENTER_NUMBER_BOND')}
-                                    name="numberBatch"
-                                    max={Number(pool?.batchAvailable ?? 0)}
-                                    min={0}
-                                    // style={{ width: '100%' }}
-                                    value={bondAmountValue}
-                                    onKeyPress={handleKeyPress}
-                                    onChange={handleOnChange}
-                                    className="!font-forza text-base"
-                                    style={{ color: '#000000', width: '100%' }}
-                                />
-                                {validateInput.bondAmount.error === true && (
-                                    <Text className="text-red-500">
-                                        {validateInput.bondAmount.helperText}
-                                    </Text>
-                                )}
-                            </div>
-                        </Col>
+                                    <Input
+                                        type="number"
+                                        placeholder={t('ENTER_NUMBER_BOND')}
+                                        name="numberBatch"
+                                        max={Number(pool?.batchAvailable ?? 0)}
+                                        min={0}
+                                        // style={{ width: '100%' }}
+                                        value={bondAmountValue}
+                                        onKeyPress={handleKeyPress}
+                                        onChange={handleOnChange}
+                                        className="!font-forza text-base"
+                                        style={{ color: '#000000', width: '100%' }}
+                                    />
+                                    {validateInput.bondAmount.error === true && (
+                                        <Text className="text-red-500">
+                                            {validateInput.bondAmount.helperText}
+                                        </Text>
+                                    )}
+                                </div>
+                            </Col>
 
                         )}
 
 
-                  
+
 
                     <Col
                         xs={24}
@@ -1114,7 +1116,7 @@ const PoolPurchaseSummary = () => {
                                                         wordWrap: 'break-word',
                                                         opacity:
                                                             disableBtnWithdraw ||
-                                                            useWithdrawFundLottery.isLoadingInitWithdrawFundLottery || useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
+                                                                useWithdrawFundLottery.isLoadingInitWithdrawFundLottery || useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
                                                                 ? 0.6
                                                                 : 1,
                                                     }}
@@ -1177,7 +1179,7 @@ const PoolPurchaseSummary = () => {
 
                     {pool.status != PoolStatus.FAIL &&
                         pool.status != PoolStatus.COMPLETED &&
-                        shouldShowDeposit  && (
+                        shouldShowDeposit && (
                             <Col
                                 xs={24}
                                 sm={24}

@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import {
     REGEX_DISCORD,
     REGEX_TELEGRAM,

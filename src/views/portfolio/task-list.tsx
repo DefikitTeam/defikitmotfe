@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { useTrustPointCaller } from '@/src/hooks/useTrustPointCaller';
 import serviceTrustPoint from '@/src/services/external-services/backend-server/trust-point';
 import { useTrustPoint } from '@/src/stores/trust-point/hook';

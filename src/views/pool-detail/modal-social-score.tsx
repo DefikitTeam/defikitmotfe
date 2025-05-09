@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Modal } from 'antd';

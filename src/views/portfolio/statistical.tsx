@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { IPool } from '@/src/services/response.type';
 import { IAnalystData, InvestPool } from '@/src/stores/pool/type';
 import { usePortfolio } from '@/src/stores/profile/hook';

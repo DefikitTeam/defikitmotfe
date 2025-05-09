@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import Loader from '@/src/components/loader';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { usePoolDetail } from '@/src/stores/pool/hook';

@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+'use client';
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import { usePoolDetail } from '@/src/stores/pool/hook';

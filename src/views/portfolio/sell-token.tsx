@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use client';
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
 import {
     ChainId,
