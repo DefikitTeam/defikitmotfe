@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { CHAIN_CONFIG } from '@/src/config/environments/chains';
+import { ConfigService } from '@/src/config/services/config-service';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface IChainInfor {
@@ -17,14 +17,14 @@ interface ChainDataState {
 }
 
 const getInitialChainData = () => {
-    // const environment = getEnvironment();
+    const configService = ConfigService.getInstance();
 
     return {
-        chainId: CHAIN_CONFIG.defaultChain.id,
-        name: CHAIN_CONFIG.defaultChain.name,
-        currency: CHAIN_CONFIG.defaultChain.nativeCurrency.symbol,
-        explorerUrl: CHAIN_CONFIG.defaultChain.blockExplorers.default.url,
-        rpcUrl: CHAIN_CONFIG.defaultChain.rpcUrls.default.http[0]
+        chainId: configService.getDefaultChainNew().id,
+        name: configService.getDefaultChainNew().name,
+        currency: configService.getDefaultChainNew().nativeCurrency.symbol,
+        explorerUrl: configService.getDefaultChainNew().blockExplorers?.default.url ?? '',
+        rpcUrl: configService.getDefaultChainNew().rpcUrls.default.http[0] ?? ''
     };
 };
 

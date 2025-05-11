@@ -1,6 +1,5 @@
 /* eslint-disable */
 
-import { CHAIN_CONFIG } from '@/src/config/environments/chains';
 import { ConfigService } from '@/src/config/services/config-service';
 import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
@@ -8,22 +7,28 @@ import { IChainInfor, setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import dynamic from 'next/dynamic';
 
 import { Chain } from 'viem/chains';
 
 const ModalSelectChain = () => {
     const { isMobile } = useWindowSize();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
-    const { chainConfig } = useConfig();
+    const { chainConfig, supportedChainsNew } = useConfig();
 
-    const listChains = CHAIN_CONFIG.supportedChains;
+    const listChains = supportedChainsNew;
 
     const dispatch = useDispatch();
 
     const router = useRouter();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -46,28 +51,19 @@ const ModalSelectChain = () => {
 
         setIsModalOpen(false);
         dispatch(setChainData(chainData as IChainInfor));
-        // router.push(`/${chain.name.replace(/\s+/g, '').toLowerCase()}`);
         const newRoute = `/${chain.name.replace(/\s+/g, '').toLowerCase()}`;
 
         window.location.href = newRoute;
     };
 
-    // useEffect(() => {
-    //     const currentPath = pathname?.split('/');
-    //     if (currentPath?.length === 2) {
-    //         router.push(`/${chainData.name.replace(/\s+/g, '').toLowerCase()}`);
-    //     }
-    // }, [chainData.name, pathname, router]);
-
     return (
         <>
-            {listChains.length > 1 && (
+            {mounted && listChains.length > 1 && (
                 <button
                     onClick={showModal}
                     className={`flex items-center justify-between gap-2 rounded-md bg-[#1a1b1f] font-bold text-white ${isMobile ? 'btn-sm max-h-[40px] gap-1 break-words px-4 py-1 text-xs font-semibold' : 'gap-2 px-4 py-2 text-base'}`}
                 >
                     {chainConfig?.name}
-
                     <CaretDownOutlined />
                 </button>
             )}
@@ -102,4 +98,4 @@ const ModalSelectChain = () => {
     );
 };
 
-export default ModalSelectChain;
+export default dynamic(() => Promise.resolve(ModalSelectChain), { ssr: false });
