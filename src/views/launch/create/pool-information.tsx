@@ -1,5 +1,5 @@
 /* eslint-disable */
-'use client'
+'use client';
 import {
     ACCEPT_AVATAR_TYPES,
     AccountFileType,

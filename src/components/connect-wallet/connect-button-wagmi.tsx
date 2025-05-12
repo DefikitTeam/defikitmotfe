@@ -36,7 +36,8 @@ const ConnectButtonWagmi = () => {
         context
     } = useSignMessage();
 
-    const { chainConfig, defaultChain, supportedChains, supportedChainsNew } = useConfig();
+    const { chainConfig, defaultChain, supportedChains, supportedChainsNew } =
+        useConfig();
 
     const {
         authState,
@@ -155,7 +156,7 @@ const ConnectButtonWagmi = () => {
                                         userSelect: 'none'
                                     }
                                 })}
-                            // onClick={handleClickConnectButton}
+                                // onClick={handleClickConnectButton}
                             >
                                 {!connected ? (
                                     <DisconnectedState

@@ -33,8 +33,6 @@ const PoolDetailInformation = () => {
     const { isConnected, address } = useAccount();
 
     const handleCopy = (tokenAddress: string | undefined) => {
-       
-
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
                 notification.success({

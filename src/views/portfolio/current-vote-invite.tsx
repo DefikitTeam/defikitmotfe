@@ -46,8 +46,6 @@ const CurrentCodeInvite = () => {
     }, [chainConfig?.chainId, address]);
 
     const handleCopy = (showCode: string | undefined) => {
-      
-
         if (showCode) {
             navigator.clipboard.writeText(showCode).then(() => {
                 notification.success({

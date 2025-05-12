@@ -548,7 +548,6 @@ const ModalCreateAiAgent = () => {
                 urlAiGentAvatar = res;
             }
 
-
             const metadata = {
                 ...metaDataInfo,
                 imageAiAgent: urlAiGentAvatar

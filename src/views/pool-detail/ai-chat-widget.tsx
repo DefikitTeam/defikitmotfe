@@ -18,7 +18,6 @@ declare global {
     }
 }
 
-
 export interface IAiChatWidget {
     agentId?: string;
 }

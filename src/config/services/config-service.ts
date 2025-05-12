@@ -2,7 +2,14 @@ import { developmentConfig } from '../environments/development';
 import { NEXT_PUBLIC_ENVIRONMENT } from '@/src/common/web3/constants/env';
 import { productionConfig } from '../environments/production';
 import { ChainConfig, EnvironmentConfig } from '../type';
-import { baseSepolia, base, berachain, berachainBepolia, Chain, iota } from 'viem/chains';
+import {
+    baseSepolia,
+    base,
+    berachain,
+    berachainBepolia,
+    Chain,
+    iota
+} from 'viem/chains';
 
 const CHAIN_MAP = {
     [berachain.id]: berachain,

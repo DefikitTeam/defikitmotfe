@@ -24,8 +24,6 @@ const HolderDistribution = () => {
     const { chainConfig } = useConfig();
 
     const handleClickHolder = (addressUser: string) => {
-       
-
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`
         );

@@ -33,7 +33,7 @@ const YourFriend = () => {
             });
             return;
         }
-        
+
         setOpenModalYourFriendListAction(true);
     };
     return (

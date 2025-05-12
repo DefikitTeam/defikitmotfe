@@ -55,8 +55,6 @@ const UserTopReward = () => {
             return rewardItem;
         });
     const handleCopy = (tokenAddress: string | undefined) => {
-      
-
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
                 notification.success({
@@ -70,8 +68,6 @@ const UserTopReward = () => {
     };
 
     const handleClickAddress = (addressUser: string) => {
-        
-
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`
         );

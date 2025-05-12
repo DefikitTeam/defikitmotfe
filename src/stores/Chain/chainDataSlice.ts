@@ -23,7 +23,9 @@ const getInitialChainData = () => {
         chainId: configService.getDefaultChainNew().id,
         name: configService.getDefaultChainNew().name,
         currency: configService.getDefaultChainNew().nativeCurrency.symbol,
-        explorerUrl: configService.getDefaultChainNew().blockExplorers?.default.url ?? '',
+        explorerUrl:
+            configService.getDefaultChainNew().blockExplorers?.default.url ??
+            '',
         rpcUrl: configService.getDefaultChainNew().rpcUrls.default.http[0] ?? ''
     };
 };

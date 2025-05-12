@@ -26,7 +26,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useAccount } from 'wagmi';
 import AdditionalAgent from '../launch/create/additional-agent';
 import { RcFile } from 'antd/es/upload';
@@ -46,7 +46,7 @@ interface Task {
     reason: string;
 }
 
-const TaskListOwnerToken = () => {
+const TaskListOwnerToken = forwardRef((props, ref) => {
     const [
         data,
         setCreateAiAgentInformationAction,
@@ -93,6 +93,7 @@ const TaskListOwnerToken = () => {
     const [loadingMintWithSignature, setLoadingMintWithSignature] =
         useState<boolean>(false);
     const [taskList, setTaskList] = useState<Task[]>([]);
+    const [hasUncompletedTask, setHasUncompletedTask] = useState(false);
 
     useEffect(() => {
         if (useMintTokenWithSignature.isLoadingInitMintTokenWithSignature) {
@@ -173,6 +174,16 @@ const TaskListOwnerToken = () => {
             setTaskList([]);
         }
     }, [trustPointToken.data]);
+
+    useEffect(() => {
+        if (taskList) {
+            setHasUncompletedTask(taskList.some((task) => !task.completed));
+        }
+    }, [taskList]);
+
+    useImperativeHandle(ref, () => ({
+        hasUncompletedTask
+    }));
 
     const handleClaimClick = async (task: Task) => {
         setLoadingMintWithSignature(true);
@@ -337,6 +348,20 @@ const TaskListOwnerToken = () => {
                                                 x{task.multiplier}
                                             </Tag>
                                             {!task.completed && (
+                                                <span
+                                                    style={{
+                                                        display: 'inline-block',
+                                                        width: 8,
+                                                        height: 8,
+                                                        borderRadius: '50%',
+                                                        background: '#ff4d4f',
+                                                        marginLeft: 4,
+                                                        marginRight: 2
+                                                    }}
+                                                    title="Not completed"
+                                                />
+                                            )}
+                                            {!task.completed && (
                                                 <Tooltip
                                                     title={task.reason}
                                                     placement="right"
@@ -374,6 +399,6 @@ const TaskListOwnerToken = () => {
             <ModalCreateAiAgent />
         </>
     );
-};
+});
 
 export default TaskListOwnerToken;
