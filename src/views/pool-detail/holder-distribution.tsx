@@ -24,15 +24,7 @@ const HolderDistribution = () => {
     const { chainConfig } = useConfig();
 
     const handleClickHolder = (addressUser: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
+       
 
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`

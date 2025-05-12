@@ -55,15 +55,7 @@ const UserTopReward = () => {
             return rewardItem;
         });
     const handleCopy = (tokenAddress: string | undefined) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
+      
 
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
@@ -78,15 +70,7 @@ const UserTopReward = () => {
     };
 
     const handleClickAddress = (addressUser: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
+        
 
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${addressUser}`

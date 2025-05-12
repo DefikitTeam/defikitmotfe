@@ -42,6 +42,7 @@ const ListRefer = () => {
             });
             return;
         }
+        
         setOpenModalInviteListReferAction(true);
     };
 
