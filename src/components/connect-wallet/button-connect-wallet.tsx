@@ -7,7 +7,7 @@ import { ILoginRequest } from '@/src/stores/auth/type';
 import { EActionStatus } from '@/src/stores/type';
 import { Dropdown } from 'antd';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
 import TelegramLoginButton from '../common/telegram';
 import TelegramInfo from '../telegram-info';
@@ -20,6 +20,10 @@ import {
     useTrustPoint,
     useTrustPointToken
 } from '@/src/stores/trust-point/hook';
+import RankBadge from '@/src/components/common/rank-badge';
+import axios from 'axios';
+import serviceWallet from '@/src/services/external-services/backend-server/wallet';
+import { useConfig } from '@/src/hooks/useConfig';
 
 const ButtonConnectWallet = () => {
     const t = useTranslations();
@@ -44,6 +48,14 @@ const ButtonConnectWallet = () => {
     const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
     const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
     let botName = 'motheroftokens_bot';
+
+    const [walletRank, setWalletRank] = useState<{
+        rank: number;
+        total: number;
+        trustScore: string;
+    } | null>(null);
+
+    const { chainConfig } = useConfig();
 
     const handleLoginWithTelegram = async (user: any) => {
         if (user) {
@@ -191,6 +203,32 @@ const ButtonConnectWallet = () => {
         authState.errorMessage
     ]);
 
+    useEffect(() => {
+        // Fetch wallet rank
+        const fetchWalletRank = async () => {
+            if (!address) {
+                setWalletRank(null);
+                return;
+            }
+            try {
+                const res = await serviceWallet.getRankWallet(
+                    chainConfig?.chainId.toString()!,
+                    address
+                );
+
+                console.log('res line 214-----', res);
+                setWalletRank({
+                    rank: res.rank,
+                    total: res.totalUser,
+                    trustScore: res.trustScore
+                });
+            } catch (e) {
+                setWalletRank(null);
+            }
+        };
+        fetchWalletRank();
+    }, [address, chainConfig?.chainId]);
+
     const socialItems = [
         {
             key: 'twitter',
@@ -225,17 +263,26 @@ const ButtonConnectWallet = () => {
     );
 
     return (
-        <div className="flex w-full items-center justify-between gap-4">
+        <div className="flex h-12 w-full items-center justify-between gap-2">
             {contextHolder}
 
-            {/* Wallet button on the left */}
             <div className="flex-shrink-0">
                 {!authState.openModalInviteBlocker && <ConnectButtonWagmi />}
             </div>
 
-            {/* Social login dropdown on the right */}
+            {walletRank && (
+                <div className="mt-1 w-full sm:mt-0 sm:w-auto">
+                    <RankBadge
+                        rank={walletRank.rank}
+                        total={walletRank.total}
+                        trustScore={walletRank.trustScore}
+                        type="wallet"
+                    />
+                </div>
+            )}
+
             {authState.userInfo?.connectedWallet && (
-                <div className="flex-shrink-0">
+                <div className={`${!isMobile ? 'flex-shrink-0' : ''}`}>
                     <Dropdown
                         menu={{ items: socialItems }}
                         trigger={['hover']}
@@ -247,7 +294,14 @@ const ButtonConnectWallet = () => {
                                 'cubic-bezier(0.4, 0, 0.2, 1)'
                         }}
                     >
-                        <button className="hover:border-primary-500 hover:text-primary-500 flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 transition-all duration-200 hover:shadow-sm">
+                        <button
+                            className={`
+    hover:border-primary-500 hover:text-primary-500 flex h-10 items-center gap-2 rounded-lg 
+    border border-gray-200 bg-white px-4 py-2
+    transition-all duration-200
+    hover:shadow-sm sm:h-12
+  `}
+                        >
                             <UserOutlined className="text-lg" />
                             <span
                                 className={`${isMobile ? 'text-sm' : 'text-base'} !font-forza`}

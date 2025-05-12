@@ -37,6 +37,8 @@ import SocialDescInformation from './social-desc-information';
 import TokenInformation from './token-information';
 import TransactionList from './transaction-list';
 import TaskListOwnerToken from './task-list-owner-token';
+import RankBadge from '@/src/components/common/rank-badge';
+import axios from 'axios';
 
 const PoolDetail = () => {
     const t = useTranslations();
@@ -84,6 +86,12 @@ const PoolDetail = () => {
                 item.name.replace(/\s+/g, '').toLowerCase() === currentPath?.[2]
         );
     };
+
+    const [poolRank, setPoolRank] = useState<{
+        rank: number;
+        total: number;
+        trustScore: number;
+    } | null>(null);
 
     useEffect(() => {
         if (refId && !(address as `0x${string}`)) {
@@ -147,6 +155,32 @@ const PoolDetail = () => {
             );
         }
     }, [authState.userInfo?.refId]);
+
+    useEffect(() => {
+        // Fetch pool rank
+        const fetchPoolRank = async () => {
+            if (!poolAddress) {
+                setPoolRank(null);
+                return;
+            }
+
+            try {
+                const res = await servicePool.getRankPool(
+                    chainConfig?.chainId.toString()!,
+                    poolAddress
+                );
+                console.log('res line 166-----', res);
+                setPoolRank({
+                    rank: res.rank,
+                    total: res.totalPool,
+                    trustScore: res.trustScore
+                });
+            } catch (e) {
+                setPoolRank(null);
+            }
+        };
+        fetchPoolRank();
+    }, [poolAddress, chainConfig?.chainId]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -219,7 +253,7 @@ const PoolDetail = () => {
 
     return (
         <BoxArea>
-            <div className={`!pt-[20px] ${isMobile ? '' : 'px-5'}`}>
+            <div className={`!pt-[30px] ${isMobile ? '' : 'px-5'}`}>
                 <div className="py-2">
                     <Row gutter={[16, 16]}>
                         <Col
@@ -235,6 +269,14 @@ const PoolDetail = () => {
                                 className="flex 
                              flex-col gap-6 overflow-y-auto overflow-x-hidden px-2 "
                             >
+                                {poolRank && (
+                                    <RankBadge
+                                        rank={poolRank.rank}
+                                        total={poolRank.total}
+                                        trustScore={poolRank.trustScore}
+                                        type="pool"
+                                    />
+                                )}
                                 <SocialDescInformation />
                                 <TradingViewChart
                                     chainId={chainConfig?.chainId!}

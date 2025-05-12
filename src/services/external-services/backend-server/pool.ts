@@ -429,6 +429,23 @@ const servicePool = {
             query: getTop100TPMonthlyCombinedQuery({ monthStartUnix })
         };
         return querySubGraph(payload, chainId);
+    },
+    getRankPool: async (chainId: string, poolAddress: string) => {
+        let res;
+        try {
+            res = await axios.get(
+                `${config.getApiConfig().baseUrl}/c/${chainId}/rank-pool/${poolAddress}`
+            );
+        } catch (error) {
+            // console.log(
+            //     '======= get social score info to server error: ',
+            //     error
+            // );
+        }
+        if (res && res.status === 200) {
+            return res.data;
+        }
+        return '';
     }
 };
 
