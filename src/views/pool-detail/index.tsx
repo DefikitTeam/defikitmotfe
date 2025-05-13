@@ -4,7 +4,6 @@ import { chains } from '@/src/common/constant/constance';
 import { randomDefaultPoolImage } from '@/src/common/utils/utils';
 import BoxArea from '@/src/components/common/box-area';
 import CommentTelegram from '@/src/components/common/comment-telegram';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import TradingViewChart from '@/src/components/common/tradingview';
 import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
@@ -381,7 +380,7 @@ const PoolDetail = () => {
                 </div>
             </div>
 
-            <ModalInviteBlocker />
+            {/* <ModalInviteBlocker /> */}
         </BoxArea>
     );
 };

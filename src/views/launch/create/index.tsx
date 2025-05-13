@@ -11,7 +11,6 @@ import {
 } from '@/src/stores/pool/hook';
 
 import { ADDRESS_NULL } from '@/src/common/constant/constance';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import { ConfigService } from '@/src/config/services/config-service';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
@@ -501,7 +500,7 @@ const CreateLaunch = () => {
                 </Col>
             </div>
 
-            <ModalInviteBlocker />
+            {/* <ModalInviteBlocker /> */}
         </BoxArea>
     );
 };

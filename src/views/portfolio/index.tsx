@@ -2,8 +2,8 @@
 'use client';
 import { chains } from '@/src/common/constant/constance';
 import BoxArea from '@/src/components/common/box-area';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import Loader from '@/src/components/loader';
+import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
@@ -13,7 +13,7 @@ import { setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { useInviteListReferPortfolio } from '@/src/stores/invite-code/hook';
 import { usePortfolio } from '@/src/stores/profile/hook';
 import { EActionStatus } from '@/src/stores/type';
-import { Col, notification, Row } from 'antd';
+import { Col, Row } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useParams, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -22,7 +22,6 @@ import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import SellToken from './sell-token';
 import Statistical from './statistical';
 import TaskList from './task-list';
-import { useConfig } from '@/src/hooks/useConfig';
 
 const Portfolio = () => {
     const { isMobile } = useWindowSize();

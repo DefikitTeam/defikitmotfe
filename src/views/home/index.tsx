@@ -11,10 +11,8 @@ import {
 } from '@/src/common/constant/constance';
 
 import BoxArea from '@/src/components/common/box-area';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import SearchComponent from '@/src/components/common/search';
 import EmptyPool from '@/src/components/empty';
-import TopReferByVol from '@/src/components/top-refer-by-vol';
 import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
@@ -855,7 +853,7 @@ const HomePage = () => {
                         </div>
                     </div>
                 </Spin>
-                <ModalInviteBlocker />
+                {/* <ModalInviteBlocker /> */}
             </div>
         </BoxArea>
     );

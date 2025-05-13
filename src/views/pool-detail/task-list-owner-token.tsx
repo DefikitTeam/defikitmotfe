@@ -31,6 +31,7 @@ import { useAccount } from 'wagmi';
 import AdditionalAgent from '../launch/create/additional-agent';
 import { RcFile } from 'antd/es/upload';
 import ModalCreateAiAgent from './modal-create-ai-agent';
+import { NEXT_PUBLIC_AI_CMS } from '@/src/common/web3/constants/env';
 
 // Simple interface that matches the expected structure from the create launch flow
 interface IPoolCreatForm {}
@@ -232,13 +233,39 @@ const TaskListOwnerToken = forwardRef((props, ref) => {
     const getStatusTag = (task: Task) => {
         if (task.claimed) {
             return (
-                <Tag
-                    icon={<CheckCircleFilled />}
-                    color="success"
-                    className="m-0 !px-3 !py-1 !font-forza !text-sm"
-                >
-                    {t('CLAIMED')}
-                </Tag>
+                // <Tag
+                //     icon={<CheckCircleFilled />}
+                //     color="success"
+                //     className="m-0 !px-3 !py-1 !font-forza !text-sm"
+                // >
+                //     {t('CLAIMED')}
+                // </Tag>
+
+                <div className="flex items-center gap-2">
+                    <Tag
+                        icon={<CheckCircleFilled />}
+                        color="success"
+                        className="m-0 !px-3 !py-1 !font-forza !text-sm"
+                    >
+                        {t('CLAIMED')}
+                    </Tag>
+                    {task.id === 13 && (
+                        <Button
+                            size="small"
+                            type="default"
+                            className="!px-2 !py-1 !text-xs !font-forza"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(
+                                    `${NEXT_PUBLIC_AI_CMS}`,
+                                    '_blank'
+                                );
+                            }}
+                        >
+                            Go to CMS
+                        </Button>
+                    )}
+                </div>
             );
         }
 
@@ -266,6 +293,22 @@ const TaskListOwnerToken = forwardRef((props, ref) => {
                     >
                         {t('CLAIM')}
                     </Button>
+                    {task.id === 13 && (
+                        <Button
+                            size="small"
+                            type="default"
+                            className="ml-2 !px-2 !py-1 !text-xs"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(
+                                    `${NEXT_PUBLIC_AI_CMS}`,
+                                    '_blank'
+                                );
+                            }}
+                        >
+                            Go to CMS
+                        </Button>
+                    )}
                 </Spin>
             );
         }

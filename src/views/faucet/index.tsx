@@ -3,7 +3,6 @@
 
 import { chains } from '@/src/common/constant/constance';
 import BoxArea from '@/src/components/common/box-area';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import Loader from '@/src/components/common/loader';
 import NotFoundPage from '@/src/components/errors/not-found';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
@@ -45,21 +44,21 @@ const Faucet = () => {
 
     const { address } = useAccount();
 
-    useEffect(() => {
-        if (!address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
+    // useEffect(() => {
+    //     if (!address) {
+    //         notification.error({
+    //             message: 'Error',
+    //             description: 'Please connect to your wallet',
+    //             duration: 3,
+    //             showProgress: true
+    //         });
 
-            router.push(
-                `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}`
-            );
-            return;
-        }
-    }, [address]);
+    //         router.push(
+    //             `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}`
+    //         );
+    //         return;
+    //     }
+    // }, [address]);
 
     // useEffect(() => {
     //     const chainInfo = getCurrentChainUrl();
@@ -139,7 +138,7 @@ const Faucet = () => {
                     </Row>
                 </div>
             </div>
-            <ModalInviteBlocker />
+            {/* <ModalInviteBlocker /> */}
         </BoxArea>
     ) : (
         <NotFoundPage />
