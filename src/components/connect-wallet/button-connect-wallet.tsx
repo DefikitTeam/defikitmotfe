@@ -215,8 +215,6 @@ const ButtonConnectWallet = () => {
                     chainConfig?.chainId.toString()!,
                     address
                 );
-
-                console.log('res line 214-----', res);
                 setWalletRank({
                     rank: res.rank,
                     total: res.totalUser,
