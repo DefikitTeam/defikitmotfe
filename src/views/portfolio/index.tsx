@@ -68,6 +68,16 @@ const Portfolio = () => {
     };
 
     useEffect(() => {
+        // Force cleanup widget khi vào home
+        if (window.AIChatWidget) {
+            window.AIChatWidget.destroy?.();
+        }
+        document.querySelectorAll('#ai-chat-widget-container').forEach(e => e.remove());
+        document.querySelectorAll('[data-ai-chat-widget]').forEach(e => e.remove());
+    }, []);
+
+    
+    useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
