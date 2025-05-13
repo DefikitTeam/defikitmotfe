@@ -122,8 +122,6 @@ const HomePage = () => {
         defaultChain
     } = useConfig();
 
-    // Check if current chain is supported
-
     const {
         poolStateList,
         getListPoolAction,
@@ -261,12 +259,10 @@ const HomePage = () => {
     }, [visiblePools, allPool, getMetadataPoolVisibleAction]);
 
     useEffect(() => {
-        // localStorage.removeItem("wagmi.store");
         getListPoolAction({
             statusPool: filter,
             orderByDirection: orderByDirection,
             orderBy: orderBy,
-            // chainId: chainData.chainData.chainId,
             chainId: chainConfig?.chainId!,
             metaDataFromStore: metadata,
             query: '',
@@ -377,17 +373,7 @@ const HomePage = () => {
     };
 
     const handleClickStartToken = () => {
-        // if (isConnected && address) {
         router.push('/create-launch');
-        // } else {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
     };
 
     const handleSelectChange = (value: string) => {
@@ -437,15 +423,6 @@ const HomePage = () => {
             const searchQuery = searchText.trim().toLowerCase();
             setQuery(searchQuery);
         }
-        // } else {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
     };
 
     const handleClearSearch = () => {
@@ -454,16 +431,6 @@ const HomePage = () => {
     };
 
     const handleClickSortFilter = (value: string) => {
-        // if (!isConnected || !address) {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
-
         switch (filter) {
             case PoolStatus.MY_POOl:
                 setOrderByAction(PoolStatusSortOrderBy.CREATE_TIMESTAMP);
@@ -545,37 +512,15 @@ const HomePage = () => {
         if (!allPool.length) {
             return;
         }
-
-        // Your existing logic using `allPool`
     }, [allPool]);
 
     const handleClickPoolItem = (poolId: string) => {
-        // if (!isConnected || !address) {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
-
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolId.toLowerCase()}`
         );
     };
 
     const handleOnPoolClick = (poolId: string) => {
-        // if (!isConnected || !address) {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
-
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${poolId}`
         );
@@ -602,7 +547,28 @@ const HomePage = () => {
                 >
                     <div>
                         <Row gutter={[1, 1]}>
-                            {!topRefByVolState.topRefByVols && (
+                            <Col
+                                xs={24}
+                                sm={24}
+                                lg={24}
+                                md={24}
+                                xxl={24}
+                            >
+                                {kingPool && (
+                                    <KingOfTheHill
+                                        pool={kingPool}
+                                        metadata={metadataShow}
+                                        analystData={analystData}
+                                        priceNative={priceNative}
+                                        chainData={chainData}
+                                        onPoolClick={(poolId) =>
+                                            handleOnPoolClick(poolId)
+                                        }
+                                    />
+                                )}
+                            </Col>
+
+                            {/* {!topRefByVolState.topRefByVols && (
                                 <Col
                                     xs={24}
                                     sm={24}
@@ -623,8 +589,9 @@ const HomePage = () => {
                                         />
                                     )}
                                 </Col>
-                            )}
-                            {!kingPool && (
+                            )} */}
+
+                            {/* {!kingPool && (
                                 <Col
                                     xs={24}
                                     sm={24}
@@ -634,9 +601,9 @@ const HomePage = () => {
                                 >
                                     <TopReferByVol />
                                 </Col>
-                            )}
+                            )} */}
 
-                            {topRefByVolState.topRefByVols && (
+                            {/* {topRefByVolState.topRefByVols && (
                                 <Col
                                     xs={24}
                                     sm={24}
@@ -657,9 +624,9 @@ const HomePage = () => {
                                         />
                                     )}
                                 </Col>
-                            )}
+                            )} */}
 
-                            {kingPool && (
+                            {/* {kingPool && (
                                 <Col
                                     xs={24}
                                     sm={24}
@@ -669,7 +636,10 @@ const HomePage = () => {
                                 >
                                     <TopReferByVol />
                                 </Col>
-                            )}
+                            )} */}
+
+
+                            
                         </Row>
                     </div>
 

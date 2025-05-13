@@ -34,6 +34,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
+import TopReferByVol from '@/src/components/top-refer-by-vol';
 
 dayjs.extend(utc);
 dayjs.extend(weekOfYear);
@@ -399,10 +400,13 @@ const Leaderboard = () => {
             dataIndex: 'points',
             key: 'points',
             width: '20%',
-
             className: '!font-forza',
+
             sorter: (a: UserLeaderboardEntry, b: UserLeaderboardEntry) =>
-                BigInt(a.points || '0') > BigInt(b.points || '0') ? 1 : -1,
+                parseFloat(a.points || '0') > parseFloat(b.points || '0')
+                    ? 1
+                    : -1,
+
             render: (points: string) => (
                 <motion.div
                     className="flex items-center space-x-2 !font-forza"
@@ -422,7 +426,9 @@ const Leaderboard = () => {
 
             className: '!font-forza',
             sorter: (a: UserLeaderboardEntry, b: UserLeaderboardEntry) =>
-                BigInt(a.volume || '0') > BigInt(b.volume || '0') ? 1 : -1,
+                parseFloat(a.volume || '0') > parseFloat(b.volume || '0')
+                    ? 1
+                    : -1,
             render: (volume: string) => (
                 <span className="!font-forza">{volume || '0'}</span>
             )
@@ -501,7 +507,8 @@ const Leaderboard = () => {
             key: 'trustScore',
             className: '!font-forza',
             sorter: (a: PoolLeaderboardEntry, b: PoolLeaderboardEntry) =>
-                BigInt(a.trustScore || '0') > BigInt(b.trustScore || '0')
+                parseFloat(a.trustScore || '0') >
+                parseFloat(b.trustScore || '0')
                     ? 1
                     : -1,
             render: (score: string) => (
@@ -521,7 +528,9 @@ const Leaderboard = () => {
             key: 'volume',
             className: '!font-forza',
             sorter: (a: PoolLeaderboardEntry, b: PoolLeaderboardEntry) =>
-                BigInt(a.volume || '0') > BigInt(b.volume || '0') ? 1 : -1,
+                parseFloat(a.volume || '0') > parseFloat(b.volume || '0')
+                    ? 1
+                    : -1,
             render: (volume: string) => (
                 <span className="font-forza">{volume || '0'}</span>
             )
@@ -669,6 +678,7 @@ const Leaderboard = () => {
                                     }
                                 />
                             </div>
+
                             <Tabs
                                 activeKey={activeDailySubTab}
                                 onChange={setActiveDailySubTab}
@@ -948,6 +958,20 @@ const Leaderboard = () => {
                                         )}
                                     </TabPane>
                                 </Tabs>
+                            </motion.div>
+                        </TabPane>
+
+                        <TabPane
+                            tab="Top Referral by Volume"
+                            key="referral"
+                            className="!font-forza"
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <TopReferByVol />
                             </motion.div>
                         </TabPane>
                     </Tabs>
