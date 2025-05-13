@@ -26,26 +26,39 @@ export interface IAiChatWidget {
 const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId, agentName }) => {
     console.log('agentId line 26-----', agentId);
 
-
     useEffect(() => {
+        // Cleanup trước khi init mới
+        if (window.AIChatWidget) {
+            window.AIChatWidget.destroy?.();
+        }
+        document
+            .querySelectorAll('#ai-chat-widget-container')
+            .forEach((e) => e.remove());
+        document
+            .querySelectorAll('[data-ai-chat-widget]')
+            .forEach((e) => e.remove());
+
         if (agentId && window.AIChatWidget) {
             window.AIChatWidget.init({
                 agentId: agentId,
                 serverUrl: 'https://aiapi.defikit.net',
                 widgetUrl: 'https://ai-cms.alex-defikit.workers.dev',
                 position: 'bottom-right',
-                welcomeMessage: `Welcome! This is ${agentName}. How can I help you today?`,
+                welcomeMessage: `Welcome! This is ${agentName}. How can I help you today?`
             });
-            
         } else {
             // Cleanup khi không có agentId
             if (window.AIChatWidget) {
                 window.AIChatWidget.destroy?.();
             }
             // Xóa tất cả container widget còn sót lại
-            document.querySelectorAll('#ai-chat-widget-container').forEach(e => e.remove());
-            document.querySelectorAll('[data-ai-chat-widget]').forEach(e => e.remove());
-            
+            document
+                .querySelectorAll('#ai-chat-widget-container')
+                .forEach((e) => e.remove());
+            document
+                .querySelectorAll('[data-ai-chat-widget]')
+                .forEach((e) => e.remove());
+
             const widgetContainer = document.getElementById('ai-chat-widget');
             if (widgetContainer) {
                 widgetContainer.remove();
@@ -62,7 +75,9 @@ const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId, agentName }) => {
             }
             const widgetContainer = document.getElementById('ai-chat-widget');
             if (widgetContainer) widgetContainer.remove();
-            const widgetStyles = document.querySelectorAll('[data-ai-chat-widget]');
+            const widgetStyles = document.querySelectorAll(
+                '[data-ai-chat-widget]'
+            );
             widgetStyles.forEach((style) => style.remove());
         };
     }, [agentId]);

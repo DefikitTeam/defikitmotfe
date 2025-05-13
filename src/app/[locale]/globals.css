@@ -57,19 +57,22 @@ body,
     padding: 0 !important;
 }
 
-#ai-chat-widget,
+/* #ai-chat-widget,
 .ai-chat-widget,
 [class*="ai-chat"] {
     position: fixed !important;
-    bottom: 120px !important;
-    right: 40px !important;
     z-index: 99999 !important;
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     pointer-events: auto !important;
+    } */
+#ai-chat-widget-container {
+        z-index: 2147483647 !important;
+        bottom: 120px !important;
+        right: 40px !important;
+    /* Nếu cần, chỉ override z-index, không override position, bottom, right, ... */
 }
-
 /* Dropdown Animations */
 @keyframes slideDown {
     from {

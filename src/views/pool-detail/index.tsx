@@ -107,11 +107,13 @@ const PoolDetail = () => {
         if (window.AIChatWidget) {
             window.AIChatWidget.destroy?.();
         }
-        document.querySelectorAll('#ai-chat-widget-container').forEach(e => e.remove());
-        document.querySelectorAll('[data-ai-chat-widget]').forEach(e => e.remove());
+        document
+            .querySelectorAll('#ai-chat-widget-container')
+            .forEach((e) => e.remove());
+        document
+            .querySelectorAll('[data-ai-chat-widget]')
+            .forEach((e) => e.remove());
     }, []);
-
-    
 
     useEffect(() => {
         if (poolAddress && poolStateDetail.pageTransaction !== undefined) {
@@ -263,7 +265,7 @@ const PoolDetail = () => {
         return <Loader />;
     }
 
-    console.log('dataDetailPoolFromServer----', dataDetailPoolFromServer)
+    console.log('dataDetailPoolFromServer----', dataDetailPoolFromServer);
 
     return (
         <BoxArea>
@@ -361,18 +363,18 @@ const PoolDetail = () => {
                                     />
                                 )} */}
 
-
                                 {dataDetailPoolFromServer.aiAgentId ? (
                                     <AiChatWidget
                                         key={dataDetailPoolFromServer.aiAgentId}
-                                        agentId={dataDetailPoolFromServer.aiAgentId}
-                                        agentName={dataDetailPoolFromServer.aiAgentName ?? ''}
+                                        agentId={
+                                            dataDetailPoolFromServer.aiAgentId
+                                        }
+                                        agentName={
+                                            dataDetailPoolFromServer.aiAgentName ??
+                                            ''
+                                        }
                                     />
                                 ) : null}
-
-
-
-
                             </div>
                         </Col>
                     </Row>
