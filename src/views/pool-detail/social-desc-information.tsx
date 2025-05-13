@@ -73,15 +73,7 @@ const SocialDescInformation = () => {
     }, [isConnected, address, poolStateDetail.pool?.owner]);
 
     const openInNewTab = (url: any | null) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
+      
 
         if (typeof url === 'object') {
             window.open(url.value, '_blank', 'noopener,noreferrer');
@@ -135,15 +127,7 @@ const SocialDescInformation = () => {
     }
 
     const handleClickShowSocialScore = () => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
+       
 
         setOpenModalSocialScoreAction(true);
     };
@@ -152,16 +136,7 @@ const SocialDescInformation = () => {
     const [previewImageUrl, setPreviewImageUrl] = useState('');
 
     const handleImageClick = (imageUrl: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
+        
         setPreviewImageUrl(imageUrl);
         setShowImagePreview(true);
     };

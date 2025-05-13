@@ -22,6 +22,7 @@ import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import SellToken from './sell-token';
 import Statistical from './statistical';
 import TaskList from './task-list';
+import { useConfig } from '@/src/hooks/useConfig';
 
 const Portfolio = () => {
     const { isMobile } = useWindowSize();
@@ -60,6 +61,8 @@ const Portfolio = () => {
     const { switchChain } = useSwitchChain();
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
+    const { chainConfig } = useConfig();
+
     const getCurrentChainUrl = (): IChainInfor | undefined => {
         return chains.find(
             (item) =>
@@ -68,7 +71,6 @@ const Portfolio = () => {
     };
 
     useEffect(() => {
-        // Force cleanup widget khi vào home
         if (window.AIChatWidget) {
             window.AIChatWidget.destroy?.();
         }
@@ -97,15 +99,7 @@ const Portfolio = () => {
         useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
 
     useEffect(() => {
-        if (!(address as `0x${string}`) || !chainId) {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 1,
-                showProgress: true
-            });
-            return;
-        }
+      
 
         if (addressParams) {
             walletAddress = addressParams;
@@ -114,7 +108,7 @@ const Portfolio = () => {
         }
         if (walletAddress) {
             fetchPortfolio({
-                chainId: chainId,
+                chainId: Number(chainConfig?.chainId!),
                 wallet: walletAddress as `0x${string}`
             });
             fetchYourListFriendAction({
@@ -139,7 +133,7 @@ const Portfolio = () => {
 
     return (
         <BoxArea>
-            <div className={`!pt-[20px] ${isMobile ? '' : 'px-5'}`}>
+            <div className={`!pt-[30px] ${isMobile ? '' : 'px-5'}`}>
                 <div className="py-2">
                     <Row gutter={[16, 16]}>
                         <Col
