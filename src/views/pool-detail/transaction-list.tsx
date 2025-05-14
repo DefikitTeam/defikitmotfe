@@ -35,7 +35,6 @@ const TransactionList = () => {
     const router = useRouter();
     const { chainConfig } = useConfig();
     const handleOpenResentTx = (hash: string, type: string) => {
-        // TODO: need change REACT_APP_TEST_SEPOLIA_EXPLORER_URL follow environment, network
         if (hash) {
             window.open(
                 chainConfig?.explorer + `/${type}/` + hash,

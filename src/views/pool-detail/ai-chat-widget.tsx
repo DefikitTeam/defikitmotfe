@@ -1,5 +1,6 @@
 /* eslint-disable */
 'use client';
+import { NEXT_PUBLIC_AI_AGENT_SERVER, NEXT_PUBLIC_AI_CMS } from '@/src/common/web3/constants/env';
 import { useEffect } from 'react';
 interface AIChatWidgetConfig {
     agentId: string;
@@ -24,7 +25,6 @@ export interface IAiChatWidget {
 }
 
 const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId, agentName }) => {
-    console.log('agentId line 26-----', agentId);
 
     useEffect(() => {
         // Cleanup trước khi init mới
@@ -41,8 +41,8 @@ const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId, agentName }) => {
         if (agentId && window.AIChatWidget) {
             window.AIChatWidget.init({
                 agentId: agentId,
-                serverUrl: 'https://aiapi.defikit.net',
-                widgetUrl: 'https://ai-cms.alex-defikit.workers.dev',
+                serverUrl: NEXT_PUBLIC_AI_AGENT_SERVER!,
+                widgetUrl: NEXT_PUBLIC_AI_CMS!,
                 position: 'bottom-right',
                 welcomeMessage: `Welcome! This is ${agentName}. How can I help you today?`
             });
@@ -51,7 +51,6 @@ const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId, agentName }) => {
             if (window.AIChatWidget) {
                 window.AIChatWidget.destroy?.();
             }
-            // Xóa tất cả container widget còn sót lại
             document
                 .querySelectorAll('#ai-chat-widget-container')
                 .forEach((e) => e.remove());

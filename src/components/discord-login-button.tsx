@@ -17,7 +17,6 @@ const DiscordLoginButton = () => {
         discordUser,
         handleDiscordCallback,
         handleDiscordVerify,
-        // handleDiscordLogin,
         handleLogout
     } = useAuthDiscordLogin();
 

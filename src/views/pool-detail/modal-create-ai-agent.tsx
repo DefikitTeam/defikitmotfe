@@ -192,7 +192,6 @@ const ModalCreateAiAgent = () => {
         }
     };
 
-    // console.log('data line184-----', data)
 
     const generateDataAiAgent = async () => {
         if (!isConnected || !address) {

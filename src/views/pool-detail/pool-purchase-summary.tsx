@@ -649,7 +649,6 @@ const PoolPurchaseSummary = () => {
         try {
             setIsWithdrawing(true);
 
-            // Convert decimal amount to wei (BigInt format)
             const amountInWei = ethers.parseEther(withdrawAmount).toString();
 
             await useWithdrawFundLottery.actionAsync({
@@ -659,7 +658,6 @@ const PoolPurchaseSummary = () => {
 
             // Reset input
             setWithdrawAmount('');
-            // Data will refresh automatically through hooks
         } catch (error) {
             console.error('Error withdrawing lottery funds:', error);
             notification.error({

@@ -183,11 +183,6 @@ const Leaderboard = () => {
             } else {
                 setUserDailyData([]);
                 setPoolDailyData([]);
-                if (
-                    trustPointDailyWalletToken.status === EActionStatus.Failed
-                ) {
-                    message.error('Failed to load daily leaderboard data.');
-                }
             }
         }
     }, [trustPointDailyWalletToken.status, trustPointDailyWalletToken]);

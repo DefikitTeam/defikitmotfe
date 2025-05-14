@@ -10,6 +10,10 @@ export const NEXT_PUBLIC_PROJECT_ID = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 export const NEXT_PUBLIC_AI_CMS =
     process.env.NEXT_PUBLIC_AI_CMS;
+export const NEXT_PUBLIC_AI_AGENT_SERVER =
+    process.env.NEXT_PUBLIC_AI_AGENT_SERVER;
+
+
 
 export const NEXT_PUBLIC_SUPPORTED_CHAINS =
     process.env.NEXT_PUBLIC_SUPPORTED_CHAINS;

@@ -155,7 +155,6 @@ const SocialDescInformation = () => {
         setIsLoading(true);
 
         try {
-            // Preserve all existing metadata fields
 
             const metadata = {
                 ...metaDataInfo,

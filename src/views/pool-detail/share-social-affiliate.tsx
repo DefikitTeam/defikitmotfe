@@ -80,8 +80,6 @@ const ShareSocialAffiliate = () => {
         if (navigator.share) {
             try {
                 await navigator.share({
-                    // title: 'kienkien',
-                    // text: 'Check out this awesome website!',
                     url: affiliate
                 });
             } catch (error) {
