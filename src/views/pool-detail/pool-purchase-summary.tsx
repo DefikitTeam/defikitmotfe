@@ -38,7 +38,7 @@ import { ethers } from 'ethers';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
 import DepositLotteryButton from './deposit-lottery-button';
 import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
@@ -52,6 +52,16 @@ const PoolPurchaseSummary = () => {
     const { pool, analystData, priceNative, status } = poolStateDetail;
 
     const { chainId, address, isConnected } = useAccount();
+    const { chainConfig } = useConfig();
+
+    const { data: balanceData } = useBalance({
+        address: address,
+        chainId: chainConfig?.chainId,
+    });
+
+    const userNativeBalance = Number(balanceData?.formatted ?? 0);
+
+
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
     const [data, setData] = useBuyPoolInformation();
@@ -66,7 +76,6 @@ const PoolPurchaseSummary = () => {
     const [maxRepeatPurchase, setMaxRepeatPurchase] = useState('0');
     const [maxAmountETH, setMaxAmountETH] = useState(0);
 
-    const { chainConfig } = useConfig();
     const multiCallerContract = getContract(chainConfig?.chainId!);
 
     const [balanceOfUser, setBalanceOfUser] = useState('0');
@@ -161,6 +170,22 @@ const PoolPurchaseSummary = () => {
         }
     }, [dataDeposit.depositAmount]);
 
+
+
+    const handleSetMaxBond = () => {
+        const pricePerBond = Number(showInitial);
+        const maxBond = Math.floor(userNativeBalance / pricePerBond);
+
+        setBondAmountValue(maxBond.toString());
+        
+        setData({
+            ...data,
+            numberBatch: maxBond
+        });
+        setDisableBtnBuy(maxBond === 0);
+        setSliderPercent(maxBond);
+    };
+
     const handleOnChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
@@ -174,6 +199,11 @@ const PoolPurchaseSummary = () => {
         let validateInputError = false;
         let validateInputHelperText = '';
 
+        const pricePerBond = Number(showInitial); 
+        const totalCost = Number(value) * pricePerBond;
+
+
+
         if (value) {
             if (Number(value) > Number(pool?.batchAvailable ?? 0)) {
                 validateInputError = true;
@@ -181,8 +211,14 @@ const PoolPurchaseSummary = () => {
                     max: pool?.batchAvailable ?? 'N/A'
                 });
 
-                // return;
-            } else {
+            } else if(totalCost > userNativeBalance){
+                validateInputError = true;
+                validateInputHelperText = t('NOT_ENOUGH_BALANCE', {
+                    currentBalance: userNativeBalance,
+                    totalCost: totalCost,
+                    currency: chainConfig?.currency
+                });
+            }else {
                 validateInputError = false;
                 validateInputHelperText = '';
             }
@@ -202,6 +238,8 @@ const PoolPurchaseSummary = () => {
             //         helperText: validateInputHelperText
             //     }
             // });
+
+
             if (!validateInputError) {
                 setData({
                     ...data,
@@ -222,6 +260,8 @@ const PoolPurchaseSummary = () => {
                     setBuyButtonText(t('BUY'));
                 }
             }
+
+
         } else {
             setDisableBtnBuy(true);
             setBuyAmountBtn('');
@@ -458,7 +498,7 @@ const PoolPurchaseSummary = () => {
 
     useEffect(() => {
         const value: number =
-            Number(sliderPercent) >= 100 ? 100 : Number(sliderPercent);
+            Number(sliderPercent) 
         setIsLoading(true);
         try {
             if (value) {
@@ -909,6 +949,9 @@ const PoolPurchaseSummary = () => {
 
                                     <Input
                                         type="number"
+                                    addonAfter={
+                                        <Button onClick={handleSetMaxBond}>MAX</Button>
+                                    }
                                         placeholder={t('ENTER_NUMBER_BOND')}
                                         name="numberBatch"
                                         max={Number(pool?.batchAvailable ?? 0)}
