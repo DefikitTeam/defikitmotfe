@@ -17,7 +17,7 @@ const GlobalConnectWalletProvider: FC<ProvidersProps> = ({ children }) => {
                 <RainbowKitProvider
                     initialChain={chainConfig.getDefaultChain()}
                     appInfo={{
-                        appName: 'Rocket Launch',
+                        appName: 'Rocket Launch'
                     }}
                     coolMode
                     theme={darkTheme({

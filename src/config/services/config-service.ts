@@ -1,12 +1,32 @@
 import { developmentConfig } from '../environments/development';
+import { NEXT_PUBLIC_ENVIRONMENT } from '@/src/common/web3/constants/env';
 import { productionConfig } from '../environments/production';
 import { ChainConfig, EnvironmentConfig } from '../type';
+import {
+    baseSepolia,
+    base,
+    berachain,
+    berachainBepolia,
+    Chain,
+    iota
+} from 'viem/chains';
+
+const CHAIN_MAP = {
+    [berachain.id]: berachain,
+    [base.id]: base,
+    [baseSepolia.id]: baseSepolia,
+    [berachainBepolia.id]: berachainBepolia,
+    [iota.id]: iota
+};
+
 export class ConfigService {
     private static instance: ConfigService;
     private currentConfig: EnvironmentConfig;
+    private chains: Record<number, Chain>;
 
     private constructor() {
         this.currentConfig = this.loadConfig();
+        this.chains = CHAIN_MAP;
     }
 
     static getInstance(): ConfigService {
@@ -17,8 +37,10 @@ export class ConfigService {
     }
 
     private loadConfig(): EnvironmentConfig {
-        // return developmentConfig;
-        return productionConfig;
+        if (NEXT_PUBLIC_ENVIRONMENT === 'production') {
+            return productionConfig;
+        }
+        return developmentConfig;
     }
 
     getChainConfig(chainId: number): ChainConfig | undefined {
@@ -89,5 +111,15 @@ export class ConfigService {
 
     getDexInfo(chainId: number): { name: any; linkSwap: string } | undefined {
         return this.getChainConfig(chainId)?.dex;
+    }
+
+    getSupportedChainsNew(): Chain[] {
+        return this.currentConfig.supportedChains.map((chainId) => {
+            return this.chains[chainId];
+        });
+    }
+
+    getDefaultChainNew(): Chain {
+        return this.chains[this.currentConfig.defaultChain];
     }
 }

@@ -51,19 +51,10 @@ const TopReferByVol = () => {
     }, [topRefByVolState.status]);
 
     const handleClickTopRefByVol = (id: string) => {
-        // if (isConnected && address) {
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
         );
-        // } else {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
+       
     };
 
     return (
@@ -83,7 +74,7 @@ const TopReferByVol = () => {
                                 <ul>
                                     {topRefByVolState.topRefByVols &&
                                         topRefByVolState.topRefByVols.length >
-                                        0 &&
+                                            0 &&
                                         topRefByVolState.topRefByVols.map(
                                             (item, index) => (
                                                 <li

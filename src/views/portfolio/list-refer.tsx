@@ -42,6 +42,7 @@ const ListRefer = () => {
             });
             return;
         }
+
         setOpenModalInviteListReferAction(true);
     };
 
@@ -72,7 +73,6 @@ const ListRefer = () => {
 
     return (
         <div className="h-full w-full">
-            {/* <ModalListReferPortfolio /> */}
 
             <Table
                 rowKey="wallet"

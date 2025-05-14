@@ -26,11 +26,12 @@ import {
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useAccount } from 'wagmi';
 import AdditionalAgent from '../launch/create/additional-agent';
 import { RcFile } from 'antd/es/upload';
 import ModalCreateAiAgent from './modal-create-ai-agent';
+import { NEXT_PUBLIC_AI_CMS } from '@/src/common/web3/constants/env';
 
 // Simple interface that matches the expected structure from the create launch flow
 interface IPoolCreatForm {}
@@ -46,7 +47,7 @@ interface Task {
     reason: string;
 }
 
-const TaskListOwnerToken = () => {
+const TaskListOwnerToken = forwardRef((props, ref) => {
     const [
         data,
         setCreateAiAgentInformationAction,
@@ -93,6 +94,7 @@ const TaskListOwnerToken = () => {
     const [loadingMintWithSignature, setLoadingMintWithSignature] =
         useState<boolean>(false);
     const [taskList, setTaskList] = useState<Task[]>([]);
+    const [hasUncompletedTask, setHasUncompletedTask] = useState(false);
 
     useEffect(() => {
         if (useMintTokenWithSignature.isLoadingInitMintTokenWithSignature) {
@@ -174,6 +176,16 @@ const TaskListOwnerToken = () => {
         }
     }, [trustPointToken.data]);
 
+    useEffect(() => {
+        if (taskList) {
+            setHasUncompletedTask(taskList.some((task) => !task.completed));
+        }
+    }, [taskList]);
+
+    useImperativeHandle(ref, () => ({
+        hasUncompletedTask
+    }));
+
     const handleClaimClick = async (task: Task) => {
         setLoadingMintWithSignature(true);
         setTokenIdProcessClaimed(task.id);
@@ -221,13 +233,39 @@ const TaskListOwnerToken = () => {
     const getStatusTag = (task: Task) => {
         if (task.claimed) {
             return (
-                <Tag
-                    icon={<CheckCircleFilled />}
-                    color="success"
-                    className="m-0 !px-3 !py-1 !font-forza !text-sm"
-                >
-                    {t('CLAIMED')}
-                </Tag>
+                // <Tag
+                //     icon={<CheckCircleFilled />}
+                //     color="success"
+                //     className="m-0 !px-3 !py-1 !font-forza !text-sm"
+                // >
+                //     {t('CLAIMED')}
+                // </Tag>
+
+                <div className="flex items-center gap-2">
+                    <Tag
+                        icon={<CheckCircleFilled />}
+                        color="success"
+                        className="m-0 !px-3 !py-1 !font-forza !text-sm"
+                    >
+                        {t('CLAIMED')}
+                    </Tag>
+                    {task.id === 13 && (
+                        <Button
+                            size="small"
+                            type="default"
+                            className="!px-2 !py-1 !text-xs !font-forza"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(
+                                    `${NEXT_PUBLIC_AI_CMS}`,
+                                    '_blank'
+                                );
+                            }}
+                        >
+                            Go to CMS
+                        </Button>
+                    )}
+                </div>
             );
         }
 
@@ -255,6 +293,22 @@ const TaskListOwnerToken = () => {
                     >
                         {t('CLAIM')}
                     </Button>
+                    {task.id === 13 && (
+                        <Button
+                            size="small"
+                            type="default"
+                            className="ml-2 !px-2 !py-1 !text-xs"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(
+                                    `${NEXT_PUBLIC_AI_CMS}`,
+                                    '_blank'
+                                );
+                            }}
+                        >
+                            Go to CMS
+                        </Button>
+                    )}
                 </Spin>
             );
         }
@@ -337,6 +391,20 @@ const TaskListOwnerToken = () => {
                                                 x{task.multiplier}
                                             </Tag>
                                             {!task.completed && (
+                                                <span
+                                                    style={{
+                                                        display: 'inline-block',
+                                                        width: 8,
+                                                        height: 8,
+                                                        borderRadius: '50%',
+                                                        background: '#ff4d4f',
+                                                        marginLeft: 4,
+                                                        marginRight: 2
+                                                    }}
+                                                    title="Not completed"
+                                                />
+                                            )}
+                                            {!task.completed && (
                                                 <Tooltip
                                                     title={task.reason}
                                                     placement="right"
@@ -374,6 +442,6 @@ const TaskListOwnerToken = () => {
             <ModalCreateAiAgent />
         </>
     );
-};
+});
 
 export default TaskListOwnerToken;

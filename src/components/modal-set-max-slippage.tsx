@@ -8,7 +8,6 @@ import { useAccount } from 'wagmi';
 const { Text } = Typography;
 const ModalSetMaxSlippage = ({ type }: { type: string }) => {
     const t = useTranslations();
-    const { address, isConnected } = useAccount();
     const { isMobile } = useWindowSize();
     const {
         setOpenModalSettingSlippage,
@@ -45,7 +44,6 @@ const ModalSetMaxSlippage = ({ type }: { type: string }) => {
     };
 
     const handleClick = () => {
-        // if (isConnected && address) {
         if (type === 'buy') {
             setSlippage(amountSlippage);
             setOpenModalSettingSlippage(false);
@@ -60,15 +58,7 @@ const ModalSetMaxSlippage = ({ type }: { type: string }) => {
             showProgress: true,
             duration: 1
         });
-        // } else {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
+       
     };
 
     return (

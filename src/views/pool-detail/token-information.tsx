@@ -48,16 +48,6 @@ const TokenInformation = () => {
     const { isConnected, address } = useAccount();
 
     const handleCopy = (tokenAddress: string | undefined) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
                 notification.success({
@@ -92,8 +82,8 @@ const TokenInformation = () => {
                         </Tooltip>
                         {isMobile
                             ? shortWalletAddress(
-                                pool ? pool.id.toLowerCase() : ''
-                            )
+                                  pool ? pool.id.toLowerCase() : ''
+                              )
                             : pool?.id.toLowerCase()}
                     </div>
                 </div>
@@ -115,8 +105,8 @@ const TokenInformation = () => {
                         {formatCurrency(
                             pool
                                 ? new BigNumber(pool.totalSupplyToken)
-                                    .div(10 ** parseInt(pool.decimals))
-                                    .toFixed(0)
+                                      .div(10 ** parseInt(pool.decimals))
+                                      .toFixed(0)
                                 : '0'
                         )}
                     </div>

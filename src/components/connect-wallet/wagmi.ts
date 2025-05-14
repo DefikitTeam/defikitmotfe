@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { NEXT_PUBLIC_PROJECT_ID } from '@/src/common/web3/constants/env';
-import { CHAIN_CONFIG } from '@/src/config/environments/chains';
+import { ConfigService } from '@/src/config/services/config-service';
 import '@hot-wallet/sdk/adapter/evm';
 import { Chain, getDefaultConfig } from '@rainbow-me/rainbowkit';
 
@@ -12,19 +12,15 @@ const iotaWithIcon: Chain = {
     iconBackground: '#ffffff'
 };
 
-// const environment = getEnvironment();
-
-export const getChainConfig = () => {
-    return CHAIN_CONFIG;
-};
+const configService = ConfigService.getInstance();
 
 export const config = getDefaultConfig({
     appName: 'Rocket Launch',
     projectId: NEXT_PUBLIC_PROJECT_ID ?? '',
     appIcon: 'https://testnet.rocketlaunch.fun/rocket_launch.jpg',
     // @ts-ignore
-    chains: [...getChainConfig().supportedChains],
-    defaultChain: getChainConfig().defaultChain,
+    chains: [...configService.getSupportedChainsNew()],
+    defaultChain: configService.getDefaultChainNew(),
     autoConnect: false
     // wallets: [
     //     hotWallet,

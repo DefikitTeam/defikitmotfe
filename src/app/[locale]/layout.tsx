@@ -19,7 +19,7 @@ export async function generateMetadata() {
             title: `Rocket Launch - Home`,
             description:
                 'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
-            url: `https://staging.defikitmotfe.pages.dev/`,
+            url: `https://staging.rocketlaunch.fun/`,
             type: 'website',
             images: [
                 {
@@ -76,35 +76,7 @@ export default async function RootLayout({
             <body className={roboto.className}>
                 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-                {/* 
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                function initWidget() {
-                    if (typeof AIChatWidget !== 'undefined') {
-                        AIChatWidget.init({
-                            agentId: '0aaa3cba-65b2-4673-add0-efbc03c3c2f2',
-                            serverUrl: 'https://aiapi-internal.defikit.net',
-                            widgetUrl: 'https://ai-cms.alex-defikit.workers.dev',
-                            position: 'bottom-right',
-                            welcomeMessage: 's',
-                            defaultOpen: false, // Thêm option này để widget không tự động mở
-                           
-                        });
-                    } else {
-                        setTimeout(initWidget, 100); // Thử lại sau 100ms nếu widget chưa load
-                    }
-                }
-
-                // Đợi document load xong mới khởi tạo widget
-                if (document.readyState === 'complete') {
-                    initWidget();
-                } else {
-                    window.addEventListener('load', initWidget);
-                }
-            `
-                    }}
-                /> */}
+                
 
                 <noscript>
                     You need to enable JavaScript to run this app.

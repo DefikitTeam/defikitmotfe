@@ -4,15 +4,12 @@ import { chains } from '@/src/common/constant/constance';
 import { randomDefaultPoolImage } from '@/src/common/utils/utils';
 import BoxArea from '@/src/components/common/box-area';
 import CommentTelegram from '@/src/components/common/comment-telegram';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import TradingViewChart from '@/src/components/common/tradingview';
 import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import {
-    REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
+import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import servicePool, {
     REFERRAL_CODE_INFO_STORAGE_KEY
 } from '@/src/services/external-services/backend-server/pool';
@@ -39,6 +36,9 @@ import SocialDescInformation from './social-desc-information';
 import TokenInformation from './token-information';
 import TransactionList from './transaction-list';
 import TaskListOwnerToken from './task-list-owner-token';
+import RankBadge from '@/src/components/common/rank-badge';
+import axios from 'axios';
+import AiChatWidget from './ai-chat-widget';
 
 const PoolDetail = () => {
     const t = useTranslations();
@@ -87,6 +87,12 @@ const PoolDetail = () => {
         );
     };
 
+    const [poolRank, setPoolRank] = useState<{
+        rank: number;
+        total: number;
+        trustScore: number;
+    } | null>(null);
+
     useEffect(() => {
         if (refId && !(address as `0x${string}`)) {
             servicePool.storeReferId({
@@ -94,6 +100,19 @@ const PoolDetail = () => {
             });
         }
     }, [refId, poolAddress]);
+
+    useEffect(() => {
+        // Force cleanup widget khi vào home
+        if (window.AIChatWidget) {
+            window.AIChatWidget.destroy?.();
+        }
+        document
+            .querySelectorAll('#ai-chat-widget-container')
+            .forEach((e) => e.remove());
+        document
+            .querySelectorAll('[data-ai-chat-widget]')
+            .forEach((e) => e.remove());
+    }, []);
 
     useEffect(() => {
         if (poolAddress && poolStateDetail.pageTransaction !== undefined) {
@@ -151,6 +170,31 @@ const PoolDetail = () => {
     }, [authState.userInfo?.refId]);
 
     useEffect(() => {
+        // Fetch pool rank
+        const fetchPoolRank = async () => {
+            if (!poolAddress) {
+                setPoolRank(null);
+                return;
+            }
+
+            try {
+                const res = await servicePool.getRankPool(
+                    chainConfig?.chainId.toString()!,
+                    poolAddress
+                );
+                setPoolRank({
+                    rank: res.rank,
+                    total: res.totalPool,
+                    trustScore: res.trustScore
+                });
+            } catch (e) {
+                setPoolRank(null);
+            }
+        };
+        fetchPoolRank();
+    }, [poolAddress, chainConfig?.chainId]);
+
+    useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
@@ -179,8 +223,8 @@ const PoolDetail = () => {
             metaDataInfo && metaDataInfo?.image
                 ? metaDataInfo?.image
                 : metaDataInfo?.tokenImageUrl
-                    ? metaDataInfo?.tokenImageUrl
-                    : randomDefaultPoolImage();
+                  ? metaDataInfo?.tokenImageUrl
+                  : randomDefaultPoolImage();
 
         let finalImageUrl: string;
         if (typeof image === 'object') {
@@ -219,9 +263,10 @@ const PoolDetail = () => {
         return <Loader />;
     }
 
+
     return (
         <BoxArea>
-            <div className={`!pt-[20px] ${isMobile ? '' : 'px-5'}`}>
+            <div className={`!pt-[30px] ${isMobile ? '' : 'px-5'}`}>
                 <div className="py-2">
                     <Row gutter={[16, 16]}>
                         <Col
@@ -237,6 +282,14 @@ const PoolDetail = () => {
                                 className="flex 
                              flex-col gap-6 overflow-y-auto overflow-x-hidden px-2 "
                             >
+                                {poolRank && (
+                                    <RankBadge
+                                        rank={poolRank.rank}
+                                        total={poolRank.total}
+                                        trustScore={poolRank.trustScore}
+                                        type="pool"
+                                    />
+                                )}
                                 <SocialDescInformation />
                                 <TradingViewChart
                                     chainId={chainConfig?.chainId!}
@@ -248,13 +301,17 @@ const PoolDetail = () => {
                                 {!isMobile ? (
                                     <>
                                         <Affiliate />
-                                        {/* {poolStateDetail.dataDetailPoolFromServer.discussionId ? (
+                                        {poolStateDetail
+                                            .dataDetailPoolFromServer
+                                            .discussionId ? (
                                             <CommentTelegram
                                                 discussionLink={
-                                                    poolStateDetail.dataDetailPoolFromServer.discussionId
+                                                    poolStateDetail
+                                                        .dataDetailPoolFromServer
+                                                        .discussionId
                                                 }
                                             />
-                                        ) : null} */}
+                                        ) : null}
                                     </>
                                 ) : null}
                             </div>
@@ -271,8 +328,8 @@ const PoolDetail = () => {
                                 <PoolPurchaseSummary />
                                 <HolderDistribution />
                                 {isConnected &&
-                                    address &&
-                                    address.toLowerCase() ===
+                                address &&
+                                address.toLowerCase() ===
                                     poolStateDetail.pool?.owner?.toLowerCase() ? (
                                     <TaskListOwnerToken />
                                 ) : null}
@@ -293,21 +350,27 @@ const PoolDetail = () => {
                                     </>
                                 ) : null}
 
-                                {/* {dataDetailPoolFromServer.aiAgentId && (
+                               
+
+                                {dataDetailPoolFromServer.aiAgentId ? (
                                     <AiChatWidget
+                                        key={dataDetailPoolFromServer.aiAgentId}
                                         agentId={
-                                            dataDetailPoolFromServer.aiAgentId ??
+                                            dataDetailPoolFromServer.aiAgentId
+                                        }
+                                        agentName={
+                                            dataDetailPoolFromServer.aiAgentName ??
                                             ''
                                         }
                                     />
-                                )} */}
+                                ) : null}
                             </div>
                         </Col>
                     </Row>
                 </div>
             </div>
 
-            <ModalInviteBlocker />
+            {/* <ModalInviteBlocker /> */}
         </BoxArea>
     );
 };

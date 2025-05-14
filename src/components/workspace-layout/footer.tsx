@@ -1,8 +1,14 @@
 /* eslint-disable */
 
 import { useConfig } from '@/src/hooks/useConfig';
+import {
+    useTrustPoint,
+    useTrustPointToken
+} from '@/src/stores/trust-point/hook';
+import { Task } from '@/src/views/portfolio/task-list';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import { useEffect, useImperativeHandle, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 
 const Footer = () => {
@@ -10,80 +16,38 @@ const Footer = () => {
     const { address, isConnected } = useAccount();
     const t = useTranslations();
 
+    const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
+    // const { trustPointToken } = useTrustPointToken();
     const { chainConfig } = useConfig();
     const handlePortfolioClick = () => {
-        // if (isConnected && address) {
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
         );
-        // } else {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
     };
     const handleClickCreateLaunch = () => {
-        // if (isConnected && address) {
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
         );
-        // } else {
-        //     notification.error({
-        //         message: 'Error',
-        //         description: t('PLEASE_CONNECT_WALLET'),
-        //         duration: 2,
-        //         showProgress: true
-        //     });
-        //     return;
-        // }
     };
-    // const handleClickFaucet = () => {
-    //     if (isConnected && address) {
-    //         router.push(
-    //             `/${chainData.name.replace(/\s+/g, '').toLowerCase()}/faucet`
-    //         );
-    //     } else {
-    //         notification.error({
-    //             message: 'Error',
-    //             description: t('PLEASE_CONNECT_WALLET'),
-    //             duration: 2,
-    //             showProgress: true
-    //         });
-    //         return;
-    //     }
-    // };
-    // const handleClickAgents = () => {
-    //     if (!isConnected) {
-    //         notification.error({
-    //             message: 'Error',
-    //             description: t('PLEASE_CONNECT_WALLET'),
-    //             duration: 2,
-    //             showProgress: true
-    //         });
-    //         return;
-    //     }
-    // };
-    const handleClickCommunity = () => {
-        // if (!isConnected) {
-        // notification.error({
-        //     message: 'Error',
-        //     description: t('PLEASE_CONNECT_WALLET'),
-        //     duration: 2,
-        //     showProgress: true
-        // });
-        // return;
-        // }
-    };
+
+    const handleClickCommunity = () => {};
 
     const handleClickLeaderboard = () => {
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/leaderboard`
         );
     };
+
+    const hasUncompletedTask = useMemo(() => {
+        return (
+            Array.isArray(trustPointStatus?.data) &&
+            trustPointStatus.data.some((task) => !task.completed)
+        );
+    }, [trustPointStatus]);
+
+    useEffect(() => {
+        getTrustPointStatusAction();
+    }, []);
 
     return (
         <div>
@@ -140,8 +104,8 @@ const Footer = () => {
                     </div>
                     <div
                         className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                        // onClick={() => router.push(`/profile/address/`)}
                         onClick={handlePortfolioClick}
+                        style={{ position: 'relative' }}
                     >
                         <svg
                             className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
@@ -156,6 +120,22 @@ const Footer = () => {
                         <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
                             Portfolio
                         </span>
+                        {hasUncompletedTask && (
+                            <span
+                                style={{
+                                    position: 'absolute',
+                                    zIndex: 100,
+                                    top: 6,
+                                    right: 18,
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: '50%',
+                                    background: '#ff4d4f',
+                                    border: '2px solid white'
+                                }}
+                                title="Uncompleted tasks nft remain"
+                            />
+                        )}
                     </div>
 
                     <div

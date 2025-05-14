@@ -44,8 +44,10 @@ export const useConfig = () => {
             getDexInfo: (chainId: number) => config.getDexInfo(chainId),
 
             // API and environment getters
-            apiConfig: config.getApiConfig()
-            // environment: config.getEnvironment()
+            apiConfig: config.getApiConfig(),
+            // environment: config.getEnvironment(),
+            supportedChainsNew: config.getSupportedChainsNew(),
+            defaultChainNew: config.getDefaultChainNew()
         }),
         [chain]
     ); // Re-compute when chain changes

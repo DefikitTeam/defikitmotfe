@@ -2,8 +2,8 @@
 'use client';
 import { chains } from '@/src/common/constant/constance';
 import BoxArea from '@/src/components/common/box-area';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import Loader from '@/src/components/loader';
+import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
@@ -13,7 +13,7 @@ import { setChainData } from '@/src/stores/Chain/chainDataSlice';
 import { useInviteListReferPortfolio } from '@/src/stores/invite-code/hook';
 import { usePortfolio } from '@/src/stores/profile/hook';
 import { EActionStatus } from '@/src/stores/type';
-import { Col, notification, Row } from 'antd';
+import { Col, Row } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useParams, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -60,12 +60,26 @@ const Portfolio = () => {
     const { switchChain } = useSwitchChain();
     const { authState, setOpenModalInviteBlocker } = useAuthLogin();
 
+    const { chainConfig } = useConfig();
+
     const getCurrentChainUrl = (): IChainInfor | undefined => {
         return chains.find(
             (item) =>
                 item.name.replace(/\s+/g, '').toLowerCase() === currentPath?.[2]
         );
     };
+
+    useEffect(() => {
+        if (window.AIChatWidget) {
+            window.AIChatWidget.destroy?.();
+        }
+        document
+            .querySelectorAll('#ai-chat-widget-container')
+            .forEach((e) => e.remove());
+        document
+            .querySelectorAll('[data-ai-chat-widget]')
+            .forEach((e) => e.remove());
+    }, []);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -80,19 +94,10 @@ const Portfolio = () => {
         }
     }, [currentPath?.[2]]);
 
-    const { value: refCodeExisted, setValue: setRefCodeExisted } =
-        useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+   
 
     useEffect(() => {
-        if (!(address as `0x${string}`) || !chainId) {
-            notification.error({
-                message: 'Error',
-                description: t('PLEASE_CONNECT_WALLET'),
-                duration: 1,
-                showProgress: true
-            });
-            return;
-        }
+      
 
         if (addressParams) {
             walletAddress = addressParams;
@@ -101,7 +106,7 @@ const Portfolio = () => {
         }
         if (walletAddress) {
             fetchPortfolio({
-                chainId: chainId,
+                chainId: Number(chainConfig?.chainId!),
                 wallet: walletAddress as `0x${string}`
             });
             fetchYourListFriendAction({
@@ -126,7 +131,7 @@ const Portfolio = () => {
 
     return (
         <BoxArea>
-            <div className={`!pt-[20px] ${isMobile ? '' : 'px-5'}`}>
+            <div className={`!pt-[30px] ${isMobile ? '' : 'px-5'}`}>
                 <div className="py-2">
                     <Row gutter={[16, 16]}>
                         <Col

@@ -35,17 +35,6 @@ const TransactionList = () => {
     const router = useRouter();
     const { chainConfig } = useConfig();
     const handleOpenResentTx = (hash: string, type: string) => {
-        if (!isConnected) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
-        // TODO: need change REACT_APP_TEST_SEPOLIA_EXPLORER_URL follow environment, network
         if (hash) {
             window.open(
                 chainConfig?.explorer + `/${type}/` + hash,
@@ -57,16 +46,6 @@ const TransactionList = () => {
     const { isConnected, address } = useAccount();
 
     const handleClickAddress = (address: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
         );

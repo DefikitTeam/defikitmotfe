@@ -46,16 +46,6 @@ const CurrentCodeInvite = () => {
     }, [chainConfig?.chainId, address]);
 
     const handleCopy = (showCode: string | undefined) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
         if (showCode) {
             navigator.clipboard.writeText(showCode).then(() => {
                 notification.success({

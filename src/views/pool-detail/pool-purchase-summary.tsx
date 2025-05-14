@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /* eslint-disable */
 import { getContract } from '@/src/common/blockchain/evm/contracts/utils/getContract';
@@ -38,9 +38,7 @@ import { ethers } from 'ethers';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    useAccount
-} from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
 import DepositLotteryButton from './deposit-lottery-button';
 import ModalActivities from './modal-activities';
 import SaveButtonBuy from './save-button-buy';
@@ -54,6 +52,16 @@ const PoolPurchaseSummary = () => {
     const { pool, analystData, priceNative, status } = poolStateDetail;
 
     const { chainId, address, isConnected } = useAccount();
+    const { chainConfig } = useConfig();
+
+    const { data: balanceData } = useBalance({
+        address: address,
+        chainId: chainConfig?.chainId,
+    });
+
+    const userNativeBalance = Number(balanceData?.formatted ?? 0);
+
+
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
     const [data, setData] = useBuyPoolInformation();
@@ -68,7 +76,6 @@ const PoolPurchaseSummary = () => {
     const [maxRepeatPurchase, setMaxRepeatPurchase] = useState('0');
     const [maxAmountETH, setMaxAmountETH] = useState(0);
 
-    const { chainConfig } = useConfig();
     const multiCallerContract = getContract(chainConfig?.chainId!);
 
     const [balanceOfUser, setBalanceOfUser] = useState('0');
@@ -163,6 +170,22 @@ const PoolPurchaseSummary = () => {
         }
     }, [dataDeposit.depositAmount]);
 
+
+
+    const handleSetMaxBond = () => {
+        const pricePerBond = Number(showInitial);
+        const maxBond = Math.floor(userNativeBalance / pricePerBond);
+
+        setBondAmountValue(maxBond.toString());
+
+        setData({
+            ...data,
+            numberBatch: maxBond
+        });
+        setDisableBtnBuy(maxBond === 0);
+        setSliderPercent(maxBond);
+    };
+
     const handleOnChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
@@ -176,6 +199,11 @@ const PoolPurchaseSummary = () => {
         let validateInputError = false;
         let validateInputHelperText = '';
 
+        const pricePerBond = Number(showInitial);
+        const totalCost = Number(value) * pricePerBond;
+
+
+
         if (value) {
             if (Number(value) > Number(pool?.batchAvailable ?? 0)) {
                 validateInputError = true;
@@ -183,7 +211,13 @@ const PoolPurchaseSummary = () => {
                     max: pool?.batchAvailable ?? 'N/A'
                 });
 
-                // return;
+            } else if (totalCost > userNativeBalance) {
+                validateInputError = true;
+                validateInputHelperText = t('NOT_ENOUGH_BALANCE', {
+                    currentBalance: userNativeBalance,
+                    totalCost: totalCost,
+                    currency: chainConfig?.currency
+                });
             } else {
                 validateInputError = false;
                 validateInputHelperText = '';
@@ -204,6 +238,8 @@ const PoolPurchaseSummary = () => {
             //         helperText: validateInputHelperText
             //     }
             // });
+
+
             if (!validateInputError) {
                 setData({
                     ...data,
@@ -224,6 +260,8 @@ const PoolPurchaseSummary = () => {
                     setBuyButtonText(t('BUY'));
                 }
             }
+
+
         } else {
             setDisableBtnBuy(true);
             setBuyAmountBtn('');
@@ -460,7 +498,7 @@ const PoolPurchaseSummary = () => {
 
     useEffect(() => {
         const value: number =
-            Number(sliderPercent) >= 100 ? 100 : Number(sliderPercent);
+            Number(sliderPercent)
         setIsLoading(true);
         try {
             if (value) {
@@ -577,7 +615,6 @@ const PoolPurchaseSummary = () => {
         return () => clearTimeout(timer);
     });
 
-
     useEffect(() => {
         if (useWithdrawFundLottery.isConfirmed) {
             notification.success({
@@ -587,8 +624,7 @@ const PoolPurchaseSummary = () => {
                 showProgress: true
             });
         }
-    }, [useWithdrawFundLottery.isConfirmed])
-
+    }, [useWithdrawFundLottery.isConfirmed]);
 
     // const funLotteryAvailableFake = 3;
     // const bondAvailableCurrentFake = 4;
@@ -605,8 +641,6 @@ const PoolPurchaseSummary = () => {
         pool.status !== PoolStatus.COMPLETED &&
         ((!isForceShowBuyButton && Number(funLotteryAvailable) > 0) ||
             Number(bondAvailableCurrent) === 0);
-
-
 
     const shouldShowSpin =
         pool.status !== PoolStatus.FAIL &&
@@ -655,7 +689,6 @@ const PoolPurchaseSummary = () => {
         try {
             setIsWithdrawing(true);
 
-            // Convert decimal amount to wei (BigInt format)
             const amountInWei = ethers.parseEther(withdrawAmount).toString();
 
             await useWithdrawFundLottery.actionAsync({
@@ -663,11 +696,8 @@ const PoolPurchaseSummary = () => {
                 amountETH: amountInWei
             });
 
-
-
             // Reset input
             setWithdrawAmount('');
-            // Data will refresh automatically through hooks
         } catch (error) {
             console.error('Error withdrawing lottery funds:', error);
             notification.error({
@@ -885,11 +915,9 @@ const PoolPurchaseSummary = () => {
                         />
                     </Col>
 
-
                     {pool.status != PoolStatus.FAIL &&
                         pool.status != PoolStatus.COMPLETED &&
                         !shouldShowDeposit && (
-
                             <Col
                                 xs={24}
                                 sm={24}
@@ -899,12 +927,19 @@ const PoolPurchaseSummary = () => {
                             >
                                 <div className="mb-0">
                                     <span className="!font-forza text-base">
-                                        <Text className="text-lg text-red-500">* </Text>
+                                        <Text className="text-lg text-red-500">
+                                            *{' '}
+                                        </Text>
                                         {t('BOND_AMOUNT')}
                                         <Tooltip
-                                            title={t('MAXIMUM_BOND_AMOUNT_AVAILABLE', {
-                                                max: pool?.batchAvailable ?? 'N/A'
-                                            })}
+                                            title={t(
+                                                'MAXIMUM_BOND_AMOUNT_AVAILABLE',
+                                                {
+                                                    max:
+                                                        pool?.batchAvailable ??
+                                                        'N/A'
+                                                }
+                                            )}
                                         >
                                             <QuestionCircleOutlined
                                                 style={{ marginLeft: '8px' }}
@@ -914,6 +949,9 @@ const PoolPurchaseSummary = () => {
 
                                     <Input
                                         type="number"
+                                        addonAfter={
+                                            <Button onClick={handleSetMaxBond}>MAX</Button>
+                                        }
                                         placeholder={t('ENTER_NUMBER_BOND')}
                                         name="numberBatch"
                                         max={Number(pool?.batchAvailable ?? 0)}
@@ -923,20 +961,23 @@ const PoolPurchaseSummary = () => {
                                         onKeyPress={handleKeyPress}
                                         onChange={handleOnChange}
                                         className="!font-forza text-base"
-                                        style={{ color: '#000000', width: '100%' }}
+                                        style={{
+                                            color: '#000000',
+                                            width: '100%'
+                                        }}
                                     />
-                                    {validateInput.bondAmount.error === true && (
-                                        <Text className="text-red-500">
-                                            {validateInput.bondAmount.helperText}
-                                        </Text>
-                                    )}
+                                    {validateInput.bondAmount.error ===
+                                        true && (
+                                            <Text className="text-red-500">
+                                                {
+                                                    validateInput.bondAmount
+                                                        .helperText
+                                                }
+                                            </Text>
+                                        )}
                                 </div>
                             </Col>
-
                         )}
-
-
-
 
                     <Col
                         xs={24}
@@ -1108,7 +1149,7 @@ const PoolPurchaseSummary = () => {
                                             >
                                                 <Button
                                                     type="primary"
-                                                    className="h-auto w-full text-white bg-blue-600 py-2 !font-forza text-base hover:bg-blue-700"
+                                                    className="h-auto w-full bg-blue-600 py-2 !font-forza text-base text-white hover:bg-blue-700"
                                                     onClick={
                                                         withdrawLotteryFunds
                                                     }
@@ -1116,13 +1157,15 @@ const PoolPurchaseSummary = () => {
                                                         wordWrap: 'break-word',
                                                         opacity:
                                                             disableBtnWithdraw ||
-                                                                useWithdrawFundLottery.isLoadingInitWithdrawFundLottery || useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
+                                                                useWithdrawFundLottery.isLoadingInitWithdrawFundLottery ||
+                                                                useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
                                                                 ? 0.6
-                                                                : 1,
+                                                                : 1
                                                     }}
                                                     disabled={
                                                         disableBtnWithdraw ||
-                                                        useWithdrawFundLottery.isLoadingInitWithdrawFundLottery || useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
+                                                        useWithdrawFundLottery.isLoadingInitWithdrawFundLottery ||
+                                                        useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
                                                     }
                                                     loading={
                                                         isWithdrawing ||
@@ -1215,6 +1258,45 @@ const PoolPurchaseSummary = () => {
                                             width: '100%'
                                         }}
                                     />
+                                    <div className="flex gap-2 mt-2">
+                                        {[25, 50, 75].map((percent) => (
+                                            <button
+                                                key={percent}
+                                                type="button"
+                                                className={`px-4 py-1 rounded-full border-2 border-orange-400 text-orange-400 font-bold transition-colors hover:bg-orange-100 ${depositAmountValue === ((userNativeBalance * percent) / 100).toFixed(6)
+                                                    ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white border-0"
+                                                    : ""
+                                                    }`}
+                                                onClick={() => {
+                                                    const val = ((userNativeBalance * percent) / 100).toFixed(6);
+                                                    setDepositAmountValue(val);
+                                                    setDepositLotteryInformation({
+                                                        ...dataDeposit,
+                                                        depositAmount: Number(val)
+                                                    });
+                                                }}
+                                            >
+                                                {percent}%
+                                            </button>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            className={`px-4 py-1 rounded-full border-2 border-orange-400 text-orange-400 font-bold transition-colors hover:bg-orange-100 ${depositAmountValue === userNativeBalance.toFixed(6)
+                                                ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white border-0"
+                                                : ""
+                                                }`}
+                                            onClick={() => {
+                                                const val = userNativeBalance.toFixed(6);
+                                                setDepositAmountValue(val);
+                                                setDepositLotteryInformation({
+                                                    ...dataDeposit,
+                                                    depositAmount: Number(val)
+                                                });
+                                            }}
+                                        >
+                                            Max
+                                        </button>
+                                    </div>
                                 </div>
                             </Col>
                         )}

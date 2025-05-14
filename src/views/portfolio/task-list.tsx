@@ -16,13 +16,13 @@ import {
     Typography
 } from 'antd';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useRouter } from 'next/navigation';
 import { useConfig } from '@/src/hooks/useConfig';
 
 const { Title, Text } = Typography;
 
-interface Task {
+export interface Task {
     id: number;
     multiplier: number;
     description: string;
@@ -32,19 +32,22 @@ interface Task {
     reason: string;
 }
 
-const TaskList = () => {
+const TaskList = forwardRef((props, ref) => {
     const t = useTranslations();
     const { chainConfig } = useConfig();
 
     const [hoveredTaskId, setHoveredTaskId] = useState<number | null>(null);
     const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
+
     const [tokenIdProcessClaimed, setTokenIdProcessClaimed] =
         useState<number>(0);
     const router = useRouter();
 
     const { useMintWithSignature } = useTrustPointCaller();
+
     const [loadingMintWithSignature, setLoadingMintWithSignature] =
         useState<boolean>(false);
+    const [hasUncompletedTask, setHasUncompletedTask] = useState(false);
 
     useEffect(() => {
         if (useMintWithSignature.isLoadingInitMintWithSignature) {
@@ -102,6 +105,18 @@ const TaskList = () => {
     useEffect(() => {
         getTrustPointStatusAction();
     }, []);
+
+    useEffect(() => {
+        if (trustPointStatus.data) {
+            setHasUncompletedTask(
+                trustPointStatus.data.some((task: Task) => !task.completed)
+            );
+        }
+    }, [trustPointStatus.data]);
+
+    useImperativeHandle(ref, () => ({
+        hasUncompletedTask
+    }));
 
     const handleClaimClick = async (task: Task) => {
         setLoadingMintWithSignature(true);
@@ -287,6 +302,20 @@ const TaskList = () => {
                                                 x{task.multiplier}
                                             </Tag>
                                             {!task.completed && (
+                                                <span
+                                                    style={{
+                                                        display: 'inline-block',
+                                                        width: 8,
+                                                        height: 8,
+                                                        borderRadius: '50%',
+                                                        background: '#ff4d4f',
+                                                        marginLeft: 4,
+                                                        marginRight: 2
+                                                    }}
+                                                    title="Not completed"
+                                                />
+                                            )}
+                                            {!task.completed && (
                                                 <Tooltip
                                                     title={task.reason}
                                                     placement="right"
@@ -322,6 +351,6 @@ const TaskList = () => {
             )}
         </Card>
     );
-};
+});
 
 export default TaskList;

@@ -33,16 +33,6 @@ const PoolDetailInformation = () => {
     const { isConnected, address } = useAccount();
 
     const handleCopy = (tokenAddress: string | undefined) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
         if (tokenAddress) {
             navigator.clipboard.writeText(tokenAddress).then(() => {
                 notification.success({

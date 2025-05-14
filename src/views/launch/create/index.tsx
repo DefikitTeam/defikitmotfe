@@ -11,7 +11,6 @@ import {
 } from '@/src/stores/pool/hook';
 
 import { ADDRESS_NULL } from '@/src/common/constant/constance';
-import ModalInviteBlocker from '@/src/components/common/invite-blocker';
 import { ConfigService } from '@/src/config/services/config-service';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
@@ -97,6 +96,19 @@ const CreateLaunch = () => {
 
     const { value: refCodeExisted, setValue: setRefCodeExisted } =
         useRefCodeWatcher(REFCODE_INFO_STORAGE_KEY);
+
+    useEffect(() => {
+        // Force cleanup widget khi vào home
+        if (window.AIChatWidget) {
+            window.AIChatWidget.destroy?.();
+        }
+        document
+            .querySelectorAll('#ai-chat-widget-container')
+            .forEach((e) => e.remove());
+        document
+            .querySelectorAll('[data-ai-chat-widget]')
+            .forEach((e) => e.remove());
+    }, []);
 
     // useEffect(() => {
     //     if (
@@ -488,7 +500,7 @@ const CreateLaunch = () => {
                 </Col>
             </div>
 
-            <ModalInviteBlocker />
+            {/* <ModalInviteBlocker /> */}
         </BoxArea>
     );
 };

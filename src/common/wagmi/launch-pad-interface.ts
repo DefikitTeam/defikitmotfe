@@ -336,24 +336,24 @@ export class LaunchPadInterface {
 
                 value: maxAmountETH
                     ? BigInt(
-                        new BigNumber(
-                            chainConfig.getPlatformFee(
-                                this._contractStruct.chainId
-                            )
-                        )
-                            .times(1e18)
-                            .plus(new BigNumber(maxAmountETH))
-                            .toFixed(0)
-                    )
+                          new BigNumber(
+                              chainConfig.getPlatformFee(
+                                  this._contractStruct.chainId
+                              )
+                          )
+                              .times(1e18)
+                              .plus(new BigNumber(maxAmountETH))
+                              .toFixed(0)
+                      )
                     : BigInt(
-                        new BigNumber(
-                            chainConfig.getPlatformFee(
-                                this._contractStruct.chainId
-                            )
-                        )
-                            .times(1e18)
-                            .toFixed(0)
-                    )
+                          new BigNumber(
+                              chainConfig.getPlatformFee(
+                                  this._contractStruct.chainId
+                              )
+                          )
+                              .times(1e18)
+                              .toFixed(0)
+                      )
             });
         } catch (err) {
             this.handleErrors(err);

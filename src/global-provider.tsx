@@ -23,6 +23,7 @@ const GlobalProvider: FC<ProvidersProps> = ({ locale, messages, children }) => {
             <NextIntlClientProvider
                 locale={locale}
                 messages={messages}
+                timeZone="UTC"
             >
                 <ConfigProvider theme={theme}>
                     <AntdRegistry>

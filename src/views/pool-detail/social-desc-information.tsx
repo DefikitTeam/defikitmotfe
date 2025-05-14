@@ -73,15 +73,7 @@ const SocialDescInformation = () => {
     }, [isConnected, address, poolStateDetail.pool?.owner]);
 
     const openInNewTab = (url: any | null) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
+      
 
         if (typeof url === 'object') {
             window.open(url.value, '_blank', 'noopener,noreferrer');
@@ -135,15 +127,7 @@ const SocialDescInformation = () => {
     }
 
     const handleClickShowSocialScore = () => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
+       
 
         setOpenModalSocialScoreAction(true);
     };
@@ -152,16 +136,7 @@ const SocialDescInformation = () => {
     const [previewImageUrl, setPreviewImageUrl] = useState('');
 
     const handleImageClick = (imageUrl: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
+        
         setPreviewImageUrl(imageUrl);
         setShowImagePreview(true);
     };
@@ -180,7 +155,6 @@ const SocialDescInformation = () => {
         setIsLoading(true);
 
         try {
-            // Preserve all existing metadata fields
 
             const metadata = {
                 ...metaDataInfo,
@@ -191,22 +165,22 @@ const SocialDescInformation = () => {
                         : metaDataInfo?.description,
                 website:
                     values.websiteLink &&
-                        !values.websiteLink.startsWith('https://')
+                    !values.websiteLink.startsWith('https://')
                         ? `https://${values.websiteLink}`
                         : values.websiteLink,
                 telegram:
                     values.telegramLink &&
-                        !values.telegramLink.startsWith('https://')
+                    !values.telegramLink.startsWith('https://')
                         ? `https://${values.telegramLink}`
                         : values.telegramLink,
                 twitter:
                     values.twitterLink &&
-                        !values.twitterLink.startsWith('https://')
+                    !values.twitterLink.startsWith('https://')
                         ? `https://${values.twitterLink}`
                         : values.twitterLink,
                 discord:
                     values.discordLink &&
-                        !values.discordLink.startsWith('https://')
+                    !values.discordLink.startsWith('https://')
                         ? `https://${values.discordLink}`
                         : values.discordLink
             };
@@ -389,7 +363,10 @@ const SocialDescInformation = () => {
             console.error('Error verifying Twitter share:', error);
             notification.error({
                 message: 'Error',
-                description: error.response?.data?.message || error.message || 'Failed to verify Twitter share',
+                description:
+                    error.response?.data?.message ||
+                    error.message ||
+                    'Failed to verify Twitter share',
                 duration: 3,
                 showProgress: true
             });
@@ -435,7 +412,7 @@ const SocialDescInformation = () => {
                     <Tooltip
                         title={
                             checkIsOwner &&
-                                !dataDetailPoolFromServer?.isTwitterVerified ? (
+                            !dataDetailPoolFromServer?.isTwitterVerified ? (
                                 <div className="!font-forza">
                                     <p>Click to share on Twitter</p>
                                     <p className="text-yellow-300">
