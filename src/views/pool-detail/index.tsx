@@ -182,7 +182,6 @@ const PoolDetail = () => {
                     chainConfig?.chainId.toString()!,
                     poolAddress
                 );
-                console.log('res line 166-----', res);
                 setPoolRank({
                     rank: res.rank,
                     total: res.totalPool,
@@ -264,7 +263,6 @@ const PoolDetail = () => {
         return <Loader />;
     }
 
-    console.log('dataDetailPoolFromServer----', dataDetailPoolFromServer);
 
     return (
         <BoxArea>
