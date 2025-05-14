@@ -303,13 +303,17 @@ const PoolDetail = () => {
                                 {!isMobile ? (
                                     <>
                                         <Affiliate />
-                                        {/* {poolStateDetail.dataDetailPoolFromServer.discussionId ? (
+                                        {poolStateDetail
+                                            .dataDetailPoolFromServer
+                                            .discussionId ? (
                                             <CommentTelegram
                                                 discussionLink={
-                                                    poolStateDetail.dataDetailPoolFromServer.discussionId
+                                                    poolStateDetail
+                                                        .dataDetailPoolFromServer
+                                                        .discussionId
                                                 }
                                             />
-                                        ) : null} */}
+                                        ) : null}
                                     </>
                                 ) : null}
                             </div>
@@ -348,19 +352,7 @@ const PoolDetail = () => {
                                     </>
                                 ) : null}
 
-                                {/* {dataDetailPoolFromServer.aiAgentId && (
-                                    <AiChatWidget
-                                        key={dataDetailPoolFromServer.aiAgentId}
-                                        agentId={
-                                            dataDetailPoolFromServer.aiAgentId ??
-                                            ''
-                                        }
-                                        agentName={
-                                            dataDetailPoolFromServer.aiAgentName ??
-                                            ''
-                                        }
-                                    />
-                                )} */}
+                               
 
                                 {dataDetailPoolFromServer.aiAgentId ? (
                                     <AiChatWidget
