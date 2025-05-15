@@ -84,6 +84,8 @@ export const productionConfig: EnvironmentConfig = {
             subgraph: {
                 uri: `${NEXT_PUBLIC_API_ENDPOINT_PROD}/subgraph/berachain`
             },
+            reserve_min: 0.001,
+
             explorer: 'https://berascan.com/',
             rpcUrl: 'https://rpc.berachain.com/',
             isTestnet: false,

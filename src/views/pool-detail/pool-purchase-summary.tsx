@@ -59,6 +59,8 @@ const PoolPurchaseSummary = () => {
         chainId: chainConfig?.chainId,
     });
 
+    const reserveMin = chainConfig?.reserve_min;
+
     const userNativeBalance = Number(balanceData?.formatted ?? 0);
 
 
@@ -174,7 +176,12 @@ const PoolPurchaseSummary = () => {
 
     const handleSetMaxBond = () => {
         const pricePerBond = Number(showInitial);
-        const maxBond = Math.floor(userNativeBalance / pricePerBond);
+        const maxBondByBalance = Math.floor(userNativeBalance / pricePerBond);
+        const totalBatch = Number(pool?.totalBatch ?? 0);
+        const soldBatch = Number(pool?.soldBatch ?? 0);
+        const availableBonds = totalBatch - soldBatch;
+
+        const maxBond = Math.min(maxBondByBalance, availableBonds);
 
         setBondAmountValue(maxBond.toString());
 
@@ -1281,12 +1288,13 @@ const PoolPurchaseSummary = () => {
                                         ))}
                                         <button
                                             type="button"
-                                            className={`px-4 py-1 rounded-full border-2 border-orange-400 text-orange-400 font-bold transition-colors hover:bg-orange-100 ${depositAmountValue === userNativeBalance.toFixed(6)
+                                        className={`px-4 py-1 rounded-full border-2 border-orange-400 text-orange-400 font-bold transition-colors hover:bg-orange-100 ${depositAmountValue === (Math.max(0, userNativeBalance - (reserveMin || 0))).toFixed(6)}
                                                 ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white border-0"
                                                 : ""
                                                 }`}
                                             onClick={() => {
-                                                const val = userNativeBalance.toFixed(6);
+
+                                                const val = Math.max(0, userNativeBalance - (reserveMin || 0)).toFixed(6);
                                                 setDepositAmountValue(val);
                                                 setDepositLotteryInformation({
                                                     ...dataDeposit,

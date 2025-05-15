@@ -25,6 +25,7 @@ export const developmentConfig: EnvironmentConfig = {
             subgraph: {
                 uri: `${NEXT_PUBLIC_API_ENDPOINT}/subgraph/berachain-bepolia`
             },
+            reserve_min: 0.001,
             currency: 'BERA',
             explorer: 'https://bepolia.beratrail.io/',
             rpcUrl: 'https://bepolia.rpc.berachain.com/',
