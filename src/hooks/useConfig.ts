@@ -47,7 +47,8 @@ export const useConfig = () => {
             apiConfig: config.getApiConfig(),
             // environment: config.getEnvironment(),
             supportedChainsNew: config.getSupportedChainsNew(),
-            defaultChainNew: config.getDefaultChainNew()
+            defaultChainNew: config.getDefaultChainNew(),
+            getReserveMin: (chainId: number) => config.getReserveMin(chainId)
         }),
         [chain]
     ); // Re-compute when chain changes

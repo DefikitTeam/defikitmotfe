@@ -54,6 +54,10 @@ export class ConfigService {
         return this.currentConfig.supportedChains;
     }
 
+    getReserveMin(chainId: number): number {
+        return this.getChainConfig(chainId)?.reserve_min || 0;
+    }
+
     getDefaultChain(): number {
         return this.currentConfig.defaultChain;
     }

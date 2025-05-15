@@ -14,6 +14,7 @@ export interface SubgraphConfig {
 export interface ChainConfig {
     chainId: ChainId;
     name: string;
+    reserve_min?: number;
     addresses: ContractAddresses;
     subgraph: SubgraphConfig;
     currency: string;
