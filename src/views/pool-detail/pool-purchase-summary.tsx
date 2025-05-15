@@ -1288,12 +1288,13 @@ const PoolPurchaseSummary = () => {
                                         ))}
                                         <button
                                             type="button"
-                                            className={`px-4 py-1 rounded-full border-2 border-orange-400 text-orange-400 font-bold transition-colors hover:bg-orange-100 ${depositAmountValue === (userNativeBalance - (reserveMin || 0)).toFixed(6)
+                                        className={`px-4 py-1 rounded-full border-2 border-orange-400 text-orange-400 font-bold transition-colors hover:bg-orange-100 ${depositAmountValue === (Math.max(0, userNativeBalance - (reserveMin || 0))).toFixed(6)}
                                                 ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white border-0"
                                                 : ""
                                                 }`}
                                             onClick={() => {
-                                                const val = (userNativeBalance - (reserveMin || 0)).toFixed(6);
+
+                                                const val = Math.max(0, userNativeBalance - (reserveMin || 0)).toFixed(6);
                                                 setDepositAmountValue(val);
                                                 setDepositLotteryInformation({
                                                     ...dataDeposit,
