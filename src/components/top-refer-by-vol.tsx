@@ -54,7 +54,6 @@ const TopReferByVol = () => {
         router.push(
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${id}`
         );
-       
     };
 
     return (

@@ -3,9 +3,10 @@ import { IBuyPool } from './type';
 
 const initialState: IBuyPool = {
     poolAddress: '',
-    numberBatch: 0,
+    // numberBatch: 0,
     payableAmount: 0,
-    maxAmountETH: 0
+    // maxAmountETH: 0
+    amountBera: ''
 };
 
 export const poolBuySlice = createSlice({
@@ -16,10 +17,11 @@ export const poolBuySlice = createSlice({
             state: IBuyPool,
             action: PayloadAction<IBuyPool>
         ) => {
-            state.maxAmountETH = action.payload.maxAmountETH;
-            state.numberBatch = action.payload.numberBatch;
+            // state.maxAmountETH = action.payload.maxAmountETH;
+            // state.numberBatch = action.payload.numberBatch;
             state.payableAmount = action.payload.payableAmount;
             state.poolAddress = action.payload.poolAddress;
+            state.amountBera = action.payload.amountBera;
         },
         resetBuyPoolInformation: () => {
             return initialState;

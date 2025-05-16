@@ -94,11 +94,7 @@ const Portfolio = () => {
         }
     }, [currentPath?.[2]]);
 
-   
-
     useEffect(() => {
-      
-
         if (addressParams) {
             walletAddress = addressParams;
         } else {

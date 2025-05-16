@@ -337,12 +337,18 @@ export interface IPriceNativeRequest {
 }
 export interface IBuyPool {
     poolAddress: string;
-    numberBatch: number;
+    // numberBatch: number;
     payableAmount: number;
-    maxAmountETH: number;
+    // maxAmountETH: number;
+    amountBera: string;
 }
 
-export interface ISellPool extends IBuyPool {}
+export interface ISellPool  {
+    poolAddress: string,
+    numberBatch: number,
+    payableAmount: number,
+    maxAmountETH: number
+}
 
 export interface IDepositLottery {
     poolAddress: string;

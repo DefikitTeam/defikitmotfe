@@ -64,6 +64,11 @@ export function useMultiCaller() {
         hash: withdrawFundLotteryWatcher.data
     });
 
+    const buyWithBeraWatcher = useWriteContract();
+    const buyWithBeraListener = useWaitForTransactionReceipt({
+        hash: buyWithBeraWatcher.data
+    });
+
     return {
         /*=======================MULTI=======================*/
 
@@ -254,6 +259,20 @@ export function useMultiCaller() {
             isError:
                 withdrawFundLotteryListener.isError ||
                 withdrawFundLotteryWatcher.isError
+        },
+
+        useBuyWithBera: {
+            actionAsync: (params: {
+                poolAddress: string;
+                amountBera: string ;
+                referrer: string;
+            }) => {
+                return multiCaller.buyWithBera(buyWithBeraWatcher, params);
+            },
+            isConfirmed: buyWithBeraListener.isSuccess,
+            isLoadingAgreedBuyWithBera: buyWithBeraListener.isLoading,
+            isLoadingInitBuyWithBera: buyWithBeraWatcher.isPending,
+            isError: buyWithBeraListener.isError || buyWithBeraWatcher.isError
         }
     };
 }

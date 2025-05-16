@@ -263,7 +263,6 @@ const PoolDetail = () => {
         return <Loader />;
     }
 
-
     return (
         <BoxArea>
             <div className={`!pt-[30px] ${isMobile ? '' : 'px-5'}`}>
@@ -349,8 +348,6 @@ const PoolDetail = () => {
                                         ) : null}
                                     </>
                                 ) : null}
-
-                               
 
                                 {dataDetailPoolFromServer.aiAgentId ? (
                                     <AiChatWidget

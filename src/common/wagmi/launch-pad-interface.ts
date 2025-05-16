@@ -561,4 +561,58 @@ export class LaunchPadInterface {
             this.handleErrors(err);
         }
     }
+
+    async buyWithBera(
+        watcher: UseWriteContractReturnType,
+        params: {
+            poolAddress: string;
+            amountBera: string;
+            referrer: string;
+        }
+    ) {
+        try {
+            const { poolAddress, amountBera, referrer } = params;
+            if (!poolAddress || !amountBera || !referrer) {
+                throw new Error('Invalid params when call buyWithBera');
+            }
+
+            if (!amountBera) {
+                throw new Error('Invalid amount when call buyWithBera');
+            }
+            if (parseFloat(amountBera) === 0) {
+                throw new Error('Please enter a valid amount');
+            }
+            if (poolAddress) {
+                const chainId = Number(this._contractStruct.chainId);
+
+                if (isNaN(chainId)) {
+                    throw new Error('Invalid chainId');
+                }
+
+                const parameters = { chainId: chainId };
+
+                const gasPrice = await getGasPrice(config, parameters);
+
+                if (!gasPrice) {
+                    throw new Error('Failed to fetch gas price');
+                }
+
+                const adjustedGasPrice = (gasPrice * BigInt(13)) / BigInt(10);
+
+                await watcher.writeContractAsync({
+                    ...this._contractStruct,
+                    functionName: 'buyWithBera',
+                    args: [
+                        poolAddress,
+                        ethers.parseEther(amountBera),
+                        referrer
+                    ],
+                    gasPrice: adjustedGasPrice,
+                    value: ethers.parseEther(amountBera)
+                });
+            }
+        } catch (err) {
+            this.handleErrors(err);
+        }
+    }
 }

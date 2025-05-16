@@ -58,7 +58,6 @@ const ModalSetMaxSlippage = ({ type }: { type: string }) => {
             showProgress: true,
             duration: 1
         });
-       
     };
 
     return (

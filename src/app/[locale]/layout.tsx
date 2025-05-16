@@ -76,8 +76,6 @@ export default async function RootLayout({
             <body className={roboto.className}>
                 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-                
-
                 <noscript>
                     You need to enable JavaScript to run this app.
                 </noscript>

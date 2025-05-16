@@ -1,8 +1,9 @@
+/* eslint-disable */
 import { ChainId } from '@/src/common/constant/constance';
-import { EActionStatus, FetchError } from '../type';
-import { ITokenList } from '../token/type';
 import { IPool } from '@/src/services/response.type';
-import { IBuyPool } from '../pool/type';
+import { ISellPool } from '../pool/type';
+import { ITokenList } from '../token/type';
+import { EActionStatus, FetchError } from '../type';
 
 export interface IGetPortfolioParams {
     chainId: ChainId;
@@ -47,4 +48,4 @@ export interface InvestPool {
     balance: string;
 }
 
-export interface ISellToken extends IBuyPool {}
+export interface ISellToken extends ISellPool {}

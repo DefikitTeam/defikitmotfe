@@ -16,7 +16,7 @@ export const tokenSellSlice = createSlice({
     reducers: {
         updateSellTokenInformation: (
             state: ISellToken,
-            action: PayloadAction<IBuyPool>
+            action: PayloadAction<ISellToken>
         ) => {
             state.maxAmountETH = action.payload.maxAmountETH;
             state.numberBatch = action.payload.numberBatch;

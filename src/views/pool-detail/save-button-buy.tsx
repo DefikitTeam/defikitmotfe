@@ -5,15 +5,9 @@ import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { useAuthLogin } from '@/src/stores/auth/hook';
-import {
-    useActivities,
-    useBuyPoolInformation,
-    usePoolDetail
-} from '@/src/stores/pool/hook';
+import { useBuyPoolInformation, usePoolDetail } from '@/src/stores/pool/hook';
 import { EActionStatus } from '@/src/stores/type';
-import { ExportOutlined } from '@ant-design/icons';
 import { Button, Spin, notification } from 'antd';
-import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -41,10 +35,6 @@ const SaveButtonBuy = ({
     const { authState } = useAuthLogin();
     const t = useTranslations();
 
-    const convertMaxAmountToETH = new BigNumber(data?.maxAmountETH)
-        .div(1e18)
-        .toString();
-
     const { chainConfig, getDexInfo } = useConfig();
     const [
         { poolStateDetail },
@@ -56,12 +46,12 @@ const SaveButtonBuy = ({
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
 
-    const { useBuyPoolMulti } = useMultiCaller();
+    const { useBuyWithBera } = useMultiCaller();
     const [hasNotified, setHasNotified] = useState<boolean>(false);
     // const currentHostName = useCurrentHostNameInformation();
 
     useEffect(() => {
-        if (useBuyPoolMulti.isLoadingInitBuyToken) {
+        if (useBuyWithBera.isLoadingInitBuyWithBera) {
             notification.info({
                 message: 'Transaction in Progress',
                 description:
@@ -70,10 +60,10 @@ const SaveButtonBuy = ({
                 showProgress: true
             });
         }
-    }, [useBuyPoolMulti.isLoadingInitBuyToken]);
+    }, [useBuyWithBera.isLoadingInitBuyWithBera]);
 
     useEffect(() => {
-        if (useBuyPoolMulti.isLoadingAgreedBuyToken) {
+        if (useBuyWithBera.isLoadingAgreedBuyWithBera) {
             setIsLoadingBuyToken(true);
             notification.info({
                 message: 'Token purchases are being processed',
@@ -82,10 +72,10 @@ const SaveButtonBuy = ({
                 showProgress: true
             });
         }
-    }, [useBuyPoolMulti.isLoadingAgreedBuyToken]);
+    }, [useBuyWithBera.isLoadingAgreedBuyWithBera]);
 
     useEffect(() => {
-        if (useBuyPoolMulti.isConfirmed && !hasNotified) {
+        if (useBuyWithBera.isConfirmed && !hasNotified) {
             setIsLoadingBuyToken(false);
             clearForm && clearForm();
             notification.success({
@@ -111,13 +101,13 @@ const SaveButtonBuy = ({
                 });
             }, 10000);
         }
-        if (!useBuyPoolMulti.isConfirmed) {
+        if (!useBuyWithBera.isConfirmed) {
             setHasNotified(false);
         }
-    }, [useBuyPoolMulti.isConfirmed, status]);
+    }, [useBuyWithBera.isConfirmed, status]);
 
     useEffect(() => {
-        if (useBuyPoolMulti.isError) {
+        if (useBuyWithBera.isError) {
             setIsLoadingBuyToken(false);
             notification.error({
                 message: 'Transaction Failed',
@@ -125,16 +115,17 @@ const SaveButtonBuy = ({
                 showProgress: true
             });
         }
-    }, [useBuyPoolMulti.isError]);
+    }, [useBuyWithBera.isError]);
 
     const handleBuyPool = async () => {
         setIsLoadingBuyToken(true);
 
         try {
-            await useBuyPoolMulti.actionAsync({
+            await useBuyWithBera.actionAsync({
                 poolAddress: data?.poolAddress,
-                numberBatch: data?.numberBatch,
-                maxAmountETH: convertMaxAmountToETH,
+                // numberBatch: data?.numberBatch,
+                amountBera: data?.amountBera,
+                // maxAmountETH: convertMaxAmountToETH,
                 referrer: authState.userInfo?.referrer
                     ? authState.userInfo?.referrer
                     : ADDRESS_NULL

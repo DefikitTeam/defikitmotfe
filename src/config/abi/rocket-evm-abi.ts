@@ -567,6 +567,29 @@ export const ROCKET_EVM_ABI = [
         inputs: [
             {
                 internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            },
+            {
+                internalType: 'uint256',
+                name: 'amountBera',
+                type: 'uint256'
+            },
+            {
+                internalType: 'address',
+                name: 'referrer',
+                type: 'address'
+            }
+        ],
+        name: 'buyWithBera',
+        outputs: [],
+        stateMutability: 'payable',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
                 name: '',
                 type: 'address'
             },
@@ -694,6 +717,30 @@ export const ROCKET_EVM_ABI = [
             }
         ],
         name: 'estimateBuy',
+        outputs: [
+            {
+                internalType: 'uint256',
+                name: '',
+                type: 'uint256'
+            }
+        ],
+        stateMutability: 'view',
+        type: 'function'
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'poolAddress',
+                type: 'address'
+            },
+            {
+                internalType: 'uint256',
+                name: 'amountBera',
+                type: 'uint256'
+            }
+        ],
+        name: 'estimateBuyWithBera',
         outputs: [
             {
                 internalType: 'uint256',

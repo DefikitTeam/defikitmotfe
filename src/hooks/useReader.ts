@@ -12,6 +12,7 @@ export interface UseReaderParam {
     amountOut?: number;
     reserveIn?: number | bigint;
     reserveOut?: number | bigint;
+    amountBera?: number | bigint | string;
 }
 export interface UseReaderReturn {
     dataReader: any;
@@ -27,7 +28,8 @@ export function useReader({
     value,
     amountOut,
     reserveIn,
-    reserveOut
+    reserveOut,
+    amountBera
 }: UseReaderParam): any {
     const readInfo: { contract: ContractInfo; func: ContractFunction[] } = {
         contract: contractAddAndAbi,
@@ -67,6 +69,11 @@ export function useReader({
             {
                 functionName: 'getUserLottery',
                 args: [poolAddress, userAddress]
+            },
+
+            {
+                functionName: 'estimateBuyWithBera',
+                args: [poolAddress, amountBera]
             }
         ]
     };
