@@ -8,6 +8,7 @@ interface RankBadgeProps {
     trustScore?: string | number;
     type: 'wallet' | 'pool';
     address: string;
+    onClick?: () => void;
 }
 
 const RankBadge = ({
@@ -15,7 +16,8 @@ const RankBadge = ({
     total,
     trustScore,
     type,
-    address
+    address,
+    onClick
 }: RankBadgeProps) => {
     const { isMobile } = useWindowSize();
     const trustScoreNumber =
@@ -43,6 +45,7 @@ const RankBadge = ({
                     sm:w-auto
                     sm:text-sm
                 "
+                onClick={onClick}
             >
                 <span className="text-lg">
                     {type === 'wallet' ? '🏆' : '🎯'}

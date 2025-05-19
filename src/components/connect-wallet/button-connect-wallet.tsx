@@ -285,14 +285,14 @@ const ButtonConnectWallet = () => {
             {walletRank && address && (
                 <div
                     className="mt-1 w-full sm:mt-0 sm:w-auto"
-                    onClick={handleClickRankBagdeWallet}
-                >
+                    >
                     <RankBadge
                         rank={walletRank.rank}
                         total={walletRank.total}
                         trustScore={walletRank.trustScore}
                         type="wallet"
                         address={address}
+                        onClick={handleClickRankBagdeWallet}
                     />
                 </div>
             )}

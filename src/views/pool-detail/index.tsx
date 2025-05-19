@@ -231,8 +231,8 @@ const PoolDetail = () => {
             metaDataInfo && metaDataInfo?.image
                 ? metaDataInfo?.image
                 : metaDataInfo?.tokenImageUrl
-                  ? metaDataInfo?.tokenImageUrl
-                  : randomDefaultPoolImage();
+                    ? metaDataInfo?.tokenImageUrl
+                    : randomDefaultPoolImage();
 
         let finalImageUrl: string;
         if (typeof image === 'object') {
@@ -294,7 +294,6 @@ const PoolDetail = () => {
                             <div
                                 className="flex 
                              flex-col gap-6 overflow-y-auto overflow-x-hidden px-2 "
-                                onClick={handleClickRankBagdePool}
                             >
                                 {poolRank && (
                                     <RankBadge
@@ -303,6 +302,7 @@ const PoolDetail = () => {
                                         trustScore={poolRank.trustScore}
                                         type="pool"
                                         address={poolAddress}
+                                        onClick={handleClickRankBagdePool}
                                     />
                                 )}
                                 <SocialDescInformation />
@@ -330,6 +330,9 @@ const PoolDetail = () => {
                                     </>
                                 ) : null}
                             </div>
+
+
+
                         </Col>
                         <Col
                             span={8}
@@ -343,8 +346,8 @@ const PoolDetail = () => {
                                 <PoolPurchaseSummary />
                                 <HolderDistribution />
                                 {isConnected &&
-                                address &&
-                                address.toLowerCase() ===
+                                    address &&
+                                    address.toLowerCase() ===
                                     poolStateDetail.pool?.owner?.toLowerCase() ? (
                                     <TaskListOwnerToken />
                                 ) : null}
