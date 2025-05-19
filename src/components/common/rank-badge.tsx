@@ -25,10 +25,6 @@ const RankBadge = ({
             ? new BigNumber(trustScore as string).div(1e18).toFixed(4)
             : 'N/A';
 
-
-
-    
-
     return (
         <>
             <div

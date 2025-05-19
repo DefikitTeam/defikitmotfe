@@ -68,8 +68,6 @@ const TrustScoreHistoryModal = ({
         }
     }, [isOpen, type, address, chainConfig?.chainId]);
 
-
-
     const handleClose = () => {
         console.log('handleClose', type);
         if (type === 'wallet') {
@@ -91,62 +89,73 @@ const TrustScoreHistoryModal = ({
     const columns: ColumnsType<
         IWalletTrustScoreHistory | IPoolTrustScoreHistory
     > = [
+        {
+            title: (
+                <span className="font-bold text-blue-600">
+                    {t('TRUST_SCORE')}
+                </span>
+            ),
+            dataIndex: 'trustScore',
+            key: 'trustScore',
+            width: '5%',
+            className: '!font-forza',
+            align: 'center',
+            render: (_, record) => (
+                <div>
+                    {new BigNumber(record.trustScore).div(1e18).toFixed(2)}
+                </div>
+            )
+        },
+        {
+            title: (
+                <span className="font-bold text-purple-600">{t('REASON')}</span>
+            ),
+            dataIndex: 'reason',
+            key: 'reason',
+            width: '5%',
+            className: '!font-forza',
+            align: 'center'
+        },
 
-            {
-                title: <span className="font-bold text-blue-600">{t('TRUST_SCORE')}</span>,
-                dataIndex: 'trustScore',
-                key: 'trustScore',
-                width: '5%',
-                className: '!font-forza',
-                align: 'center',
-                render: (_, record) => (
-                    <div>
-                        {new BigNumber(record.trustScore).div(1e18).toFixed(2)}
-                    </div>
-                )
-            },
-            {
-                title: <span className="font-bold text-purple-600">{t('REASON')}</span>,
-                dataIndex: 'reason',
-                key: 'reason',
-                width: '5%',
-                className: '!font-forza',
-                align: 'center'
-            },
-
-            {
-                title: <span className="font-bold text-green-600">{t('DATE')}</span>,
-                dataIndex: 'timestamp',
-                key: 'timestamp',
-                width: '5%',
-                className: '!font-forza',
-                align: 'center',
-                render: (_, record) => {
-                    return (
-                        <Moment fromNow>
-                            {new Date(Number(record.timestamp) * 1000)}
-                        </Moment>
-                    );
-                }
-            },
-            {
-                title: <span className="font-bold text-pink-600">{t('TXN_HASH')}</span>,
-                dataIndex: 'transactionHash',
-                key: 'transactionHash',
-                render: (_, record) => (
-                    <div className="flex justify-center items-center">
-                        <ExportOutlined
-                            className="text-blue-500 hover:text-blue-700 transition-transform duration-200 hover:scale-125 cursor-pointer"
-                            style={{ fontSize: '15px' }}
-                            onClick={() => handleOpenResentTx(record.transactionHash, 'tx')}
-                        />
-                    </div>
-                ),
-                width: '5%',
-                className: '!font-forza',
-                align: 'center'
-            },
-        ];
+        {
+            title: (
+                <span className="text-green-600 font-bold">{t('DATE')}</span>
+            ),
+            dataIndex: 'timestamp',
+            key: 'timestamp',
+            width: '5%',
+            className: '!font-forza',
+            align: 'center',
+            render: (_, record) => {
+                return (
+                    <Moment fromNow>
+                        {new Date(Number(record.timestamp) * 1000)}
+                    </Moment>
+                );
+            }
+        },
+        {
+            title: (
+                <span className="font-bold text-pink-600">{t('TXN_HASH')}</span>
+            ),
+            dataIndex: 'transactionHash',
+            key: 'transactionHash',
+            render: (_, record) => (
+                <div className="flex items-center justify-center">
+                    <ExportOutlined
+                        className="cursor-pointer text-blue-500 transition-transform duration-200 hover:scale-125 hover:text-blue-700"
+                        style={{ fontSize: '15px' }}
+                        onClick={() =>
+                            handleOpenResentTx(record.transactionHash, 'tx')
+                        }
+                    />
+                </div>
+            ),
+            width: '5%',
+            className: '!font-forza',
+            align: 'center'
+        }
+    ];
 
     return (
         <Modal
@@ -161,18 +170,17 @@ const TrustScoreHistoryModal = ({
             maskClosable={true}
             className="custom-modal"
         >
-            <div className="w-full bg-white/90  rounded-2xl shadow-2xl p-6 animate-fade-in border border-gray-200 dark:border-gray-700 backdrop-blur-md">
+            <div className="animate-fade-in w-full  rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-2xl backdrop-blur-md dark:border-gray-700">
                 <Table
                     columns={columns}
                     dataSource={historyData}
                     rowKey={(record) => record.transactionHash}
                     pagination={{
-                        pageSize: 3,
+                        pageSize: 3
                     }}
-                    
                     bordered
                     scroll={{ x: 'max-content' }}
-                    className="!rounded-xl !overflow-hidden !shadow-lg !bg-white "
+                    className="!overflow-hidden !rounded-xl !bg-white !shadow-lg "
                 />
             </div>
         </Modal>

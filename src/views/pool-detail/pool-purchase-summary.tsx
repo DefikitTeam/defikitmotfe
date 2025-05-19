@@ -240,7 +240,6 @@ const PoolPurchaseSummary = () => {
         }
     };
 
-
     // const handleOnChange = (
     //     event:
     //         | React.ChangeEvent<HTMLInputElement>
@@ -311,14 +310,13 @@ const PoolPurchaseSummary = () => {
     // };
 
     const handleOnChange = (
-        event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+        event:
+            | React.ChangeEvent<HTMLInputElement>
+            | React.ChangeEvent<HTMLTextAreaElement>
     ) => {
         const { value } = event.target;
         validateAndSetAmount(value);
     };
-
-
-
 
     const clearForm = () => {
         setDisableBtnBuy(true);
@@ -1040,54 +1038,53 @@ const PoolPurchaseSummary = () => {
                                             width: '100%'
                                         }}
                                     />
-                                <div className="mt-2 flex gap-2">
-                                    {[25, 50, 75].map((percent) => (
-                                        <button
-                                            key={percent}
-                                            type="button"
-                                            className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue ===
+                                    <div className="mt-2 flex gap-2">
+                                        {[25, 50, 75].map((percent) => (
+                                            <button
+                                                key={percent}
+                                                type="button"
+                                                className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                                                    depositAmountValue ===
                                                     (
                                                         (userNativeBalance *
                                                             percent) /
                                                         100
                                                     ).toFixed(6)
-                                                    ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                                                    : ''
+                                                        ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                                                        : ''
                                                 }`}
-                                            onClick={() => {
-                                                const val = (
-                                                    (userNativeBalance *
-                                                        percent) /
-                                                    100
-                                                ).toFixed(6);
-                                                validateAndSetAmount(val);
-                                                setBeraAmountValue(val)
-
-                                            }}
-                                        >
-                                            {percent}%
-                                        </button>
-                                    ))}
-                                    <button
-                                        type="button"
-                                        className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue === Math.max(0, userNativeBalance - (reserveMin || 0)).toFixed(6)}
+                                                onClick={() => {
+                                                    const val = (
+                                                        (userNativeBalance *
+                                                            percent) /
+                                                        100
+                                                    ).toFixed(6);
+                                                    validateAndSetAmount(val);
+                                                    setBeraAmountValue(val);
+                                                }}
+                                            >
+                                                {percent}%
+                                            </button>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue === Math.max(0, userNativeBalance - (reserveMin || 0)).toFixed(6)}
                                                 ? "bg-gradient-to-r border-0" : "" }
                                                 from-pink-500 to-orange-400
                                                 text-white`}
-                                        onClick={() => {
-                                            const val = Math.max(
-                                                0,
-                                                userNativeBalance -
-                                                (reserveMin || 0)
-                                            ).toFixed(6);
-                                            validateAndSetAmount(val);
-                                            setBeraAmountValue(val)
-                                        }}
-                                    >
-                                        Max
-                                    </button>
-                                </div>
-
+                                            onClick={() => {
+                                                const val = Math.max(
+                                                    0,
+                                                    userNativeBalance -
+                                                        (reserveMin || 0)
+                                                ).toFixed(6);
+                                                validateAndSetAmount(val);
+                                                setBeraAmountValue(val);
+                                            }}
+                                        >
+                                            Max
+                                        </button>
+                                    </div>
 
                                     {validateInput.amountBera.error ===
                                         true && (
@@ -1104,7 +1101,6 @@ const PoolPurchaseSummary = () => {
                                             {estimatedBonds} {t('BONDS')}
                                         </div>
                                     )}
-
                                 </div>
                             </Col>
                         )}
@@ -1444,7 +1440,6 @@ const PoolPurchaseSummary = () => {
                                             Max
                                         </button>
                                     </div>
-
                                 </div>
                             </Col>
                         )}

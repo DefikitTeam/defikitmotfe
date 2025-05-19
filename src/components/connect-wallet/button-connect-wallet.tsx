@@ -283,9 +283,7 @@ const ButtonConnectWallet = () => {
             </div>
 
             {walletRank && address && (
-                <div
-                    className="mt-1 w-full sm:mt-0 sm:w-auto"
-                    >
+                <div className="mt-1 w-full sm:mt-0 sm:w-auto">
                     <RankBadge
                         rank={walletRank.rank}
                         total={walletRank.total}
