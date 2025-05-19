@@ -367,7 +367,6 @@ const PoolDetail = () => {
                 </div>
             </div>
 
-            {/* <ModalInviteBlocker /> */}
         </BoxArea>
     );
 };

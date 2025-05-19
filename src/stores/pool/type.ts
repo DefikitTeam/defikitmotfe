@@ -220,6 +220,11 @@ export interface IDetailPoolBackgroundResponseData {
     socialScoreInfo: ISocialScoreInfo;
 }
 
+
+
+
+
+
 export interface IPoolState extends FetchError {
     status: EActionStatus;
     statusGetPoolListBackground: EActionStatus;
@@ -587,3 +592,42 @@ export interface IGetTop100TrustPointWalletAndTokenMonthlyResponse {
         poolTrustScoreMonthlies: IPoolTrustPointScoreMonthlyItem[];
     };
 }
+ 
+
+export interface IGetTrustScoreHistoryPoolParams {
+    poolAddress: string;
+    chainId: number;
+}
+
+
+
+export interface ITrustScoreHistoryPoolState extends FetchError {
+    status: EActionStatus;
+    trustScoreHistoryPool: IPoolTrustScoreHistory[];
+    openModalHistoryPool: boolean
+
+}
+
+export interface IPoolTrustScoreHistory {
+    pool: string;
+    timestamp: number;
+    trustScore: number;
+    reason: string;
+    transactionHash: string;    
+}
+
+// export interface ITrustScoreHistoryWallet {
+//     user: string;
+//     timestamp: number;
+//     trustScore: number;
+//     reason: string;
+//     transactionHash: string;
+// }
+
+
+
+
+
+// export interface IGetTrustScoreHistoryPoolResponse {
+//     poolTrustScoreHistories: IPoolTrustScoreHistory[];
+// }

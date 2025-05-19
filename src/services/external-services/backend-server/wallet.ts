@@ -1,5 +1,7 @@
 import { ConfigService } from '@/src/config/services/config-service';
+import { IGetTrustScoreHistoryWalletParams } from '@/src/stores/wallet/type';
 import axios from 'axios';
+import { querySubGraph } from '../fetcher';
 
 const config = ConfigService.getInstance();
 
@@ -19,6 +21,36 @@ const serviceWallet = {
             return res.data;
         }
         return '';
+    },
+    getTrustScoreHistoryWallet: async ({ userAddress, chainId }: IGetTrustScoreHistoryWalletParams) => {
+        const query = {
+            query: `
+                {
+            userTrustScoreHistories (
+    where: {
+      user: "${userAddress.toLowerCase()}"
+    }
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    user {
+      id
+    }
+    timestamp
+    trustScore
+    reason
+    transactionHash
+  }
+
+                }
+
+            `
+        }
+
+
+
+
+        return querySubGraph(query, chainId);
     }
 };
 
