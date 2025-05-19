@@ -13,6 +13,7 @@ import {
     IGetTop100TrustPointWalletAndTokenQuery,
     IGetTop100TrustPointWalletAndTokenWeeklyQuery,
     IGetTransactionByPoolAndSenderParams,
+    IGetTrustScoreHistoryPoolParams,
     IGetUserPoolParams,
     IGetUserTopRewardByPoolParams,
     IReferralPool
@@ -446,6 +447,37 @@ const servicePool = {
             return res.data;
         }
         return '';
+    },
+
+    getTrustScoreHistoryPool: async ({
+        poolAddress,
+        chainId
+    }: IGetTrustScoreHistoryPoolParams) => {
+        const query = {
+            query: `
+                {
+            
+            poolTrustScoreHistories (
+    where: {
+      pool: "${poolAddress.toLowerCase()}"
+    }
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
+    pool {
+      id
+    }
+    timestamp
+    trustScore
+    reason
+    transactionHash
+  }
+                }
+
+            `
+        };
+
+        return querySubGraph(query, chainId);
     }
 };
 

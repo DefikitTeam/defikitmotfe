@@ -43,7 +43,6 @@ const TransactionList = () => {
             );
         }
     };
-    const { isConnected, address } = useAccount();
 
     const handleClickAddress = (address: string) => {
         router.push(

@@ -343,11 +343,11 @@ export interface IBuyPool {
     amountBera: string;
 }
 
-export interface ISellPool  {
-    poolAddress: string,
-    numberBatch: number,
-    payableAmount: number,
-    maxAmountETH: number
+export interface ISellPool {
+    poolAddress: string;
+    numberBatch: number;
+    payableAmount: number;
+    maxAmountETH: number;
 }
 
 export interface IDepositLottery {
@@ -587,3 +587,34 @@ export interface IGetTop100TrustPointWalletAndTokenMonthlyResponse {
         poolTrustScoreMonthlies: IPoolTrustPointScoreMonthlyItem[];
     };
 }
+
+export interface IGetTrustScoreHistoryPoolParams {
+    poolAddress: string;
+    chainId: number;
+}
+
+export interface ITrustScoreHistoryPoolState extends FetchError {
+    status: EActionStatus;
+    trustScoreHistoryPool: IPoolTrustScoreHistory[];
+    openModalHistoryPool: boolean;
+}
+
+export interface IPoolTrustScoreHistory {
+    pool: string;
+    timestamp: number;
+    trustScore: number;
+    reason: string;
+    transactionHash: string;
+}
+
+// export interface ITrustScoreHistoryWallet {
+//     user: string;
+//     timestamp: number;
+//     trustScore: number;
+//     reason: string;
+//     transactionHash: string;
+// }
+
+// export interface IGetTrustScoreHistoryPoolResponse {
+//     poolTrustScoreHistories: IPoolTrustScoreHistory[];
+// }
