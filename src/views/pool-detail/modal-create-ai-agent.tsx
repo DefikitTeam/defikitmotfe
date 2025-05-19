@@ -271,7 +271,6 @@ const ModalCreateAiAgent = () => {
             }
         };
 
-
         try {
             setTechnologyOptions(
                 formattedData.topics.map((item, index) => ({

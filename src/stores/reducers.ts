@@ -17,7 +17,6 @@ import rewardReducer from '@/src/stores/pool/rewardSlice';
 import chainDataReducer from '@/src/stores/Chain/chainDataSlice';
 import notificationReducer from '@/src/stores/notification/slice';
 import topRefByVolReducer from '@/src/stores/top-ref-by-vol/slice';
-// import checkInviteCodeReducer from '@/src/stores/invite-code/check-invite-slice';
 import inviteListReferReducer from '@/src/stores/invite-code/list-refer-slice';
 import getInviteCodeReducer from '@/src/stores/invite-code/get-invite-code';
 import depositLotteryReducer from '@/src/stores/pool/depositLotterySlice';
@@ -31,7 +30,6 @@ import trustPointMonthlyWalletTokenReducer from '@/src/stores/trust-point/trust-
 import createAiAgentReducer from '@/src/stores/pool/createAiAgent';
 import trustScoreHistoryPoolReducer from '@/src/stores/pool/trustScoreHistoryPoolSlice';
 import trustScoreHistoryWalletReducer from '@/src/stores/wallet/walletSlice';
-
 
 const rootReducer = combineReducers({
     auth: authReducer,

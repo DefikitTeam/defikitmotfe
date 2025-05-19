@@ -4,18 +4,21 @@ import { chains } from '@/src/common/constant/constance';
 import { randomDefaultPoolImage } from '@/src/common/utils/utils';
 import BoxArea from '@/src/components/common/box-area';
 import CommentTelegram from '@/src/components/common/comment-telegram';
+import RankBadge from '@/src/components/common/rank-badge';
 import TradingViewChart from '@/src/components/common/tradingview';
 import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { REFCODE_INFO_STORAGE_KEY } from '@/src/services/external-services/backend-server/auth';
 import servicePool, {
     REFERRAL_CODE_INFO_STORAGE_KEY
 } from '@/src/services/external-services/backend-server/pool';
 import { RootState } from '@/src/stores';
 import { useAuthLogin } from '@/src/stores/auth/hook';
-import { usePoolDetail } from '@/src/stores/pool/hook';
+import {
+    usePoolDetail,
+    useTrustScoreHistoryPool
+} from '@/src/stores/pool/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { Col, Row } from 'antd';
 import { useTranslations } from 'next-intl';
@@ -29,16 +32,14 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import Affiliate from './affiliate';
+import AiChatWidget from './ai-chat-widget';
 import HolderDistribution from './holder-distribution';
 import PoolDetailInformation from './pool-detail-information';
 import PoolPurchaseSummary from './pool-purchase-summary';
 import SocialDescInformation from './social-desc-information';
+import TaskListOwnerToken from './task-list-owner-token';
 import TokenInformation from './token-information';
 import TransactionList from './transaction-list';
-import TaskListOwnerToken from './task-list-owner-token';
-import RankBadge from '@/src/components/common/rank-badge';
-import axios from 'axios';
-import AiChatWidget from './ai-chat-widget';
 
 const PoolDetail = () => {
     const t = useTranslations();
@@ -55,6 +56,13 @@ const PoolDetail = () => {
         ,
         resetPoolDetailAction
     ] = usePoolDetail();
+
+    const {
+        trustScoreHistoryPoolState,
+        getTrustScoreHistoryPoolAction,
+        setOpenModalHistoryPoolAction,
+        resetTrustScoreHistoryPoolAction
+    } = useTrustScoreHistoryPool();
 
     const {
         pool,
@@ -248,6 +256,12 @@ const PoolDetail = () => {
         // }
     }, [status, showAlert, pool, metaDataInfo, t]);
 
+    const handleClickRankBagdePool = () => {
+        if (!trustScoreHistoryPoolState.openModalHistoryPool) {
+            setOpenModalHistoryPoolAction(true);
+        }
+    };
+
     useEffect(() => {
         const forceReload = () => {
             const script = document.createElement('script');
@@ -280,6 +294,7 @@ const PoolDetail = () => {
                             <div
                                 className="flex 
                              flex-col gap-6 overflow-y-auto overflow-x-hidden px-2 "
+                                onClick={handleClickRankBagdePool}
                             >
                                 {poolRank && (
                                     <RankBadge
@@ -287,6 +302,7 @@ const PoolDetail = () => {
                                         total={poolRank.total}
                                         trustScore={poolRank.trustScore}
                                         type="pool"
+                                        address={poolAddress}
                                     />
                                 )}
                                 <SocialDescInformation />
@@ -366,7 +382,6 @@ const PoolDetail = () => {
                     </Row>
                 </div>
             </div>
-
         </BoxArea>
     );
 };

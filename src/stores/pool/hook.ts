@@ -96,7 +96,11 @@ import {
     setOpenModalCreateAiAgent,
     updateCreateAiAgentInformation
 } from './createAiAgent';
-import { getTrustScoreHistoryPool, resetTrustScoreHistoryPool, setOpenModalHistoryPool } from './trustScoreHistoryPoolSlice';
+import {
+    getTrustScoreHistoryPool,
+    resetTrustScoreHistoryPool,
+    setOpenModalHistoryPool
+} from './trustScoreHistoryPoolSlice';
 export function usePoolDetail(): [
     {
         poolStateDetail: IDetailPoolState;
@@ -605,17 +609,20 @@ export const useReward = (): RewardType => {
     };
 };
 
-
 type TrustScoreHistoryPoolType = {
     trustScoreHistoryPoolState: ITrustScoreHistoryPoolState;
-    getTrustScoreHistoryPoolAction: (data: IGetTrustScoreHistoryPoolParams) => void;
+    getTrustScoreHistoryPoolAction: (
+        data: IGetTrustScoreHistoryPoolParams
+    ) => void;
     setOpenModalHistoryPoolAction: (isOpenModalHistoryPool: boolean) => void;
     resetTrustScoreHistoryPoolAction: () => void;
 };
 
 export const useTrustScoreHistoryPool = (): TrustScoreHistoryPoolType => {
     const dispatch = useAppDispatch();
-    const trustScoreHistoryPoolState = useAppSelector((state: RootState) => state.trustScoreHistoryPool);
+    const trustScoreHistoryPoolState = useAppSelector(
+        (state: RootState) => state.trustScoreHistoryPool
+    );
 
     const getTrustScoreHistoryPoolAction = useCallback(
         (data: IGetTrustScoreHistoryPoolParams) => {

@@ -1,11 +1,12 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IGetTrustScoreHistoryPoolParams, IPoolTrustScoreHistory, ITrustScoreHistoryPoolState } from "./type";
-import servicePool from "@/src/services/external-services/backend-server/pool";
-import { AxiosError } from "axios";
-import { EActionStatus, FetchError } from "../type";
-
-
-
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+    IGetTrustScoreHistoryPoolParams,
+    IPoolTrustScoreHistory,
+    ITrustScoreHistoryPoolState
+} from './type';
+import servicePool from '@/src/services/external-services/backend-server/pool';
+import { AxiosError } from 'axios';
+import { EActionStatus, FetchError } from '../type';
 
 const initialState: ITrustScoreHistoryPoolState = {
     status: EActionStatus.Idle,
@@ -13,8 +14,7 @@ const initialState: ITrustScoreHistoryPoolState = {
     errorCode: '',
     errorMessage: '',
     openModalHistoryPool: false
-}
-
+};
 
 export const getTrustScoreHistoryPool = createAsyncThunk<
     IPoolTrustScoreHistory[],
@@ -26,10 +26,7 @@ export const getTrustScoreHistoryPool = createAsyncThunk<
     try {
         const data = await servicePool.getTrustScoreHistoryPool(params);
         const listHistoryPool = await data.json();
-        console.log('listHistoryPool', listHistoryPool);
         return listHistoryPool.data.poolTrustScoreHistories;
-
-
     } catch (error) {
         const err = error as AxiosError;
         const responseData: any = err.response?.data;
@@ -38,11 +35,7 @@ export const getTrustScoreHistoryPool = createAsyncThunk<
             errorCode: responseData?.code
         });
     }
-})
-
-
-
-
+});
 
 export const trustScoreHistoryPoolSlice = createSlice({
     name: 'trustScoreHistoryPool',
@@ -51,33 +44,29 @@ export const trustScoreHistoryPoolSlice = createSlice({
         resetTrustScoreHistoryPool: (state) => {
             return initialState;
         },
-        setOpenModalHistoryPool: (state, action: PayloadAction<{ isOpenModalHistoryPool: boolean }>) => {
+        setOpenModalHistoryPool: (
+            state,
+            action: PayloadAction<{ isOpenModalHistoryPool: boolean }>
+        ) => {
             state.openModalHistoryPool = action.payload.isOpenModalHistoryPool;
         }
     },
     extraReducers: (builder) => {
         builder.addCase(getTrustScoreHistoryPool.pending, (state) => {
             state.status = EActionStatus.Pending;
-        })
+        });
         builder.addCase(getTrustScoreHistoryPool.fulfilled, (state, action) => {
-
-
-
-            console.log('action.payload line 58-----', action.payload);
             state.status = EActionStatus.Succeeded;
             state.trustScoreHistoryPool = action.payload;
-        })
+        });
         builder.addCase(getTrustScoreHistoryPool.rejected, (state, action) => {
             state.status = EActionStatus.Failed;
             state.errorCode = action.payload?.errorCode || '';
             state.errorMessage = action.payload?.errorMessage || '';
-        })
+        });
     }
-})
+});
 
-
-export const { resetTrustScoreHistoryPool, setOpenModalHistoryPool} = trustScoreHistoryPoolSlice.actions;
+export const { resetTrustScoreHistoryPool, setOpenModalHistoryPool } =
+    trustScoreHistoryPoolSlice.actions;
 export default trustScoreHistoryPoolSlice.reducer;
-
-
-

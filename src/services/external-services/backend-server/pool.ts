@@ -449,7 +449,10 @@ const servicePool = {
         return '';
     },
 
-    getTrustScoreHistoryPool: async ({ poolAddress, chainId }: IGetTrustScoreHistoryPoolParams) => {
+    getTrustScoreHistoryPool: async ({
+        poolAddress,
+        chainId
+    }: IGetTrustScoreHistoryPoolParams) => {
         const query = {
             query: `
                 {
@@ -472,15 +475,10 @@ const servicePool = {
                 }
 
             `
-        }
-
-
-
+        };
 
         return querySubGraph(query, chainId);
     }
-
-
 };
 
 export default servicePool;

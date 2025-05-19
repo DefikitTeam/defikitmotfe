@@ -1,16 +1,14 @@
-import { EActionStatus, FetchError } from "../type";
+import { EActionStatus, FetchError } from '../type';
 
 export interface IGetTrustScoreHistoryWalletParams {
     userAddress: string;
     chainId: number;
 }
 
-
 export interface ITrustScoreHistoryWalletState extends FetchError {
     status: EActionStatus;
     trustScoreHistoryWallet: IWalletTrustScoreHistory[];
-    openModalHistoryWallet: boolean
-
+    openModalHistoryWallet: boolean;
 }
 
 export interface IWalletTrustScoreHistory {

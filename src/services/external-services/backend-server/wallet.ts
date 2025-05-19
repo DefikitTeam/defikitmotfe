@@ -22,7 +22,10 @@ const serviceWallet = {
         }
         return '';
     },
-    getTrustScoreHistoryWallet: async ({ userAddress, chainId }: IGetTrustScoreHistoryWalletParams) => {
+    getTrustScoreHistoryWallet: async ({
+        userAddress,
+        chainId
+    }: IGetTrustScoreHistoryWalletParams) => {
         const query = {
             query: `
                 {
@@ -45,10 +48,7 @@ const serviceWallet = {
                 }
 
             `
-        }
-
-
-
+        };
 
         return querySubGraph(query, chainId);
     }
