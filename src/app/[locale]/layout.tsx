@@ -6,7 +6,6 @@ import './globals.css';
 
 import WorkspaceLayout from '@/src/components/workspace-layout';
 import GlobalProvider from '@/src/global-provider';
-import ErudaInit from '@/src/components/eruda-int';
 
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 
@@ -23,7 +22,7 @@ export async function generateMetadata() {
             type: 'website',
             images: [
                 {
-                    url: 'https://testnet.rocketlaunch.fun/rocket_launch.jpg',
+                    url: 'https://defikit-mot.s3.ap-southeast-1.amazonaws.com/rocket_launch.png',
                     width: 800,
                     height: 600,
                     alt: 'Rocket Launch Image'
@@ -35,7 +34,7 @@ export async function generateMetadata() {
             title: `Rocket Launch - Home`,
             description:
                 'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
-            images: 'https://testnet.rocketlaunch.fun/rocket_launch.jpg'
+            images: 'https://defikit-mot.s3.ap-southeast-1.amazonaws.com/rocket_launch.png'
         }
     };
 }
