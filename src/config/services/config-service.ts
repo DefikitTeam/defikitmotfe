@@ -8,7 +8,8 @@ import {
     berachain,
     berachainBepolia,
     Chain,
-    iota
+    iota,
+    somniaTestnet
 } from 'viem/chains';
 
 const CHAIN_MAP = {
@@ -16,7 +17,8 @@ const CHAIN_MAP = {
     [base.id]: base,
     [baseSepolia.id]: baseSepolia,
     [berachainBepolia.id]: berachainBepolia,
-    [iota.id]: iota
+    [iota.id]: iota,
+    [somniaTestnet.id]: somniaTestnet
 };
 
 export class ConfigService {
