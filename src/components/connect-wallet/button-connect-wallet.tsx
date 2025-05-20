@@ -268,11 +268,6 @@ const ButtonConnectWallet = () => {
         </div>
     );
 
-    const handleClickRankBagdeWallet = () => {
-        if (!trustScoreHistoryWalletState.openModalHistoryWallet) {
-            setOpenModalHistoryWalletAction(true);
-        }
-    };
 
     return (
         <div className="flex h-12 w-full items-center justify-between gap-2">
@@ -289,8 +284,6 @@ const ButtonConnectWallet = () => {
                         total={walletRank.total}
                         trustScore={walletRank.trustScore}
                         type="wallet"
-                        address={address}
-                        onClick={handleClickRankBagdeWallet}
                     />
                 </div>
             )}

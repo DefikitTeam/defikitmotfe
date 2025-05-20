@@ -10,6 +10,20 @@ export interface IGetPortfolioParams {
     wallet: string;
 }
 
+
+export interface IRecentTx {
+    id: string;
+    hash: string;
+    type: string;
+    sender: string;
+    blockNumber: string;
+    timestamp: string;
+    batch: string;
+    eth: string;
+    trustScoreUser: string
+}
+
+
 export interface IPortfolioState extends FetchError {
     status: EActionStatus;
     createdTokens: ITokenList[];
@@ -23,6 +37,9 @@ export interface IPortfolioState extends FetchError {
     yourFriendList: IYourFriendList[];
     errorCodeYourListFriend: string;
     errorMessageYourListFriend: string;
+    recentTx: IRecentTx[];
+    pageRecentTx: number;
+    limitRecentTx: number;
 }
 export interface IYourFriendList {
     wallet: string;
@@ -48,4 +65,17 @@ export interface InvestPool {
     balance: string;
 }
 
-export interface ISellToken extends ISellPool {}
+export interface IGetRecentTxParams {
+    page: number;
+    limit: number;
+    userWalletAddress: string;
+    chainId: ChainId;
+}
+
+export interface IGetRecentTxResponse {
+    transactionUsers: IRecentTx[];
+    page: number;
+    limit: number;
+}
+
+export interface ISellToken extends ISellPool { }

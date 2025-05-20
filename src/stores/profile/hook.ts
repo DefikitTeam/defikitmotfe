@@ -6,12 +6,15 @@ import {
 } from './sellTokenSlice';
 import {
     getProfile,
+    getRecentTx,
     getYourFriendList,
     setIdChooseTokenSell,
-    setOpenModalYourFriendList
+    setOpenModalYourFriendList,
+    setPageRecentTx
 } from './slice';
 import {
     IGetPortfolioParams,
+    IGetRecentTxParams,
     IGetYourFriendListParams,
     IPortfolioState,
     ISellToken
@@ -27,7 +30,9 @@ export function usePortfolio(): [
 
     setOpenModalYourFriendListAction: (
         isOpenModalYourFriendList: boolean
-    ) => void
+    ) => void,
+    (data: IGetRecentTxParams) => void,
+    (data: number) => void
 ] {
     const dispatch = useAppDispatch();
     const portfolio = useAppSelector((state: RootState) => state.portfolio);
@@ -57,6 +62,18 @@ export function usePortfolio(): [
         },
         [dispatch]
     );
+    const fetchRecentTxAction = useCallback(
+        (data: IGetRecentTxParams) => {
+            dispatch(getRecentTx(data));
+        },
+        [dispatch]
+    );
+    const setPageRecentTxAction = useCallback(
+        (page: number) => {
+            dispatch(setPageRecentTx({ page }));
+        },
+        [dispatch]
+    );
 
     return [
         {
@@ -65,7 +82,9 @@ export function usePortfolio(): [
         fetchPortfolio,
         setIdCurrentChoosedTokenSell,
         fetchYourListFriendAction,
-        setOpenModalYourFriendListAction
+        setOpenModalYourFriendListAction,
+        fetchRecentTxAction,
+        setPageRecentTxAction
     ];
 }
 

@@ -1,10 +1,13 @@
 /* eslint-disable */
 'use client';
+import { ChainId } from '@/src/common/constant/constance';
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
 import { usePoolDetail } from '@/src/stores/pool/hook';
 import { Transaction } from '@/src/stores/pool/type';
+import { usePortfolio } from '@/src/stores/profile/hook';
+import { IRecentTx } from '@/src/stores/profile/type';
 import { ExportOutlined } from '@ant-design/icons';
 import { notification, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -16,22 +19,21 @@ import Moment from 'react-moment';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 const { Title } = Typography;
-const TransactionList = () => {
+
+
+const RecentTx = ({ userWalletAddress }: { userWalletAddress: string }) => {
     const t = useTranslations();
     const params = useParams();
-    const poolAddress = params?.poolAddress as string;
-    const chainData = useSelector((state: RootState) => state.chainData);
     const [
-        { poolStateDetail },
+        { portfolio },
         ,
         ,
         ,
-        setPageTransactionAction,
         ,
-        fetchTransactions
-    ] = usePoolDetail();
+        fetchRecentTxAction,
+    ] = usePortfolio();
 
-    const { transactions } = poolStateDetail;
+    const { recentTx } = portfolio;
     const router = useRouter();
     const { chainConfig } = useConfig();
     const handleOpenResentTx = (hash: string, type: string) => {
@@ -50,7 +52,7 @@ const TransactionList = () => {
         );
     };
 
-    const columns: ColumnsType<Transaction> = [
+    const columns: ColumnsType<IRecentTx> = [
         {
             title: t('TYPE'),
             dataIndex: 'type',
@@ -60,32 +62,15 @@ const TransactionList = () => {
             render: (_, record) => <div>{record.type}</div>
         },
         {
-            title: t('PRICE'),
-            dataIndex: 'eth',
-            width: '5%',
-            className: '!font-forza',
-            align: 'center',
-            render: (_, record) => (
-                <div>
-                    {new BigNumber(record.eth).gt(0) ?
-                        `$${new BigNumber(
-                            new BigNumber(record.eth).div(1e18).toFixed(5)
-                        )
-                            .div(record.batch)
-                            .toFixed(7)}` : 'N/A'}
-                </div>
-            )
-        },
-        {
             title: t('TRUST_SCORE'),
-            dataIndex: 'trustScorePool',
+            dataIndex: 'trustScoreUser',
             width: '5%',
             className: '!font-forza',
             align: 'center',
             render: (_, record) => (
                 <div>
-                    {record.trustScorePool ?
-                        new BigNumber(record.trustScorePool).div(1e18).toFixed(2)
+                    {record.trustScoreUser ?
+                        new BigNumber(record.trustScoreUser).div(1e18).toFixed(2)
                         : '0'}
                 </div>
             )
@@ -104,22 +89,7 @@ const TransactionList = () => {
             className: '!font-forza',
             align: 'center',
             render: (_, record) => (
-                <div>{new BigNumber(record.eth).div(1e18).toFixed(7)}</div>
-            )
-        },
-        {
-            title: t('SENDER'),
-            dataIndex: 'sender',
-            width: '10%',
-            className: '!font-forza',
-            align: 'center',
-            render: (_, record) => (
-                <span
-                    className="cursor-pointer text-blue-400"
-                    onClick={() => handleClickAddress(record.sender || '')}
-                >
-                    {shortWalletAddress(record.sender || '')}
-                </span>
+                <div>{new BigNumber(record.eth).gt(0) ? new BigNumber(record.eth).div(1e18).toFixed(7) : 'N/A'}</div>
             )
         },
         {
@@ -155,19 +125,19 @@ const TransactionList = () => {
     ];
 
     useEffect(() => {
-        if (poolAddress && poolStateDetail.pageTransaction !== undefined) {
-            fetchTransactions({
-                page: poolStateDetail.pageTransaction,
-                limit: poolStateDetail.limitTransaction,
-                poolAddress: poolAddress,
-                chainId: chainConfig?.chainId as number
+        if (userWalletAddress) {
+            fetchRecentTxAction({
+                page: portfolio.pageRecentTx,
+                limit: portfolio.limitRecentTx,
+                userWalletAddress: userWalletAddress,
+                chainId: chainConfig?.chainId as ChainId
             });
         }
-    }, [poolAddress, chainConfig?.chainId, poolStateDetail.pageTransaction]);
+    }, [userWalletAddress]);
 
-    const handlePageTransactionChange = (pageTransactionChange: number) => {
-        setPageTransactionAction(pageTransactionChange);
-    };
+    // const handlePageTransactionChange = (pageTransactionChange: number) => {
+    //     setPageRecentTxAction(pageTransactionChange);
+    // };
 
     return (
         <div className="h-full w-full bg-white pt-2">
@@ -176,8 +146,9 @@ const TransactionList = () => {
             </div>
 
             <Table
+                key={userWalletAddress}
                 rowKey="id"
-                dataSource={transactions}
+                dataSource={recentTx}
                 columns={columns}
                 className="!font-forza"
                 // pagination={{ pageSize: 10 }}
@@ -188,10 +159,8 @@ const TransactionList = () => {
                 //     setPageTransactionAction(pagination.current || 1);
                 // }}
                 pagination={{
-                    pageSize: poolStateDetail.limitTransaction,
-                    defaultCurrent: poolStateDetail.pageTransaction,
-                    total: poolStateDetail.totalTransaction,
-                    onChange: handlePageTransactionChange,
+                    pageSize: portfolio.limitRecentTx,
+                    defaultCurrent: portfolio.pageRecentTx,
                     showSizeChanger: false
                 }}
             />
@@ -199,4 +168,4 @@ const TransactionList = () => {
     );
 };
 
-export default TransactionList;
+export default RecentTx;

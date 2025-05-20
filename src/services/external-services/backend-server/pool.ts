@@ -125,6 +125,7 @@ const servicePool = {
           batch
           eth
           isBuy
+          trustScorePool
         }
       }
       `

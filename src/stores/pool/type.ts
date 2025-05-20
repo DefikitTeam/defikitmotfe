@@ -59,6 +59,7 @@ export interface Transaction {
     batch: string;
     eth: string;
     isBuy: boolean;
+    trustScorePool: string
 }
 
 export interface UserPoolInfo {
@@ -117,7 +118,7 @@ export interface IGetDetailPoolParams extends IGetAllQuery {
     chainId: number;
 }
 export interface IGetDetailHolderDistributionParams
-    extends Omit<IGetDetailPoolParams, 'userAddress'> {}
+    extends Omit<IGetDetailPoolParams, 'userAddress'> { }
 
 export interface IGetDetailDiscussionParams {
     chainId: string;

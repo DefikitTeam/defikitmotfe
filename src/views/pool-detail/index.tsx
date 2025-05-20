@@ -231,8 +231,8 @@ const PoolDetail = () => {
             metaDataInfo && metaDataInfo?.image
                 ? metaDataInfo?.image
                 : metaDataInfo?.tokenImageUrl
-                  ? metaDataInfo?.tokenImageUrl
-                  : randomDefaultPoolImage();
+                    ? metaDataInfo?.tokenImageUrl
+                    : randomDefaultPoolImage();
 
         let finalImageUrl: string;
         if (typeof image === 'object') {
@@ -255,12 +255,6 @@ const PoolDetail = () => {
         //     setShowAlert(true);
         // }
     }, [status, showAlert, pool, metaDataInfo, t]);
-
-    const handleClickRankBagdePool = () => {
-        if (!trustScoreHistoryPoolState.openModalHistoryPool) {
-            setOpenModalHistoryPoolAction(true);
-        }
-    };
 
     useEffect(() => {
         const forceReload = () => {
@@ -301,8 +295,6 @@ const PoolDetail = () => {
                                         total={poolRank.total}
                                         trustScore={poolRank.trustScore}
                                         type="pool"
-                                        address={poolAddress}
-                                        onClick={handleClickRankBagdePool}
                                     />
                                 )}
                                 <SocialDescInformation />
@@ -343,8 +335,8 @@ const PoolDetail = () => {
                                 <PoolPurchaseSummary />
                                 <HolderDistribution />
                                 {isConnected &&
-                                address &&
-                                address.toLowerCase() ===
+                                    address &&
+                                    address.toLowerCase() ===
                                     poolStateDetail.pool?.owner?.toLowerCase() ? (
                                     <TaskListOwnerToken />
                                 ) : null}
