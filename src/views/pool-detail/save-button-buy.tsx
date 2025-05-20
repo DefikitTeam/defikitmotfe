@@ -5,7 +5,11 @@ import Loader from '@/src/components/loader';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { useAuthLogin } from '@/src/stores/auth/hook';
-import { useBuyPoolInformation, usePoolDetail } from '@/src/stores/pool/hook';
+import {
+    useBuyPoolInformation,
+    usePoolDetail,
+    useSlippage
+} from '@/src/stores/pool/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { Button, Spin, notification } from 'antd';
 import { useTranslations } from 'next-intl';
@@ -19,7 +23,8 @@ const SaveButtonBuy = ({
     isLoading,
     disableBtnBuy,
     clearForm,
-    isTradeBex
+    isTradeBex,
+    batchReceivedMin
 }: {
     text: string;
     label: string;
@@ -27,13 +32,16 @@ const SaveButtonBuy = ({
     disableBtnBuy: boolean;
     clearForm?: () => void;
     isTradeBex: boolean;
+    batchReceivedMin: string;
 }) => {
     const [data, , resetData] = useBuyPoolInformation();
     const [statusLoading, setStatusLoading] = useState(EActionStatus.Idle);
-    const { address, chainId, isConnected } = useAccount();
+    const { address, isConnected } = useAccount();
     const [isLoadingBuyToken, setIsLoadingBuyToken] = useState<boolean>(false);
     const { authState } = useAuthLogin();
     const t = useTranslations();
+
+    // console.log('slippageState.slippage-----', slippageState.slippage)
 
     const { chainConfig, getDexInfo } = useConfig();
     const [
@@ -123,9 +131,8 @@ const SaveButtonBuy = ({
         try {
             await useBuyWithBera.actionAsync({
                 poolAddress: data?.poolAddress,
-                // numberBatch: data?.numberBatch,
                 amountBera: data?.amountBera,
-                // maxAmountETH: convertMaxAmountToETH,
+                batchReceivedMin: batchReceivedMin,
                 referrer: authState.userInfo?.referrer
                     ? authState.userInfo?.referrer
                     : ADDRESS_NULL

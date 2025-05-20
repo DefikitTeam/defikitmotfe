@@ -576,6 +576,11 @@ export const ROCKET_EVM_ABI = [
                 type: 'uint256'
             },
             {
+                internalType: 'uint256',
+                name: 'batchReceivedMin',
+                type: 'uint256'
+            },
+            {
                 internalType: 'address',
                 name: 'referrer',
                 type: 'address'
@@ -744,7 +749,12 @@ export const ROCKET_EVM_ABI = [
         outputs: [
             {
                 internalType: 'uint256',
-                name: '',
+                name: 'batchesReceivable',
+                type: 'uint256'
+            },
+            {
+                internalType: 'uint256',
+                name: 'beraDepositAmount',
                 type: 'uint256'
             }
         ],

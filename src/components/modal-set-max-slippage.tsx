@@ -16,6 +16,7 @@ const ModalSetMaxSlippage = ({ type }: { type: string }) => {
         slippageState,
         setOpenModalSellSettingSlippage
     } = useSlippage();
+
     const [amountSlippage, setAmountSlippage] = useState(
         slippageState.slippage
     );

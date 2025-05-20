@@ -265,6 +265,7 @@ export function useMultiCaller() {
             actionAsync: (params: {
                 poolAddress: string;
                 amountBera: string;
+                batchReceivedMin: string;
                 referrer: string;
             }) => {
                 return multiCaller.buyWithBera(buyWithBeraWatcher, params);

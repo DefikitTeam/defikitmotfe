@@ -567,12 +567,14 @@ export class LaunchPadInterface {
         params: {
             poolAddress: string;
             amountBera: string;
+            batchReceivedMin: string;
             referrer: string;
         }
     ) {
         try {
-            const { poolAddress, amountBera, referrer } = params;
-            if (!poolAddress || !amountBera || !referrer) {
+            const { poolAddress, amountBera, referrer, batchReceivedMin } =
+                params;
+            if (!poolAddress || !amountBera || !referrer || !batchReceivedMin) {
                 throw new Error('Invalid params when call buyWithBera');
             }
 
@@ -582,7 +584,11 @@ export class LaunchPadInterface {
             if (parseFloat(amountBera) === 0) {
                 throw new Error('Please enter a valid amount');
             }
+            if (parseFloat(batchReceivedMin) === 0) {
+                throw new Error('Please enter a valid batchReceivedMin');
+            }
             if (poolAddress) {
+                console.log('params----', params);
                 const chainId = Number(this._contractStruct.chainId);
 
                 if (isNaN(chainId)) {
@@ -605,6 +611,7 @@ export class LaunchPadInterface {
                     args: [
                         poolAddress,
                         ethers.parseEther(amountBera),
+                        batchReceivedMin,
                         referrer
                     ],
                     gasPrice: adjustedGasPrice,

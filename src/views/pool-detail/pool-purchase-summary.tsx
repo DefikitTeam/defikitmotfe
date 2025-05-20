@@ -86,6 +86,7 @@ const PoolPurchaseSummary = () => {
     const [bondAmountValue, setBondAmountValue] = useState('');
     const [beraAmountValue, setBeraAmountValue] = useState('');
     const [estimatedBonds, setEstimatedBonds] = useState('0');
+    const [depositBeraAmount, setDepositBeraAmount] = useState('0');
     const [depositAmountValue, setDepositAmountValue] = useState('');
     const [disableBtnBuy, setDisableBtnBuy] = useState(true);
     const [disableBtnDeposit, setDisableBtnDeposit] = useState(true);
@@ -99,11 +100,12 @@ const PoolPurchaseSummary = () => {
     const [isTradeBex, setIsTradeBex] = useState<boolean>(false);
     const { setOpenModalActiviti } = useActivities();
     const { slippageState, setOpenModalSettingSlippage } = useSlippage();
+
+    const slippage = slippageState.slippage;
+
+    const [batchReceivedMin, setBatchReceivedMin] = useState<string>('');
+
     const [validateInput, setValidateInput] = useState({
-        // bondAmount: {
-        //     error: false,
-        //     helperText: ''
-        // },
         amountBera: {
             error: false,
             helperText: ''
@@ -140,11 +142,6 @@ const PoolPurchaseSummary = () => {
             );
         }
     }, [userLotteryValue, isFetchingUserLotteryData]);
-
-    // const withdrawLotteryWatcher = useWriteContract();
-    // const withdrawLotteryListener = useWaitForTransactionReceipt({
-    //     hash: withdrawLotteryWatcher.data
-    // });
 
     const { useWithdrawFundLottery } = useMultiCaller();
 
@@ -515,7 +512,14 @@ const PoolPurchaseSummary = () => {
     const estimateBuyWithBeraValue = dataReaderBera
         ? dataReaderBera[9]
         : undefined;
+
     const estimateBuyWithBeraValueReal = estimateBuyWithBeraValue?.result;
+
+    // console.log('estimateBuyWithBeraValue line 523---', estimateBuyWithBeraValue)
+    // console.log('estimateBuyWithBeraValueReal line 526---', estimateBuyWithBeraValueReal)
+    // const [batchesReceivable, beraDepositAmount] = estimateBuyWithBeraValueReal || [];
+    // console.log('batchesReceivable:', batchesReceivable?.toString());
+    // console.log('beraDepositAmount:', beraDepositAmount?.toString());
 
     useEffect(() => {
         reFetchDataReader();
@@ -647,15 +651,31 @@ const PoolPurchaseSummary = () => {
     useEffect(() => {
         try {
             if (!isFetchingDataReaderBera && estimateBuyWithBeraValueReal) {
+                const [batchesReceivable, beraDepositAmount] =
+                    estimateBuyWithBeraValueReal || [];
                 const estimatedBondsValue = new BigNumber(
-                    estimateBuyWithBeraValueReal
+                    batchesReceivable
                 ).toString();
+
+                const depositBeraAmountValue = new BigNumber(beraDepositAmount)
+                    .div(1e18)
+                    .toFixed(6);
+
                 setEstimatedBonds(estimatedBondsValue);
+                setDepositBeraAmount(depositBeraAmountValue);
             }
         } catch (error) {
             console.log('==== call estimateBuyWithBera error: ', error);
         }
     }, [isFetchingDataReaderBera, estimateBuyWithBeraValueReal]);
+
+    useEffect(() => {
+        const batchesReceivable = Number(estimatedBonds);
+        const value = Math.floor(
+            (batchesReceivable * (100 - slippageState.slippage)) / 100
+        );
+        setBatchReceivedMin(value.toString());
+    }, [estimatedBonds, slippageState.slippage]);
 
     useEffect(() => {
         if (pool?.soldBatch === pool?.totalBatch) {
@@ -1015,10 +1035,6 @@ const PoolPurchaseSummary = () => {
                                     </span>
 
                                     <Input
-                                        // type="number"
-                                        // addonAfter={
-                                        //     <Button onClick={handleSetMaxBond}>MAX</Button>
-                                        // }
                                         placeholder={t(
                                             'ENTER_NUMBER_NATIVE_TOKEN',
                                             {
@@ -1026,9 +1042,6 @@ const PoolPurchaseSummary = () => {
                                             }
                                         )}
                                         name="amountBera"
-                                        // max={Number(pool?.batchAvailable ?? 0)}
-                                        // min={0}
-                                        // style={{ width: '100%' }}
                                         value={beraAmountValue}
                                         onKeyPress={handleKeyPress}
                                         onChange={handleOnChange}
@@ -1044,7 +1057,7 @@ const PoolPurchaseSummary = () => {
                                                 key={percent}
                                                 type="button"
                                                 className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
-                                                    depositAmountValue ===
+                                                    beraAmountValue ===
                                                     (
                                                         (userNativeBalance *
                                                             percent) /
@@ -1068,10 +1081,17 @@ const PoolPurchaseSummary = () => {
                                         ))}
                                         <button
                                             type="button"
-                                            className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue === Math.max(0, userNativeBalance - (reserveMin || 0)).toFixed(6)}
-                                                ? "bg-gradient-to-r border-0" : "" }
-                                                from-pink-500 to-orange-400
-                                                text-white`}
+                                            className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                                                beraAmountValue ===
+                                                Math.max(
+                                                    0,
+                                                    userNativeBalance -
+                                                        (reserveMin || 0)
+                                                ).toFixed(6)
+                                                    ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                                                    : ''
+                                            }
+                                                `}
                                             onClick={() => {
                                                 const val = Math.max(
                                                     0,
@@ -1095,10 +1115,19 @@ const PoolPurchaseSummary = () => {
                                             }
                                         </Text>
                                     )}
+
                                     {beraAmountValue && (
                                         <div className="mt-2 text-right !font-forza text-base text-blue-400">
                                             {t('ESTIMATED_BONDS')}:{' '}
                                             {estimatedBonds} {t('BONDS')}
+                                        </div>
+                                    )}
+
+                                    {beraAmountValue && (
+                                        <div className="mt-2 text-right !font-forza text-base text-blue-400">
+                                            {t('DEPOSIT_BERA_AMOUNT')}:{' '}
+                                            {depositBeraAmount}{' '}
+                                            {t(`${chainConfig?.currency}`)}
                                         </div>
                                     )}
                                 </div>
@@ -1362,13 +1391,6 @@ const PoolPurchaseSummary = () => {
                                             *{' '}
                                         </Text>
                                         {`${t('DEPOSIT_AMOUNT')} ${chainConfig?.currency}`}
-                                        {/* <Tooltip
-                                        title={t('DEPOSIT_AMOUNT_TOOLTIP')}
-                                    >
-                                        <QuestionCircleOutlined
-                                            style={{ marginLeft: '8px' }}
-                                        />
-                                    </Tooltip> */}
                                     </span>
 
                                     <Input
@@ -1420,10 +1442,17 @@ const PoolPurchaseSummary = () => {
                                         ))}
                                         <button
                                             type="button"
-                                            className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue === Math.max(0, userNativeBalance - (reserveMin || 0)).toFixed(6)}
-                                                ? "bg-gradient-to-r border-0" : "" }
-                                                from-pink-500 to-orange-400
-                                                text-white`}
+                                            className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                                                depositAmountValue ===
+                                                Math.max(
+                                                    0,
+                                                    userNativeBalance -
+                                                        (reserveMin || 0)
+                                                ).toFixed(6)
+                                                    ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                                                    : ''
+                                            }}
+                                               `}
                                             onClick={() => {
                                                 const val = Math.max(
                                                     0,
@@ -1465,6 +1494,7 @@ const PoolPurchaseSummary = () => {
                                 disableBtnBuy={disableBtnBuy}
                                 clearForm={clearForm}
                                 isTradeBex={isTradeBex}
+                                batchReceivedMin={batchReceivedMin}
                             />
                         ) : shouldShowDeposit && !shouldShowSpin ? (
                             <DepositLotteryButton
