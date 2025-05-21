@@ -25,7 +25,7 @@ export const developmentConfig: EnvironmentConfig = {
             },
             reserve_min: 0.001,
             currency: 'STT',
-            explorer: 'https://somnia-testnet.socialscan.io/',
+            explorer: 'https://shannon-explorer.somnia.network/',
             rpcUrl: 'https://dream-rpc.somnia.network/',
             isTestnet: true,
             contractAbis: ROCKET_EVM_ABI,

@@ -293,6 +293,47 @@ export class LaunchPadInterface {
             }
 
             const chainConfig = ConfigService.getInstance();
+            console.log('params----', {
+                name,
+                symbol,
+                decimals,
+                totalSupply,
+                fixedCapETH,
+                tokenForAirdrop,
+                tokenForFarm,
+                tokenForSale,
+                tokenForAddLP,
+                tokenPerPurchase,
+                // maxRepeatPurchase,
+                startTime,
+                minDurationSell,
+                maxDurationSell,
+                metadata,
+                numberBatch,
+                maxAmountETH,
+                referrer
+            });
+
+            console.log("value: ", maxAmountETH
+                ? BigInt(
+                    new BigNumber(
+                        chainConfig.getPlatformFee(
+                            this._contractStruct.chainId
+                        )
+                    )
+                        .times(1e18)
+                        .plus(new BigNumber(maxAmountETH))
+                        .toFixed(0)
+                )
+                : BigInt(
+                    new BigNumber(
+                        chainConfig.getPlatformFee(
+                            this._contractStruct.chainId
+                        )
+                    )
+                        .times(1e18)
+                        .toFixed(0)
+                ))
 
             await watcher.writeContractAsync({
                 ...this._contractStruct,
@@ -336,24 +377,24 @@ export class LaunchPadInterface {
 
                 value: maxAmountETH
                     ? BigInt(
-                          new BigNumber(
-                              chainConfig.getPlatformFee(
-                                  this._contractStruct.chainId
-                              )
-                          )
-                              .times(1e18)
-                              .plus(new BigNumber(maxAmountETH))
-                              .toFixed(0)
-                      )
+                        new BigNumber(
+                            chainConfig.getPlatformFee(
+                                this._contractStruct.chainId
+                            )
+                        )
+                            .times(1e18)
+                            .plus(new BigNumber(maxAmountETH))
+                            .toFixed(0)
+                    )
                     : BigInt(
-                          new BigNumber(
-                              chainConfig.getPlatformFee(
-                                  this._contractStruct.chainId
-                              )
-                          )
-                              .times(1e18)
-                              .toFixed(0)
-                      )
+                        new BigNumber(
+                            chainConfig.getPlatformFee(
+                                this._contractStruct.chainId
+                            )
+                        )
+                            .times(1e18)
+                            .toFixed(0)
+                    )
             });
         } catch (err) {
             this.handleErrors(err);
