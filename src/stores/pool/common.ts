@@ -17,8 +17,8 @@ const config = ConfigService.getInstance();
 export async function updateMetaDataWorker(
     id: string,
 
-    // metadataLink: string,
-    chainId?: string
+    metadataLink: string,
+    // chainId?: string
 ): Promise<any> {
     try {
         /**
@@ -29,10 +29,10 @@ export async function updateMetaDataWorker(
             );
          */
         const response: IResponseMetadata | IResponseMetadata =
-            // await axios.get(metadataLink);
-            await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${id}/metadata`
-            );
+            await axios.get(metadataLink);
+        // await axios.get(
+        //     `${config.getApiConfig().baseUrl}/c/${chainId}/t/${id}/metadata`
+        // );
 
         if ('body' in response.data) {
             const { body } = response.data;

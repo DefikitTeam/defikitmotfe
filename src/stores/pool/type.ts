@@ -321,8 +321,8 @@ export interface IGetAllPoolBackgroundQuery {
 
 export interface IGetMetadataPoolParams {
     id: string;
-    // metadataLink: string;
-    chainId?: string;
+    metadataLink: string;
+    // chainId?: string;
 }
 export interface IGetAllPoolQueryByAddress {
     poolAddress: string;

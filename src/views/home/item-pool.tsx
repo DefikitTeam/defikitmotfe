@@ -38,8 +38,8 @@ const ItemPool = (props: Props) => {
         metadata && metadata?.image
             ? metadata?.image
             : metadata?.tokenImageUrl
-              ? metadata?.tokenImageUrl
-              : randomDefaultPoolImage();
+                ? metadata?.tokenImageUrl
+                : randomDefaultPoolImage();
 
     let finalImageUrl: string;
     if (typeof image === 'object') {
@@ -50,16 +50,16 @@ const ItemPool = (props: Props) => {
 
     const description =
         metadata &&
-        metadata?.description &&
-        typeof metadata?.description === 'string'
+            metadata?.description &&
+            typeof metadata?.description === 'string'
             ? metadata?.description
             : '';
 
     const raisedShow = marketCap.isEqualTo(0)
         ? `0`
         : marketCap.isLessThanOrEqualTo(0.001)
-          ? `<0.001`
-          : `${marketCap.toFixed(3)} - $${currencyFormatter(
+            ? `<0.001`
+            : `${marketCap.toFixed(3)} - $${currencyFormatter(
                 marketCap.times(priceNative),
                 2
             )}`;
@@ -72,20 +72,20 @@ const ItemPool = (props: Props) => {
 
     const expectProfitShow =
         analysisData?.liquidityPrice &&
-        (analysisData?.currentPrice || analysisData?.startPrice) &&
-        !isNaN(Number(analysisData?.liquidityPrice)) &&
-        !isNaN(
-            Number(analysisData?.currentPrice) ||
+            (analysisData?.currentPrice || analysisData?.startPrice) &&
+            !isNaN(Number(analysisData?.liquidityPrice)) &&
+            !isNaN(
+                Number(analysisData?.currentPrice) ||
                 Number(analysisData?.startPrice)
-        )
+            )
             ? new BigNumber(analysisData?.liquidityPrice)
-                  .div(
-                      new BigNumber(
-                          analysisData?.currentPrice || analysisData?.startPrice
-                      )
-                  )
-                  .times(100)
-                  .toFixed(0) + '%'
+                .div(
+                    new BigNumber(
+                        analysisData?.currentPrice || analysisData?.startPrice
+                    )
+                )
+                .times(100)
+                .toFixed(0) + '%'
             : '0%';
 
     const bondingCurve = new BigNumber(poolItem.raisedInETH)
@@ -144,9 +144,8 @@ ${isMobile ? `${props.className}` : `${props.className}`}
                             : finalImageUrl
                     }
                     alt="{poolItem.name} - {poolItem.symbol}"
-                    className={`rounded-lg border ${
-                        isMobile ? 'h-20 w-20' : 'h-20 w-20'
-                    }`}
+                    className={`rounded-lg border ${isMobile ? 'h-20 w-20' : 'h-20 w-20'
+                        }`}
                 />
 
                 {/* <Image

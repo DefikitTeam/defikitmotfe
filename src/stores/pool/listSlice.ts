@@ -92,10 +92,10 @@ export const getPoolMetadata = createAsyncThunk<
     }
 >('pool/getPoolMetadata', async (params, { rejectWithValue }) => {
     try {
-        const { id, chainId } = params;
+        const { id, metadataLink } = params;
         const metadata = await servicePool.getPoolMetadata(
             id,
-            chainId?.toString()!
+            metadataLink
         );
         return { id, metadata };
     } catch (error) {
