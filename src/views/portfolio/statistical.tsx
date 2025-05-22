@@ -23,6 +23,8 @@ import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import Investpool from './Investpool';
 import RecentTx from './recent-tx';
+import serviceWallet from '@/src/services/external-services/backend-server/wallet';
+import RankBadge from '@/src/components/common/rank-badge';
 export interface IAssetList {
     index: number;
     id: string;
@@ -57,6 +59,12 @@ const Statistical = () => {
     const params = useParams();
     const addressParams = params?.walletAddress as string;
     const isAddressDifferent = addressParams && addressParams !== address;
+
+    const [walletRank, setWalletRank] = useState<{
+        rank: number;
+        total: number;
+        trustScore: string;
+    } | null>(null);
 
     useEffect(() => {
         if (
@@ -169,6 +177,30 @@ const Statistical = () => {
             });
         }
     }, [useClaimToken.isError]);
+
+    useEffect(() => {
+        // Fetch wallet rank
+        const fetchWalletRank = async () => {
+            if (!addressParams) {
+                setWalletRank(null);
+                return;
+            }
+            try {
+                const res = await serviceWallet.getRankWallet(
+                    chainConfig?.chainId.toString()!,
+                    addressParams
+                );
+                setWalletRank({
+                    rank: res.rank,
+                    total: res.totalUser,
+                    trustScore: res.trustScore
+                });
+            } catch (e) {
+                setWalletRank(null);
+            }
+        };
+        fetchWalletRank();
+    }, [addressParams, chainConfig?.chainId]);
 
     const onHandleSellOrClaim = async (
         poolAddress: string,
@@ -392,6 +424,18 @@ const Statistical = () => {
                 {t('PORTFOLIO')}
             </div>
             <div className="py-4">
+                {walletRank && (
+                    <div className="mt-1 w-full sm:mt-0 sm:w-auto">
+                        <RankBadge
+                            rank={walletRank.rank}
+                            total={walletRank.total}
+                            trustScore={walletRank.trustScore}
+                            type="wallet"
+                            isHeader={false}
+                        />
+                    </div>
+                )}
+
                 <p className="!font-forza text-base text-black">
                     {t('TOTAL_INVESTED')}:{' '}
                     {new BigNumber(totalInvestedETH).div(1e18).toFixed(10)}{' '}
@@ -447,7 +491,7 @@ const Statistical = () => {
                     scroll={{ x: 300 }}
                 />
             </Spin>
-            <RecentTx userWalletAddress={addressParams} />
+            <RecentTx userWalletAddress={addressParams?.toLowerCase()} />
         </div>
     );
 };

@@ -135,10 +135,6 @@ const RecentTx = ({ userWalletAddress }: { userWalletAddress: string }) => {
         }
     }, [userWalletAddress]);
 
-    // const handlePageTransactionChange = (pageTransactionChange: number) => {
-    //     setPageRecentTxAction(pageTransactionChange);
-    // };
-
     return (
         <div className="h-full w-full bg-white pt-2">
             <div className="!font-forza text-base font-bold">
@@ -151,18 +147,9 @@ const RecentTx = ({ userWalletAddress }: { userWalletAddress: string }) => {
                 dataSource={recentTx}
                 columns={columns}
                 className="!font-forza"
-                // pagination={{ pageSize: 10 }}
+                pagination={{ pageSize: 1000 }}
                 scroll={{ x: 300 }}
                 bordered
-                sortDirections={['descend']}
-                // onChange={(pagination) => {
-                //     setPageTransactionAction(pagination.current || 1);
-                // }}
-                pagination={{
-                    pageSize: portfolio.limitRecentTx,
-                    defaultCurrent: portfolio.pageRecentTx,
-                    showSizeChanger: false
-                }}
             />
         </div>
     );

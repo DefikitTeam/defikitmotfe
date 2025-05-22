@@ -284,6 +284,7 @@ const ButtonConnectWallet = () => {
                         total={walletRank.total}
                         trustScore={walletRank.trustScore}
                         type="wallet"
+                        isHeader={true}
                     />
                 </div>
             )}
