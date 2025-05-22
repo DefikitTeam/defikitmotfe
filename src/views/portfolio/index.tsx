@@ -52,7 +52,7 @@ const Portfolio = () => {
 
     const params = useParams();
     const addressParams = params?.walletAddress as string;
-    const isAddressDifferent = addressParams && addressParams !== address;
+    const isAddressDifferent = addressParams && addressParams.toLowerCase() !== address?.toLowerCase();
     let walletAddress;
     const pathname = usePathname();
     const dispatch = useDispatch();

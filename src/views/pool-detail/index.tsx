@@ -295,6 +295,7 @@ const PoolDetail = () => {
                                         total={poolRank.total}
                                         trustScore={poolRank.trustScore}
                                         type="pool"
+                                        isHeader={false}
                                     />
                                 )}
                                 <SocialDescInformation />

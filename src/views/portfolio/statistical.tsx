@@ -447,7 +447,7 @@ const Statistical = () => {
                     scroll={{ x: 300 }}
                 />
             </Spin>
-            <RecentTx userWalletAddress={addressParams} />
+            <RecentTx userWalletAddress={addressParams?.toLowerCase()} />
         </div>
     );
 };
