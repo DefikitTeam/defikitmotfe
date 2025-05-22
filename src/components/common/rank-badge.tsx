@@ -67,6 +67,14 @@ const RankBadge = ({
                         cy={size / 2}
                         r={radius}
                         strokeWidth={strokeWidth}
+                        stroke="#e5e7eb"
+                        fill="none"
+                    />
+                    <circle
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={radius}
+                        strokeWidth={strokeWidth}
                         stroke="#10b981"
                         fill="none"
                         strokeLinecap="round"
