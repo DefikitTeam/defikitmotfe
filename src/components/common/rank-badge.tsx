@@ -87,7 +87,6 @@ const RankBadge = ({
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <div className="flex items-baseline justify-center">
                         <span className={`${isHeader ? 'text-sm font-bold text-gray-300 !font-forza' : 'text-sm font-bold  !font-forza'}`}>{percentage}</span>
-                        <span className={`${isHeader ? 'text-[9px] text-gray-300 !font-forza' : 'text-[9px] !font-forza'}`}>/100</span>
                     </div>
                 </div>
             </div>
