@@ -21,7 +21,7 @@ const TelegramInfo = ({ name }: { name: string }) => {
     // switch (environment) {
     //     case 'staging':
     // botName = 'motheroftokens_bot';
-    botName = 'MotStagingBerachainBepolia_bot';
+    botName = 'MotStagingSomnia_bot';
     //         break;
     //     case 'development':
     //         botName = 'MotherOfTokensDevBot';
