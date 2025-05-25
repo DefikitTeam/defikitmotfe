@@ -192,7 +192,6 @@ const ModalCreateAiAgent = () => {
         }
     };
 
-
     const generateDataAiAgent = async () => {
         if (!isConnected || !address) {
             notification.error({
@@ -271,8 +270,6 @@ const ModalCreateAiAgent = () => {
                 }
             }
         };
-
-        console.log('formattedData line 264-----', formattedData);
 
         try {
             setTechnologyOptions(

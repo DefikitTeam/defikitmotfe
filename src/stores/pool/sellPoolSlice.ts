@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ISellPool } from './type';
 

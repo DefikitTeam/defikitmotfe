@@ -25,6 +25,7 @@ const ModalActivities = () => {
         getListTransactionByPoolAndSender,
         setOpenModalActiviti
     } = useActivities();
+
     const handleClose = () => {
         setOpenModalActiviti(false);
     };

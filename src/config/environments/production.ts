@@ -1,23 +1,20 @@
+/* eslint-disable */
 import { ChainId, DexName } from '@/src/common/constant/constance';
 import {
     NEXT_PUBLIC_API_ENDPOINT_PROD,
-    NEXT_PUBLIC_BASE_CONTRACT_ADDRESS_PROD,
     NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_PROD,
-    NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_TRUST_POINT,
-    NEXT_PUBLIC_IOTA_CONTRACT_ADDRESS_PROD
+    NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_TRUST_POINT
 } from '@/src/common/web3/constants/env';
 import { ROCKET_EVM_ABI } from '../abi/rocket-evm-abi';
-import { ROCKET_EVM_ABI_PROD } from '../abi/rocket-evm-abi-prod';
-import { EnvironmentConfig } from '../type';
-import { ROCKET_EVM_ABI_IOTA_PROD } from '../abi/rocket-evm-abi-iota-prod';
 import { ROCKET_EVM_ABI_MIN_NFT } from '../abi/rocket-evm-abi-min-nft';
+import { EnvironmentConfig } from '../type';
 
 export const productionConfig: EnvironmentConfig = {
     environment: 'production',
     defaultChain: ChainId.BERACHAIN_MAINNET,
     supportedChains: [
-        // ChainId.BASE, 
-        // ChainId.IOTA, 
+        // ChainId.BASE,
+        // ChainId.IOTA,
         ChainId.BERACHAIN_MAINNET
     ],
     chains: {

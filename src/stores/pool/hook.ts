@@ -75,12 +75,14 @@ import {
     IGetMetadataPoolParams,
     IGetPoolInfoRewardParams,
     IGetTransactionByPoolAndSenderParams,
+    IGetTrustScoreHistoryPoolParams,
     IGetUserTopRewardByPoolParams,
     IPassDataState,
     IPoolState,
     IRewardPoolState,
     ISellPool,
     ISettingSlippageState,
+    ITrustScoreHistoryPoolState,
     IUpdateCalculatePoolParams,
     IVestingState
 } from './type';
@@ -94,6 +96,11 @@ import {
     setOpenModalCreateAiAgent,
     updateCreateAiAgentInformation
 } from './createAiAgent';
+import {
+    getTrustScoreHistoryPool,
+    resetTrustScoreHistoryPool,
+    setOpenModalHistoryPool
+} from './trustScoreHistoryPoolSlice';
 export function usePoolDetail(): [
     {
         poolStateDetail: IDetailPoolState;
@@ -599,5 +606,46 @@ export const useReward = (): RewardType => {
         rewardState,
         getPoolInfoRewardAction,
         getTopUserRewardByPoolAction
+    };
+};
+
+type TrustScoreHistoryPoolType = {
+    trustScoreHistoryPoolState: ITrustScoreHistoryPoolState;
+    getTrustScoreHistoryPoolAction: (
+        data: IGetTrustScoreHistoryPoolParams
+    ) => void;
+    setOpenModalHistoryPoolAction: (isOpenModalHistoryPool: boolean) => void;
+    resetTrustScoreHistoryPoolAction: () => void;
+};
+
+export const useTrustScoreHistoryPool = (): TrustScoreHistoryPoolType => {
+    const dispatch = useAppDispatch();
+    const trustScoreHistoryPoolState = useAppSelector(
+        (state: RootState) => state.trustScoreHistoryPool
+    );
+
+    const getTrustScoreHistoryPoolAction = useCallback(
+        (data: IGetTrustScoreHistoryPoolParams) => {
+            dispatch(getTrustScoreHistoryPool(data));
+        },
+        [dispatch]
+    );
+
+    const setOpenModalHistoryPoolAction = useCallback(
+        (isOpenModalHistoryPool: boolean) => {
+            dispatch(setOpenModalHistoryPool({ isOpenModalHistoryPool }));
+        },
+        [dispatch]
+    );
+
+    const resetTrustScoreHistoryPoolAction = useCallback(() => {
+        dispatch(resetTrustScoreHistoryPool());
+    }, [dispatch]);
+
+    return {
+        trustScoreHistoryPoolState,
+        getTrustScoreHistoryPoolAction,
+        setOpenModalHistoryPoolAction,
+        resetTrustScoreHistoryPoolAction
     };
 };

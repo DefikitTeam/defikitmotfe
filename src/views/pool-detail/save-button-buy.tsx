@@ -6,14 +6,12 @@ import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { useAuthLogin } from '@/src/stores/auth/hook';
 import {
-    useActivities,
     useBuyPoolInformation,
-    usePoolDetail
+    usePoolDetail,
+    useSlippage
 } from '@/src/stores/pool/hook';
 import { EActionStatus } from '@/src/stores/type';
-import { ExportOutlined } from '@ant-design/icons';
 import { Button, Spin, notification } from 'antd';
-import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -25,7 +23,8 @@ const SaveButtonBuy = ({
     isLoading,
     disableBtnBuy,
     clearForm,
-    isTradeBex
+    isTradeBex,
+    batchReceivedMin
 }: {
     text: string;
     label: string;
@@ -33,17 +32,16 @@ const SaveButtonBuy = ({
     disableBtnBuy: boolean;
     clearForm?: () => void;
     isTradeBex: boolean;
+    batchReceivedMin: string;
 }) => {
     const [data, , resetData] = useBuyPoolInformation();
     const [statusLoading, setStatusLoading] = useState(EActionStatus.Idle);
-    const { address, chainId, isConnected } = useAccount();
+    const { address, isConnected } = useAccount();
     const [isLoadingBuyToken, setIsLoadingBuyToken] = useState<boolean>(false);
     const { authState } = useAuthLogin();
     const t = useTranslations();
 
-    const convertMaxAmountToETH = new BigNumber(data?.maxAmountETH)
-        .div(1e18)
-        .toString();
+    // console.log('slippageState.slippage-----', slippageState.slippage)
 
     const { chainConfig, getDexInfo } = useConfig();
     const [
@@ -56,12 +54,12 @@ const SaveButtonBuy = ({
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
 
-    const { useBuyPoolMulti } = useMultiCaller();
+    const { useBuyWithBera } = useMultiCaller();
     const [hasNotified, setHasNotified] = useState<boolean>(false);
     // const currentHostName = useCurrentHostNameInformation();
 
     useEffect(() => {
-        if (useBuyPoolMulti.isLoadingInitBuyToken) {
+        if (useBuyWithBera.isLoadingInitBuyWithBera) {
             notification.info({
                 message: 'Transaction in Progress',
                 description:
@@ -70,10 +68,10 @@ const SaveButtonBuy = ({
                 showProgress: true
             });
         }
-    }, [useBuyPoolMulti.isLoadingInitBuyToken]);
+    }, [useBuyWithBera.isLoadingInitBuyWithBera]);
 
     useEffect(() => {
-        if (useBuyPoolMulti.isLoadingAgreedBuyToken) {
+        if (useBuyWithBera.isLoadingAgreedBuyWithBera) {
             setIsLoadingBuyToken(true);
             notification.info({
                 message: 'Token purchases are being processed',
@@ -82,10 +80,10 @@ const SaveButtonBuy = ({
                 showProgress: true
             });
         }
-    }, [useBuyPoolMulti.isLoadingAgreedBuyToken]);
+    }, [useBuyWithBera.isLoadingAgreedBuyWithBera]);
 
     useEffect(() => {
-        if (useBuyPoolMulti.isConfirmed && !hasNotified) {
+        if (useBuyWithBera.isConfirmed && !hasNotified) {
             setIsLoadingBuyToken(false);
             clearForm && clearForm();
             notification.success({
@@ -111,13 +109,13 @@ const SaveButtonBuy = ({
                 });
             }, 10000);
         }
-        if (!useBuyPoolMulti.isConfirmed) {
+        if (!useBuyWithBera.isConfirmed) {
             setHasNotified(false);
         }
-    }, [useBuyPoolMulti.isConfirmed, status]);
+    }, [useBuyWithBera.isConfirmed, status]);
 
     useEffect(() => {
-        if (useBuyPoolMulti.isError) {
+        if (useBuyWithBera.isError) {
             setIsLoadingBuyToken(false);
             notification.error({
                 message: 'Transaction Failed',
@@ -125,16 +123,16 @@ const SaveButtonBuy = ({
                 showProgress: true
             });
         }
-    }, [useBuyPoolMulti.isError]);
+    }, [useBuyWithBera.isError]);
 
     const handleBuyPool = async () => {
         setIsLoadingBuyToken(true);
 
         try {
-            await useBuyPoolMulti.actionAsync({
+            await useBuyWithBera.actionAsync({
                 poolAddress: data?.poolAddress,
-                numberBatch: data?.numberBatch,
-                maxAmountETH: convertMaxAmountToETH,
+                amountBera: data?.amountBera,
+                batchReceivedMin: batchReceivedMin,
                 referrer: authState.userInfo?.referrer
                     ? authState.userInfo?.referrer
                     : ADDRESS_NULL

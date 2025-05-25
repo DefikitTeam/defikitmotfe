@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IBuyPool } from '../pool/type';
 import { ISellToken } from './type';
 
 const initialState: ISellToken = {
@@ -15,7 +14,7 @@ export const tokenSellSlice = createSlice({
     reducers: {
         updateSellTokenInformation: (
             state: ISellToken,
-            action: PayloadAction<IBuyPool>
+            action: PayloadAction<ISellToken>
         ) => {
             state.maxAmountETH = action.payload.maxAmountETH;
             state.numberBatch = action.payload.numberBatch;

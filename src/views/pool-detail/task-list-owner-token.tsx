@@ -253,13 +253,10 @@ const TaskListOwnerToken = forwardRef((props, ref) => {
                         <Button
                             size="small"
                             type="default"
-                            className="!px-2 !py-1 !text-xs !font-forza"
+                            className="!px-2 !py-1 !font-forza !text-xs"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                window.open(
-                                    `${NEXT_PUBLIC_AI_CMS}`,
-                                    '_blank'
-                                );
+                                window.open(`${NEXT_PUBLIC_AI_CMS}`, '_blank');
                             }}
                         >
                             Go to CMS
@@ -300,10 +297,7 @@ const TaskListOwnerToken = forwardRef((props, ref) => {
                             className="ml-2 !px-2 !py-1 !text-xs"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                window.open(
-                                    `${NEXT_PUBLIC_AI_CMS}`,
-                                    '_blank'
-                                );
+                                window.open(`${NEXT_PUBLIC_AI_CMS}`, '_blank');
                             }}
                         >
                             Go to CMS

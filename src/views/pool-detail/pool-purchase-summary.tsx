@@ -7,7 +7,8 @@ import {
     calculateTimeLeft,
     currencyFormatter,
     divToDecimal,
-    formatCurrency
+    formatCurrency,
+    isValidEtherInput
 } from '@/src/common/utils/utils';
 import ModalSetMaxSlippage from '@/src/components/modal-set-max-slippage';
 import { useConfig } from '@/src/hooks/useConfig';
@@ -56,13 +57,12 @@ const PoolPurchaseSummary = () => {
 
     const { data: balanceData } = useBalance({
         address: address,
-        chainId: chainConfig?.chainId,
+        chainId: chainConfig?.chainId
     });
 
     const reserveMin = chainConfig?.reserve_min;
 
     const userNativeBalance = Number(balanceData?.formatted ?? 0);
-
 
     const params = useParams();
     const poolAddress = params?.poolAddress as string;
@@ -84,6 +84,9 @@ const PoolPurchaseSummary = () => {
     const [sliderPercent, setSliderPercent] = useState<number>(0);
     const [maxSlider, setMaxSlider] = useState(0);
     const [bondAmountValue, setBondAmountValue] = useState('');
+    const [beraAmountValue, setBeraAmountValue] = useState('');
+    const [estimatedBonds, setEstimatedBonds] = useState('0');
+    const [depositBeraAmount, setDepositBeraAmount] = useState('0');
     const [depositAmountValue, setDepositAmountValue] = useState('');
     const [disableBtnBuy, setDisableBtnBuy] = useState(true);
     const [disableBtnDeposit, setDisableBtnDeposit] = useState(true);
@@ -97,8 +100,13 @@ const PoolPurchaseSummary = () => {
     const [isTradeBex, setIsTradeBex] = useState<boolean>(false);
     const { setOpenModalActiviti } = useActivities();
     const { slippageState, setOpenModalSettingSlippage } = useSlippage();
+
+    const slippage = slippageState.slippage;
+
+    const [batchReceivedMin, setBatchReceivedMin] = useState<string>('');
+
     const [validateInput, setValidateInput] = useState({
-        bondAmount: {
+        amountBera: {
             error: false,
             helperText: ''
         }
@@ -135,11 +143,6 @@ const PoolPurchaseSummary = () => {
         }
     }, [userLotteryValue, isFetchingUserLotteryData]);
 
-    // const withdrawLotteryWatcher = useWriteContract();
-    // const withdrawLotteryListener = useWaitForTransactionReceipt({
-    //     hash: withdrawLotteryWatcher.data
-    // });
-
     const { useWithdrawFundLottery } = useMultiCaller();
 
     const handleKeyPressDeposit = (event: any) => {
@@ -172,111 +175,144 @@ const PoolPurchaseSummary = () => {
         }
     }, [dataDeposit.depositAmount]);
 
+    const validateAndSetAmount = (value: string) => {
+        if (value === '') {
+            setBeraAmountValue('');
+            clearForm();
+            setDisableBtnBuy(true);
+            setBuyButtonText(t('BUY'));
+            return;
+        }
 
+        if (isNaN(Number(value)) || Number(value) < 0) {
+            clearForm();
+            setDisableBtnBuy(true);
+            setBuyButtonText(t('BUY'));
+            return;
+        }
 
-    const handleSetMaxBond = () => {
-        const pricePerBond = Number(showInitial);
-        const maxBondByBalance = Math.floor(userNativeBalance / pricePerBond);
-        const totalBatch = Number(pool?.totalBatch ?? 0);
-        const soldBatch = Number(pool?.soldBatch ?? 0);
-        const availableBonds = totalBatch - soldBatch;
+        let validateInputError = false;
+        let validateInputHelperText = '';
 
-        const maxBond = Math.min(maxBondByBalance, availableBonds);
+        if (parseFloat(value) > userNativeBalance) {
+            validateInputError = true;
+            validateInputHelperText = t('NOT_ENOUGH_BALANCE', {
+                currentBalance: userNativeBalance.toFixed(3),
+                currency: chainConfig?.currency
+            });
+        }
 
-        setBondAmountValue(maxBond.toString());
-
-        setData({
-            ...data,
-            numberBatch: maxBond
+        setValidateInput({
+            ...validateInput,
+            amountBera: {
+                error: validateInputError,
+                helperText: validateInputHelperText
+            }
         });
-        setDisableBtnBuy(maxBond === 0);
-        setSliderPercent(maxBond);
+
+        if (!validateInputError) {
+            setData({
+                ...data,
+                amountBera: value.toString().trim()
+            });
+
+            setBeraAmountValue(value.toString());
+
+            const now = new Date();
+            if (parseInt(pool?.startTime ?? '0') * 1000 > now.valueOf()) {
+                setDisableBtnBuy(true);
+            } else {
+                setDisableBtnBuy(false);
+            }
+            setSliderPercent(Number(value));
+
+            if (Number(value) > Number(bondAvailableCurrent)) {
+                setBuyButtonText(t('BUY_AND_DEPOSIT_LOTTERY'));
+            } else {
+                setBuyButtonText(t('BUY'));
+            }
+        } else {
+            setDisableBtnBuy(true);
+            setBuyButtonText(t('BUY'));
+        }
     };
+
+    // const handleOnChange = (
+    //     event:
+    //         | React.ChangeEvent<HTMLInputElement>
+    //         | React.ChangeEvent<HTMLTextAreaElement>
+    // ) => {
+    //     const { name, value } = event.target;
+
+    //     if (value === '') {
+    //         setBeraAmountValue('');
+    //         clearForm();
+    //         return;
+    //     }
+
+    //     if (isNaN(Number(value)) || Number(value) < 0) {
+    //         clearForm();
+    //         return;
+    //     }
+    //     let validateInputError = false;
+    //     let validateInputHelperText = '';
+
+    //     if (value) {
+    //         if (parseFloat(value) > userNativeBalance) {
+    //             validateInputError = true;
+    //             validateInputHelperText = t('NOT_ENOUGH_BALANCE', {
+    //                 currentBalance: userNativeBalance.toFixed(3),
+    //                 currency: chainConfig?.currency
+    //             });
+    //         }
+
+    //         setValidateInput({
+    //             ...validateInput,
+    //             amountBera: {
+    //                 error: validateInputError,
+    //                 helperText: validateInputHelperText
+    //             }
+    //         });
+
+    //         if (!validateInputError) {
+    //             setData({
+    //                 ...data,
+    //                 amountBera: value.toString().trim()
+    //             });
+
+    //             setBeraAmountValue(value.toString());
+
+    //             const now = new Date();
+    //             if (parseInt(pool?.startTime ?? '0') * 1000 > now.valueOf()) {
+    //                 setDisableBtnBuy(true);
+    //             } else {
+    //                 setDisableBtnBuy(false);
+    //             }
+    //             setSliderPercent(Number(value));
+
+    //             if (Number(value) > Number(bondAvailableCurrent)) {
+    //                 setBuyButtonText(t('BUY_AND_DEPOSIT_LOTTERY'));
+    //             } else {
+    //                 setBuyButtonText(t('BUY'));
+    //             }
+    //         }
+    //     } else {
+    //         setDisableBtnBuy(true);
+    //         setBuyAmountBtn('');
+    //         setMaxAmountETH(0);
+    //         setBondAmountValue('');
+    //         setSliderPercent(0);
+    //         setBuyButtonText(t('BUY'));
+    //     }
+    // };
 
     const handleOnChange = (
         event:
             | React.ChangeEvent<HTMLInputElement>
             | React.ChangeEvent<HTMLTextAreaElement>
     ) => {
-        const { name, value } = event.target;
-        if (isNaN(Number(value)) || parseInt(value) === 0) {
-            clearForm();
-            return;
-        }
-        let validateInputError = false;
-        let validateInputHelperText = '';
-
-        const pricePerBond = Number(showInitial);
-        const totalCost = Number(value) * pricePerBond;
-
-
-
-        if (value) {
-            if (Number(value) > Number(pool?.batchAvailable ?? 0)) {
-                validateInputError = true;
-                validateInputHelperText = t('MAXIMUM_BOND_EXCEEDED', {
-                    max: pool?.batchAvailable ?? 'N/A'
-                });
-
-            } else if (totalCost > userNativeBalance) {
-                validateInputError = true;
-                validateInputHelperText = t('NOT_ENOUGH_BALANCE', {
-                    currentBalance: userNativeBalance,
-                    totalCost: totalCost,
-                    currency: chainConfig?.currency
-                });
-            } else {
-                validateInputError = false;
-                validateInputHelperText = '';
-            }
-
-            setValidateInput({
-                ...validateInput,
-                bondAmount: {
-                    error: validateInputError,
-                    helperText: validateInputHelperText
-                }
-            });
-
-            // setValidateInput({
-            //     ...validateInput,
-            //     bondAmount: {
-            //         error: validateInputError,
-            //         helperText: validateInputHelperText
-            //     }
-            // });
-
-
-            if (!validateInputError) {
-                setData({
-                    ...data,
-                    [name]: Number(value)
-                });
-                setBondAmountValue(value.toString());
-                const now = new Date();
-                if (parseInt(pool?.startTime ?? '0') * 1000 > now.valueOf()) {
-                    setDisableBtnBuy(true);
-                } else {
-                    setDisableBtnBuy(false);
-                }
-                setSliderPercent(Number(value));
-
-                if (Number(value) > Number(bondAvailableCurrent)) {
-                    setBuyButtonText(t('BUY_AND_DEPOSIT_LOTTERY'));
-                } else {
-                    setBuyButtonText(t('BUY'));
-                }
-            }
-
-
-        } else {
-            setDisableBtnBuy(true);
-            setBuyAmountBtn('');
-            setMaxAmountETH(0);
-            setBondAmountValue('');
-            setSliderPercent(0);
-            setBuyButtonText(t('BUY'));
-        }
+        const { value } = event.target;
+        validateAndSetAmount(value);
     };
 
     const clearForm = () => {
@@ -289,36 +325,36 @@ const PoolPurchaseSummary = () => {
     };
 
     const debounceTimeoutRef = useRef<NodeJS.Timeout>();
-    const handleChangeSlider = useCallback(
-        (newValue: number | number[]) => {
-            if (debounceTimeoutRef.current) {
-                clearTimeout(debounceTimeoutRef.current);
-            }
+    // const handleChangeSlider = useCallback(
+    //     (newValue: number | number[]) => {
+    //         if (debounceTimeoutRef.current) {
+    //             clearTimeout(debounceTimeoutRef.current);
+    //         }
 
-            const buyVolume = newValue as number;
-            setSliderPercent(buyVolume);
+    //         const buyVolume = newValue as number;
+    //         setSliderPercent(buyVolume);
 
-            debounceTimeoutRef.current = setTimeout(() => {
-                const now = new Date();
-                setData({
-                    ...data,
-                    numberBatch: buyVolume
-                });
-                setBondAmountValue(buyVolume.toString());
+    //         debounceTimeoutRef.current = setTimeout(() => {
+    //             const now = new Date();
+    //             setData({
+    //                 ...data,
+    //                 numberBatch: buyVolume
+    //             });
+    //             setBondAmountValue(buyVolume.toString());
 
-                if (buyVolume > 0 && pool) {
-                    if (parseInt(pool.startTime) * 1000 > now.valueOf()) {
-                        setDisableBtnBuy(true);
-                    } else {
-                        setDisableBtnBuy(false);
-                    }
-                } else {
-                    clearForm();
-                }
-            }, 300); // 300ms debounce delay
-        },
-        [pool, setData, clearForm]
-    );
+    //             if (buyVolume > 0 && pool) {
+    //                 if (parseInt(pool.startTime) * 1000 > now.valueOf()) {
+    //                     setDisableBtnBuy(true);
+    //                 } else {
+    //                     setDisableBtnBuy(false);
+    //                 }
+    //             } else {
+    //                 clearForm();
+    //             }
+    //         }, 300); // 300ms debounce delay
+    //     },
+    //     [pool, setData, clearForm]
+    // );
 
     const [endTime, setEndTime] = useState({
         days: 0,
@@ -385,8 +421,8 @@ const PoolPurchaseSummary = () => {
             const raisedShow = marketCap.isEqualTo(0)
                 ? `0`
                 : marketCap.isLessThanOrEqualTo(0.001)
-                    ? `<0.001`
-                    : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
+                  ? `<0.001`
+                  : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
                         marketCap.times(priceNative)
                     )}`;
             setRaisedEth(raisedShow);
@@ -424,7 +460,7 @@ const PoolPurchaseSummary = () => {
         setOpenModalSettingSlippage(true);
     };
     const handleKeyPress = (event: any) => {
-        const pattern = /^[0-9]*$/;
+        const pattern = /^[0-9.]$/;
         if (!pattern.test(event.key)) {
             event.preventDefault();
         }
@@ -459,19 +495,38 @@ const PoolPurchaseSummary = () => {
     const estimateBuyValue2 = dataReader2 ? dataReader2[2] : undefined;
     const estimateBuyValueReal2 = estimateBuyValue2?.result;
 
-    useEffect(() => {
-        // if(Number(new BigNumber(maxBondCurrent?.result).toString())=== Number(pool?.totalBatch)){
-        //     return;
-        // }
+    const {
+        dataReader: dataReaderBera,
+        isFetchingDataReader: isFetchingDataReaderBera,
+        reFetchDataReader: reFetchDataReaderBera
+    } = useReader({
+        contractAddAndAbi: multiCallerContract,
+        poolAddress: pool?.id as string,
+        amountBera:
+            beraAmountValue && isValidEtherInput(beraAmountValue)
+                ? ethers.parseEther(beraAmountValue).toString()
+                : undefined,
+        chainId: chainConfig?.chainId as number
+    });
 
+    const estimateBuyWithBeraValue = dataReaderBera
+        ? dataReaderBera[9]
+        : undefined;
+
+    const estimateBuyWithBeraValueReal = estimateBuyWithBeraValue?.result;
+
+    // console.log('estimateBuyWithBeraValue line 523---', estimateBuyWithBeraValue)
+    // console.log('estimateBuyWithBeraValueReal line 526---', estimateBuyWithBeraValueReal)
+    // const [batchesReceivable, beraDepositAmount] = estimateBuyWithBeraValueReal || [];
+    // console.log('batchesReceivable:', batchesReceivable?.toString());
+    // console.log('beraDepositAmount:', beraDepositAmount?.toString());
+
+    useEffect(() => {
         reFetchDataReader();
+        reFetchDataReaderBera();
     }, [pool?.soldBatch, pool?.batchAvailable, endTime.seconds]);
 
     useEffect(() => {
-        // if(Number(new BigNumber(maxBondCurrent?.result).toString())=== Number(pool?.totalBatch)){
-        //     return;
-        // }
-
         reFetchDataReader2();
     }, [pool?.soldBatch, pool?.batchAvailable, endTime.seconds]);
 
@@ -504,8 +559,7 @@ const PoolPurchaseSummary = () => {
     }, [maxBondCurrentValue]);
 
     useEffect(() => {
-        const value: number =
-            Number(sliderPercent)
+        const value: number = Number(sliderPercent);
         setIsLoading(true);
         try {
             if (value) {
@@ -517,16 +571,18 @@ const PoolPurchaseSummary = () => {
                     const ethToBuy: number =
                         slippageState.slippage !== 0
                             ? Number(
-                                new BigNumber(estimateBuyValueReal)
-                                    .times(1 + slippageState.slippage / 100)
-                                    .toFixed(0)
-                            )
+                                  new BigNumber(estimateBuyValueReal)
+                                      .times(1 + slippageState.slippage / 100)
+                                      .toFixed(0)
+                              )
                             : Number(estimateBuyValueReal);
                     setMaxAmountETH(ethToBuy);
-                    setData({
-                        ...data,
-                        maxAmountETH: Number(ethToBuy)
-                    });
+
+                    // setData({
+                    //     ...data,
+                    //     maxAmountETH: Number(ethToBuy)
+                    // });
+
                     setBuyAmountBtn(
                         `${parseFloat(maxRepeatPurchase) * value} ${pool?.symbol} ~ ${new BigNumber(estimateBuyRes).toFixed(6)} ${chainConfig?.currency}`
                     );
@@ -591,6 +647,35 @@ const PoolPurchaseSummary = () => {
             console.log('==== call funLottery error: ', error);
         }
     }, [isFetchingDataReader, funLottery]);
+
+    useEffect(() => {
+        try {
+            if (!isFetchingDataReaderBera && estimateBuyWithBeraValueReal) {
+                const [batchesReceivable, beraDepositAmount] =
+                    estimateBuyWithBeraValueReal || [];
+                const estimatedBondsValue = new BigNumber(
+                    batchesReceivable
+                ).toString();
+
+                const depositBeraAmountValue = new BigNumber(beraDepositAmount)
+                    .div(1e18)
+                    .toFixed(6);
+
+                setEstimatedBonds(estimatedBondsValue);
+                setDepositBeraAmount(depositBeraAmountValue);
+            }
+        } catch (error) {
+            console.log('==== call estimateBuyWithBera error: ', error);
+        }
+    }, [isFetchingDataReaderBera, estimateBuyWithBeraValueReal]);
+
+    useEffect(() => {
+        const batchesReceivable = Number(estimatedBonds);
+        const value = Math.floor(
+            (batchesReceivable * (100 - slippageState.slippage)) / 100
+        );
+        setBatchReceivedMin(value.toString());
+    }, [estimatedBonds, slippageState.slippage]);
 
     useEffect(() => {
         if (pool?.soldBatch === pool?.totalBatch) {
@@ -676,8 +761,8 @@ const PoolPurchaseSummary = () => {
         setWithdrawAmount(value.toString());
         setDisableBtnWithdraw(
             !value ||
-            Number(value) <= 0 ||
-            Number(value) > Number(userLotteryFunds)
+                Number(value) <= 0 ||
+                Number(value) > Number(userLotteryFunds)
         );
     };
 
@@ -937,16 +1022,11 @@ const PoolPurchaseSummary = () => {
                                         <Text className="text-lg text-red-500">
                                             *{' '}
                                         </Text>
-                                        {t('BOND_AMOUNT')}
+                                        {t('NATIVE_TOKEN_AMOUNT', {
+                                            currency: chainConfig?.currency
+                                        })}
                                         <Tooltip
-                                            title={t(
-                                                'MAXIMUM_BOND_AMOUNT_AVAILABLE',
-                                                {
-                                                    max:
-                                                        pool?.batchAvailable ??
-                                                        'N/A'
-                                                }
-                                            )}
+                                            title={`Enter the amount of BERA you want to use to purchase. Your current balance: ${userNativeBalance.toFixed(3)} ${chainConfig?.currency}.`}
                                         >
                                             <QuestionCircleOutlined
                                                 style={{ marginLeft: '8px' }}
@@ -955,16 +1035,14 @@ const PoolPurchaseSummary = () => {
                                     </span>
 
                                     <Input
-                                        type="number"
-                                        addonAfter={
-                                            <Button onClick={handleSetMaxBond}>MAX</Button>
-                                        }
-                                        placeholder={t('ENTER_NUMBER_BOND')}
-                                        name="numberBatch"
-                                        max={Number(pool?.batchAvailable ?? 0)}
-                                        min={0}
-                                        // style={{ width: '100%' }}
-                                        value={bondAmountValue}
+                                        placeholder={t(
+                                            'ENTER_NUMBER_NATIVE_TOKEN',
+                                            {
+                                                currency: chainConfig?.currency
+                                            }
+                                        )}
+                                        name="amountBera"
+                                        value={beraAmountValue}
                                         onKeyPress={handleKeyPress}
                                         onChange={handleOnChange}
                                         className="!font-forza text-base"
@@ -973,15 +1051,85 @@ const PoolPurchaseSummary = () => {
                                             width: '100%'
                                         }}
                                     />
-                                    {validateInput.bondAmount.error ===
+                                    <div className="mt-2 flex gap-2">
+                                        {[25, 50, 75].map((percent) => (
+                                            <button
+                                                key={percent}
+                                                type="button"
+                                                className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                                                    beraAmountValue ===
+                                                    (
+                                                        (userNativeBalance *
+                                                            percent) /
+                                                        100
+                                                    ).toFixed(6)
+                                                        ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                                                        : ''
+                                                }`}
+                                                onClick={() => {
+                                                    const val = (
+                                                        (userNativeBalance *
+                                                            percent) /
+                                                        100
+                                                    ).toFixed(6);
+                                                    validateAndSetAmount(val);
+                                                    setBeraAmountValue(val);
+                                                }}
+                                            >
+                                                {percent}%
+                                            </button>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                                                beraAmountValue ===
+                                                Math.max(
+                                                    0,
+                                                    userNativeBalance -
+                                                        (reserveMin || 0)
+                                                ).toFixed(6)
+                                                    ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                                                    : ''
+                                            }
+                                                `}
+                                            onClick={() => {
+                                                const val = Math.max(
+                                                    0,
+                                                    userNativeBalance -
+                                                        (reserveMin || 0)
+                                                ).toFixed(6);
+                                                validateAndSetAmount(val);
+                                                setBeraAmountValue(val);
+                                            }}
+                                        >
+                                            Max
+                                        </button>
+                                    </div>
+
+                                    {validateInput.amountBera.error ===
                                         true && (
-                                            <Text className="text-red-500">
-                                                {
-                                                    validateInput.bondAmount
-                                                        .helperText
-                                                }
-                                            </Text>
-                                        )}
+                                        <Text className="text-red-500">
+                                            {
+                                                validateInput.amountBera
+                                                    .helperText
+                                            }
+                                        </Text>
+                                    )}
+
+                                    {beraAmountValue && (
+                                        <div className="mt-2 text-right !font-forza text-base text-blue-400">
+                                            {t('ESTIMATED_BONDS')}:{' '}
+                                            {estimatedBonds} {t('BONDS')}
+                                        </div>
+                                    )}
+
+                                    {beraAmountValue && (
+                                        <div className="mt-2 text-right !font-forza text-base text-blue-400">
+                                            {t('DEPOSIT_BERA_AMOUNT')}:{' '}
+                                            {depositBeraAmount}{' '}
+                                            {t(`${chainConfig?.currency}`)}
+                                        </div>
+                                    )}
                                 </div>
                             </Col>
                         )}
@@ -1164,8 +1312,8 @@ const PoolPurchaseSummary = () => {
                                                         wordWrap: 'break-word',
                                                         opacity:
                                                             disableBtnWithdraw ||
-                                                                useWithdrawFundLottery.isLoadingInitWithdrawFundLottery ||
-                                                                useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
+                                                            useWithdrawFundLottery.isLoadingInitWithdrawFundLottery ||
+                                                            useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
                                                                 ? 0.6
                                                                 : 1
                                                     }}
@@ -1191,7 +1339,7 @@ const PoolPurchaseSummary = () => {
                             </Col>
                         )}
 
-                    {pool.status != PoolStatus.FAIL &&
+                    {/* {pool.status != PoolStatus.FAIL &&
                         pool.status != PoolStatus.COMPLETED &&
                         shouldShowBuyButton && (
                             <Col
@@ -1225,7 +1373,7 @@ const PoolPurchaseSummary = () => {
                                     />
                                 </div>
                             </Col>
-                        )}
+                        )} */}
 
                     {pool.status != PoolStatus.FAIL &&
                         pool.status != PoolStatus.COMPLETED &&
@@ -1243,13 +1391,6 @@ const PoolPurchaseSummary = () => {
                                             *{' '}
                                         </Text>
                                         {`${t('DEPOSIT_AMOUNT')} ${chainConfig?.currency}`}
-                                        {/* <Tooltip
-                                        title={t('DEPOSIT_AMOUNT_TOOLTIP')}
-                                    >
-                                        <QuestionCircleOutlined
-                                            style={{ marginLeft: '8px' }}
-                                        />
-                                    </Tooltip> */}
                                     </span>
 
                                     <Input
@@ -1265,22 +1406,35 @@ const PoolPurchaseSummary = () => {
                                             width: '100%'
                                         }}
                                     />
-                                    <div className="flex gap-2 mt-2">
+                                    <div className="mt-2 flex gap-2">
                                         {[25, 50, 75].map((percent) => (
                                             <button
                                                 key={percent}
                                                 type="button"
-                                                className={`px-4 py-1 rounded-full border-2 border-orange-400 text-orange-400 font-bold transition-colors hover:bg-orange-100 ${depositAmountValue === ((userNativeBalance * percent) / 100).toFixed(6)
-                                                    ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white border-0"
-                                                    : ""
-                                                    }`}
+                                                className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                                                    depositAmountValue ===
+                                                    (
+                                                        (userNativeBalance *
+                                                            percent) /
+                                                        100
+                                                    ).toFixed(6)
+                                                        ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                                                        : ''
+                                                }`}
                                                 onClick={() => {
-                                                    const val = ((userNativeBalance * percent) / 100).toFixed(6);
+                                                    const val = (
+                                                        (userNativeBalance *
+                                                            percent) /
+                                                        100
+                                                    ).toFixed(6);
                                                     setDepositAmountValue(val);
-                                                    setDepositLotteryInformation({
-                                                        ...dataDeposit,
-                                                        depositAmount: Number(val)
-                                                    });
+                                                    setDepositLotteryInformation(
+                                                        {
+                                                            ...dataDeposit,
+                                                            depositAmount:
+                                                                Number(val)
+                                                        }
+                                                    );
                                                 }}
                                             >
                                                 {percent}%
@@ -1288,13 +1442,23 @@ const PoolPurchaseSummary = () => {
                                         ))}
                                         <button
                                             type="button"
-                                        className={`px-4 py-1 rounded-full border-2 border-orange-400 text-orange-400 font-bold transition-colors hover:bg-orange-100 ${depositAmountValue === (Math.max(0, userNativeBalance - (reserveMin || 0))).toFixed(6)}
-                                                ? "bg-gradient-to-r from-pink-500 to-orange-400 text-white border-0"
-                                                : ""
-                                                }`}
+                                            className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                                                depositAmountValue ===
+                                                Math.max(
+                                                    0,
+                                                    userNativeBalance -
+                                                        (reserveMin || 0)
+                                                ).toFixed(6)
+                                                    ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                                                    : ''
+                                            }}
+                                               `}
                                             onClick={() => {
-
-                                                const val = Math.max(0, userNativeBalance - (reserveMin || 0)).toFixed(6);
+                                                const val = Math.max(
+                                                    0,
+                                                    userNativeBalance -
+                                                        (reserveMin || 0)
+                                                ).toFixed(6);
                                                 setDepositAmountValue(val);
                                                 setDepositLotteryInformation({
                                                     ...dataDeposit,
@@ -1330,6 +1494,7 @@ const PoolPurchaseSummary = () => {
                                 disableBtnBuy={disableBtnBuy}
                                 clearForm={clearForm}
                                 isTradeBex={isTradeBex}
+                                batchReceivedMin={batchReceivedMin}
                             />
                         ) : shouldShowDeposit && !shouldShowSpin ? (
                             <DepositLotteryButton

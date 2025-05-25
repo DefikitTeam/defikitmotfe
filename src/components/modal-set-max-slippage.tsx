@@ -16,6 +16,7 @@ const ModalSetMaxSlippage = ({ type }: { type: string }) => {
         slippageState,
         setOpenModalSellSettingSlippage
     } = useSlippage();
+
     const [amountSlippage, setAmountSlippage] = useState(
         slippageState.slippage
     );
@@ -58,7 +59,6 @@ const ModalSetMaxSlippage = ({ type }: { type: string }) => {
             showProgress: true,
             duration: 1
         });
-       
     };
 
     return (

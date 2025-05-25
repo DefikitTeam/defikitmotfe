@@ -127,3 +127,6 @@ export const prevDayFrom = (currentDate: Date, dayMinus: number) => {
     currentDate.setDate(currentDate.getDate() - dayMinus);
     return currentDate;
 };
+export const isValidEtherInput = (value: string) => {
+    return /^(\d+(\.\d{1,18})?)$/.test(value);
+};

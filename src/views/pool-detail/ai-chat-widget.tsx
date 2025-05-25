@@ -1,6 +1,9 @@
 /* eslint-disable */
 'use client';
-import { NEXT_PUBLIC_AI_AGENT_SERVER, NEXT_PUBLIC_AI_CMS } from '@/src/common/web3/constants/env';
+import {
+    NEXT_PUBLIC_AI_AGENT_SERVER,
+    NEXT_PUBLIC_AI_CMS
+} from '@/src/common/web3/constants/env';
 import { useEffect } from 'react';
 interface AIChatWidgetConfig {
     agentId: string;
@@ -25,7 +28,6 @@ export interface IAiChatWidget {
 }
 
 const AiChatWidget: React.FC<IAiChatWidget> = ({ agentId, agentName }) => {
-
     useEffect(() => {
         // Cleanup trước khi init mới
         if (window.AIChatWidget) {

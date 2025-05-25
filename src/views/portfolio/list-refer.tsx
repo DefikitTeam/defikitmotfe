@@ -73,7 +73,6 @@ const ListRefer = () => {
 
     return (
         <div className="h-full w-full">
-
             <Table
                 rowKey="wallet"
                 dataSource={data}

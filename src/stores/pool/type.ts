@@ -59,6 +59,7 @@ export interface Transaction {
     batch: string;
     eth: string;
     isBuy: boolean;
+    trustScorePool: string
 }
 
 export interface UserPoolInfo {
@@ -117,7 +118,7 @@ export interface IGetDetailPoolParams extends IGetAllQuery {
     chainId: number;
 }
 export interface IGetDetailHolderDistributionParams
-    extends Omit<IGetDetailPoolParams, 'userAddress'> {}
+    extends Omit<IGetDetailPoolParams, 'userAddress'> { }
 
 export interface IGetDetailDiscussionParams {
     chainId: string;
@@ -337,12 +338,18 @@ export interface IPriceNativeRequest {
 }
 export interface IBuyPool {
     poolAddress: string;
+    // numberBatch: number;
+    payableAmount: number;
+    // maxAmountETH: number;
+    amountBera: string;
+}
+
+export interface ISellPool {
+    poolAddress: string;
     numberBatch: number;
     payableAmount: number;
     maxAmountETH: number;
 }
-
-export interface ISellPool extends IBuyPool {}
 
 export interface IDepositLottery {
     poolAddress: string;
@@ -581,3 +588,34 @@ export interface IGetTop100TrustPointWalletAndTokenMonthlyResponse {
         poolTrustScoreMonthlies: IPoolTrustPointScoreMonthlyItem[];
     };
 }
+
+export interface IGetTrustScoreHistoryPoolParams {
+    poolAddress: string;
+    chainId: number;
+}
+
+export interface ITrustScoreHistoryPoolState extends FetchError {
+    status: EActionStatus;
+    trustScoreHistoryPool: IPoolTrustScoreHistory[];
+    openModalHistoryPool: boolean;
+}
+
+export interface IPoolTrustScoreHistory {
+    pool: string;
+    timestamp: number;
+    trustScore: number;
+    reason: string;
+    transactionHash: string;
+}
+
+// export interface ITrustScoreHistoryWallet {
+//     user: string;
+//     timestamp: number;
+//     trustScore: number;
+//     reason: string;
+//     transactionHash: string;
+// }
+
+// export interface IGetTrustScoreHistoryPoolResponse {
+//     poolTrustScoreHistories: IPoolTrustScoreHistory[];
+// }

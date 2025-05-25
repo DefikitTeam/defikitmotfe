@@ -22,7 +22,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
 import Investpool from './Investpool';
-
+import RecentTx from './recent-tx';
+import serviceWallet from '@/src/services/external-services/backend-server/wallet';
+import RankBadge from '@/src/components/common/rank-badge';
 export interface IAssetList {
     index: number;
     id: string;
@@ -57,6 +59,12 @@ const Statistical = () => {
     const params = useParams();
     const addressParams = params?.walletAddress as string;
     const isAddressDifferent = addressParams && addressParams !== address;
+
+    const [walletRank, setWalletRank] = useState<{
+        rank: number;
+        total: number;
+        trustScore: string;
+    } | null>(null);
 
     useEffect(() => {
         if (
@@ -170,6 +178,30 @@ const Statistical = () => {
         }
     }, [useClaimToken.isError]);
 
+    useEffect(() => {
+        // Fetch wallet rank
+        const fetchWalletRank = async () => {
+            if (!addressParams) {
+                setWalletRank(null);
+                return;
+            }
+            try {
+                const res = await serviceWallet.getRankWallet(
+                    chainConfig?.chainId.toString()!,
+                    addressParams
+                );
+                setWalletRank({
+                    rank: res.rank,
+                    total: res.totalUser,
+                    trustScore: res.trustScore
+                });
+            } catch (e) {
+                setWalletRank(null);
+            }
+        };
+        fetchWalletRank();
+    }, [addressParams, chainConfig?.chainId]);
+
     const onHandleSellOrClaim = async (
         poolAddress: string,
         pendingClaimAmount: string
@@ -272,54 +304,54 @@ const Statistical = () => {
 
     const actionColumn: ColumnsType<IAssetList> = !isAddressDifferent
         ? [
-              {
-                  title: t('ACTION'),
-                  key: 'action',
-                  className: '!font-forza',
-                  align: 'center',
-                  width: '7%',
-                  render: (_, record) => (
-                      <div className="">
-                          <Button
-                              size="large"
-                              className={`w-[10%] w-fit !flex-1 text-nowrap !font-forza transition-opacity `}
-                              disabled={Boolean(
-                                  (parseFloat(record.pendingClaimAmount) ===
-                                      0 &&
-                                      record.status !== TOKEN_STATUS.ACTIVE) ||
-                                      (addressParams &&
-                                          addressParams !== address)
-                              )}
-                              style={{
-                                  backgroundColor:
-                                      parseFloat(record.pendingClaimAmount) ===
-                                          0 &&
-                                      record.status !== TOKEN_STATUS.ACTIVE
-                                          ? '#E0E0E0'
-                                          : '#297fd6',
-                                  color:
-                                      parseFloat(record.pendingClaimAmount) ===
-                                          0 &&
-                                      record.status !== TOKEN_STATUS.ACTIVE
-                                          ? '#A6A6A6'
-                                          : 'white'
-                              }}
-                              onClick={() =>
-                                  onHandleSellOrClaim(
-                                      record.id,
-                                      record.pendingClaimAmount
-                                  )
-                              }
-                          >
-                              {parseFloat(record.pendingClaimAmount) > 0 ||
-                              record.status !== TOKEN_STATUS.ACTIVE
-                                  ? 'Claim'
-                                  : 'Sell'}
-                          </Button>
-                      </div>
-                  )
-              }
-          ]
+            {
+                title: t('ACTION'),
+                key: 'action',
+                className: '!font-forza',
+                align: 'center',
+                width: '7%',
+                render: (_, record) => (
+                    <div className="">
+                        <Button
+                            size="large"
+                            className={`w-[10%] w-fit !flex-1 text-nowrap !font-forza transition-opacity `}
+                            disabled={Boolean(
+                                (parseFloat(record.pendingClaimAmount) ===
+                                    0 &&
+                                    record.status !== TOKEN_STATUS.ACTIVE) ||
+                                (addressParams &&
+                                    addressParams !== address)
+                            )}
+                            style={{
+                                backgroundColor:
+                                    parseFloat(record.pendingClaimAmount) ===
+                                        0 &&
+                                        record.status !== TOKEN_STATUS.ACTIVE
+                                        ? '#E0E0E0'
+                                        : '#297fd6',
+                                color:
+                                    parseFloat(record.pendingClaimAmount) ===
+                                        0 &&
+                                        record.status !== TOKEN_STATUS.ACTIVE
+                                        ? '#A6A6A6'
+                                        : 'white'
+                            }}
+                            onClick={() =>
+                                onHandleSellOrClaim(
+                                    record.id,
+                                    record.pendingClaimAmount
+                                )
+                            }
+                        >
+                            {parseFloat(record.pendingClaimAmount) > 0 ||
+                                record.status !== TOKEN_STATUS.ACTIVE
+                                ? 'Claim'
+                                : 'Sell'}
+                        </Button>
+                    </div>
+                )
+            }
+        ]
         : [];
 
     // Hợp nhất baseColumns và actionColumn
@@ -392,6 +424,18 @@ const Statistical = () => {
                 {t('PORTFOLIO')}
             </div>
             <div className="py-4">
+                {walletRank && (
+                    <div className="mt-1 w-full sm:mt-0 sm:w-auto">
+                        <RankBadge
+                            rank={walletRank.rank}
+                            total={walletRank.total}
+                            trustScore={walletRank.trustScore}
+                            type="wallet"
+                            isHeader={false}
+                        />
+                    </div>
+                )}
+
                 <p className="!font-forza text-base text-black">
                     {t('TOTAL_INVESTED')}:{' '}
                     {new BigNumber(totalInvestedETH).div(1e18).toFixed(10)}{' '}
@@ -438,6 +482,7 @@ const Statistical = () => {
                 delay={0}
             >
                 <Table
+                    key={addressParams}
                     rowKey="index"
                     dataSource={(address as `0x${string}`) ? listAsset : []}
                     columns={columns}
@@ -446,6 +491,7 @@ const Statistical = () => {
                     scroll={{ x: 300 }}
                 />
             </Spin>
+            <RecentTx userWalletAddress={addressParams?.toLowerCase()} />
         </div>
     );
 };

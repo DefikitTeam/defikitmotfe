@@ -24,6 +24,7 @@ import RankBadge from '@/src/components/common/rank-badge';
 import axios from 'axios';
 import serviceWallet from '@/src/services/external-services/backend-server/wallet';
 import { useConfig } from '@/src/hooks/useConfig';
+import { useTrustScoreHistoryWallet } from '@/src/stores/wallet/hook';
 
 const ButtonConnectWallet = () => {
     const t = useTranslations();
@@ -44,6 +45,13 @@ const ButtonConnectWallet = () => {
         logoutDiscordAction,
         logoutTwitterAction
     } = useAuthLogin();
+
+    const {
+        trustScoreHistoryWalletState,
+        getTrustScoreHistoryWalletAction,
+        setOpenModalHistoryWalletAction,
+        resetTrustScoreHistoryWalletAction
+    } = useTrustScoreHistoryWallet();
 
     const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
     const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
@@ -260,6 +268,7 @@ const ButtonConnectWallet = () => {
         </div>
     );
 
+
     return (
         <div className="flex h-12 w-full items-center justify-between gap-2">
             {contextHolder}
@@ -268,13 +277,14 @@ const ButtonConnectWallet = () => {
                 {!authState.openModalInviteBlocker && <ConnectButtonWagmi />}
             </div>
 
-            {walletRank && (
+            {walletRank && address && (
                 <div className="mt-1 w-full sm:mt-0 sm:w-auto">
                     <RankBadge
                         rank={walletRank.rank}
                         total={walletRank.total}
                         trustScore={walletRank.trustScore}
                         type="wallet"
+                        isHeader={true}
                     />
                 </div>
             )}

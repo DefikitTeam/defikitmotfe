@@ -73,8 +73,6 @@ const SocialDescInformation = () => {
     }, [isConnected, address, poolStateDetail.pool?.owner]);
 
     const openInNewTab = (url: any | null) => {
-      
-
         if (typeof url === 'object') {
             window.open(url.value, '_blank', 'noopener,noreferrer');
         } else {
@@ -127,8 +125,6 @@ const SocialDescInformation = () => {
     }
 
     const handleClickShowSocialScore = () => {
-       
-
         setOpenModalSocialScoreAction(true);
     };
 
@@ -136,7 +132,6 @@ const SocialDescInformation = () => {
     const [previewImageUrl, setPreviewImageUrl] = useState('');
 
     const handleImageClick = (imageUrl: string) => {
-        
         setPreviewImageUrl(imageUrl);
         setShowImagePreview(true);
     };
@@ -155,7 +150,6 @@ const SocialDescInformation = () => {
         setIsLoading(true);
 
         try {
-
             const metadata = {
                 ...metaDataInfo,
                 image: finalImageUrl,

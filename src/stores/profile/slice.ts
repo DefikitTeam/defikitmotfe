@@ -6,9 +6,12 @@ import { AxiosError } from 'axios';
 import { EActionStatus, FetchError } from '../type';
 import {
     IGetPortfolioParams,
+    IGetRecentTxParams,
+    IGetRecentTxResponse,
     IGetYourFriendListParams,
     IPortfolioResponseData,
     IPortfolioState,
+    IRecentTx,
     IYourFriendList
 } from './type';
 
@@ -27,7 +30,10 @@ const initialState: IPortfolioState = {
     openModalYourFriendList: false,
     yourFriendList: [],
     errorCodeYourListFriend: '',
-    errorMessageYourListFriend: ''
+    errorMessageYourListFriend: '',
+    recentTx: [],
+    pageRecentTx: 0,
+    limitRecentTx: 1000
 };
 
 export const getProfile = createAsyncThunk<
@@ -85,6 +91,35 @@ export const getYourFriendList = createAsyncThunk<
     }
 });
 
+export const getRecentTx = createAsyncThunk<
+    IGetRecentTxResponse,
+    IGetRecentTxParams,
+    { rejectValue: FetchError }
+>('portfolio/getRecentTx', async (params, { rejectWithValue }) => {
+    try {
+        const { page, limit, userWalletAddress, chainId } = params;
+        const recentTx = await servicePortfolio.getRecentTx(
+            page,
+            limit,
+            userWalletAddress,
+            chainId
+        );
+        const transactionsData = await recentTx.json();
+        return {
+            transactionUsers: transactionsData.data.transactionUsers,
+            page: page,
+            limit: limit,
+        }
+    } catch (error) {
+        const err = error as AxiosError;
+        const responseData: any = err.response?.data;
+        return rejectWithValue({
+            errorMessage: responseData?.message,
+            errorCode: responseData?.code
+        });
+    }
+});
+
 export const portfolioSlice = createSlice({
     name: 'portfolioSlice',
     initialState,
@@ -101,6 +136,12 @@ export const portfolioSlice = createSlice({
         ) => {
             state.openModalYourFriendList =
                 action.payload.isOpenModalYourFriendList;
+        },
+        setPageRecentTx: (
+            state,
+            action: PayloadAction<{ page: number }>
+        ) => {
+            state.pageRecentTx = action.payload.page;
         }
     },
     extraReducers: (builder) => {
@@ -131,10 +172,15 @@ export const portfolioSlice = createSlice({
                 state.errorCodeYourListFriend = action.payload?.errorCode || '';
                 state.errorMessageYourListFriend =
                     action.payload?.errorMessage || '';
-            });
+            })
+            .addCase(getRecentTx.fulfilled, (state, action) => {
+                state.recentTx = action.payload.transactionUsers;
+                state.pageRecentTx = action.payload.page;
+                state.limitRecentTx = action.payload.limit;
+            })
     }
 });
 
-export const { setIdChooseTokenSell, setOpenModalYourFriendList } =
+export const { setIdChooseTokenSell, setOpenModalYourFriendList, setPageRecentTx } =
     portfolioSlice.actions;
 export default portfolioSlice.reducer;
