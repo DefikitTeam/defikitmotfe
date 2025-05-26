@@ -205,7 +205,7 @@ const FaucetInformation = () => {
                         className={` ${isMobile ? 'text-center text-3xl' : ''} !font-forza text-4xl`}
                     >
                         {' '}
-                        {t('TITLE_FAUCET')}
+                        {t(`TITLE_FAUCET`, { chain: chainConfig?.name })}
                     </Title>
                 </Col>
                 <Col
@@ -223,7 +223,7 @@ const FaucetInformation = () => {
                             className={`  mr-[6px] font-forza text-xl`}
                         >
                             {' '}
-                            {t('DESC_FAUCET')} {chainConfig?.currency}
+                            {t('DESC_FAUCET', { currency: chainConfig?.currency })}
                         </Title>
                     </div>
                 </Col>
@@ -367,24 +367,24 @@ const FaucetInformation = () => {
                                     color: 'white',
                                     opacity:
                                         !(address as `0x${string}`) ||
-                                        isLoadingFaucet === true ||
-                                        validateInput.walletAddress.error ===
+                                            isLoadingFaucet === true ||
+                                            validateInput.walletAddress.error ===
                                             true ||
-                                        !isClickFollow ||
-                                        !walletAddress ||
-                                        !isUserInfoSavedWithTelegram
+                                            !isClickFollow ||
+                                            !walletAddress ||
+                                            !isUserInfoSavedWithTelegram
                                             ? 0.6
                                             : 1,
                                     whiteSpace: 'normal',
                                     wordWrap: 'break-word',
                                     cursor:
                                         !(address as `0x${string}`) ||
-                                        isLoadingFaucet === true ||
-                                        validateInput.walletAddress.error ===
+                                            isLoadingFaucet === true ||
+                                            validateInput.walletAddress.error ===
                                             true ||
-                                        !isClickFollow ||
-                                        !walletAddress ||
-                                        !isUserInfoSavedWithTelegram
+                                            !isClickFollow ||
+                                            !walletAddress ||
+                                            !isUserInfoSavedWithTelegram
                                             ? 'not-allowed'
                                             : 'pointer'
                                 }}
@@ -392,7 +392,7 @@ const FaucetInformation = () => {
                                     !(address as `0x${string}`) ||
                                     !isClickFollow ||
                                     validateInput.walletAddress.error ===
-                                        true ||
+                                    true ||
                                     !walletAddress ||
                                     !isUserInfoSavedWithTelegram
                                 }
@@ -403,7 +403,10 @@ const FaucetInformation = () => {
                             </Button>
                             {isDoneFaucet && (
                                 <span className="animate-fadeIn !font-forza text-sm text-[#00C805]">
-                                    {t('SUCCESS_FAUCET')}{' '}
+                                    {t('SUCCESS_FAUCET', {
+                                        amount: '0.1',
+                                        currency: chainConfig?.currency
+                                    })}{' '}
                                     {t('FRE_SUB_SUCCESS_FAUCET')}{' '}
                                     <strong>{chainConfig?.currency}</strong>{' '}
                                     {t('SUB_SUB_SUCCESS_FAUCET')}{' '}
@@ -430,7 +433,9 @@ const FaucetInformation = () => {
                     <div className="flex flex-col gap-1">
                         <div className="mb-1 w-full border-t-2 border-[#BB3E4E]"></div>
                         <span className="mt-2 w-full !font-forza text-base">
-                            {t('TIME_REMIND_FAUCET')}
+                            {t('TIME_REMIND_FAUCET', {
+                                currency: chainConfig?.currency,
+                            })}
                         </span>
                     </div>
                 </Col>

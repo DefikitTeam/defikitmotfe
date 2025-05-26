@@ -6,6 +6,7 @@ import {
     useTrustPointToken
 } from '@/src/stores/trust-point/hook';
 import { Task } from '@/src/views/portfolio/task-list';
+import { notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useImperativeHandle, useMemo } from 'react';
@@ -37,6 +38,23 @@ const Footer = () => {
             `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/leaderboard`
         );
     };
+    
+    
+    const handleClickFaucet = ()=> {
+        if(!address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
+            return
+        }
+        router.push(
+            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/faucet`
+        );
+
+    }
 
     const hasUncompletedTask = useMemo(() => {
         return (
@@ -55,7 +73,7 @@ const Footer = () => {
 
             <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
                 <div
-                    className={` mx-auto grid h-full max-w-lg cursor-pointer grid-cols-5 font-medium`}
+                    className={` mx-auto grid h-full max-w-lg cursor-pointer grid-cols-6 font-medium`}
                 >
                     <div
                         className="group inline-flex flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
@@ -185,7 +203,7 @@ const Footer = () => {
                         </span>
                     </div>
 
-                    {/* {chainData.onFaucet && (
+                    {chainConfig?.onFaucet && (
                         <div
                             className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
                             onClick={handleClickFaucet}
@@ -228,7 +246,7 @@ const Footer = () => {
                                 Faucet
                             </span>
                         </div>
-                    )} */}
+                    )}
                 </div>
             </div>
         </div>

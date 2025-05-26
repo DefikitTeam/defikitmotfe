@@ -41,7 +41,7 @@ export const developmentConfig: EnvironmentConfig = {
             platformFee: 0.01,
             hardCapInitial: 1,
             minHardcap: { min: 0.1, error: 'Min value is 0.1' },
-            onFaucet: false
+            onFaucet: true
         }
     },
     api: {

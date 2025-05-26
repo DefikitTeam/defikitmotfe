@@ -20,10 +20,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
 import FaucetInformation from './faucet-information';
 import ImageFaucet from './image-faucet';
+import { useConfig } from '@/src/hooks/useConfig';
 
 const Faucet = () => {
     const { isMobile } = useWindowSize();
-    const chainData = useSelector((state: RootState) => state.chainData);
+    // const chainData = useSelector((state: RootState) => state.chainData);
+    const { chainConfig } = useConfig();
 
     const [loading, setLoading] = useState(true);
     const [onFaucet, setOnFaucet] = useState(false);
@@ -44,35 +46,28 @@ const Faucet = () => {
 
     const { address } = useAccount();
 
-    // useEffect(() => {
-    //     if (!address) {
-    //         notification.error({
-    //             message: 'Error',
-    //             description: 'Please connect to your wallet',
-    //             duration: 3,
-    //             showProgress: true
-    //         });
+    useEffect(() => {
+        if (!address) {
+            notification.error({
+                message: 'Error',
+                description: 'Please connect to your wallet',
+                duration: 3,
+                showProgress: true
+            });
 
-    //         router.push(
-    //             `/${chainData.chainData.name.replace(/\s+/g, '').toLowerCase()}`
-    //         );
-    //         return;
-    //     }
-    // }, [address]);
+            router.push(
+                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
+            );
+            return;
+        }
+    }, [address]);
 
-    // useEffect(() => {
-    //     const chainInfo = getCurrentChainUrl();
-    //     if (chainInfo) {
-    //         dispatch(setChainData(chainInfo));
-    //         switchChain({ chainId: chainInfo.chainId });
-    //         // router.push(`${currentPath?.join('/')}?refId=${refId}`);
-    //     }
-    // }, [currentPath?.[2]]);
+   
 
-    // useEffect(() => {
-    //     setOnFaucet(chainData.chainData.onFaucet);
-    //     setLoading(false);
-    // }, [chainData.chainData.onFaucet]);
+    useEffect(() => {
+        setOnFaucet(chainConfig?.onFaucet!);
+        setLoading(false);
+    }, [chainConfig?.onFaucet]);
 
     return loading ? (
         <Loader />
@@ -125,7 +120,7 @@ const Faucet = () => {
                             xxl={6}
                             // className="h-full"
                         >
-                            <ImageFaucet />
+                            {/* <ImageFaucet /> */}
                         </Col>
                         <Col
                             xs={0}
