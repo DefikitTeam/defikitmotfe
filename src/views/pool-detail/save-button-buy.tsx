@@ -9,7 +9,7 @@ import {
   useBuyPoolInformation,
   usePoolDetail,
   useSlippage
-} from '@/src/stores/pool/hook';
+} from '@/src/stores/pool/hooks';
 import { EActionStatus } from '@/src/stores/type';
 import { Button, Spin, notification } from 'antd';
 import { useTranslations } from 'next-intl';

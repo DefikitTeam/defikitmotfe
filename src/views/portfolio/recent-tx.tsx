@@ -4,7 +4,7 @@ import { ChainId } from '@/src/common/constant/constance';
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
-import { usePoolDetail } from '@/src/stores/pool/hook';
+import { usePoolDetail } from '@/src/stores/pool/hooks';
 import { Transaction } from '@/src/stores/pool/type';
 import { usePortfolio } from '@/src/stores/profile/hook';
 import { IRecentTx } from '@/src/stores/profile/type';

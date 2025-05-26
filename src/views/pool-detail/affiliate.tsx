@@ -3,7 +3,7 @@
 import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { useAuthLogin } from '@/src/stores/auth/hook';
-import { useReward } from '@/src/stores/pool/hook';
+import { useReward } from '@/src/stores/pool/hooks';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';

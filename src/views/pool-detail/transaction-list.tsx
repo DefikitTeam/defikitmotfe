@@ -3,7 +3,7 @@
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
-import { usePoolDetail } from '@/src/stores/pool/hook';
+import { usePoolDetail } from '@/src/stores/pool/hooks';
 import { Transaction } from '@/src/stores/pool/type';
 import { ExportOutlined } from '@ant-design/icons';
 import { notification, Table, Typography } from 'antd';
@@ -69,8 +69,8 @@ const TransactionList = () => {
         <div>
           {new BigNumber(record.eth).gt(0)
             ? `$${new BigNumber(new BigNumber(record.eth).div(1e18).toFixed(5))
-                .div(record.batch)
-                .toFixed(7)}`
+              .div(record.batch)
+              .toFixed(7)}`
             : 'N/A'}
         </div>
       )

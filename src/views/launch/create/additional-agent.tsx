@@ -6,7 +6,7 @@ import MessageReplyByAgent from '@/src/components/common/message-reply-by-agent'
 import StyleCommunication from '@/src/components/common/style-communication';
 import serviceAiGenerate from '@/src/services/external-services/backend-server/ai-generate';
 import { IGenerateDataAiAgentResponse } from '@/src/services/response.type';
-import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hook';
+import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hooks';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -223,13 +223,13 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
 
   const onUpload =
     (name: 'avatarAccount', fileType: AccountFileType) =>
-    async ({ file }: RcCustomRequestOptions) => {
-      setCheckFileData({
-        ...checkFileData,
-        errorNoValue: false
-      });
-      getFileAiAgentAvatar({ file: file, flag: true });
-    };
+      async ({ file }: RcCustomRequestOptions) => {
+        setCheckFileData({
+          ...checkFileData,
+          errorNoValue: false
+        });
+        getFileAiAgentAvatar({ file: file, flag: true });
+      };
 
   const handleFileChange: UploadProps['onChange'] = (info) => {
     const { fileList: newFileList } = info;
@@ -666,7 +666,7 @@ const AdditionalAgent = ({ form, getFileAiAgentAvatar }: PoolInforProps) => {
                             className="!font-forza text-base"
                             placeholder="Please enter the prompt for generating image"
                           />
-                          {}
+                          { }
                           {loadingPromptGenerateImage ? (
                             <Spin className="absolute bottom-2 right-2" />
                           ) : (

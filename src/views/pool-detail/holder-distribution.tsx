@@ -2,7 +2,7 @@
 'use client';
 import { shortWalletAddress } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
-import { usePoolDetail } from '@/src/stores/pool/hook';
+import { usePoolDetail } from '@/src/stores/pool/hooks';
 import { IHolderDistribution } from '@/src/stores/pool/type';
 import { notification, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';

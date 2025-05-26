@@ -18,7 +18,7 @@ import { useAuthLogin } from '@/src/stores/auth/hook';
 import {
   usePoolDetail,
   useTrustScoreHistoryPool
-} from '@/src/stores/pool/hook';
+} from '@/src/stores/pool/hooks';
 import { EActionStatus } from '@/src/stores/type';
 import { Col, Row } from 'antd';
 import { useTranslations } from 'next-intl';
@@ -323,8 +323,8 @@ const PoolDetail = () => {
                 <PoolPurchaseSummary />
                 <HolderDistribution />
                 {isConnected &&
-                address &&
-                address.toLowerCase() ===
+                  address &&
+                  address.toLowerCase() ===
                   poolStateDetail.pool?.owner?.toLowerCase() ? (
                   <TaskListOwnerToken />
                 ) : null}

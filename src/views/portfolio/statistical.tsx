@@ -17,7 +17,7 @@ import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import serviceInviteCode from '@/src/services/external-services/backend-server/invite-code';
 import { RootState } from '@/src/stores';
-import { useListPool } from '@/src/stores/pool/hook';
+import { useListPool } from '@/src/stores/pool/hooks';
 import { useParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { useAccount } from 'wagmi';
@@ -302,47 +302,47 @@ const Statistical = () => {
 
   const actionColumn: ColumnsType<IAssetList> = !isAddressDifferent
     ? [
-        {
-          title: t('ACTION'),
-          key: 'action',
-          className: '!font-forza',
-          align: 'center',
-          width: '7%',
-          render: (_, record) => (
-            <div className="">
-              <Button
-                size="large"
-                className={`w-[10%] w-fit !flex-1 text-nowrap !font-forza transition-opacity `}
-                disabled={Boolean(
-                  (parseFloat(record.pendingClaimAmount) === 0 &&
-                    record.status !== TOKEN_STATUS.ACTIVE) ||
-                    (addressParams && addressParams !== address)
-                )}
-                style={{
-                  backgroundColor:
-                    parseFloat(record.pendingClaimAmount) === 0 &&
+      {
+        title: t('ACTION'),
+        key: 'action',
+        className: '!font-forza',
+        align: 'center',
+        width: '7%',
+        render: (_, record) => (
+          <div className="">
+            <Button
+              size="large"
+              className={`w-[10%] w-fit !flex-1 text-nowrap !font-forza transition-opacity `}
+              disabled={Boolean(
+                (parseFloat(record.pendingClaimAmount) === 0 &&
+                  record.status !== TOKEN_STATUS.ACTIVE) ||
+                (addressParams && addressParams !== address)
+              )}
+              style={{
+                backgroundColor:
+                  parseFloat(record.pendingClaimAmount) === 0 &&
                     record.status !== TOKEN_STATUS.ACTIVE
-                      ? '#E0E0E0'
-                      : '#297fd6',
-                  color:
-                    parseFloat(record.pendingClaimAmount) === 0 &&
+                    ? '#E0E0E0'
+                    : '#297fd6',
+                color:
+                  parseFloat(record.pendingClaimAmount) === 0 &&
                     record.status !== TOKEN_STATUS.ACTIVE
-                      ? '#A6A6A6'
-                      : 'white'
-                }}
-                onClick={() =>
-                  onHandleSellOrClaim(record.id, record.pendingClaimAmount)
-                }
-              >
-                {parseFloat(record.pendingClaimAmount) > 0 ||
+                    ? '#A6A6A6'
+                    : 'white'
+              }}
+              onClick={() =>
+                onHandleSellOrClaim(record.id, record.pendingClaimAmount)
+              }
+            >
+              {parseFloat(record.pendingClaimAmount) > 0 ||
                 record.status !== TOKEN_STATUS.ACTIVE
-                  ? 'Claim'
-                  : 'Sell'}
-              </Button>
-            </div>
-          )
-        }
-      ]
+                ? 'Claim'
+                : 'Sell'}
+            </Button>
+          </div>
+        )
+      }
+    ]
     : [];
 
   // Hợp nhất baseColumns và actionColumn

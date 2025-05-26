@@ -2,7 +2,7 @@
 import {
   useCreateAiAgentInformation,
   useCreatePoolLaunchInformation
-} from '@/src/stores/pool/hook';
+} from '@/src/stores/pool/hooks';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Collapse, CollapseProps } from 'antd';
 import { useTranslations } from 'next-intl';
@@ -118,7 +118,7 @@ const MessageReplyByAgent = ({ mode }: { mode: string }) => {
                   }
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                  // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
+                // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>
@@ -221,7 +221,7 @@ const MessageReplyByAgent = ({ mode }: { mode: string }) => {
                   }
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                  // disabled={(dataAiAgent?.style?.all ?? [])?.length >= 10}
+                // disabled={(dataAiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>

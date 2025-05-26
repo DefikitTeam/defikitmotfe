@@ -1,6 +1,6 @@
 /* eslint-disable */
 'use client';
-import { useActivities, usePoolDetail } from '@/src/stores/pool/hook';
+import { useActivities, usePoolDetail } from '@/src/stores/pool/hooks';
 import { Transaction } from '@/src/stores/pool/type';
 import { Modal, Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';

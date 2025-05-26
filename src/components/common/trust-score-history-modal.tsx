@@ -1,5 +1,5 @@
 import { useConfig } from '@/src/hooks/useConfig';
-import { useTrustScoreHistoryPool } from '@/src/stores/pool/hook';
+import { useTrustScoreHistoryPool } from '@/src/stores/pool/hooks';
 import { useTrustScoreHistoryWallet } from '@/src/stores/wallet/hook';
 import { Modal, Table } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -89,59 +89,59 @@ const TrustScoreHistoryModal = ({
   const columns: ColumnsType<
     IWalletTrustScoreHistory | IPoolTrustScoreHistory
   > = [
-    {
-      title: (
-        <span className="font-bold text-blue-600">{t('TRUST_SCORE')}</span>
-      ),
-      dataIndex: 'trustScore',
-      key: 'trustScore',
-      width: '5%',
-      className: '!font-forza',
-      align: 'center',
-      render: (_, record) => (
-        <div>{new BigNumber(record.trustScore).div(1e18).toFixed(2)}</div>
-      )
-    },
-    {
-      title: <span className="font-bold text-purple-600">{t('REASON')}</span>,
-      dataIndex: 'reason',
-      key: 'reason',
-      width: '5%',
-      className: '!font-forza',
-      align: 'center'
-    },
+      {
+        title: (
+          <span className="font-bold text-blue-600">{t('TRUST_SCORE')}</span>
+        ),
+        dataIndex: 'trustScore',
+        key: 'trustScore',
+        width: '5%',
+        className: '!font-forza',
+        align: 'center',
+        render: (_, record) => (
+          <div>{new BigNumber(record.trustScore).div(1e18).toFixed(2)}</div>
+        )
+      },
+      {
+        title: <span className="font-bold text-purple-600">{t('REASON')}</span>,
+        dataIndex: 'reason',
+        key: 'reason',
+        width: '5%',
+        className: '!font-forza',
+        align: 'center'
+      },
 
-    {
-      title: <span className="text-green-600 font-bold">{t('DATE')}</span>,
-      dataIndex: 'timestamp',
-      key: 'timestamp',
-      width: '5%',
-      className: '!font-forza',
-      align: 'center',
-      render: (_, record) => {
-        return (
-          <Moment fromNow>{new Date(Number(record.timestamp) * 1000)}</Moment>
-        );
+      {
+        title: <span className="text-green-600 font-bold">{t('DATE')}</span>,
+        dataIndex: 'timestamp',
+        key: 'timestamp',
+        width: '5%',
+        className: '!font-forza',
+        align: 'center',
+        render: (_, record) => {
+          return (
+            <Moment fromNow>{new Date(Number(record.timestamp) * 1000)}</Moment>
+          );
+        }
+      },
+      {
+        title: <span className="font-bold text-pink-600">{t('TXN_HASH')}</span>,
+        dataIndex: 'transactionHash',
+        key: 'transactionHash',
+        render: (_, record) => (
+          <div className="flex items-center justify-center">
+            <ExportOutlined
+              className="cursor-pointer text-blue-500 transition-transform duration-200 hover:scale-125 hover:text-blue-700"
+              style={{ fontSize: '15px' }}
+              onClick={() => handleOpenResentTx(record.transactionHash, 'tx')}
+            />
+          </div>
+        ),
+        width: '5%',
+        className: '!font-forza',
+        align: 'center'
       }
-    },
-    {
-      title: <span className="font-bold text-pink-600">{t('TXN_HASH')}</span>,
-      dataIndex: 'transactionHash',
-      key: 'transactionHash',
-      render: (_, record) => (
-        <div className="flex items-center justify-center">
-          <ExportOutlined
-            className="cursor-pointer text-blue-500 transition-transform duration-200 hover:scale-125 hover:text-blue-700"
-            style={{ fontSize: '15px' }}
-            onClick={() => handleOpenResentTx(record.transactionHash, 'tx')}
-          />
-        </div>
-      ),
-      width: '5%',
-      className: '!font-forza',
-      align: 'center'
-    }
-  ];
+    ];
 
   return (
     <Modal

@@ -14,7 +14,7 @@ import {
 } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import serviceAiGenerate from '@/src/services/external-services/backend-server/ai-generate';
-import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hook';
+import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hooks';
 import { useListTokenOwner } from '@/src/stores/token/hook';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
@@ -194,13 +194,13 @@ const PoolInformation = ({
 
   const onUpload =
     (name: 'avatarAccount', fileType: AccountFileType) =>
-    async ({ file }: RcCustomRequestOptions) => {
-      setCheckFileData({
-        ...checkFileData,
-        errorNoValue: false
-      });
-      getFileAvatar({ file: file, flag: true });
-    };
+      async ({ file }: RcCustomRequestOptions) => {
+        setCheckFileData({
+          ...checkFileData,
+          errorNoValue: false
+        });
+        getFileAvatar({ file: file, flag: true });
+      };
 
   const handleFileChange: UploadProps['onChange'] = (info) => {
     const { fileList: newFileList } = info;
@@ -290,7 +290,7 @@ const PoolInformation = ({
     </div>
   );
 
-  const onOkDateTime = (value: DatePickerProps['value']) => {};
+  const onOkDateTime = (value: DatePickerProps['value']) => { };
 
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
     return current && current < dayjs(defaultStartTime);

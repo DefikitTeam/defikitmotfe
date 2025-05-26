@@ -8,7 +8,7 @@ import serviceUpload from '@/src/services/external-services/backend-server/uploa
 import {
   useCreatePoolLaunchInformation,
   usePassData
-} from '@/src/stores/pool/hook';
+} from '@/src/stores/pool/hooks';
 
 import { ADDRESS_NULL } from '@/src/common/constant/constance';
 import { ConfigService } from '@/src/config/services/config-service';
@@ -31,7 +31,7 @@ import { useSelector } from 'react-redux';
 import { useAccount, useDisconnect } from 'wagmi';
 import PoolInformation from './pool-information';
 import SaveCreatePoolButton from './save-button';
-export interface IPoolCreatForm {}
+export interface IPoolCreatForm { }
 const { Title } = Typography;
 // const currentHostName = useCurrentHostNameInformation();
 // const isProd =

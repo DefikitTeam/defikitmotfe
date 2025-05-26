@@ -8,7 +8,7 @@ import { formatCurrency } from '@/src/common/utils/utils';
 import {
   useCreatePoolLaunchInformation,
   usePassData
-} from '@/src/stores/pool/hook';
+} from '@/src/stores/pool/hooks';
 import { useListTokenOwner } from '@/src/stores/token/hook';
 import { ConsoleSqlOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
@@ -62,7 +62,7 @@ const AdvanceConfiguration = ({ form }: PoolInforProps) => {
   } = useListTokenOwner();
   const [data, setData, resetData] = useCreatePoolLaunchInformation();
 
-  const onChange = (key: string | string[]) => {};
+  const onChange = (key: string | string[]) => { };
 
   useEffect(() => {
     if (!data.totalSupply || !data.symbol) return;

@@ -10,7 +10,7 @@ import { randomDefaultPoolImage } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import serviceUpload from '@/src/services/external-services/backend-server/upload';
 import serviceVerify from '@/src/services/external-services/backend-server/verify';
-import { usePoolDetail } from '@/src/stores/pool/hook';
+import { usePoolDetail } from '@/src/stores/pool/hooks';
 import { useTrustPointToken } from '@/src/stores/trust-point/hook';
 import { Button, Form, Input, Modal, notification, Tooltip } from 'antd';
 import { useTranslations } from 'next-intl';

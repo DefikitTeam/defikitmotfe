@@ -1,6 +1,6 @@
 /* eslint-disable */
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { useSlippage } from '@/src/stores/pool/hook';
+import { useSlippage } from '@/src/stores/pool/hooks';
 import { Button, Input, Modal, Typography, notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

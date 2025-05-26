@@ -6,7 +6,7 @@ import serviceTrustPoint from '@/src/services/external-services/backend-server/t
 import {
   useCreateAiAgentInformation,
   usePoolDetail
-} from '@/src/stores/pool/hook';
+} from '@/src/stores/pool/hooks';
 import { useTrustPointToken } from '@/src/stores/trust-point/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { CheckCircleFilled, InfoCircleOutlined } from '@ant-design/icons';
@@ -34,7 +34,7 @@ import ModalCreateAiAgent from './modal-create-ai-agent';
 import { NEXT_PUBLIC_AI_CMS } from '@/src/common/web3/constants/env';
 
 // Simple interface that matches the expected structure from the create launch flow
-interface IPoolCreatForm {}
+interface IPoolCreatForm { }
 
 const { Title, Text } = Typography;
 interface Task {

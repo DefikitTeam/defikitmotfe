@@ -5,7 +5,7 @@ import { formatCurrency } from '@/src/common/utils/utils';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useReader } from '@/src/hooks/useReader';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { usePoolDetail, useReward } from '@/src/stores/pool/hook';
+import { usePoolDetail, useReward } from '@/src/stores/pool/hooks';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
@@ -84,8 +84,8 @@ const PoolInfoReward = () => {
           {formatCurrency(
             poolDetail && pool?.tokenForAirdrop
               ? new BigNumber(pool?.tokenForAirdrop)
-                  .div(10 ** parseInt(poolDetail?.decimals))
-                  .toFixed(0)
+                .div(10 ** parseInt(poolDetail?.decimals))
+                .toFixed(0)
               : '0'
           )}{' '}
           {poolDetail?.symbol}

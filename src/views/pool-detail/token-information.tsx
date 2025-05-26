@@ -2,7 +2,7 @@
 'use client';
 import { formatCurrency, shortWalletAddress } from '@/src/common/utils/utils';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { usePoolDetail } from '@/src/stores/pool/hook';
+import { usePoolDetail } from '@/src/stores/pool/hooks';
 import { CopyOutlined } from '@ant-design/icons';
 import { Tooltip, notification, Tag } from 'antd';
 import BigNumber from 'bignumber.js';
@@ -103,8 +103,8 @@ const TokenInformation = () => {
             {formatCurrency(
               pool
                 ? new BigNumber(pool.totalSupplyToken)
-                    .div(10 ** parseInt(pool.decimals))
-                    .toFixed(0)
+                  .div(10 ** parseInt(pool.decimals))
+                  .toFixed(0)
                 : '0'
             )}
           </div>

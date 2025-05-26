@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Modal } from 'antd';
-import { usePoolDetail } from '@/src/stores/pool/hook';
+import { usePoolDetail } from '@/src/stores/pool/hooks';
 const ModalSocialScore = () => {
   const t = useTranslations();
   const [{ poolStateDetail }, , , , , , , setOpenModalSocialScoreAction] =

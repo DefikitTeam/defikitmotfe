@@ -8,7 +8,7 @@ import {
 import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import servicePool from '@/src/services/external-services/backend-server/pool';
-import { usePoolDetail, useVesting } from '@/src/stores/pool/hook';
+import { usePoolDetail, useVesting } from '@/src/stores/pool/hooks';
 import { Modal, Table } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useTranslations } from 'next-intl';
@@ -87,56 +87,56 @@ const ModalDetailVesting = () => {
     const NOW = new Date();
     const dateArr = tgeTime
       ? [
-          {
-            time: getDateTimeInFormat(new Date(parseInt(tgeTime) * 1000)),
-            status: NOW.valueOf() < parseInt(tgeTime) * 1000 ? 'lock' : 'unlock'
-          },
-          {
-            time: getDateTimeInFormat(
-              new Date(parseInt(tgeTime) * 1000 + 8 * 60 * 60 * 1000)
-            ),
-            status:
-              NOW.valueOf() < parseInt(tgeTime) * 1000 + 8 * 60 * 60 * 1000
-                ? 'lock'
-                : 'unlock'
-          },
-          {
-            time: getDateTimeInFormat(
-              new Date(parseInt(tgeTime) * 1000 + 16 * 60 * 60 * 1000)
-            ),
-            status:
-              NOW.valueOf() < parseInt(tgeTime) * 1000 + 16 * 60 * 60 * 1000
-                ? 'lock'
-                : 'unlock'
-          },
-          {
-            time: getDateTimeInFormat(
-              new Date(parseInt(tgeTime) * 1000 + 24 * 60 * 60 * 1000)
-            ),
-            status:
-              NOW.valueOf() < parseInt(tgeTime) * 1000 + 24 * 60 * 60 * 1000
-                ? 'lock'
-                : 'unlock'
-          }
-        ]
+        {
+          time: getDateTimeInFormat(new Date(parseInt(tgeTime) * 1000)),
+          status: NOW.valueOf() < parseInt(tgeTime) * 1000 ? 'lock' : 'unlock'
+        },
+        {
+          time: getDateTimeInFormat(
+            new Date(parseInt(tgeTime) * 1000 + 8 * 60 * 60 * 1000)
+          ),
+          status:
+            NOW.valueOf() < parseInt(tgeTime) * 1000 + 8 * 60 * 60 * 1000
+              ? 'lock'
+              : 'unlock'
+        },
+        {
+          time: getDateTimeInFormat(
+            new Date(parseInt(tgeTime) * 1000 + 16 * 60 * 60 * 1000)
+          ),
+          status:
+            NOW.valueOf() < parseInt(tgeTime) * 1000 + 16 * 60 * 60 * 1000
+              ? 'lock'
+              : 'unlock'
+        },
+        {
+          time: getDateTimeInFormat(
+            new Date(parseInt(tgeTime) * 1000 + 24 * 60 * 60 * 1000)
+          ),
+          status:
+            NOW.valueOf() < parseInt(tgeTime) * 1000 + 24 * 60 * 60 * 1000
+              ? 'lock'
+              : 'unlock'
+        }
+      ]
       : [
-          {
-            time: 'TGE',
-            status: 'lock'
-          },
-          {
-            time: '8 hours after TGE',
-            status: 'lock'
-          },
-          {
-            time: '16 hours after TGE',
-            status: 'lock'
-          },
-          {
-            time: '24 hours after TGE',
-            status: 'lock'
-          }
-        ];
+        {
+          time: 'TGE',
+          status: 'lock'
+        },
+        {
+          time: '8 hours after TGE',
+          status: 'lock'
+        },
+        {
+          time: '16 hours after TGE',
+          status: 'lock'
+        },
+        {
+          time: '24 hours after TGE',
+          status: 'lock'
+        }
+      ];
 
     const data = [
       {

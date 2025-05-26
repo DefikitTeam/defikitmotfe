@@ -4,7 +4,7 @@ import { ADDRESS_NULL } from '@/src/common/constant/constance';
 import { useConfig } from '@/src/hooks/useConfig';
 import { useMultiCaller } from '@/src/hooks/useMultiCaller';
 import { useAuthLogin } from '@/src/stores/auth/hook';
-import { useDepositLottery, usePoolDetail } from '@/src/stores/pool/hook';
+import { useDepositLottery, usePoolDetail } from '@/src/stores/pool/hooks';
 import { EActionStatus } from '@/src/stores/type';
 import { Button, notification, Spin } from 'antd';
 import { Loader } from 'lucide-react';

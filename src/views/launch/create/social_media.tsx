@@ -6,7 +6,7 @@ import {
   REGEX_TWITTER,
   REGEX_WEBSITE
 } from '@/src/common/constant/constance';
-import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hook';
+import { useCreatePoolLaunchInformation } from '@/src/stores/pool/hooks';
 import {
   Col,
   Collapse,
