@@ -2,13 +2,13 @@ import { IGetTokensByOwnerParams } from '@/src/stores/token/type';
 import { querySubGraph } from '../fetcher';
 
 const serviceToken = {
-    getTokensByOwner: ({
-        ownerAddress,
-        status,
-        chainId
-    }: IGetTokensByOwnerParams) => {
-        const query = {
-            query: `
+  getTokensByOwner: ({
+    ownerAddress,
+    status,
+    chainId
+  }: IGetTokensByOwnerParams) => {
+    const query = {
+      query: `
 
             query getTokensByOwner {
   tokens(where: {owner: "${ownerAddress}"
@@ -28,9 +28,9 @@ const serviceToken = {
 
             
             `
-        };
-        return querySubGraph(query, chainId);
-    }
+    };
+    return querySubGraph(query, chainId);
+  }
 };
 
 export default serviceToken;

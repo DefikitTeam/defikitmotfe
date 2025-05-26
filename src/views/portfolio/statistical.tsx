@@ -26,432 +26,420 @@ import RecentTx from './recent-tx';
 import serviceWallet from '@/src/services/external-services/backend-server/wallet';
 import RankBadge from '@/src/components/common/rank-badge';
 export interface IAssetList {
-    index: number;
-    id: string;
-    symbolAndName: string;
-    currentPrice: string;
-    time24h: string;
-    bondAmount: string;
-    claimable: string;
-    incentivesInfo: string;
-    status: string;
-    pendingClaimAmount: string;
-    analystData: { [key: string]: { id: string; analystData?: IAnalystData } };
+  index: number;
+  id: string;
+  symbolAndName: string;
+  currentPrice: string;
+  time24h: string;
+  bondAmount: string;
+  claimable: string;
+  incentivesInfo: string;
+  status: string;
+  pendingClaimAmount: string;
+  analystData: { [key: string]: { id: string; analystData?: IAnalystData } };
 }
 
 const Statistical = () => {
-    const t = useTranslations();
+  const t = useTranslations();
 
-    const { chainConfig } = useConfig();
-    const [isLoadingClaimTokenOrSell, setIsLoadingClaimTokenOrSell] =
-        useState(false);
-    const { address, chainId, isConnected } = useAccount();
-    const router = useRouter();
-    const [{ portfolio }, fetchPortfolio, setIdCurrentChoosedTokenSell] =
-        usePortfolio();
-    const chainData = useSelector((state: RootState) => state.chainData);
-    const { poolStateList } = useListPool();
-    const { isMobile } = useWindowSize();
-    const { totalInvestedETH } = portfolio;
-    const [activeInvestPools, setActiveInvestPools] = useState<IPool[]>([]);
-    const [loadingTableAsset, setLoadingTableAsset] = useState(false);
-    const [claimMap, setClaimMap] = useState(new Map<string, InvestPool>());
-    const params = useParams();
-    const addressParams = params?.walletAddress as string;
-    const isAddressDifferent = addressParams && addressParams !== address;
+  const { chainConfig } = useConfig();
+  const [isLoadingClaimTokenOrSell, setIsLoadingClaimTokenOrSell] =
+    useState(false);
+  const { address, chainId, isConnected } = useAccount();
+  const router = useRouter();
+  const [{ portfolio }, fetchPortfolio, setIdCurrentChoosedTokenSell] =
+    usePortfolio();
+  const chainData = useSelector((state: RootState) => state.chainData);
+  const { poolStateList } = useListPool();
+  const { isMobile } = useWindowSize();
+  const { totalInvestedETH } = portfolio;
+  const [activeInvestPools, setActiveInvestPools] = useState<IPool[]>([]);
+  const [loadingTableAsset, setLoadingTableAsset] = useState(false);
+  const [claimMap, setClaimMap] = useState(new Map<string, InvestPool>());
+  const params = useParams();
+  const addressParams = params?.walletAddress as string;
+  const isAddressDifferent = addressParams && addressParams !== address;
 
-    const [walletRank, setWalletRank] = useState<{
-        rank: number;
-        total: number;
-        trustScore: string;
-    } | null>(null);
+  const [walletRank, setWalletRank] = useState<{
+    rank: number;
+    total: number;
+    trustScore: string;
+  } | null>(null);
 
-    useEffect(() => {
-        if (
-            (address as `0x${string}`) &&
-            portfolio.investedPools &&
-            portfolio.investedPools.length > 0
-        ) {
-            const dataActiveInvestPools = portfolio.investedPools.filter(
-                (item: IPool) => {
-                    return (
-                        item.status !== TOKEN_STATUS.FAIL &&
-                        item.status !== TOKEN_STATUS.COMPLETED
-                    );
-                }
-            );
-            setActiveInvestPools(dataActiveInvestPools);
+  useEffect(() => {
+    if (
+      (address as `0x${string}`) &&
+      portfolio.investedPools &&
+      portfolio.investedPools.length > 0
+    ) {
+      const dataActiveInvestPools = portfolio.investedPools.filter(
+        (item: IPool) => {
+          return (
+            item.status !== TOKEN_STATUS.FAIL &&
+            item.status !== TOKEN_STATUS.COMPLETED
+          );
         }
-    }, [portfolio.investedPools]);
+      );
+      setActiveInvestPools(dataActiveInvestPools);
+    }
+  }, [portfolio.investedPools]);
 
-    useEffect(() => {
-        if (!(address as `0x${string}`) || !chainId || !addressParams) {
-            setLoadingTableAsset(false);
-            // resetGetInviteCode();
+  useEffect(() => {
+    if (!(address as `0x${string}`) || !chainId || !addressParams) {
+      setLoadingTableAsset(false);
+      // resetGetInviteCode();
+    }
+  }, [address, addressParams]);
+
+  const funcGenerateTableAsset = (
+    innerClaimMap: Map<string, InvestPool>,
+    pools: IPool[],
+    analystData: {
+      [key: string]: { id: string; analystData?: IAnalystData };
+    }
+  ): IAssetList[] => {
+    const listAsset: IAssetList[] = pools
+      .map((pool: IPool, index: number) => {
+        const investPool = innerClaimMap.get(pool.id);
+
+        if (investPool) {
+          return {
+            index,
+            id: pool.id,
+            symbolAndName: `${pool.symbol}/${pool.name}`,
+            currentPrice: analystData[pool.id]?.analystData?.currentPrice,
+            time24h: new BigNumber(pool.changePrice24h).toFixed(2) + '%',
+            bondAmount: formatCurrency(
+              new BigNumber(investPool.balance).toFixed(0)
+            ),
+            claimable:
+              parseFloat(investPool?.pendingClaimAmount) > 0
+                ? investPool?.pendingClaimAmount
+                : '-',
+            incentivesInfo:
+              parseFloat(investPool?.pendingRewardFarming) > 0
+                ? investPool?.pendingRewardFarming
+                : '-',
+            status: pool.status,
+            pendingClaimAmount: investPool.pendingClaimAmount
+          };
         }
-    }, [address, addressParams]);
+        return undefined;
+      })
+      .filter(
+        (item) =>
+          item !== undefined &&
+          parseFloat(item.bondAmount.replace(/,/g, '')) > 0
+      ) as IAssetList[];
 
-    const funcGenerateTableAsset = (
-        innerClaimMap: Map<string, InvestPool>,
-        pools: IPool[],
-        analystData: {
-            [key: string]: { id: string; analystData?: IAnalystData };
-        }
-    ): IAssetList[] => {
-        const listAsset: IAssetList[] = pools
-            .map((pool: IPool, index: number) => {
-                const investPool = innerClaimMap.get(pool.id);
+    return listAsset;
+  };
+  const listAsset: IAssetList[] = funcGenerateTableAsset(
+    claimMap,
+    activeInvestPools,
+    poolStateList.analystData
+  );
 
-                if (investPool) {
-                    return {
-                        index,
-                        id: pool.id,
-                        symbolAndName: `${pool.symbol}/${pool.name}`,
-                        currentPrice:
-                            analystData[pool.id]?.analystData?.currentPrice,
-                        time24h:
-                            new BigNumber(pool.changePrice24h).toFixed(2) + '%',
-                        bondAmount: formatCurrency(
-                            new BigNumber(investPool.balance).toFixed(0)
-                        ),
-                        claimable:
-                            parseFloat(investPool?.pendingClaimAmount) > 0
-                                ? investPool?.pendingClaimAmount
-                                : '-',
-                        incentivesInfo:
-                            parseFloat(investPool?.pendingRewardFarming) > 0
-                                ? investPool?.pendingRewardFarming
-                                : '-',
-                        status: pool.status,
-                        pendingClaimAmount: investPool.pendingClaimAmount
-                    };
-                }
-                return undefined;
-            })
-            .filter(
-                (item) =>
-                    item !== undefined &&
-                    parseFloat(item.bondAmount.replace(/,/g, '')) > 0
-            ) as IAssetList[];
+  const { useClaimToken } = useMultiCaller();
 
-        return listAsset;
-    };
-    const listAsset: IAssetList[] = funcGenerateTableAsset(
-        claimMap,
-        activeInvestPools,
-        poolStateList.analystData
-    );
+  useEffect(() => {
+    if (useClaimToken.isLoadingInitClaimToken) {
+      setIsLoadingClaimTokenOrSell(true);
+      notification.info({
+        message: 'Token in Progress',
+        description: 'Please wait while your token is being processed',
+        duration: 1.3,
+        showProgress: true
+      });
+    }
+  }, [useClaimToken.isLoadingInitClaimToken]);
+  useEffect(() => {
+    if (useClaimToken.isLoadingAgreedClaimToken) {
+      setIsLoadingClaimTokenOrSell(false);
+      notification.success({
+        message: 'Claim token successfully!',
+        // description: '',
+        duration: 1.2,
+        showProgress: true
+      });
+    }
+  }, [useClaimToken.isLoadingAgreedClaimToken]);
 
-    const { useClaimToken } = useMultiCaller();
+  useEffect(() => {
+    if (useClaimToken.isError) {
+      setIsLoadingClaimTokenOrSell(false);
+      notification.error({
+        message: 'Transaction Failed',
+        duration: 3,
+        showProgress: true
+      });
+    }
+  }, [useClaimToken.isError]);
 
-    useEffect(() => {
-        if (useClaimToken.isLoadingInitClaimToken) {
-            setIsLoadingClaimTokenOrSell(true);
-            notification.info({
-                message: 'Token in Progress',
-                description: 'Please wait while your token is being processed',
-                duration: 1.3,
-                showProgress: true
-            });
-        }
-    }, [useClaimToken.isLoadingInitClaimToken]);
-    useEffect(() => {
-        if (useClaimToken.isLoadingAgreedClaimToken) {
-            setIsLoadingClaimTokenOrSell(false);
-            notification.success({
-                message: 'Claim token successfully!',
-                // description: '',
-                duration: 1.2,
-                showProgress: true
-            });
-        }
-    }, [useClaimToken.isLoadingAgreedClaimToken]);
-
-    useEffect(() => {
-        if (useClaimToken.isError) {
-            setIsLoadingClaimTokenOrSell(false);
-            notification.error({
-                message: 'Transaction Failed',
-                duration: 3,
-                showProgress: true
-            });
-        }
-    }, [useClaimToken.isError]);
-
-    useEffect(() => {
-        // Fetch wallet rank
-        const fetchWalletRank = async () => {
-            if (!addressParams) {
-                setWalletRank(null);
-                return;
-            }
-            try {
-                const res = await serviceWallet.getRankWallet(
-                    chainConfig?.chainId.toString()!,
-                    addressParams
-                );
-                setWalletRank({
-                    rank: res.rank,
-                    total: res.totalUser,
-                    trustScore: res.trustScore
-                });
-            } catch (e) {
-                setWalletRank(null);
-            }
-        };
-        fetchWalletRank();
-    }, [addressParams, chainConfig?.chainId]);
-
-    const onHandleSellOrClaim = async (
-        poolAddress: string,
-        pendingClaimAmount: string
-    ) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-
-        if (parseFloat(pendingClaimAmount) > 0) {
-            // case claim token
-            if (!(chainId && address)) {
-                notification.error({
-                    message: 'Error',
-                    description: t('PLEASE_CONNECT_WALLET'),
-                    duration: 1,
-                    showProgress: true
-                });
-                return;
-            }
-            await useClaimToken.actionAsync({ poolAddress });
-        } else {
-            // case sell token
-            setIdCurrentChoosedTokenSell(poolAddress);
-        }
-    };
-
-    const handleClickAddress = (addressPool: string) => {
-        if (!isConnected || !address) {
-            notification.error({
-                message: 'Error',
-                description: 'Please connect to your wallet',
-                duration: 3,
-                showProgress: true
-            });
-            return;
-        }
-        router.push(
-            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${addressPool}`
+  useEffect(() => {
+    // Fetch wallet rank
+    const fetchWalletRank = async () => {
+      if (!addressParams) {
+        setWalletRank(null);
+        return;
+      }
+      try {
+        const res = await serviceWallet.getRankWallet(
+          chainConfig?.chainId.toString()!,
+          addressParams
         );
-    };
-    const baseColumns: ColumnsType<IAssetList> = [
-        {
-            title: t('SYMBOL/NAME'),
-            dataIndex: 'symbolAndName',
-            key: 'index',
-            width: '5%',
-            className: '!font-forza ',
-            align: 'left',
-            render: (_, record) => (
-                <span
-                    className="cursor-pointer text-blue-400"
-                    onClick={() => handleClickAddress(record.id.toLowerCase())}
-                >
-                    {record.symbolAndName}
-                </span>
-            )
-        },
-        {
-            title: t('CURRENT_PRICE'),
-            className: '!font-forza ',
-            align: 'center',
-            dataIndex: 'currentPrice',
-            width: '7%'
-        },
-        {
-            title: t('24H(%)'),
-            className: '!font-forza ',
-            align: 'center',
-            dataIndex: 'time24h',
-            width: '7%'
-        },
-        {
-            title: t('BOND_AMOUNT'),
-            className: '!font-forza ',
-            align: 'center',
-            dataIndex: 'bondAmount',
-            width: '7%'
-        },
-        {
-            title: t('CLAIMABLE'),
-            dataIndex: 'claimable',
-            align: 'center',
-            className: '!font-forza',
-            width: '7%'
-        },
-        {
-            title: t('INCENTIVES_INFO'),
-            className: '!font-forza',
-            align: 'center',
-            dataIndex: 'incentivesInfo',
-            width: '7%'
-        }
-    ];
-
-    const actionColumn: ColumnsType<IAssetList> = !isAddressDifferent
-        ? [
-            {
-                title: t('ACTION'),
-                key: 'action',
-                className: '!font-forza',
-                align: 'center',
-                width: '7%',
-                render: (_, record) => (
-                    <div className="">
-                        <Button
-                            size="large"
-                            className={`w-[10%] w-fit !flex-1 text-nowrap !font-forza transition-opacity `}
-                            disabled={Boolean(
-                                (parseFloat(record.pendingClaimAmount) ===
-                                    0 &&
-                                    record.status !== TOKEN_STATUS.ACTIVE) ||
-                                (addressParams &&
-                                    addressParams !== address)
-                            )}
-                            style={{
-                                backgroundColor:
-                                    parseFloat(record.pendingClaimAmount) ===
-                                        0 &&
-                                        record.status !== TOKEN_STATUS.ACTIVE
-                                        ? '#E0E0E0'
-                                        : '#297fd6',
-                                color:
-                                    parseFloat(record.pendingClaimAmount) ===
-                                        0 &&
-                                        record.status !== TOKEN_STATUS.ACTIVE
-                                        ? '#A6A6A6'
-                                        : 'white'
-                            }}
-                            onClick={() =>
-                                onHandleSellOrClaim(
-                                    record.id,
-                                    record.pendingClaimAmount
-                                )
-                            }
-                        >
-                            {parseFloat(record.pendingClaimAmount) > 0 ||
-                                record.status !== TOKEN_STATUS.ACTIVE
-                                ? 'Claim'
-                                : 'Sell'}
-                        </Button>
-                    </div>
-                )
-            }
-        ]
-        : [];
-
-    // Hợp nhất baseColumns và actionColumn
-    const columns = baseColumns.concat(actionColumn);
-
-    useEffect(() => {
-        // Assuming data is fully fetched and set loading to false
-        if (
-            !loadingTableAsset &&
-            Object.keys(claimMap).length === activeInvestPools.length
-        ) {
-            setLoadingTableAsset(false);
-        }
-    }, [claimMap, loadingTableAsset, activeInvestPools.length]);
-
-    const handleClaimMapUpdate = (
-        poolAddress: string,
-        investPoolObj: InvestPool
-    ) => {
-        setClaimMap((prevClaimMap) => {
-            const newClaimMap = new Map<string, InvestPool>(prevClaimMap);
-            newClaimMap.set(poolAddress, investPoolObj);
-            return newClaimMap;
+        setWalletRank({
+          rank: res.rank,
+          total: res.totalUser,
+          trustScore: res.trustScore
         });
+      } catch (e) {
+        setWalletRank(null);
+      }
     };
+    fetchWalletRank();
+  }, [addressParams, chainConfig?.chainId]);
 
-    const handleLoadingTable = (isLoading: boolean) => {
-        setLoadingTableAsset(isLoading);
-    };
+  const onHandleSellOrClaim = async (
+    poolAddress: string,
+    pendingClaimAmount: string
+  ) => {
+    if (!isConnected || !address) {
+      notification.error({
+        message: 'Error',
+        description: 'Please connect to your wallet',
+        duration: 3,
+        showProgress: true
+      });
+      return;
+    }
 
-    const handleGenerateCode = async () => {
-        try {
-            const data = await serviceInviteCode.generateInviteCode();
-            if (data) {
-                notification.success({
-                    message: 'Success',
-                    // @ts-ignore
-                    description: data.message,
-                    duration: 3,
-                    showProgress: true
-                });
+    if (parseFloat(pendingClaimAmount) > 0) {
+      // case claim token
+      if (!(chainId && address)) {
+        notification.error({
+          message: 'Error',
+          description: t('PLEASE_CONNECT_WALLET'),
+          duration: 1,
+          showProgress: true
+        });
+        return;
+      }
+      await useClaimToken.actionAsync({ poolAddress });
+    } else {
+      // case sell token
+      setIdCurrentChoosedTokenSell(poolAddress);
+    }
+  };
 
-                // @ts-ignore
-                await fetchGetInviteCode();
-            }
-        } catch (error) {
-            notification.error({
-                message: 'Error',
-                description:
-                    'Please try again because your balance is less than $500',
-                duration: 3,
-                showProgress: true
-            });
-        }
-    };
+  const handleClickAddress = (addressPool: string) => {
+    if (!isConnected || !address) {
+      notification.error({
+        message: 'Error',
+        description: 'Please connect to your wallet',
+        duration: 3,
+        showProgress: true
+      });
+      return;
+    }
+    router.push(
+      `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/pool/address/${addressPool}`
+    );
+  };
+  const baseColumns: ColumnsType<IAssetList> = [
+    {
+      title: t('SYMBOL/NAME'),
+      dataIndex: 'symbolAndName',
+      key: 'index',
+      width: '5%',
+      className: '!font-forza ',
+      align: 'left',
+      render: (_, record) => (
+        <span
+          className="cursor-pointer text-blue-400"
+          onClick={() => handleClickAddress(record.id.toLowerCase())}
+        >
+          {record.symbolAndName}
+        </span>
+      )
+    },
+    {
+      title: t('CURRENT_PRICE'),
+      className: '!font-forza ',
+      align: 'center',
+      dataIndex: 'currentPrice',
+      width: '7%'
+    },
+    {
+      title: t('24H(%)'),
+      className: '!font-forza ',
+      align: 'center',
+      dataIndex: 'time24h',
+      width: '7%'
+    },
+    {
+      title: t('BOND_AMOUNT'),
+      className: '!font-forza ',
+      align: 'center',
+      dataIndex: 'bondAmount',
+      width: '7%'
+    },
+    {
+      title: t('CLAIMABLE'),
+      dataIndex: 'claimable',
+      align: 'center',
+      className: '!font-forza',
+      width: '7%'
+    },
+    {
+      title: t('INCENTIVES_INFO'),
+      className: '!font-forza',
+      align: 'center',
+      dataIndex: 'incentivesInfo',
+      width: '7%'
+    }
+  ];
 
-    return (
-        <div className="h-full w-full">
-            {(address as `0x${string}`) &&
-                activeInvestPools.map((item) => (
-                    <Investpool
-                        item={item}
-                        onUpdateClaimMap={handleClaimMapUpdate}
-                        onLoading={handleLoadingTable}
-                        address={addressParams || address || ''}
-                    />
-                ))}
-
-            <div className="!font-forza text-base font-bold">
-                {t('PORTFOLIO')}
-            </div>
-            <div className="py-4">
-                {walletRank && (
-                    <div className="mt-1 w-full sm:mt-0 sm:w-auto">
-                        <RankBadge
-                            rank={walletRank.rank}
-                            total={walletRank.total}
-                            trustScore={walletRank.trustScore}
-                            type="wallet"
-                            isHeader={false}
-                        />
-                    </div>
+  const actionColumn: ColumnsType<IAssetList> = !isAddressDifferent
+    ? [
+        {
+          title: t('ACTION'),
+          key: 'action',
+          className: '!font-forza',
+          align: 'center',
+          width: '7%',
+          render: (_, record) => (
+            <div className="">
+              <Button
+                size="large"
+                className={`w-[10%] w-fit !flex-1 text-nowrap !font-forza transition-opacity `}
+                disabled={Boolean(
+                  (parseFloat(record.pendingClaimAmount) === 0 &&
+                    record.status !== TOKEN_STATUS.ACTIVE) ||
+                    (addressParams && addressParams !== address)
                 )}
-
-                <p className="!font-forza text-base text-black">
-                    {t('TOTAL_INVESTED')}:{' '}
-                    {new BigNumber(totalInvestedETH).div(1e18).toFixed(10)}{' '}
-                    {chainConfig?.currency}
-                </p>
-
-                <p className="!font-forza text-base text-black">
-                    {t('ADDRESS')}:{' '}
-                    {isMobile
-                        ? shortWalletAddress(addressParams ? addressParams : '')
-                        : addressParams}
-                </p>
-
-                {/* <ModalListCurrentCode /> */}
+                style={{
+                  backgroundColor:
+                    parseFloat(record.pendingClaimAmount) === 0 &&
+                    record.status !== TOKEN_STATUS.ACTIVE
+                      ? '#E0E0E0'
+                      : '#297fd6',
+                  color:
+                    parseFloat(record.pendingClaimAmount) === 0 &&
+                    record.status !== TOKEN_STATUS.ACTIVE
+                      ? '#A6A6A6'
+                      : 'white'
+                }}
+                onClick={() =>
+                  onHandleSellOrClaim(record.id, record.pendingClaimAmount)
+                }
+              >
+                {parseFloat(record.pendingClaimAmount) > 0 ||
+                record.status !== TOKEN_STATUS.ACTIVE
+                  ? 'Claim'
+                  : 'Sell'}
+              </Button>
             </div>
-            {/* {address && !isAddressDifferent && (
+          )
+        }
+      ]
+    : [];
+
+  // Hợp nhất baseColumns và actionColumn
+  const columns = baseColumns.concat(actionColumn);
+
+  useEffect(() => {
+    // Assuming data is fully fetched and set loading to false
+    if (
+      !loadingTableAsset &&
+      Object.keys(claimMap).length === activeInvestPools.length
+    ) {
+      setLoadingTableAsset(false);
+    }
+  }, [claimMap, loadingTableAsset, activeInvestPools.length]);
+
+  const handleClaimMapUpdate = (
+    poolAddress: string,
+    investPoolObj: InvestPool
+  ) => {
+    setClaimMap((prevClaimMap) => {
+      const newClaimMap = new Map<string, InvestPool>(prevClaimMap);
+      newClaimMap.set(poolAddress, investPoolObj);
+      return newClaimMap;
+    });
+  };
+
+  const handleLoadingTable = (isLoading: boolean) => {
+    setLoadingTableAsset(isLoading);
+  };
+
+  const handleGenerateCode = async () => {
+    try {
+      const data = await serviceInviteCode.generateInviteCode();
+      if (data) {
+        notification.success({
+          message: 'Success',
+          // @ts-ignore
+          description: data.message,
+          duration: 3,
+          showProgress: true
+        });
+
+        // @ts-ignore
+        await fetchGetInviteCode();
+      }
+    } catch (error) {
+      notification.error({
+        message: 'Error',
+        description: 'Please try again because your balance is less than $500',
+        duration: 3,
+        showProgress: true
+      });
+    }
+  };
+
+  return (
+    <div className="h-full w-full">
+      {(address as `0x${string}`) &&
+        activeInvestPools.map((item) => (
+          <Investpool
+            item={item}
+            onUpdateClaimMap={handleClaimMapUpdate}
+            onLoading={handleLoadingTable}
+            address={addressParams || address || ''}
+          />
+        ))}
+
+      <div className="!font-forza text-base font-bold">{t('PORTFOLIO')}</div>
+      <div className="py-4">
+        {walletRank && (
+          <div className="mt-1 w-full sm:mt-0 sm:w-auto">
+            <RankBadge
+              rank={walletRank.rank}
+              total={walletRank.total}
+              trustScore={walletRank.trustScore}
+              type="wallet"
+              isHeader={false}
+            />
+          </div>
+        )}
+
+        <p className="!font-forza text-base text-black">
+          {t('TOTAL_INVESTED')}:{' '}
+          {new BigNumber(totalInvestedETH).div(1e18).toFixed(10)}{' '}
+          {chainConfig?.currency}
+        </p>
+
+        <p className="!font-forza text-base text-black">
+          {t('ADDRESS')}:{' '}
+          {isMobile
+            ? shortWalletAddress(addressParams ? addressParams : '')
+            : addressParams}
+        </p>
+
+        {/* <ModalListCurrentCode /> */}
+      </div>
+      {/* {address && !isAddressDifferent && (
                 <>
                     <div className="mt-2 !font-forza text-lg font-bold">
                         {t('CURRENT_CODE_INVITE')}
@@ -462,7 +450,7 @@ const Statistical = () => {
                 </>
             )} */}
 
-            {/* {address && !isAddressDifferent && (
+      {/* {address && !isAddressDifferent && (
                 <>
                     <div className="mb-2 mt-2 !font-forza text-lg font-bold">
                         {t('INVITE_LIST_REFER')}
@@ -474,26 +462,24 @@ const Statistical = () => {
                 </>
             )} */}
 
-            <div className="mt-3 !font-forza text-lg font-bold">
-                {t('ASSET')}
-            </div>
-            <Spin
-                spinning={loadingTableAsset}
-                delay={0}
-            >
-                <Table
-                    key={addressParams}
-                    rowKey="index"
-                    dataSource={(address as `0x${string}`) ? listAsset : []}
-                    columns={columns}
-                    bordered
-                    className="!font-forza"
-                    scroll={{ x: 300 }}
-                />
-            </Spin>
-            <RecentTx userWalletAddress={addressParams?.toLowerCase()} />
-        </div>
-    );
+      <div className="mt-3 !font-forza text-lg font-bold">{t('ASSET')}</div>
+      <Spin
+        spinning={loadingTableAsset}
+        delay={0}
+      >
+        <Table
+          key={addressParams}
+          rowKey="index"
+          dataSource={(address as `0x${string}`) ? listAsset : []}
+          columns={columns}
+          bordered
+          className="!font-forza"
+          scroll={{ x: 300 }}
+        />
+      </Spin>
+      <RecentTx userWalletAddress={addressParams?.toLowerCase()} />
+    </div>
+  );
 };
 
 export default Statistical;

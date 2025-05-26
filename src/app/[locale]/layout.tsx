@@ -10,81 +10,80 @@ import GlobalProvider from '@/src/global-provider';
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 
 export async function generateMetadata() {
-    return {
-        title: `Rocket Launch - Home`,
-        description:
-            'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
-        openGraph: {
-            title: `Rocket Launch - Home`,
-            description:
-                'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
-            url: `https://staging.rocketlaunch.fun/`,
-            type: 'website',
-            images: [
-                {
-                    url: 'https://defikit-mot.s3.ap-southeast-1.amazonaws.com/rocket_launch.png',
-                    width: 800,
-                    height: 600,
-                    alt: 'Rocket Launch Image'
-                }
-            ]
-        },
-        twitter: {
-            card: 'summary_large_image',
-            title: `Rocket Launch - Home`,
-            description:
-                'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
-            images: 'https://defikit-mot.s3.ap-southeast-1.amazonaws.com/rocket_launch.png'
+  return {
+    title: `Rocket Launch - Home`,
+    description:
+      'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
+    openGraph: {
+      title: `Rocket Launch - Home`,
+      description:
+        'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
+      url: `https://staging.rocketlaunch.fun/`,
+      type: 'website',
+      images: [
+        {
+          url: 'https://defikit-mot.s3.ap-southeast-1.amazonaws.com/rocket_launch.png',
+          width: 800,
+          height: 600,
+          alt: 'Rocket Launch Image'
         }
-    };
+      ]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Rocket Launch - Home`,
+      description:
+        'Mother Of Token - Rocket Launch is a decentralized platform for launching tokens',
+      images:
+        'https://defikit-mot.s3.ap-southeast-1.amazonaws.com/rocket_launch.png'
+    }
+  };
 }
 
 export function generateStaticParams() {
-    return [{ locale: 'en' }];
+  return [{ locale: 'en' }];
 }
 
 export default async function RootLayout({
-    children,
-    params: { locale }
+  children,
+  params: { locale }
 }: {
-    children: ReactNode;
-    params: {
-        locale: string;
-    };
+  children: ReactNode;
+  params: {
+    locale: string;
+  };
 }) {
-    let messages;
-    try {
-        messages = (await import(`../../locales/${locale}.json`)).default;
-    } catch (error) {
-        notFound();
-    }
+  let messages;
+  try {
+    messages = (await import(`../../locales/${locale}.json`)).default;
+  } catch (error) {
+    notFound();
+  }
 
-    return (
-        <html
-            lang={locale}
-            className="scroll-smooth"
+  return (
+    <html
+      lang={locale}
+      className="scroll-smooth"
+    >
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://ai-cms.alex-defikit.workers.dev/styling.css"
+        />
+        <script src="https://ai-cms.alex-defikit.workers.dev/widget.js"></script>
+      </head>
+
+      <body className={roboto.className}>
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <GlobalProvider
+          locale={locale}
+          messages={messages}
         >
-            <head>
-                <link
-                    rel="stylesheet"
-                    href="https://ai-cms.alex-defikit.workers.dev/styling.css"
-                />
-                <script src="https://ai-cms.alex-defikit.workers.dev/widget.js"></script>
-            </head>
-
-            <body className={roboto.className}>
-                <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-                <noscript>
-                    You need to enable JavaScript to run this app.
-                </noscript>
-                <GlobalProvider
-                    locale={locale}
-                    messages={messages}
-                >
-                    <WorkspaceLayout>{children}</WorkspaceLayout>
-                </GlobalProvider>
-            </body>
-        </html>
-    );
+          <WorkspaceLayout>{children}</WorkspaceLayout>
+        </GlobalProvider>
+      </body>
+    </html>
+  );
 }

@@ -4,28 +4,29 @@ import { logger } from '@/src/common/utils/logger';
 import { ConfigService } from '@/src/config/services/config-service';
 import { updateMetaDataWorker } from '@/src/stores/pool/common';
 import {
-    IGetAllPoolBackgroundQuery,
-    IGetAllPoolQuery,
-    IGetDetailHolderDistributionParams,
-    IGetDetailPoolParams,
-    IGetPoolInfoRewardParams,
-    IGetTop100TrustPointWalletAndTokenMonthlyQuery,
-    IGetTop100TrustPointWalletAndTokenQuery,
-    IGetTop100TrustPointWalletAndTokenWeeklyQuery,
-    IGetTransactionByPoolAndSenderParams,
-    IGetTrustScoreHistoryPoolParams,
-    IGetUserPoolParams,
-    IGetUserTopRewardByPoolParams,
-    IReferralPool
+  IGetAllPoolBackgroundQuery,
+  IGetAllPoolQuery,
+  IGetDetailHolderDistributionParams,
+  IGetDetailPoolParams,
+  IGetPoolInfoRewardParams,
+  IGetTop100TrustPointWalletAndTokenMonthlyQuery,
+  IGetTop100TrustPointWalletAndTokenQuery,
+  IGetTop100TrustPointWalletAndTokenWeeklyQuery,
+  IGetTransactionByPoolAndSenderParams,
+  IGetTrustScoreHistoryPoolParams,
+  IGetUserPoolParams,
+  IGetUserTopRewardByPoolParams,
+  IReferralPool,
+  IGetAllRankPoolsParams
 } from '@/src/stores/pool/type';
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import { querySubGraph } from '../fetcher';
 import {
-    getQueryByStatus,
-    getTop100TPDailyCombinedQuery,
-    getTop100TPMonthlyCombinedQuery,
-    getTop100TPWeeklyCombinedQuery
+  getQueryByStatus,
+  getTop100TPDailyCombinedQuery,
+  getTop100TPMonthlyCombinedQuery,
+  getTop100TPWeeklyCombinedQuery
 } from './query';
 export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
 // const currentHostName = useCurrentHostNameInformation();
@@ -36,9 +37,9 @@ export const REFERRAL_CODE_INFO_STORAGE_KEY = 'refId';
 const config = ConfigService.getInstance();
 
 const servicePool = {
-    getDetailPoolInfo: ({ poolAddress, chainId }: IGetDetailPoolParams) => {
-        const query = {
-            query: `
+  getDetailPoolInfo: ({ poolAddress, chainId }: IGetDetailPoolParams) => {
+    const query = {
+      query: `
                 {
                     pool(id: "${poolAddress}") {
                         id
@@ -74,40 +75,41 @@ const servicePool = {
                         tgeTimestamp
                         reserveETH
                         reserveToken
+                        trustScore
                     }
                 }
             `
-        };
-        return querySubGraph(query, chainId);
-    },
-    // getUserPool: ({
-    //     poolAddress,
-    //     userAddress,
-    //     chainId
-    // }: IGetDetailPoolParams) => {
-    //     const query = {
-    //         query: `{
-    //                 userInPools(where: {user: "${userAddress}, pool: "${poolAddress}"}) {
-    //                     id
-    //                     pool
-    //                     user
-    //                     batch
-    //                     ethBought
-    //                     batchClaimed
-    //                 }
-    //             }`
-    //     };
-    //     return querySubGraph(query, chainId);
-    // },
-    getTransaction: async (
-        page: number,
-        limit: number,
-        poolAddress: string | undefined,
-        chainId: ChainId = ChainId.BASE_SEPOLIA
-    ) => {
-        const skip = (page - 1) * limit;
-        const query = {
-            query: `
+    };
+    return querySubGraph(query, chainId);
+  },
+  // getUserPool: ({
+  //     poolAddress,
+  //     userAddress,
+  //     chainId
+  // }: IGetDetailPoolParams) => {
+  //     const query = {
+  //         query: `{
+  //                 userInPools(where: {user: "${userAddress}, pool: "${poolAddress}"}) {
+  //                     id
+  //                     pool
+  //                     user
+  //                     batch
+  //                     ethBought
+  //                     batchClaimed
+  //                 }
+  //             }`
+  //     };
+  //     return querySubGraph(query, chainId);
+  // },
+  getTransaction: async (
+    page: number,
+    limit: number,
+    poolAddress: string | undefined,
+    chainId: ChainId = ChainId.BASE_SEPOLIA
+  ) => {
+    const skip = (page - 1) * limit;
+    const query = {
+      query: `
       {
         transactions(
           
@@ -129,43 +131,43 @@ const servicePool = {
         }
       }
       `
-        };
-        return querySubGraph(query, chainId);
-    },
+    };
+    return querySubGraph(query, chainId);
+  },
 
-    getAllPoolByType: ({
-        chainId,
-        statusPool,
-        query,
-        owner
-    }: IGetAllPoolQuery | IGetAllPoolBackgroundQuery) => {
-        const payload = {
-            query: getQueryByStatus({
-                status: statusPool,
-                query: query,
-                owner: owner
-            })
-        };
-        return querySubGraph(payload, chainId!);
-    },
+  getAllPoolByType: ({
+    chainId,
+    statusPool,
+    query,
+    owner
+  }: IGetAllPoolQuery | IGetAllPoolBackgroundQuery) => {
+    const payload = {
+      query: getQueryByStatus({
+        status: statusPool,
+        query: query,
+        owner: owner
+      })
+    };
+    return querySubGraph(payload, chainId!);
+  },
 
-    getPoolMetadata: async (poolId: string, chainId: string) => {
-        try {
-            const response = await updateMetaDataWorker(poolId, chainId);
+  getPoolMetadata: async (poolId: string, chainId: string) => {
+    try {
+      const response = await updateMetaDataWorker(poolId, chainId);
 
-            return response;
-        } catch (error) {
-            throw error;
-        }
-    },
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
 
-    getTransactionByPoolAndSender: ({
-        poolAddress,
-        chainId,
-        senderAddress
-    }: IGetTransactionByPoolAndSenderParams) => {
-        const query = {
-            query: `
+  getTransactionByPoolAndSender: ({
+    poolAddress,
+    chainId,
+    senderAddress
+  }: IGetTransactionByPoolAndSenderParams) => {
+    const query = {
+      query: `
                 query getTransactionByPoolAndSender {
                 transactions(where: {pool: "${poolAddress}", sender: "${senderAddress}"}, orderBy: timestamp, orderDirection: desc) {
                     id
@@ -179,17 +181,13 @@ const servicePool = {
                 }
             }
             `
-        };
+    };
 
-        return querySubGraph(query, chainId);
-    },
-    getUserPool: ({
-        chainId,
-        poolAddress,
-        userAddress
-    }: IGetUserPoolParams) => {
-        const query = {
-            query: `{
+    return querySubGraph(query, chainId);
+  },
+  getUserPool: ({ chainId, poolAddress, userAddress }: IGetUserPoolParams) => {
+    const query = {
+      query: `{
         userInPools(
           where: {user: "${userAddress}", pool: "${poolAddress}"}
         ) {
@@ -201,13 +199,13 @@ const servicePool = {
           batchClaimed
         }
       }`
-        };
-        return querySubGraph(query, chainId);
-    },
+    };
+    return querySubGraph(query, chainId);
+  },
 
-    getPoolInfoReward: ({ id, chainId }: IGetPoolInfoRewardParams) => {
-        const query = {
-            query: `
+  getPoolInfoReward: ({ id, chainId }: IGetPoolInfoRewardParams) => {
+    const query = {
+      query: `
              query getPool {
   pool(id: "${id}") {
     id
@@ -223,16 +221,16 @@ const servicePool = {
 
             
             `
-        };
-        return querySubGraph(query, chainId);
-    },
+    };
+    return querySubGraph(query, chainId);
+  },
 
-    getUserTopRewardByPool: ({
-        pool,
-        chainId
-    }: IGetUserTopRewardByPoolParams) => {
-        const query = {
-            query: `    
+  getUserTopRewardByPool: ({
+    pool,
+    chainId
+  }: IGetUserTopRewardByPoolParams) => {
+    const query = {
+      query: `    
                query getUserByPool {
   userInPools(
     orderBy: referrerBond
@@ -250,121 +248,119 @@ const servicePool = {
 }
 
                         `
-        };
-        return querySubGraph(query, chainId);
-    },
+    };
+    return querySubGraph(query, chainId);
+  },
 
-    storeReferId: (refer: IReferralPool | null) => {
-        if (refer) {
-            if (typeof window !== 'undefined') {
-                const existingRefId = localStorage.getItem(
-                    REFERRAL_CODE_INFO_STORAGE_KEY
-                );
-                if (!existingRefId) {
-                    localStorage.setItem(
-                        REFERRAL_CODE_INFO_STORAGE_KEY,
-                        JSON.stringify(refer)
-                    );
-                } else {
-                    console.log('RefId existed: ', existingRefId);
-                }
-            }
+  storeReferId: (refer: IReferralPool | null) => {
+    if (refer) {
+      if (typeof window !== 'undefined') {
+        const existingRefId = localStorage.getItem(
+          REFERRAL_CODE_INFO_STORAGE_KEY
+        );
+        if (!existingRefId) {
+          localStorage.setItem(
+            REFERRAL_CODE_INFO_STORAGE_KEY,
+            JSON.stringify(refer)
+          );
+        } else {
+          console.log('RefId existed: ', existingRefId);
         }
-    },
+      }
+    }
+  },
 
-    getReferId: (): IReferralPool | null => {
-        if (typeof window !== 'undefined') {
-            const refer = localStorage.getItem(REFERRAL_CODE_INFO_STORAGE_KEY);
+  getReferId: (): IReferralPool | null => {
+    if (typeof window !== 'undefined') {
+      const refer = localStorage.getItem(REFERRAL_CODE_INFO_STORAGE_KEY);
 
-            return refer ? (JSON.parse(refer) as IReferralPool) : null;
-        }
-        return null;
-    },
+      return refer ? (JSON.parse(refer) as IReferralPool) : null;
+    }
+    return null;
+  },
 
-    createLaunchPool: async (
-        name: string,
-        symbol: string,
-        decimals: string,
-        totalSupply: string,
-        address: string,
-        chainId: string,
-        dataAgent?: any,
-        ownerAddress?: string
-    ) => {
-        let res;
+  createLaunchPool: async (
+    name: string,
+    symbol: string,
+    decimals: string,
+    totalSupply: string,
+    address: string,
+    chainId: string,
+    dataAgent?: any,
+    ownerAddress?: string
+  ) => {
+    let res;
 
-        const totalSupplyFormatted = new BigNumber(totalSupply)
-            .div(10 ** parseInt(decimals))
-            .toFixed(0);
+    const totalSupplyFormatted = new BigNumber(totalSupply)
+      .div(10 ** parseInt(decimals))
+      .toFixed(0);
 
-        const data: any = {
-            name,
-            symbol,
-            decimals,
-            totalSupply: totalSupplyFormatted,
-            address
-        };
+    const data: any = {
+      name,
+      symbol,
+      decimals,
+      totalSupply: totalSupplyFormatted,
+      address
+    };
 
-        if (dataAgent !== undefined) {
-            data.dataAgent = dataAgent;
-            data.ownerAddress = ownerAddress;
-        }
+    if (dataAgent !== undefined) {
+      data.dataAgent = dataAgent;
+      data.ownerAddress = ownerAddress;
+    }
 
-        try {
-            res = await axios.post(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/t`,
-                data
-            );
-        } catch (error) {
-            console.log('======= create launch pool to server error: ', error);
-        }
-        if (res && res.status === 200) {
-            return res.data;
-        }
-        return '';
-    },
+    try {
+      res = await axios.post(
+        `${config.getApiConfig().baseUrl}/c/${chainId}/t`,
+        data
+      );
+    } catch (error) {
+      console.log('======= create launch pool to server error: ', error);
+    }
+    if (res && res.status === 200) {
+      return res.data;
+    }
+    return '';
+  },
 
-    getDetailPoolDataFromServer: async (chainId: string, address: string) => {
-        let res;
+  getDetailPoolDataFromServer: async (chainId: string, address: string) => {
+    let res;
 
-        try {
-            res = await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}`
-            );
-        } catch (error) {
-            logger.error(
-                `======= get detail pool data from server error: ${error}`
-            );
-        }
-        if (res && res.status === 200) {
-            return res.data;
-        }
-        return '';
-    },
+    try {
+      res = await axios.get(
+        `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}`
+      );
+    } catch (error) {
+      logger.error(`======= get detail pool data from server error: ${error}`);
+    }
+    if (res && res.status === 200) {
+      return res.data;
+    }
+    return '';
+  },
 
-    getSocialScoreInfo: async (chainId: string, address: string) => {
-        let res;
-        try {
-            res = await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}/social-score`
-            );
-        } catch (error) {
-            // console.log(
-            //     '======= get social score info to server error: ',
-            //     error
-            // );
-        }
-        if (res && res.status === 200) {
-            return res.data;
-        }
-        return '';
-    },
-    getHolderDistribution: ({
-        poolAddress,
-        chainId
-    }: IGetDetailHolderDistributionParams) => {
-        const query = {
-            query: `
+  getSocialScoreInfo: async (chainId: string, address: string) => {
+    let res;
+    try {
+      res = await axios.get(
+        `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}/social-score`
+      );
+    } catch (error) {
+      // console.log(
+      //     '======= get social score info to server error: ',
+      //     error
+      // );
+    }
+    if (res && res.status === 200) {
+      return res.data;
+    }
+    return '';
+  },
+  getHolderDistribution: ({
+    poolAddress,
+    chainId
+  }: IGetDetailHolderDistributionParams) => {
+    const query = {
+      query: `
                   {
   holders(
     orderBy: batch
@@ -381,81 +377,81 @@ const servicePool = {
 
 
             `
-        };
-        return querySubGraph(query, chainId);
-    },
-    getListFocusPools: async (chainId: string) => {
-        let res;
+    };
+    return querySubGraph(query, chainId);
+  },
+  getListFocusPools: async (chainId: string) => {
+    let res;
 
-        try {
-            res = await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/focus-pools`
-            );
-        } catch (error) {
-            // console.log(
-            //     '======= get list focus pools to server error: ',
-            //     error
-            // );
-        }
-        if (res && res.status === 200) {
-            return res.data;
-        }
-        return [];
-    },
+    try {
+      res = await axios.get(
+        `${config.getApiConfig().baseUrl}/c/${chainId}/focus-pools`
+      );
+    } catch (error) {
+      // console.log(
+      //     '======= get list focus pools to server error: ',
+      //     error
+      // );
+    }
+    if (res && res.status === 200) {
+      return res.data;
+    }
+    return [];
+  },
 
-    getTop100TrustPointWalletAndToken: ({
-        dayStartUnix,
-        chainId
-    }: IGetTop100TrustPointWalletAndTokenQuery) => {
-        const payload = {
-            query: getTop100TPDailyCombinedQuery({ dayStartUnix })
-        };
-        return querySubGraph(payload, chainId);
-    },
+  getTop100TrustPointWalletAndToken: ({
+    dayStartUnix,
+    chainId
+  }: IGetTop100TrustPointWalletAndTokenQuery) => {
+    const payload = {
+      query: getTop100TPDailyCombinedQuery({ dayStartUnix })
+    };
+    return querySubGraph(payload, chainId);
+  },
 
-    getTop100TrustPointWalletAndTokenWeekly: ({
-        weekStartUnix,
-        chainId
-    }: IGetTop100TrustPointWalletAndTokenWeeklyQuery) => {
-        const payload = {
-            query: getTop100TPWeeklyCombinedQuery({ weekStartUnix })
-        };
-        return querySubGraph(payload, chainId);
-    },
+  getTop100TrustPointWalletAndTokenWeekly: ({
+    weekStartUnix,
+    chainId
+  }: IGetTop100TrustPointWalletAndTokenWeeklyQuery) => {
+    const payload = {
+      query: getTop100TPWeeklyCombinedQuery({ weekStartUnix })
+    };
+    return querySubGraph(payload, chainId);
+  },
 
-    getTop100TrustPointWalletAndTokenMonthly: ({
-        monthStartUnix,
-        chainId
-    }: IGetTop100TrustPointWalletAndTokenMonthlyQuery) => {
-        const payload = {
-            query: getTop100TPMonthlyCombinedQuery({ monthStartUnix })
-        };
-        return querySubGraph(payload, chainId);
-    },
-    getRankPool: async (chainId: string, poolAddress: string) => {
-        let res;
-        try {
-            res = await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/rank-pool/${poolAddress}`
-            );
-        } catch (error) {
-            // console.log(
-            //     '======= get social score info to server error: ',
-            //     error
-            // );
-        }
-        if (res && res.status === 200) {
-            return res.data;
-        }
-        return '';
-    },
+  getTop100TrustPointWalletAndTokenMonthly: ({
+    monthStartUnix,
+    chainId
+  }: IGetTop100TrustPointWalletAndTokenMonthlyQuery) => {
+    const payload = {
+      query: getTop100TPMonthlyCombinedQuery({ monthStartUnix })
+    };
+    return querySubGraph(payload, chainId);
+  },
+  getRankPool: async (chainId: string, poolAddress: string) => {
+    let res;
+    try {
+      res = await axios.get(
+        `${config.getApiConfig().baseUrl}/c/${chainId}/rank-pool/${poolAddress}`
+      );
+    } catch (error) {
+      // console.log(
+      //     '======= get social score info to server error: ',
+      //     error
+      // );
+    }
+    if (res && res.status === 200) {
+      return res.data;
+    }
+    return '';
+  },
 
-    getTrustScoreHistoryPool: async ({
-        poolAddress,
-        chainId
-    }: IGetTrustScoreHistoryPoolParams) => {
-        const query = {
-            query: `
+  getTrustScoreHistoryPool: async ({
+    poolAddress,
+    chainId
+  }: IGetTrustScoreHistoryPoolParams) => {
+    const query = {
+      query: `
                 {
             
             poolTrustScoreHistories (
@@ -476,10 +472,32 @@ const servicePool = {
                 }
 
             `
-        };
+    };
 
-        return querySubGraph(query, chainId);
-    }
+    return querySubGraph(query, chainId);
+  },
+
+  getAllRankPools: ({ skip, chainId }: IGetAllRankPoolsParams) => {
+    const query = {
+      query: `
+                {
+                     pools(
+                        first: 1000
+                        skip: ${skip}
+                        orderBy: trustScore
+                        orderDirection: desc
+                    ) {
+                        id
+                        trustScore
+                    }
+                    analysisRocket(id: "ANALYSIS_DATA") {
+                        totalPool
+                    }
+                }
+            `
+    };
+    return querySubGraph(query, chainId);
+  }
 };
 
 export default servicePool;

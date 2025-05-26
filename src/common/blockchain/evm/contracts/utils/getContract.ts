@@ -4,16 +4,16 @@ import { useConfig } from '@/src/hooks/useConfig';
 import { Abi } from 'viem';
 
 export const getContract = (chainId: number): ContractInfo => {
-    let address: string = '';
+  let address: string = '';
 
-    const { chainConfig, getContractAbi } = useConfig();
+  const { chainConfig, getContractAbi } = useConfig();
 
-    let abi: Abi = getContractAbi(chainId);
-    address = chainConfig?.addresses.rocket as string;
+  let abi: Abi = getContractAbi(chainId);
+  address = chainConfig?.addresses.rocket as string;
 
-    return {
-        address: address as `0x${string}`,
-        abi: abi,
-        chainId: chainId
-    };
+  return {
+    address: address as `0x${string}`,
+    abi: abi,
+    chainId: chainId
+  };
 };

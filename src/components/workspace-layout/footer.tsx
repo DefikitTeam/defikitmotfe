@@ -2,8 +2,8 @@
 
 import { useConfig } from '@/src/hooks/useConfig';
 import {
-    useTrustPoint,
-    useTrustPointToken
+  useTrustPoint,
+  useTrustPointToken
 } from '@/src/stores/trust-point/hook';
 import { Task } from '@/src/views/portfolio/task-list';
 import { useTranslations } from 'next-intl';
@@ -12,180 +12,180 @@ import { useEffect, useImperativeHandle, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 
 const Footer = () => {
-    const router = useRouter();
-    const { address, isConnected } = useAccount();
-    const t = useTranslations();
+  const router = useRouter();
+  const { address, isConnected } = useAccount();
+  const t = useTranslations();
 
-    const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
-    // const { trustPointToken } = useTrustPointToken();
-    const { chainConfig } = useConfig();
-    const handlePortfolioClick = () => {
-        router.push(
-            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
-        );
-    };
-    const handleClickCreateLaunch = () => {
-        router.push(
-            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
-        );
-    };
+  const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
+  // const { trustPointToken } = useTrustPointToken();
+  const { chainConfig } = useConfig();
+  const handlePortfolioClick = () => {
+    router.push(
+      `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/profile/address/${address}`
+    );
+  };
+  const handleClickCreateLaunch = () => {
+    router.push(
+      `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/create-launch`
+    );
+  };
 
-    const handleClickCommunity = () => {};
+  const handleClickCommunity = () => {};
 
-    const handleClickLeaderboard = () => {
-        router.push(
-            `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/leaderboard`
-        );
-    };
+  const handleClickLeaderboard = () => {
+    router.push(
+      `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/leaderboard`
+    );
+  };
 
-    const hasUncompletedTask = useMemo(() => {
-        return (
-            Array.isArray(trustPointStatus?.data) &&
-            trustPointStatus.data.some((task) => !task.completed)
-        );
-    }, [trustPointStatus]);
-
-    useEffect(() => {
-        getTrustPointStatusAction();
-    }, []);
-
+  const hasUncompletedTask = useMemo(() => {
     return (
-        <div>
-            <div className="h-20 bg-white"></div>
+      Array.isArray(trustPointStatus?.data) &&
+      trustPointStatus.data.some((task) => !task.completed)
+    );
+  }, [trustPointStatus]);
 
-            <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
-                <div
-                    className={` mx-auto grid h-full max-w-lg cursor-pointer grid-cols-5 font-medium`}
-                >
-                    <div
-                        className="group inline-flex flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                        onClick={() =>
-                            router.push(
-                                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
-                            )
-                        }
-                    >
-                        <svg
-                            className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                        </svg>
-                        <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
-                            Home
-                        </span>
-                    </div>
+  useEffect(() => {
+    getTrustPointStatusAction();
+  }, []);
 
-                    <div
-                        className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                        onClick={handleClickCreateLaunch}
-                    >
-                        <svg
-                            className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M9 1v16M1 9h16"
-                            />
-                        </svg>
-                        <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
-                            Create
-                        </span>
-                    </div>
-                    <div
-                        className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                        onClick={handlePortfolioClick}
-                        style={{ position: 'relative' }}
-                    >
-                        <svg
-                            className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path d="M11.074 4 8.442.408A.95.95 0 0 0 7.014.254L2.926 4h8.148ZM9 13v-1a4 4 0 0 1 4-4h6V6a1 1 0 0 0-1-1H1a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h17a1 1 0 0 0 1-1v-2h-6a4 4 0 0 1-4-4Z" />
-                            <path d="M19 10h-6a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1Zm-4.5 3.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM12.62 4h2.78L12.539.41a1.086 1.086 0 1 0-1.7 1.352L12.62 4Z" />
-                        </svg>
-                        <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
-                            Portfolio
-                        </span>
-                        {hasUncompletedTask && (
-                            <span
-                                style={{
-                                    position: 'absolute',
-                                    zIndex: 100,
-                                    top: 6,
-                                    right: 18,
-                                    width: 12,
-                                    height: 12,
-                                    borderRadius: '50%',
-                                    background: '#ff4d4f',
-                                    border: '2px solid white'
-                                }}
-                                title="Uncompleted tasks nft remain"
-                            />
-                        )}
-                    </div>
+  return (
+    <div>
+      <div className="h-20 bg-white"></div>
 
-                    <div
-                        className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                        onClick={handleClickCommunity}
-                    >
-                        <a
-                            href="https://linktr.ee/RocketLaunch_DeFiKit"
-                            target="_blank"
-                            className={`group inline-flex flex-col items-center justify-center border-gray-200 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800`}
-                        >
-                            <svg
-                                className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
-                                />
-                            </svg>
-                            <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
-                                Community
-                            </span>
-                        </a>
-                    </div>
+      <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
+        <div
+          className={` mx-auto grid h-full max-w-lg cursor-pointer grid-cols-5 font-medium`}
+        >
+          <div
+            className="group inline-flex flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+            onClick={() =>
+              router.push(
+                `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`
+              )
+            }
+          >
+            <svg
+              className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+            </svg>
+            <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
+              Home
+            </span>
+          </div>
 
-                    <div
-                        className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
-                        onClick={handleClickLeaderboard}
-                    >
-                        <svg
-                            className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path d="M15.75 3.75a1.5 1.5 0 00-1.5 1.5v10.5a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5V5.25a1.5 1.5 0 00-1.5-1.5h-.75zM9.75 8.25a1.5 1.5 0 00-1.5 1.5v6a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5v-6a1.5 1.5 0 00-1.5-1.5h-.75zM3.75 12.75a1.5 1.5 0 00-1.5 1.5v1.5a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5v-1.5a1.5 1.5 0 00-1.5-1.5h-.75z" />
-                        </svg>
+          <div
+            className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+            onClick={handleClickCreateLaunch}
+          >
+            <svg
+              className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 1v16M1 9h16"
+              />
+            </svg>
+            <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
+              Create
+            </span>
+          </div>
+          <div
+            className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+            onClick={handlePortfolioClick}
+            style={{ position: 'relative' }}
+          >
+            <svg
+              className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M11.074 4 8.442.408A.95.95 0 0 0 7.014.254L2.926 4h8.148ZM9 13v-1a4 4 0 0 1 4-4h6V6a1 1 0 0 0-1-1H1a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h17a1 1 0 0 0 1-1v-2h-6a4 4 0 0 1-4-4Z" />
+              <path d="M19 10h-6a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1Zm-4.5 3.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM12.62 4h2.78L12.539.41a1.086 1.086 0 1 0-1.7 1.352L12.62 4Z" />
+            </svg>
+            <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
+              Portfolio
+            </span>
+            {hasUncompletedTask && (
+              <span
+                style={{
+                  position: 'absolute',
+                  zIndex: 100,
+                  top: 6,
+                  right: 18,
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  background: '#ff4d4f',
+                  border: '2px solid white'
+                }}
+                title="Uncompleted tasks nft remain"
+              />
+            )}
+          </div>
 
-                        <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
-                            Leaderboard
-                        </span>
-                    </div>
+          <div
+            className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+            onClick={handleClickCommunity}
+          >
+            <a
+              href="https://linktr.ee/RocketLaunch_DeFiKit"
+              target="_blank"
+              className={`group inline-flex flex-col items-center justify-center border-gray-200 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800`}
+            >
+              <svg
+                className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
+                />
+              </svg>
+              <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
+                Community
+              </span>
+            </a>
+          </div>
 
-                    {/* {chainData.onFaucet && (
+          <div
+            className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+            onClick={handleClickLeaderboard}
+          >
+            <svg
+              className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M15.75 3.75a1.5 1.5 0 00-1.5 1.5v10.5a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5V5.25a1.5 1.5 0 00-1.5-1.5h-.75zM9.75 8.25a1.5 1.5 0 00-1.5 1.5v6a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5v-6a1.5 1.5 0 00-1.5-1.5h-.75zM3.75 12.75a1.5 1.5 0 00-1.5 1.5v1.5a1.5 1.5 0 001.5 1.5h.75a1.5 1.5 0 001.5-1.5v-1.5a1.5 1.5 0 00-1.5-1.5h-.75z" />
+            </svg>
+
+            <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
+              Leaderboard
+            </span>
+          </div>
+
+          {/* {chainData.onFaucet && (
                         <div
                             className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
                             onClick={handleClickFaucet}
@@ -229,10 +229,10 @@ const Footer = () => {
                             </span>
                         </div>
                     )} */}
-                </div>
-            </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Footer;

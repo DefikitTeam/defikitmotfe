@@ -6,28 +6,28 @@ import { querySubGraph } from '../fetcher';
 const config = ConfigService.getInstance();
 
 const serviceWallet = {
-    getRankWallet: async (chainId: string, walletAddress: string) => {
-        let res;
-        try {
-            res = await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/rank-wallet/${walletAddress}`
-            );
-        } catch (error) {
-            // console.log(
-            //     '======= get social score info to server error: ',
-            //     error
-        }
-        if (res && res.status === 200) {
-            return res.data;
-        }
-        return '';
-    },
-    getTrustScoreHistoryWallet: async ({
-        userAddress,
-        chainId
-    }: IGetTrustScoreHistoryWalletParams) => {
-        const query = {
-            query: `
+  getRankWallet: async (chainId: string, walletAddress: string) => {
+    let res;
+    try {
+      res = await axios.get(
+        `${config.getApiConfig().baseUrl}/c/${chainId}/rank-wallet/${walletAddress}`
+      );
+    } catch (error) {
+      // console.log(
+      //     '======= get social score info to server error: ',
+      //     error
+    }
+    if (res && res.status === 200) {
+      return res.data;
+    }
+    return '';
+  },
+  getTrustScoreHistoryWallet: async ({
+    userAddress,
+    chainId
+  }: IGetTrustScoreHistoryWalletParams) => {
+    const query = {
+      query: `
                 {
             userTrustScoreHistories (
     where: {
@@ -48,10 +48,10 @@ const serviceWallet = {
                 }
 
             `
-        };
+    };
 
-        return querySubGraph(query, chainId);
-    }
+    return querySubGraph(query, chainId);
+  }
 };
 
 export default serviceWallet;

@@ -9,16 +9,16 @@ import { querySubGraph } from '../fetcher';
 const config = ConfigService.getInstance();
 
 const servicePortfolio = {
-    getProfileDAtaFromSubgraph: async ({
-        chainId,
-        wallet
-    }: IGetPortfolioParams) => {
-        const config = ConfigService.getInstance();
-        const endpoint = config.getApiConfig().endpoints.subgraph[chainId];
+  getProfileDAtaFromSubgraph: async ({
+    chainId,
+    wallet
+  }: IGetPortfolioParams) => {
+    const config = ConfigService.getInstance();
+    const endpoint = config.getApiConfig().endpoints.subgraph[chainId];
 
-        const response: IResponseProfileData = await request(
-            endpoint,
-            gql`
+    const response: IResponseProfileData = await request(
+      endpoint,
+      gql`
                 query getProfileData {
                     user(id: "${wallet.toLowerCase()}") {
                         id
@@ -92,35 +92,35 @@ const servicePortfolio = {
                 }
             
             `
-        );
+    );
 
-        return response || {};
-    },
+    return response || {};
+  },
 
-    getYourFriendList: async (wallet: string) => {
-        let res;
-        try {
-            res = await axios.get(
-                `${config.getApiConfig().baseUrl}/w/${wallet}/referers`
-            );
-        } catch (error) {
-            console.log('======== get your friend list error', error);
-        }
-        if (res && res.status === 200) {
-            return res.data;
-        }
-        return res;
-    },
+  getYourFriendList: async (wallet: string) => {
+    let res;
+    try {
+      res = await axios.get(
+        `${config.getApiConfig().baseUrl}/w/${wallet}/referers`
+      );
+    } catch (error) {
+      console.log('======== get your friend list error', error);
+    }
+    if (res && res.status === 200) {
+      return res.data;
+    }
+    return res;
+  },
 
-    getRecentTx: async (
-        page: number,
-        limit: number,
-        userWalletAddress: string,
-        chainId: ChainId = ChainId.BASE_SEPOLIA
-    ) => {
-        const skip = (page - 1) * limit;
-        const query = {
-            query: `
+  getRecentTx: async (
+    page: number,
+    limit: number,
+    userWalletAddress: string,
+    chainId: ChainId = ChainId.BASE_SEPOLIA
+  ) => {
+    const skip = (page - 1) * limit;
+    const query = {
+      query: `
       {
         transactionUsers(
           where: {sender: "${userWalletAddress}"}
@@ -139,10 +139,9 @@ const servicePortfolio = {
         }
       }
       `
-        };
-        return querySubGraph(query, chainId);
-    },
-
+    };
+    return querySubGraph(query, chainId);
+  }
 };
 
 export default servicePortfolio;

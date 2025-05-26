@@ -7,23 +7,23 @@ import { Chain, getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { iota } from 'viem/chains';
 
 const iotaWithIcon: Chain = {
-    ...iota,
-    iconUrl: 'https://cryptologos.cc/logos/iota-miota-logo.png',
-    iconBackground: '#ffffff'
+  ...iota,
+  iconUrl: 'https://cryptologos.cc/logos/iota-miota-logo.png',
+  iconBackground: '#ffffff'
 };
 
 const configService = ConfigService.getInstance();
 
 export const config = getDefaultConfig({
-    appName: 'Rocket Launch',
-    projectId: NEXT_PUBLIC_PROJECT_ID ?? '',
-    appIcon: 'https://testnet.rocketlaunch.fun/rocket_launch.jpg',
-    // @ts-ignore
-    chains: [...configService.getSupportedChainsNew()],
-    defaultChain: configService.getDefaultChainNew(),
-    autoConnect: false
-    // wallets: [
-    //     hotWallet,
-    // ],
-    // ssr: true
+  appName: 'Rocket Launch',
+  projectId: NEXT_PUBLIC_PROJECT_ID ?? '',
+  appIcon: 'https://testnet.rocketlaunch.fun/rocket_launch.jpg',
+  // @ts-ignore
+  chains: [...configService.getSupportedChainsNew()],
+  defaultChain: configService.getDefaultChainNew(),
+  autoConnect: false
+  // wallets: [
+  //     hotWallet,
+  // ],
+  // ssr: true
 });
