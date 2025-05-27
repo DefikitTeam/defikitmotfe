@@ -3,20 +3,20 @@ import axios from 'axios';
 const config = ConfigService.getInstance();
 
 const serviceTopRefByVol = {
-    getAllTopRefByVol: async (chainId: string) => {
-        let res;
-        try {
-            res = await axios.get(
-                `${config.getApiConfig().baseUrl}/c/${chainId}/top-referrer`
-            );
-        } catch (error) {
-            // console.log('=========== GET faucet error: ', error);
-        }
-        if (res && res.status === 200) {
-            return res.data;
-        }
-        return '';
+  getAllTopRefByVol: async (chainId: string) => {
+    let res;
+    try {
+      res = await axios.get(
+        `${config.getApiConfig().baseUrl}/c/${chainId}/top-referrer`
+      );
+    } catch (error) {
+      // console.log('=========== GET faucet error: ', error);
     }
+    if (res && res.status === 200) {
+      return res.data;
+    }
+    return '';
+  }
 };
 
 export default serviceTopRefByVol;

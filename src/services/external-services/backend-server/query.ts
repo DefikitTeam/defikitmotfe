@@ -34,20 +34,21 @@ const entities = ` {
           tgeTimestamp
           reserveETH
           reserveToken
+          trustScore
         }`;
 export interface IParams {
-    status: PoolStatus;
-    query: string;
-    owner?: string;
+  status: PoolStatus;
+  query: string;
+  owner?: string;
 }
 
 function getQueryPools(params: IParams) {
-    const isContractAddress = /^0x[a-fA-F0-9]{40}$/.test(params.query);
-    let query;
-    let currentEpoch = Math.round(Date.now() / 1000).toFixed(0);
-    switch (params.status) {
-        case PoolStatus.MY_POOl:
-            query = `pools(where: {
+  const isContractAddress = /^0x[a-fA-F0-9]{40}$/.test(params.query);
+  let query;
+  let currentEpoch = Math.round(Date.now() / 1000).toFixed(0);
+  switch (params.status) {
+    case PoolStatus.MY_POOl:
+      query = `pools(where: {
                   and: [
                     {owner: "${params?.owner?.toLocaleLowerCase()}"},
                     {or: [
@@ -61,9 +62,9 @@ function getQueryPools(params: IParams) {
                   orderDirection: desc
                 )
               `;
-            break;
-        case PoolStatus.ACTIVE:
-            query = `pools(where: {
+      break;
+    case PoolStatus.ACTIVE:
+      query = `pools(where: {
                 and: [
                   {status: "ACTIVE"},
                   {endTime_gte: "${currentEpoch}"},
@@ -78,9 +79,9 @@ function getQueryPools(params: IParams) {
                 orderDirection: desc
               )
             `;
-            break;
-        case PoolStatus.UP_COMING:
-            query = `pools(where: {
+      break;
+    case PoolStatus.UP_COMING:
+      query = `pools(where: {
                 and: [
                   {status: "ACTIVE"},
                   {startTime_gt: "${currentEpoch}"},  
@@ -92,9 +93,9 @@ function getQueryPools(params: IParams) {
                 orderBy: startTime,
                 orderDirection: desc
               )`;
-            break;
-        case PoolStatus.All_POOL:
-            query = `pools(where: {
+      break;
+    case PoolStatus.All_POOL:
+      query = `pools(where: {
                 and: [
                   {or: [
                     {name_contains_nocase: "${params.query}"},
@@ -104,9 +105,9 @@ function getQueryPools(params: IParams) {
                 orderBy: latestTimestampBuy,
                 orderDirection: desc
               )`;
-            break;
-        default:
-            query = `pools(where: {
+      break;
+    default:
+      query = `pools(where: {
                 and: [
                   {status: "${params.status}"},
                   {or: [
@@ -118,30 +119,30 @@ function getQueryPools(params: IParams) {
                 orderBy: latestTimestampBuy,
                 orderDirection: desc
               )`;
-            break;
-    }
-    return query;
+      break;
+  }
+  return query;
 }
 export const getQueryByStatus = (prams: IParams) => {
-    return `query { ${getQueryPools(prams)} ${entities} }`;
+  return `query { ${getQueryPools(prams)} ${entities} }`;
 };
 
 // Trust Point Daily Queries
 export interface IDailyQueryParams {
-    first?: number;
-    orderBy?: string;
-    orderDirection?: 'asc' | 'desc';
-    dayStartUnix: number; // Unix timestamp for the start of the day
+  first?: number;
+  orderBy?: string;
+  orderDirection?: 'asc' | 'desc';
+  dayStartUnix: number; // Unix timestamp for the start of the day
 }
 
 export interface IWeeklyQueryParams
-    extends Omit<IDailyQueryParams, 'dayStartUnix'> {
-    weekStartUnix: number; // Unix timestamp for the start of the week
+  extends Omit<IDailyQueryParams, 'dayStartUnix'> {
+  weekStartUnix: number; // Unix timestamp for the start of the week
 }
 
 export interface IMonthlyQueryParams
-    extends Omit<IWeeklyQueryParams, 'weekStartUnix'> {
-    monthStartUnix: number; // Unix timestamp for the start of the month
+  extends Omit<IWeeklyQueryParams, 'weekStartUnix'> {
+  monthStartUnix: number; // Unix timestamp for the start of the month
 }
 
 const userTrustScoreDailyEntities = ` {
@@ -256,20 +257,20 @@ id
 `;
 
 function buildDailyQuery(
-    entityType: 'userTrustScoreDailies' | 'poolTrustScoreDailies',
-    params: IDailyQueryParams,
-    entities: string
+  entityType: 'userTrustScoreDailies' | 'poolTrustScoreDailies',
+  params: IDailyQueryParams,
+  entities: string
 ) {
-    const {
-        first = 100,
-        orderBy = 'trustScore',
-        orderDirection = 'desc',
-        dayStartUnix
-    } = params;
-    // Ensure dayStartUnix is treated as a number, not a string in the query
-    const whereClause = `{ dayStartUnix: ${dayStartUnix} }`;
+  const {
+    first = 100,
+    orderBy = 'trustScore',
+    orderDirection = 'desc',
+    dayStartUnix
+  } = params;
+  // Ensure dayStartUnix is treated as a number, not a string in the query
+  const whereClause = `{ dayStartUnix: ${dayStartUnix} }`;
 
-    return `
+  return `
       ${entityType}(
         first: ${first}
         orderBy: ${orderBy}
@@ -280,20 +281,20 @@ function buildDailyQuery(
 }
 
 function buildWeeklyQuery(
-    entityType: 'userTrustScoreWeeklies' | 'poolTrustScoreWeeklies',
-    params: IWeeklyQueryParams,
-    entities: string
+  entityType: 'userTrustScoreWeeklies' | 'poolTrustScoreWeeklies',
+  params: IWeeklyQueryParams,
+  entities: string
 ) {
-    const {
-        first = 100,
-        orderBy = 'trustScore',
-        orderDirection = 'desc',
-        weekStartUnix
-    } = params;
+  const {
+    first = 100,
+    orderBy = 'trustScore',
+    orderDirection = 'desc',
+    weekStartUnix
+  } = params;
 
-    const whereClause = `{ weekStartUnix: ${weekStartUnix} }`;
+  const whereClause = `{ weekStartUnix: ${weekStartUnix} }`;
 
-    return `
+  return `
       ${entityType}(
         first: ${first} 
         orderBy: ${orderBy}
@@ -304,20 +305,20 @@ function buildWeeklyQuery(
 }
 
 function buildMonthlyQuery(
-    entityType: 'userTrustScoreMonthlies' | 'poolTrustScoreMonthlies',
-    params: IMonthlyQueryParams,
-    entities: string
+  entityType: 'userTrustScoreMonthlies' | 'poolTrustScoreMonthlies',
+  params: IMonthlyQueryParams,
+  entities: string
 ) {
-    const {
-        first = 100,
-        orderBy = 'trustScore',
-        orderDirection = 'desc',
-        monthStartUnix
-    } = params;
+  const {
+    first = 100,
+    orderBy = 'trustScore',
+    orderDirection = 'desc',
+    monthStartUnix
+  } = params;
 
-    const whereClause = `{ monthStartUnix: ${monthStartUnix} }`;
+  const whereClause = `{ monthStartUnix: ${monthStartUnix} }`;
 
-    return `
+  return `
       ${entityType}(
         first: ${first} 
         orderBy: ${orderBy}
@@ -334,80 +335,80 @@ function buildMonthlyQuery(
  * @returns The combined GraphQL query string.
  */
 export const getTop100TPDailyCombinedQuery = (params: {
-    dayStartUnix: number;
+  dayStartUnix: number;
 }) => {
-    const queryParams: IDailyQueryParams = {
-        ...params,
-        first: 100,
-        orderBy: 'trustScore',
-        orderDirection: 'desc'
-    };
-    const userQueryPart = buildDailyQuery(
-        'userTrustScoreDailies',
-        queryParams,
-        userTrustScoreDailyEntities
-    );
-    const poolQueryPart = buildDailyQuery(
-        'poolTrustScoreDailies',
-        queryParams,
-        poolTrustScoreDailyEntities
-    );
+  const queryParams: IDailyQueryParams = {
+    ...params,
+    first: 100,
+    orderBy: 'trustScore',
+    orderDirection: 'desc'
+  };
+  const userQueryPart = buildDailyQuery(
+    'userTrustScoreDailies',
+    queryParams,
+    userTrustScoreDailyEntities
+  );
+  const poolQueryPart = buildDailyQuery(
+    'poolTrustScoreDailies',
+    queryParams,
+    poolTrustScoreDailyEntities
+  );
 
-    return `query top100TPDaily {
+  return `query top100TPDaily {
       ${userQueryPart}
       ${poolQueryPart}
     }`;
 };
 
 export const getTop100TPWeeklyCombinedQuery = (params: {
-    weekStartUnix: number;
+  weekStartUnix: number;
 }) => {
-    const queryParams: IWeeklyQueryParams = {
-        ...params,
-        first: 100,
-        orderBy: 'trustScore',
-        orderDirection: 'desc'
-    };
+  const queryParams: IWeeklyQueryParams = {
+    ...params,
+    first: 100,
+    orderBy: 'trustScore',
+    orderDirection: 'desc'
+  };
 
-    const userQueryPart = buildWeeklyQuery(
-        'userTrustScoreWeeklies',
-        queryParams,
-        userTrustScoreWeeklyEntities
-    );
-    const poolQueryPart = buildWeeklyQuery(
-        'poolTrustScoreWeeklies',
-        queryParams,
-        poolTrustScoreWeeklyEntities
-    );
+  const userQueryPart = buildWeeklyQuery(
+    'userTrustScoreWeeklies',
+    queryParams,
+    userTrustScoreWeeklyEntities
+  );
+  const poolQueryPart = buildWeeklyQuery(
+    'poolTrustScoreWeeklies',
+    queryParams,
+    poolTrustScoreWeeklyEntities
+  );
 
-    return `query top100TPWeekly {
+  return `query top100TPWeekly {
       ${userQueryPart}
       ${poolQueryPart}
     }`;
 };
 
 export const getTop100TPMonthlyCombinedQuery = (params: {
-    monthStartUnix: number;
+  monthStartUnix: number;
 }) => {
-    const queryParams: IMonthlyQueryParams = {
-        ...params,
-        first: 100,
-        orderBy: 'trustScore',
-        orderDirection: 'desc'
-    };
+  const queryParams: IMonthlyQueryParams = {
+    ...params,
+    first: 100,
+    orderBy: 'trustScore',
+    orderDirection: 'desc'
+  };
 
-    const userQueryPart = buildMonthlyQuery(
-        'userTrustScoreMonthlies',
-        queryParams,
-        userTrustScoreMonthlyEntities
-    );
-    const poolQueryPart = buildMonthlyQuery(
-        'poolTrustScoreMonthlies',
-        queryParams,
-        poolTrustScoreMonthlyEntities
-    );
+  const userQueryPart = buildMonthlyQuery(
+    'userTrustScoreMonthlies',
+    queryParams,
+    userTrustScoreMonthlyEntities
+  );
+  const poolQueryPart = buildMonthlyQuery(
+    'poolTrustScoreMonthlies',
+    queryParams,
+    poolTrustScoreMonthlyEntities
+  );
 
-    return `query top100TPMonthly {
+  return `query top100TPMonthly {
       ${userQueryPart}
       ${poolQueryPart}
     }`;

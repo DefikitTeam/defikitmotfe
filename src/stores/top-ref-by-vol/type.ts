@@ -1,21 +1,21 @@
 import { EActionStatus } from '../type';
 
 export interface ITopRefByVolState {
-    topRefByVols: ITopRefByVolItem[];
-    status: EActionStatus;
-    errorMessage: string;
-    errorCode: string;
+  topRefByVols: ITopRefByVolItem[];
+  status: EActionStatus;
+  errorMessage: string;
+  errorCode: string;
 }
 
 export interface ITopRefByVolItem {
-    id: string;
-    volumeInETH: string;
+  id: string;
+  volumeInETH: string;
 }
 
 export interface IGetAllTopRefByVolRequest {
-    chainId: string;
+  chainId: string;
 }
 
 export interface IGetAllTopRefByVolResponse {
-    data: ITopRefByVolItem[];
+  data: ITopRefByVolItem[];
 }

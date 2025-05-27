@@ -9,39 +9,39 @@ import Footer from './footer';
 import Header from './header';
 
 export interface IWorkspaceLayout {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 const WorkspaceLayout = (props: IWorkspaceLayout) => {
-    const router = useRouter();
-    const pathname = usePathname();
-    const currentPath = pathname?.split('/');
+  const router = useRouter();
+  const pathname = usePathname();
+  const currentPath = pathname?.split('/');
 
-    const { chainConfig } = useConfig();
+  const { chainConfig } = useConfig();
 
-    useEffect(() => {
-        if (currentPath && currentPath.length < 2) {
-            handleNavigation();
-        }
-    }, [currentPath, chainConfig?.name]);
-
-    const handleNavigation = useCallback(() => {
-        router.push(`/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`);
-    }, [chainConfig]);
-
+  useEffect(() => {
     if (currentPath && currentPath.length < 2) {
-        handleNavigation();
-        return null;
+      handleNavigation();
     }
+  }, [currentPath, chainConfig?.name]);
 
-    return (
-        <Layout className="min-h-screen">
-            <Header />
-            <Layout className="mt-12">
-                <Content {...props} />
-            </Layout>
-            <Footer />
-        </Layout>
-    );
+  const handleNavigation = useCallback(() => {
+    router.push(`/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}`);
+  }, [chainConfig]);
+
+  if (currentPath && currentPath.length < 2) {
+    handleNavigation();
+    return null;
+  }
+
+  return (
+    <Layout className="min-h-screen">
+      <Header />
+      <Layout className="mt-12">
+        <Content {...props} />
+      </Layout>
+      <Footer />
+    </Layout>
+  );
 };
 export default WorkspaceLayout;
