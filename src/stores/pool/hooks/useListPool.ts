@@ -7,7 +7,8 @@ import {
 import { useCallback } from 'react';
 import { RootState, useAppDispatch, useAppSelector } from '../../';
 import {
-  getAllRankPools
+  getAllRankPools,
+  getAllRankWallet
 } from '../detailSlice';
 import {
   getAllPoolBackgroundByType,
@@ -22,6 +23,7 @@ import {
   IGetAllPoolBackgroundQuery,
   IGetAllPoolQuery,
   IGetAllRankPoolsParams,
+  IGetAllRankWalletParams,
   IGetMetadataPoolParams,
   IPoolState,
   IUpdateCalculatePoolParams,
@@ -42,6 +44,7 @@ type ListPooltype = {
   setOrderByAction: (data: PoolStatusSortOrderBy) => void;
 
   getAllRankPoolsAction: (data: IGetAllRankPoolsParams) => void;
+  getAllRankWalletAction: (data: IGetAllRankWalletParams) => void;
 };
 
 export const useListPool = (): ListPooltype => {
@@ -104,6 +107,13 @@ export const useListPool = (): ListPooltype => {
     [dispatch]
   );
 
+  const getAllRankWalletAction = useCallback(
+    (data: IGetAllRankWalletParams) => {
+      dispatch(getAllRankWallet(data));
+    },
+    [dispatch]
+  );
+
   return {
     poolStateList,
     getListPoolAction,
@@ -113,7 +123,8 @@ export const useListPool = (): ListPooltype => {
     setFilterAction,
     setOrderByDirectionAction,
     setOrderByAction,
-    getAllRankPoolsAction
+    getAllRankPoolsAction,
+    getAllRankWalletAction
   };
 };
 

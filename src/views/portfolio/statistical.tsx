@@ -25,6 +25,7 @@ import Investpool from './Investpool';
 import RecentTx from './recent-tx';
 import serviceWallet from '@/src/services/external-services/backend-server/wallet';
 import RankBadge from '@/src/components/common/rank-badge';
+import MyLaunchPool from './my-launch-pool';
 export interface IAssetList {
   index: number;
   id: string;
@@ -477,6 +478,7 @@ const Statistical = () => {
           scroll={{ x: 300 }}
         />
       </Spin>
+      <MyLaunchPool walletAddress={addressParams?.toLowerCase()} />
       <RecentTx userWalletAddress={addressParams?.toLowerCase()} />
     </div>
   );

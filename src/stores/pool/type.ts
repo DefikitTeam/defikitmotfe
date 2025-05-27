@@ -118,7 +118,7 @@ export interface IGetDetailPoolParams extends IGetAllQuery {
   chainId: number;
 }
 export interface IGetDetailHolderDistributionParams
-  extends Omit<IGetDetailPoolParams, 'userAddress'> {}
+  extends Omit<IGetDetailPoolParams, 'userAddress'> { }
 
 export interface IGetDetailDiscussionParams {
   chainId: string;
@@ -174,6 +174,7 @@ export interface IDetailPoolState {
   totalTopReward: number;
 
   rankPools: IGetAllRankPoolsResponse;
+  rankWallet: IGetAllRankWalletResponse;
 }
 export interface IHolderDistribution {
   pool: string;
@@ -621,6 +622,20 @@ export interface IGetAllRankPoolsResponse {
     trustScore: number;
   }[];
   totalPool: number;
+  isFetchedRankPools: boolean;
+}
+
+export interface IGetAllRankWalletParams {
+  skip: number;
+  chainId: number;
+}
+export interface IGetAllRankWalletResponse {
+  users: {
+    id: string;
+    trustScore: number;
+  }[];
+  totalUser: number;
+  isFetchedRankWallet: boolean;
 }
 
 // export interface ITrustScoreHistoryWallet {

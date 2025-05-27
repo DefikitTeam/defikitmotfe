@@ -5,13 +5,16 @@ import {
 } from '@/src/common/utils/utils';
 import Image from 'next/image';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { IAnalystData, IMetaData, IPoolList } from '@/src/stores/pool/type';
+import { IAnalystData, IGetAllRankPoolsResponse, IMetaData, IPoolList } from '@/src/stores/pool/type';
 import { Typography } from 'antd';
 import BigNumber from 'bignumber.js';
 import { useEffect, useState } from 'react';
 import Moment from 'react-moment';
 import BubbleUp from '@/src/components/common/bubble-up';
 import { useConfig } from '@/src/hooks/useConfig';
+import { useAppSelector } from '@/src/stores';
+import { RootState } from '@/src/stores';
+import RankBadge, { TrustScore } from '@/src/components/common/rank-badge';
 interface Props {
   poolItem: IPoolList;
   metadata?: IMetaData | undefined;
@@ -19,19 +22,23 @@ interface Props {
   onClick: () => void;
   className?: string;
   priceNative: number;
+  rankPools: IGetAllRankPoolsResponse;
 }
 const { Text } = Typography;
 
 const ItemPool = (props: Props) => {
   const { isMobile } = useWindowSize();
-
   const { chainConfig } = useConfig();
 
   const [animationNewTransactionClass, setAnimationNewTransactionClass] =
     useState('');
   // const [currency, setCurrency] = useState('ETH');
 
-  const { poolItem, onClick, analysisData, metadata, priceNative } = props;
+  const { poolItem, onClick, analysisData, metadata, priceNative, rankPools } = props;
+  const rankIndex = rankPools.pools.findIndex((pool) => pool.id === poolItem.id);
+  const trustScore = poolItem.trustScore !== undefined && poolItem.trustScore !== null
+    ? new BigNumber(poolItem.trustScore).div(1e18).toFixed(4)
+    : 'N/A';
   const marketCap = new BigNumber(poolItem.raisedInETH).div(1e18);
 
   const image: any =
@@ -50,8 +57,8 @@ const ItemPool = (props: Props) => {
 
   const description =
     metadata &&
-    metadata?.description &&
-    typeof metadata?.description === 'string'
+      metadata?.description &&
+      typeof metadata?.description === 'string'
       ? metadata?.description
       : '';
 
@@ -60,9 +67,9 @@ const ItemPool = (props: Props) => {
     : marketCap.isLessThanOrEqualTo(0.001)
       ? `<0.001`
       : `${marketCap.toFixed(3)} - $${currencyFormatter(
-          marketCap.times(priceNative),
-          2
-        )}`;
+        marketCap.times(priceNative),
+        2
+      )}`;
 
   const hardCap = new BigNumber(poolItem.capInETH);
   const hardCapShow = hardCap.isZero() ? '0' : hardCap.div(1e18).toFixed(3);
@@ -72,19 +79,19 @@ const ItemPool = (props: Props) => {
 
   const expectProfitShow =
     analysisData?.liquidityPrice &&
-    (analysisData?.currentPrice || analysisData?.startPrice) &&
-    !isNaN(Number(analysisData?.liquidityPrice)) &&
-    !isNaN(
-      Number(analysisData?.currentPrice) || Number(analysisData?.startPrice)
-    )
+      (analysisData?.currentPrice || analysisData?.startPrice) &&
+      !isNaN(Number(analysisData?.liquidityPrice)) &&
+      !isNaN(
+        Number(analysisData?.currentPrice) || Number(analysisData?.startPrice)
+      )
       ? new BigNumber(analysisData?.liquidityPrice)
-          .div(
-            new BigNumber(
-              analysisData?.currentPrice || analysisData?.startPrice
-            )
+        .div(
+          new BigNumber(
+            analysisData?.currentPrice || analysisData?.startPrice
           )
-          .times(100)
-          .toFixed(0) + '%'
+        )
+        .times(100)
+        .toFixed(0) + '%'
       : '0%';
 
   const bondingCurve = new BigNumber(poolItem.raisedInETH)
@@ -135,9 +142,8 @@ ${isMobile ? `${props.className}` : `${props.className}`}
           loading={'lazy'}
           src={!finalImageUrl ? randomDefaultPoolImage() : finalImageUrl}
           alt="{poolItem.name} - {poolItem.symbol}"
-          className={`rounded-lg border ${
-            isMobile ? 'h-20 w-20' : 'h-20 w-20'
-          }`}
+          className={`rounded-lg border ${isMobile ? 'h-20 w-20' : 'h-20 w-20'
+            }`}
         />
 
         {/* <Image
@@ -167,6 +173,22 @@ ${isMobile ? `${props.className}` : `${props.className}`}
               {raisedShow}/{hardCapShow} ({chainConfig?.currency},{' '}
               {bondingCurve.toFixed(2)} % )
             </span>
+          </Text>
+          <Text
+            className={`!font-forza ${isMobile ? '' : 'text-lg-important'} items-center flex`}
+          >
+            Trust Score:{' '}
+            <span className="text-lg text-blue-800">
+              {trustScore}
+            </span>
+            <div className="inline-flex items-center ml-2">
+              <TrustScore
+                rank={rankIndex + 1}
+                total={rankPools.totalPool}
+                isHeader={false}
+                size={30}
+              />
+            </div>
           </Text>
           <Text
             className={`!font-forza ${isMobile ? '' : 'text-lg-important'}`}
@@ -212,6 +234,13 @@ ${isMobile ? `${props.className}` : `${props.className}`}
           <div className="mt-2 max-h-[35px] overflow-hidden text-ellipsis whitespace-nowrap font-forza text-lg">
             {description}
           </div>
+          {/* <RankBadge
+            rank={rankIndex + 1}
+            total={rankPools.totalPool}
+            trustScore={poolItem.trustScore}
+            type="pool"
+            isHeader={false}
+          /> */}
         </div>
       </div>
     </div>

@@ -34,6 +34,7 @@ const entities = ` {
           tgeTimestamp
           reserveETH
           reserveToken
+          trustScore
         }`;
 export interface IParams {
   status: PoolStatus;

@@ -17,7 +17,8 @@ import {
   IGetUserPoolParams,
   IGetUserTopRewardByPoolParams,
   IReferralPool,
-  IGetAllRankPoolsParams
+  IGetAllRankPoolsParams,
+  IGetAllRankWalletParams
 } from '@/src/stores/pool/type';
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
@@ -493,6 +494,28 @@ const servicePool = {
                     analysisRocket(id: "ANALYSIS_DATA") {
                         totalPool
                     }
+                }
+            `
+    };
+    return querySubGraph(query, chainId);
+  },
+
+  getAllRankWallet: ({ skip, chainId }: IGetAllRankWalletParams) => {
+    const query = {
+      query: `
+                {
+                  users(
+                    first: 1000
+                    skip: ${skip}
+                    orderBy: trustScore
+                    orderDirection: desc
+                  ) {
+                    id
+                    trustScore
+                  }
+                  analysisRocket(id: "ANALYSIS_DATA") {
+                    totalUser
+                  }
                 }
             `
     };

@@ -43,6 +43,7 @@ export interface IPoolDetail {
   tgeTimestamp: string | null;
   reserveETH: string;
   reserveToken: string;
+  trustScore: number;
 }
 
 export interface ApiResponse<T = {}> {
@@ -80,7 +81,7 @@ export interface IGenerateDataAiAgentResponse {
   style?: any;
 }
 export interface IPool
-  extends Omit<IPoolList, 'tgeTimestamp' | 'buyTransactions'> {}
+  extends Omit<IPoolList, 'tgeTimestamp' | 'buyTransactions'> { }
 
 export interface IGetAllInviteListReferResponse {
   totalRecords: number;

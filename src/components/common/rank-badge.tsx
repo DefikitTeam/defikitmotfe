@@ -7,9 +7,10 @@ interface ITrustScore {
   rank: number;
   total: number;
   isHeader?: boolean;
+  size: number;
 }
 
-export const TrustScore = ({ rank, total, isHeader = false }: ITrustScore) => {
+export const TrustScore = ({ rank, total, isHeader = false, size = 44 }: ITrustScore) => {
   // Calculate percentage for the circular progress
   const percentage = useMemo(() => {
     if (rank && total) {
@@ -23,7 +24,6 @@ export const TrustScore = ({ rank, total, isHeader = false }: ITrustScore) => {
   }, [rank, total]);
 
   // SVG circle properties - smaller size for header integration
-  const size = 44;
   const strokeWidth = 3;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -121,6 +121,7 @@ const RankBadge = ({
         rank={rank}
         total={total}
         isHeader={isHeader}
+        size={44}
       />
     </div>
   );

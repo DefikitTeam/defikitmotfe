@@ -1,9 +1,10 @@
 /* eslint-disable */
 'use client';
 import { shortWalletAddress } from '@/src/common/utils/utils';
+import { TrustScore } from '@/src/components/common/rank-badge';
 import { useConfig } from '@/src/hooks/useConfig';
 import { RootState } from '@/src/stores';
-import { usePoolDetail } from '@/src/stores/pool/hooks';
+import { useListPool, usePoolDetail } from '@/src/stores/pool/hooks';
 import { Transaction } from '@/src/stores/pool/type';
 import { ExportOutlined } from '@ant-design/icons';
 import { notification, Table, Typography } from 'antd';
@@ -31,7 +32,9 @@ const TransactionList = () => {
     fetchTransactions
   ] = usePoolDetail();
 
-  const { transactions } = poolStateDetail;
+  const { getAllRankWalletAction } = useListPool();
+
+  const { transactions, rankWallet } = poolStateDetail;
   const router = useRouter();
   const { chainConfig } = useConfig();
   const handleOpenResentTx = (hash: string, type: string) => {
@@ -114,10 +117,18 @@ const TransactionList = () => {
       align: 'center',
       render: (_, record) => (
         <span
-          className="cursor-pointer text-blue-400"
+          className="cursor-pointer text-blue-400 flex items-center justify-between"
           onClick={() => handleClickAddress(record.sender || '')}
         >
-          {shortWalletAddress(record.sender || '')}
+          <span className="flex items-center gap-2 w-full">
+            {shortWalletAddress(record.sender || '')}
+          </span>
+          <TrustScore
+            rank={rankWallet.users.findIndex((user) => user.id === record.sender) + 1}
+            total={rankWallet.totalUser}
+            isHeader={false}
+            size={30}
+          />
         </span>
       )
     },
@@ -162,6 +173,15 @@ const TransactionList = () => {
     }
   }, [poolAddress, chainConfig?.chainId, poolStateDetail.pageTransaction]);
 
+  useEffect(() => {
+    if (!rankWallet.isFetchedRankWallet && chainConfig?.chainId) {
+      getAllRankWalletAction({
+        skip: 0,
+        chainId: chainConfig?.chainId!
+      });
+    }
+  }, [rankWallet, chainConfig?.chainId]);
+
   const handlePageTransactionChange = (pageTransactionChange: number) => {
     setPageTransactionAction(pageTransactionChange);
   };
@@ -176,7 +196,7 @@ const TransactionList = () => {
         rowKey="id"
         dataSource={transactions}
         columns={columns}
-        className="!font-forza"
+        className="!font-forza !w-full"
         // pagination={{ pageSize: 10 }}
         scroll={{ x: 300 }}
         bordered

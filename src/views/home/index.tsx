@@ -14,9 +14,9 @@ import SearchComponent from '@/src/components/common/search';
 import EmptyPool from '@/src/components/empty';
 import { useConfig } from '@/src/hooks/useConfig';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import { RootState } from '@/src/stores';
+import { RootState, useAppSelector } from '@/src/stores';
 import { useListPool } from '@/src/stores/pool/hooks';
-import { IPoolList } from '@/src/stores/pool/type';
+import { IGetAllRankPoolsResponse, IPoolList } from '@/src/stores/pool/type';
 import { useTopRefByVol } from '@/src/stores/top-ref-by-vol/hook';
 import { EActionStatus } from '@/src/stores/type';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
@@ -38,6 +38,7 @@ interface KingOfTheHillProps {
   priceNative: any;
   chainData: any;
   onPoolClick: (poolId: string) => void;
+  rankPools: IGetAllRankPoolsResponse;
 }
 
 const KingOfTheHill = ({
@@ -46,10 +47,10 @@ const KingOfTheHill = ({
   analystData,
   priceNative,
   chainData,
-  onPoolClick
+  onPoolClick,
+  rankPools
 }: KingOfTheHillProps) => {
   const [metadataShow, setMetadataShow] = useState<any>(null);
-
   const { chainConfig } = useConfig();
   useEffect(() => {
     if (metadata) {
@@ -92,6 +93,7 @@ const KingOfTheHill = ({
                 analysisData={analystData && analystData[pool.id]?.analystData}
                 priceNative={priceNative}
                 onClick={() => onPoolClick(pool.id)}
+                rankPools={rankPools}
               />
             </div>
           </div>
@@ -114,9 +116,14 @@ const HomePage = () => {
     setFilterAction,
     updateCalculatePoolAction,
     setOrderByAction,
-    setOrderByDirectionAction
+    setOrderByDirectionAction,
+    getAllRankPoolsAction,
+    getAllRankWalletAction
   } = useListPool();
   const { address } = useAccount();
+
+  const rankPools = useAppSelector((state: RootState) => state.poolDetail.rankPools);
+
 
   const {
     analystData,
@@ -260,6 +267,14 @@ const HomePage = () => {
     setKingPool(null);
     setAllPool([]);
     fetchPoolList();
+    getAllRankPoolsAction({
+      chainId: chainConfig?.chainId!,
+      skip: 0
+    });
+    getAllRankWalletAction({
+      chainId: chainConfig?.chainId!,
+      skip: 0
+    });
   }, [chainConfig?.chainId]);
 
   useEffect(() => {
@@ -513,6 +528,7 @@ const HomePage = () => {
                     priceNative={priceNative}
                     chainData={chainData}
                     onPoolClick={(poolId) => handleOnPoolClick(poolId)}
+                    rankPools={rankPools}
                   />
                 )}
               </Col>
@@ -688,6 +704,7 @@ const HomePage = () => {
                             undefined
                           }
                           priceNative={priceNative}
+                          rankPools={rankPools}
                         />
                       </div>
                     </div>

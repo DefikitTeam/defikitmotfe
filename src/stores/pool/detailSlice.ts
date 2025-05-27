@@ -16,7 +16,9 @@ import {
   IHolderDistribution,
   Transaction,
   IGetAllRankPoolsParams,
-  IGetAllRankPoolsResponse
+  IGetAllRankPoolsResponse,
+  IGetAllRankWalletResponse,
+  IGetAllRankWalletParams
 } from './type';
 
 const initialState: IDetailPoolState = {
@@ -86,8 +88,15 @@ const initialState: IDetailPoolState = {
   holderDistribution: [],
   rankPools: {
     pools: [],
-    totalPool: 0
+    totalPool: 0,
+    isFetchedRankPools: false,
+  },
+  rankWallet: {
+    users: [],
+    totalUser: 0,
+    isFetchedRankWallet: false
   }
+
 };
 
 export const getDetailPoolBackground = createAsyncThunk<
@@ -275,8 +284,6 @@ export const getAllRankPools = createAsyncThunk<
       const rankPoolsData = await rankPools.json();
       pools.push(...rankPoolsData.data.pools);
       totalPool = rankPoolsData.data.analysisRocket?.totalPool;
-      const newPools = rankPoolsData.data.pools;
-      pools.push(...newPools);
       if (pools.length >= totalPool) {
         break;
       }
@@ -284,8 +291,49 @@ export const getAllRankPools = createAsyncThunk<
     }
     return {
       pools,
-      totalPool
+      totalPool,
+      isFetchedRankPools: true
     } as unknown as IGetAllRankPoolsResponse;
+  } catch (error) {
+    const err = error as AxiosError;
+    const responseData: any = err.response?.data;
+    return rejectWithValue({
+      errorMessage: responseData?.message,
+      errorCode: responseData?.code
+    });
+  }
+});
+
+export const getAllRankWallet = createAsyncThunk<
+  IGetAllRankWalletResponse,
+  IGetAllRankWalletParams,
+  {
+    rejectValue: FetchError;
+  }
+>('pool/getAllRankWallet', async (params, { rejectWithValue }) => {
+  try {
+    const { chainId } = params;
+    let skipReal = 0;
+    const users = [];
+    let totalUser = 0;
+    while (true) {
+      const rankWallet = await servicePool.getAllRankWallet({
+        skip: skipReal,
+        chainId
+      });
+      const rankWalletData = await rankWallet.json();
+      users.push(...rankWalletData.data.users);
+      totalUser = rankWalletData.data.analysisRocket?.totalUser;
+      if (users.length >= totalUser) {
+        break;
+      }
+      skipReal += 1000;
+    }
+    return {
+      users,
+      totalUser,
+      isFetchedRankWallet: true
+    } as unknown as IGetAllRankWalletResponse;
   } catch (error) {
     const err = error as AxiosError;
     const responseData: any = err.response?.data;
@@ -389,6 +437,12 @@ export const poolDetailSlice = createSlice({
         state.rankPools = action.payload;
       })
       .addCase(getAllRankPools.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(getAllRankWallet.fulfilled, (state, action) => {
+        state.rankWallet = action.payload;
+      })
+      .addCase(getAllRankWallet.rejected, (state, action) => {
         state.error = action.payload;
       });
   }
