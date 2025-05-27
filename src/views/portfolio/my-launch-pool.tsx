@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { IPoolList } from "@/src/stores/pool/type";
 import EmptyPool from "@/src/components/empty";
 import ItemPool from "../home/item-pool";
-import router from "next/router";
+import { useRouter } from 'next/navigation';
 import { RootState } from "@/src/stores";
 import { useAppSelector } from "@/src/stores";
 
@@ -14,6 +14,7 @@ import { useAppSelector } from "@/src/stores";
 const MyLaunchPool = ({ walletAddress }: { walletAddress: string }) => {
   const t = useTranslations();
   const { chainConfig } = useConfig();
+  const router = useRouter();
   const { getListPoolAction, poolStateList } = useListPool();
 
   const [allPool, setAllPool] = useState<IPoolList[]>([]);
