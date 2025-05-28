@@ -55,7 +55,7 @@ const ButtonConnectWallet = () => {
 
   const { getTrustPointStatusAction, trustPointStatus } = useTrustPoint();
   const { getTrustPointTokenAction, trustPointToken } = useTrustPointToken();
-  let botName = 'motheroftokens_bot';
+  let botName = 'MotStagingBerachainBepolia_bot';
 
   const [walletRank, setWalletRank] = useState<{
     rank: number;
