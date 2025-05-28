@@ -15,7 +15,7 @@ type Props = {
 
 
 export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
-    const tokenAddress = params.poolAddress;
+    const tokenAddress = params.poolAddress as string;
     // const chain = params.chain;
     // const locale = params.locale;
     // console.log('chain line 20-----', chain
@@ -24,14 +24,14 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
     // console.log('locale line 21-----', locale)
     // console.log('tokenAddress line 19-----', tokenAddress)
     let tokenData: any = null
-    let metadata: any = null
+    let metadataResult: any = null
     try {
         const [poolDetails, metadataUpdateResult] = await Promise.all([
             servicePool.getDetailPoolDataFromServer(configService.getDefaultChain().toString(), tokenAddress),
             updateMetaDataWorker(tokenAddress,configService.getDefaultChain().toString())
         ]);
         tokenData = poolDetails;
-        metadata = metadataUpdateResult
+        metadataResult = metadataUpdateResult
 
         // console.log('Fetched poolDetails for metadata:', tokenData);
         // console.log('Result of updateMetaDataWorker:', metadataUpdateResult);
@@ -42,14 +42,17 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
     // optionally access and extend (rather than replace) parent metadata
     const previousImages = (await parent).openGraph?.images || []
 
+    console.log('metadataResult line 45-----', metadataResult)
+    console.log('tokenData line 46-----', tokenData)
+
     return {
         openGraph: {
             type: 'website',
             title: tokenData.data?.name,
-            description: metadata?.description,
+            description: metadataResult.metadata?.description,
             images: [
                 {
-                    url: metadata?.image || '',
+                    url: metadataResult.metadata?.image || '',
                     width: 1200,
                     height: 630,
                     alt: `${tokenData.data?.name}'s Logo`
@@ -60,8 +63,8 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
         twitter: {
             card: 'summary_large_image',
             title: tokenData.data?.name,
-            description: metadata?.description,
-            images: [metadata?.image || '']
+            description: metadataResult.metadata?.description,
+            images: [metadataResult.metadata?.image || '']
         }
     }
 }
