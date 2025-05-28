@@ -330,6 +330,24 @@ const servicePool = {
         }
         return '';
     },
+    getDetailPoolDataFromServer: async (chainId: string, address: string) => {
+        let res;
+
+        try {
+            res = await axios.get(
+                `${config.getApiConfig().baseUrl}/c/${chainId}/t/${address}`
+            );
+        } catch (error) {
+            logger.error(
+                `======= get detail pool data from server error: ${error}`
+            );
+        }
+        if (res && res.status === 200) {
+            return res.data;
+        }
+        return '';
+    },
+    
     getSocialScoreInfo: async (chainId: string, address: string) => {
         let res;
         try {
