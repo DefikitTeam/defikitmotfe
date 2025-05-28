@@ -68,6 +68,9 @@ export async function generateMetadata({ params, searchParams }: Props, parent: 
 
 
 
-export default PoolDetail;
+// export default PoolDetail;
+export default function Index({ params, searchParams }: Props) {
+    return <PoolDetail />
+}
 
 export const runtime = 'edge';
