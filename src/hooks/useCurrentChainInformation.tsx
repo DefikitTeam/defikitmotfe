@@ -13,12 +13,12 @@
 // import { useConfig } from './useConfig';
 
 export interface IChainInfor {
-    chainId: number;
-    name: string;
-    currency: string;
-    explorerUrl: string;
-    rpcUrl: string;
-    onFaucet: boolean;
+  chainId: number;
+  name: string;
+  currency: string;
+  explorerUrl: string;
+  rpcUrl: string;
+  onFaucet: boolean;
 }
 
 // const useCurrentChainInformation = () => {

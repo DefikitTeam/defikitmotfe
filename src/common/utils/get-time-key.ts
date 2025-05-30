@@ -24,18 +24,18 @@ export const ONE_WEEK_SECONDS = 604800;
 export const ONE_MONTH_SECONDS = 2592000; // 30 ngày cố định
 
 export const calculateDayStartUnixForDate = (date: dayjs.Dayjs): number => {
-    const epochSeconds = date.utc().unix();
-    return epochSeconds - (epochSeconds % ONE_DAY_SECONDS);
+  const epochSeconds = date.utc().unix();
+  return epochSeconds - (epochSeconds % ONE_DAY_SECONDS);
 };
 
 export const calculateWeekStartUnixForDate = (date: dayjs.Dayjs): number => {
-    const epochSeconds = date.utc().unix();
-    return epochSeconds - (epochSeconds % ONE_WEEK_SECONDS);
+  const epochSeconds = date.utc().unix();
+  return epochSeconds - (epochSeconds % ONE_WEEK_SECONDS);
 };
 
 export const calculateMonthStartUnixForDate_Inaccurate = (
-    date: dayjs.Dayjs
+  date: dayjs.Dayjs
 ): number => {
-    const epochSeconds = date.utc().unix();
-    return epochSeconds - (epochSeconds % ONE_MONTH_SECONDS);
+  const epochSeconds = date.utc().unix();
+  return epochSeconds - (epochSeconds % ONE_MONTH_SECONDS);
 };

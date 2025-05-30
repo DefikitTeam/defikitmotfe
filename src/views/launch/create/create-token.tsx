@@ -7,7 +7,7 @@
 // import {
 //     useCreatePoolLaunchInformation,
 //     usePassData
-// } from '@/src/stores/pool/hook';
+// } from '@/src/stores/pool/hooks';
 // import { useListTokenOwner } from '@/src/stores/token/hook';
 // import { ITokenList } from '@/src/stores/token/type';
 // import { Button, Select, Typography } from 'antd';

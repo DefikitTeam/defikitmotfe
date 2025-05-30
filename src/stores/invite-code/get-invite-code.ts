@@ -8,95 +8,92 @@ import { IGetInviteCodeResponse, IGetInviteCodeState } from './type';
 import { CodeReferStatus } from '@/src/common/constant/constance';
 
 const initialState: IGetInviteCodeState = {
-    status: EActionStatus.Idle,
-    errorMessage: '',
-    errorCode: '',
-    data: [],
-    isOpenModalGetListCurrentCode: false
+  status: EActionStatus.Idle,
+  errorMessage: '',
+  errorCode: '',
+  data: [],
+  isOpenModalGetListCurrentCode: false
 };
 
 export const getInviteCode = createAsyncThunk<
-    { data: IGetInviteCodeResponse },
-    void,
-    {
-        rejectValue: FetchError;
-    }
+  { data: IGetInviteCodeResponse },
+  void,
+  {
+    rejectValue: FetchError;
+  }
 >('getInviteCodeRefer/getInviteCode', async (_, { rejectWithValue }) => {
-    try {
-        const data = await serviceInviteCode.getInviteCode();
-        if (!data) {
-            throw new Error('No data from call get invite code ');
-        }
-
-        const sortedData = data.data.sort((a, b) => {
-            if (
-                a.status === CodeReferStatus.ACTIVE &&
-                b.status === CodeReferStatus.INACTIVE
-            )
-                return -1;
-            if (
-                a.status === CodeReferStatus.INACTIVE &&
-                b.status === CodeReferStatus.ACTIVE
-            )
-                return 1;
-            return 0;
-        });
-
-        const formatedData = {
-            data: sortedData
-        };
-
-        return { data: formatedData };
-    } catch (error) {
-        const err = error as AxiosError;
-        const responseData: any = err.response?.data;
-        const responseStatus: any = err.response?.status || 0;
-        return rejectWithValue({
-            errorMessage: responseData?.error,
-            errorCode: responseStatus
-        });
+  try {
+    const data = await serviceInviteCode.getInviteCode();
+    if (!data) {
+      throw new Error('No data from call get invite code ');
     }
+
+    const sortedData = data.data.sort((a, b) => {
+      if (
+        a.status === CodeReferStatus.ACTIVE &&
+        b.status === CodeReferStatus.INACTIVE
+      )
+        return -1;
+      if (
+        a.status === CodeReferStatus.INACTIVE &&
+        b.status === CodeReferStatus.ACTIVE
+      )
+        return 1;
+      return 0;
+    });
+
+    const formatedData = {
+      data: sortedData
+    };
+
+    return { data: formatedData };
+  } catch (error) {
+    const err = error as AxiosError;
+    const responseData: any = err.response?.data;
+    const responseStatus: any = err.response?.status || 0;
+    return rejectWithValue({
+      errorMessage: responseData?.error,
+      errorCode: responseStatus
+    });
+  }
 });
 
 const getInviteCodeSlice = createSlice({
-    name: 'getInviteCodeRefer',
-    initialState,
-    reducers: {
-        setIsOpenModalGetListCurrentCode: (
-            state,
-            action: PayloadAction<{ isOpenModalGetListCurrentCode: boolean }>
-        ) => {
-            state.isOpenModalGetListCurrentCode =
-                action.payload.isOpenModalGetListCurrentCode;
-        },
-
-        resetGetInviteCodeRefer: (state) => {
-            return initialState;
-        }
+  name: 'getInviteCodeRefer',
+  initialState,
+  reducers: {
+    setIsOpenModalGetListCurrentCode: (
+      state,
+      action: PayloadAction<{ isOpenModalGetListCurrentCode: boolean }>
+    ) => {
+      state.isOpenModalGetListCurrentCode =
+        action.payload.isOpenModalGetListCurrentCode;
     },
-    extraReducers: (builder) => {
-        builder
-            .addCase(
-                getInviteCode.fulfilled,
-                (
-                    state,
-                    action: PayloadAction<{ data: IGetInviteCodeResponse }>
-                ) => {
-                    state.status = EActionStatus.Succeeded;
-                    state.data = action.payload.data.data;
-                }
-            )
-            .addCase(getInviteCode.pending, (state, action) => {
-                state.status = EActionStatus.Pending;
-            })
-            .addCase(getInviteCode.rejected, (state, action) => {
-                state.status = EActionStatus.Failed;
-                state.errorMessage = action.payload?.errorMessage ?? '';
-                state.errorCode = action.payload?.errorCode ?? '';
-            });
+
+    resetGetInviteCodeRefer: (state) => {
+      return initialState;
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(
+        getInviteCode.fulfilled,
+        (state, action: PayloadAction<{ data: IGetInviteCodeResponse }>) => {
+          state.status = EActionStatus.Succeeded;
+          state.data = action.payload.data.data;
+        }
+      )
+      .addCase(getInviteCode.pending, (state, action) => {
+        state.status = EActionStatus.Pending;
+      })
+      .addCase(getInviteCode.rejected, (state, action) => {
+        state.status = EActionStatus.Failed;
+        state.errorMessage = action.payload?.errorMessage ?? '';
+        state.errorCode = action.payload?.errorCode ?? '';
+      });
+  }
 });
 
 export const { setIsOpenModalGetListCurrentCode, resetGetInviteCodeRefer } =
-    getInviteCodeSlice.actions;
+  getInviteCodeSlice.actions;
 export default getInviteCodeSlice.reducer;

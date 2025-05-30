@@ -256,5 +256,6 @@
   "BUY": "Buy",
   "CLAIM": "Claim",
   "SHOW_CODE_COPIED_TO_CLIPBOARD": "Code copied to Clipboard",
-  "CLAIMED": "Claimed"
+  "CLAIMED": "Claimed",
+  "MY_LAUNCH_POOL": "My Launch Pool"
 }
