@@ -69,6 +69,7 @@ const ButtonConnectWallet = () => {
     if (user) {
       const refCode = localStorage.getItem(REFCODE_INFO_STORAGE_KEY);
       const bodyAuthTele: ILoginRequest = {
+        wallet: authState.userWallet!,
         tele: {
           botName: botName,
           auth: user

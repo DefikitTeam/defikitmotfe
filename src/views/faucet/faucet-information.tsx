@@ -14,7 +14,8 @@ import React, { useEffect, useState } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
 const { Text, Title } = Typography;
 const FaucetInformation = () => {
-  const { address, chainId, isConnected } = useAccount();
+  const { address,  isConnected } = useAccount();
+//   const { chainId } = useConfig();
   const t = useTranslations();
   const { disconnect } = useDisconnect();
 
@@ -49,7 +50,8 @@ const FaucetInformation = () => {
     checkIsSaveInfoUserWithTelegram &&
     authState.userInfo &&
     authState.userInfo?.connectedWallet === address &&
-    authState.userInfo?.chainId === chainId;
+    authState.userInfo?.chainId === chainConfig?.chainId;
+
 
   useEffect(() => {
     if (!(address as `0x${string}`)) {
@@ -66,7 +68,7 @@ const FaucetInformation = () => {
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    if (!(chainId && address)) {
+    if (!(address)) {
       notification.error({
         message: 'Error',
         description: t('PLEASE_CONNECT_WALLET'),
@@ -401,6 +403,8 @@ const FaucetInformation = () => {
               >
                 {t('DRIP_TOKEN')}
               </Button>
+
+
               {isDoneFaucet && (
                 <span className="animate-fadeIn !font-forza text-sm text-[#00C805]">
                   {t('SUCCESS_FAUCET', {

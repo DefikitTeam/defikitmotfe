@@ -5,22 +5,15 @@ import { chains } from '@/src/common/constant/constance';
 import BoxArea from '@/src/components/common/box-area';
 import Loader from '@/src/components/common/loader';
 import NotFoundPage from '@/src/components/errors/not-found';
+import { useConfig } from '@/src/hooks/useConfig';
 import { IChainInfor } from '@/src/hooks/useCurrentChainInformation';
-import useRefCodeWatcher from '@/src/hooks/useRefCodeWatcher';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import serviceAuth, {
-  REFCODE_INFO_STORAGE_KEY
-} from '@/src/services/external-services/backend-server/auth';
-import { RootState } from '@/src/stores';
-import { useAuthLogin } from '@/src/stores/auth/hook';
 import { Col, notification, Row } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAccount, useDisconnect, useSwitchChain } from 'wagmi';
+import { useDispatch } from 'react-redux';
+import { useAccount, useSwitchChain } from 'wagmi';
 import FaucetInformation from './faucet-information';
-import ImageFaucet from './image-faucet';
-import { useConfig } from '@/src/hooks/useConfig';
 
 const Faucet = () => {
   const { isMobile } = useWindowSize();
@@ -35,12 +28,12 @@ const Faucet = () => {
   const currentPath = pathname?.split('/');
   const { switchChain } = useSwitchChain();
 
-  const getCurrentChainUrl = (): IChainInfor | undefined => {
-    return chains.find(
-      (item) =>
-        item.name.replace(/\s+/g, '').toLowerCase() === currentPath?.[2]
-    );
-  };
+  // const getCurrentChainUrl = (): IChainInfor | undefined => {
+  //   return chains.find(
+  //     (item) =>
+  //       item.name.replace(/\s+/g, '').toLowerCase() === currentPath?.[2]
+  //   );
+  // };
 
   const router = useRouter();
 
