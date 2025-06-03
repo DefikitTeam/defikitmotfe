@@ -6,10 +6,9 @@ import './globals.css';
 
 import WorkspaceLayout from '@/src/components/workspace-layout';
 import GlobalProvider from '@/src/global-provider';
-
-const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 import { Metadata } from 'next'
 import { siteConfig } from '@/src/common/constant/siteConfig';
+const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 
 // export async function generateMetadata() {
 //   return {
