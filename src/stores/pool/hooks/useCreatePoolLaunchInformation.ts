@@ -6,9 +6,7 @@ import {
   resetCreatePoolLaunchData,
   updateCreatePoolLaunchInformation
 } from '../createSlice';
-import {
-  ICreatePoolLaunch
-} from '../type';
+import { ICreatePoolLaunch } from '../type';
 
 export function useCreatePoolLaunchInformation(): [
   ICreatePoolLaunch,
@@ -38,4 +36,4 @@ export function useCreatePoolLaunchInformation(): [
     resetData,
     resetDataAiAgentAction
   ];
-} 
+}

@@ -421,8 +421,8 @@ const PoolPurchaseSummary = () => {
         : marketCap.isLessThanOrEqualTo(0.001)
           ? `<0.001`
           : `${marketCap.toFixed(3)} ${chainConfig?.currency} - $${currencyFormatter(
-            marketCap.times(priceNative)
-          )}`;
+              marketCap.times(priceNative)
+            )}`;
       setRaisedEth(raisedShow);
       const bondingCurve = new BigNumber(pool.raisedInETH)
         .times(100)
@@ -567,10 +567,10 @@ const PoolPurchaseSummary = () => {
           const ethToBuy: number =
             slippageState.slippage !== 0
               ? Number(
-                new BigNumber(estimateBuyValueReal)
-                  .times(1 + slippageState.slippage / 100)
-                  .toFixed(0)
-              )
+                  new BigNumber(estimateBuyValueReal)
+                    .times(1 + slippageState.slippage / 100)
+                    .toFixed(0)
+                )
               : Number(estimateBuyValueReal);
           setMaxAmountETH(ethToBuy);
 
@@ -663,12 +663,16 @@ const PoolPurchaseSummary = () => {
     const batchesReceivable = Number(estimatedBonds);
     if (batchesReceivable === 0) {
       setBatchReceivedMin('0');
-      return;
     }
-    const value = Math.floor(
-      (batchesReceivable * (100 - slippageState.slippage)) / 100
-    );
-    setBatchReceivedMin(value.toString());
+    if (batchesReceivable === 1) {
+      setBatchReceivedMin('1');
+    }
+    if (batchesReceivable > 1) {
+      const value = Math.floor(
+        (batchesReceivable * (100 - slippageState.slippage)) / 100
+      );
+      setBatchReceivedMin(value.toString());
+    }
   }, [estimatedBonds, slippageState.slippage]);
 
   useEffect(() => {
@@ -1038,11 +1042,12 @@ const PoolPurchaseSummary = () => {
                       <button
                         key={percent}
                         type="button"
-                        className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${beraAmountValue ===
+                        className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                          beraAmountValue ===
                           ((userNativeBalance * percent) / 100).toFixed(6)
-                          ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                          : ''
-                          }`}
+                            ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                            : ''
+                        }`}
                         onClick={() => {
                           const val = (
                             (userNativeBalance * percent) /
@@ -1057,14 +1062,15 @@ const PoolPurchaseSummary = () => {
                     ))}
                     <button
                       type="button"
-                      className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${beraAmountValue ===
+                      className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                        beraAmountValue ===
                         Math.max(
                           0,
                           userNativeBalance - (reserveMin || 0)
                         ).toFixed(6)
-                        ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                        : ''
-                        }
+                          ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                          : ''
+                      }
                                                 `}
                       onClick={() => {
                         const val = Math.max(
@@ -1269,8 +1275,8 @@ const PoolPurchaseSummary = () => {
                             wordWrap: 'break-word',
                             opacity:
                               disableBtnWithdraw ||
-                                useWithdrawFundLottery.isLoadingInitWithdrawFundLottery ||
-                                useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
+                              useWithdrawFundLottery.isLoadingInitWithdrawFundLottery ||
+                              useWithdrawFundLottery.isLoadingAgreedWithdrawFundLottery
                                 ? 0.6
                                 : 1
                           }}
@@ -1364,11 +1370,12 @@ const PoolPurchaseSummary = () => {
                       <button
                         key={percent}
                         type="button"
-                        className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue ===
+                        className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                          depositAmountValue ===
                           ((userNativeBalance * percent) / 100).toFixed(6)
-                          ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                          : ''
-                          }`}
+                            ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                            : ''
+                        }`}
                         onClick={() => {
                           const val = (
                             (userNativeBalance * percent) /
@@ -1386,14 +1393,15 @@ const PoolPurchaseSummary = () => {
                     ))}
                     <button
                       type="button"
-                      className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue ===
+                      className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${
+                        depositAmountValue ===
                         Math.max(
                           0,
                           userNativeBalance - (reserveMin || 0)
                         ).toFixed(6)
-                        ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                        : ''
-                        }}
+                          ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                          : ''
+                      }}
                                                `}
                       onClick={() => {
                         const val = Math.max(

@@ -8,7 +8,6 @@ import {
   IRewardPoolState
 } from '../type';
 
-
 type RewardType = {
   rewardState: IRewardPoolState;
   getPoolInfoRewardAction: (data: IGetPoolInfoRewardParams) => void;
@@ -38,4 +37,3 @@ export const useReward = (): RewardType => {
     getTopUserRewardByPoolAction
   };
 };
-

@@ -323,8 +323,8 @@ const PoolDetail = () => {
                 <PoolPurchaseSummary />
                 <HolderDistribution />
                 {isConnected &&
-                  address &&
-                  address.toLowerCase() ===
+                address &&
+                address.toLowerCase() ===
                   poolStateDetail.pool?.owner?.toLowerCase() ? (
                   <TaskListOwnerToken />
                 ) : null}

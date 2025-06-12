@@ -7,9 +7,7 @@ import {
   setValueSellSlippage,
   setValueSlippage
 } from '../slippageSlice';
-import {
-  ISettingSlippageState
-} from '../type';
+import { ISettingSlippageState } from '../type';
 
 type SlippageType = {
   slippageState: ISettingSlippageState;
@@ -56,4 +54,3 @@ export const useSlippage = (): SlippageType => {
     setOpenModalSellSettingSlippage
   };
 };
-

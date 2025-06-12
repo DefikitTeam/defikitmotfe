@@ -74,8 +74,8 @@ const PoolDetailInformation = () => {
               {formatCurrency(
                 pool
                   ? `${new BigNumber(pool?.tokenForSale)
-                    .div(10 ** parseInt(pool?.decimals))
-                    .toFixed(0)} ${pool.symbol}`
+                      .div(10 ** parseInt(pool?.decimals))
+                      .toFixed(0)} ${pool.symbol}`
                   : '0'
               )}
             </div>
@@ -87,8 +87,8 @@ const PoolDetailInformation = () => {
               {formatCurrency(
                 pool
                   ? `${new BigNumber(pool?.tokenForLiquidity)
-                    .div(10 ** parseInt(pool?.decimals))
-                    .toFixed(0)} ${pool.symbol}`
+                      .div(10 ** parseInt(pool?.decimals))
+                      .toFixed(0)} ${pool.symbol}`
                   : '0'
               )}
             </div>
@@ -99,8 +99,8 @@ const PoolDetailInformation = () => {
               {formatCurrency(
                 pool
                   ? `${new BigNumber(pool?.tokenForAirdrop)
-                    .div(10 ** parseInt(pool?.decimals))
-                    .toFixed(0)} ${pool.symbol}`
+                      .div(10 ** parseInt(pool?.decimals))
+                      .toFixed(0)} ${pool.symbol}`
                   : '0'
               )}
             </div>
@@ -111,8 +111,8 @@ const PoolDetailInformation = () => {
               {formatCurrency(
                 pool
                   ? `${new BigNumber(pool?.tokenForFarm)
-                    .div(10 ** parseInt(pool?.decimals))
-                    .toFixed(0)} ${pool.symbol}`
+                      .div(10 ** parseInt(pool?.decimals))
+                      .toFixed(0)} ${pool.symbol}`
                   : '0'
               )}
             </div>
@@ -122,8 +122,8 @@ const PoolDetailInformation = () => {
             <div className="  ">
               {pool
                 ? `${new BigNumber(pool?.capInETH)
-                  .div(1e18)
-                  .toFixed(7)} ${chainConfig?.currency}`
+                    .div(1e18)
+                    .toFixed(7)} ${chainConfig?.currency}`
                 : '0'}
             </div>
           </div>

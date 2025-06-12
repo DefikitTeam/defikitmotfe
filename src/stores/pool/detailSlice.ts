@@ -89,14 +89,13 @@ const initialState: IDetailPoolState = {
   rankPools: {
     pools: [],
     totalPool: 0,
-    isFetchedRankPools: false,
+    isFetchedRankPools: false
   },
   rankWallet: {
     users: [],
     totalUser: 0,
     isFetchedRankWallet: false
   }
-
 };
 
 export const getDetailPoolBackground = createAsyncThunk<

@@ -18,7 +18,7 @@ import {
   IGetAllTransactionsParams,
   IGetDetailHolderDistributionParams,
   IGetDetailPoolBackgroundParams,
-  IGetDetailPoolParams,
+  IGetDetailPoolParams
 } from '../type';
 
 export function usePoolDetail(): [
@@ -112,4 +112,4 @@ export function usePoolDetail(): [
     setOpenModalSocialScoreAction,
     resetPoolDetailAction
   ];
-} 
+}

@@ -6,45 +6,45 @@ import './globals.css';
 
 import WorkspaceLayout from '@/src/components/workspace-layout';
 import GlobalProvider from '@/src/global-provider';
-import { Metadata } from 'next'
+import { Metadata } from 'next';
 import { siteConfig } from '@/src/common/constant/siteConfig';
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL(siteConfig.url),
-    title: {
-        default: siteConfig.title,
-        template: `%s | ${siteConfig.title}`
-    },
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.title}`
+  },
+  description: siteConfig.description,
+  icons: {
+    icon: siteConfig.icon,
+    shortcut: siteConfig.logo,
+    apple: siteConfig.logo
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.title,
     description: siteConfig.description,
-    icons: {
-        icon: siteConfig.icon,
-        shortcut: siteConfig.logo,
-        apple: siteConfig.logo
-    },
-    twitter: {
-        card: 'summary_large_image',
-        title: siteConfig.title,
-        description: siteConfig.description,
-        images: [siteConfig.landing]
-    },
-    openGraph: {
-        type: 'website',
-        url: siteConfig.url,
-        title: siteConfig.title,
-        description: siteConfig.description,
-        images: [
-            {
-                url: siteConfig.landing,
-                width: 1200,
-                height: 630,
-                alt: 'Landing Meta Image'
-            }
-        ]
-    },
-    viewport: 'width=device-width, initial-scale=1.0',
-    robots: 'index, follow'
-}
+    images: [siteConfig.landing]
+  },
+  openGraph: {
+    type: 'website',
+    url: siteConfig.url,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [
+      {
+        url: siteConfig.landing,
+        width: 1200,
+        height: 630,
+        alt: 'Landing Meta Image'
+      }
+    ]
+  },
+  viewport: 'width=device-width, initial-scale=1.0',
+  robots: 'index, follow'
+};
 
 export function generateStaticParams() {
   return [{ locale: 'en' }];

@@ -87,56 +87,56 @@ const ModalDetailVesting = () => {
     const NOW = new Date();
     const dateArr = tgeTime
       ? [
-        {
-          time: getDateTimeInFormat(new Date(parseInt(tgeTime) * 1000)),
-          status: NOW.valueOf() < parseInt(tgeTime) * 1000 ? 'lock' : 'unlock'
-        },
-        {
-          time: getDateTimeInFormat(
-            new Date(parseInt(tgeTime) * 1000 + 8 * 60 * 60 * 1000)
-          ),
-          status:
-            NOW.valueOf() < parseInt(tgeTime) * 1000 + 8 * 60 * 60 * 1000
-              ? 'lock'
-              : 'unlock'
-        },
-        {
-          time: getDateTimeInFormat(
-            new Date(parseInt(tgeTime) * 1000 + 16 * 60 * 60 * 1000)
-          ),
-          status:
-            NOW.valueOf() < parseInt(tgeTime) * 1000 + 16 * 60 * 60 * 1000
-              ? 'lock'
-              : 'unlock'
-        },
-        {
-          time: getDateTimeInFormat(
-            new Date(parseInt(tgeTime) * 1000 + 24 * 60 * 60 * 1000)
-          ),
-          status:
-            NOW.valueOf() < parseInt(tgeTime) * 1000 + 24 * 60 * 60 * 1000
-              ? 'lock'
-              : 'unlock'
-        }
-      ]
+          {
+            time: getDateTimeInFormat(new Date(parseInt(tgeTime) * 1000)),
+            status: NOW.valueOf() < parseInt(tgeTime) * 1000 ? 'lock' : 'unlock'
+          },
+          {
+            time: getDateTimeInFormat(
+              new Date(parseInt(tgeTime) * 1000 + 8 * 60 * 60 * 1000)
+            ),
+            status:
+              NOW.valueOf() < parseInt(tgeTime) * 1000 + 8 * 60 * 60 * 1000
+                ? 'lock'
+                : 'unlock'
+          },
+          {
+            time: getDateTimeInFormat(
+              new Date(parseInt(tgeTime) * 1000 + 16 * 60 * 60 * 1000)
+            ),
+            status:
+              NOW.valueOf() < parseInt(tgeTime) * 1000 + 16 * 60 * 60 * 1000
+                ? 'lock'
+                : 'unlock'
+          },
+          {
+            time: getDateTimeInFormat(
+              new Date(parseInt(tgeTime) * 1000 + 24 * 60 * 60 * 1000)
+            ),
+            status:
+              NOW.valueOf() < parseInt(tgeTime) * 1000 + 24 * 60 * 60 * 1000
+                ? 'lock'
+                : 'unlock'
+          }
+        ]
       : [
-        {
-          time: 'TGE',
-          status: 'lock'
-        },
-        {
-          time: '8 hours after TGE',
-          status: 'lock'
-        },
-        {
-          time: '16 hours after TGE',
-          status: 'lock'
-        },
-        {
-          time: '24 hours after TGE',
-          status: 'lock'
-        }
-      ];
+          {
+            time: 'TGE',
+            status: 'lock'
+          },
+          {
+            time: '8 hours after TGE',
+            status: 'lock'
+          },
+          {
+            time: '16 hours after TGE',
+            status: 'lock'
+          },
+          {
+            time: '24 hours after TGE',
+            status: 'lock'
+          }
+        ];
 
     const data = [
       {

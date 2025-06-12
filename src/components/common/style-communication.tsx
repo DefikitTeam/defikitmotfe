@@ -103,7 +103,7 @@ const StyleCommunication = ({ mode }: { mode: string }) => {
                   onClick={() => onAddNew('all')}
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
+                  // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>
@@ -138,7 +138,7 @@ const StyleCommunication = ({ mode }: { mode: string }) => {
                   onClick={() => onAddNew('chat')}
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
+                  // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>
@@ -173,7 +173,7 @@ const StyleCommunication = ({ mode }: { mode: string }) => {
                   onClick={() => onAddNew('post')}
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
+                  // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>
@@ -259,7 +259,7 @@ const StyleCommunication = ({ mode }: { mode: string }) => {
                   onClick={() => onAddNew('all')}
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
+                  // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>
@@ -294,7 +294,7 @@ const StyleCommunication = ({ mode }: { mode: string }) => {
                   onClick={() => onAddNew('chat')}
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
+                  // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>
@@ -329,7 +329,7 @@ const StyleCommunication = ({ mode }: { mode: string }) => {
                   onClick={() => onAddNew('post')}
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
+                  // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>
