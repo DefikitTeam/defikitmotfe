@@ -109,6 +109,7 @@
         "tailwindcss": "^3.4.1",
         "typescript": "^5.4.3",
         "viem": "^2.22.23",
-        "wagmi": "^2.5.13"
+        "wagmi": "^2.5.13",
+        "worker-loader": "^3.0.8"
     }
 }
