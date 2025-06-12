@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { ConfigService } from '@/src/config/services/config-service';
 import { IGetPortfolioParams } from '@/src/stores/profile/type';
 import axios from 'axios';

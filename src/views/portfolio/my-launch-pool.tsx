@@ -1,15 +1,14 @@
-import { PoolStatus } from "@/src/common/constant/constance";
-import { useConfig } from "@/src/hooks/useConfig";
-import { useListPool } from "@/src/stores/pool/hooks/useListPool";
-import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import { IPoolList } from "@/src/stores/pool/type";
-import EmptyPool from "@/src/components/empty";
-import ItemPool from "../home/item-pool";
+import { PoolStatus } from '@/src/common/constant/constance';
+import { useConfig } from '@/src/hooks/useConfig';
+import { useListPool } from '@/src/stores/pool/hooks/useListPool';
+import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { IPoolList } from '@/src/stores/pool/type';
+import EmptyPool from '@/src/components/empty';
+import ItemPool from '../home/item-pool';
 import { useRouter } from 'next/navigation';
-import { RootState } from "@/src/stores";
-import { useAppSelector } from "@/src/stores";
-
+import { RootState } from '@/src/stores';
+import { useAppSelector } from '@/src/stores';
 
 const MyLaunchPool = ({ walletAddress }: { walletAddress: string }) => {
   const t = useTranslations();
@@ -31,7 +30,9 @@ const MyLaunchPool = ({ walletAddress }: { walletAddress: string }) => {
 
   const { getAllRankPoolsAction } = useListPool();
 
-  const rankPools = useAppSelector((state: RootState) => state.poolDetail.rankPools);
+  const rankPools = useAppSelector(
+    (state: RootState) => state.poolDetail.rankPools
+  );
 
   useEffect(() => {
     if (!rankPools.isFetchedRankPools && chainConfig?.chainId) {
@@ -62,13 +63,11 @@ const MyLaunchPool = ({ walletAddress }: { walletAddress: string }) => {
     }
   }, [metadata]);
 
-
   useEffect(() => {
     if (poolList) {
       setAllPool(poolList);
     }
   }, [poolList]);
-
 
   const handleClickPoolItem = (poolId: string) => {
     router.push(
@@ -76,52 +75,54 @@ const MyLaunchPool = ({ walletAddress }: { walletAddress: string }) => {
     );
   };
 
-  return <div>
-    <div className="mt-3 !font-forza text-lg font-bold">{t('MY_LAUNCH_POOL')}</div>
-    <div className="grid gap-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 xs:grid-cols-1 xxl:grid-cols-3 ">
-      {allPool.length === 0 && (
-        <div className="col-span-full">
-          <EmptyPool />
-        </div>
-      )}
-      {allPool &&
-        allPool.length > 0 &&
-        allPool?.map((pool: IPoolList, index) => {
-          return (
-            <div
-              key={pool.id}
-              className="contents"
-            >
+  return (
+    <div>
+      <div className="mt-3 !font-forza text-lg font-bold">
+        {t('MY_LAUNCH_POOL')}
+      </div>
+      <div className="grid gap-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 xs:grid-cols-1 xxl:grid-cols-3 ">
+        {allPool.length === 0 && (
+          <div className="col-span-full">
+            <EmptyPool />
+          </div>
+        )}
+        {allPool &&
+          allPool.length > 0 &&
+          allPool?.map((pool: IPoolList, index) => {
+            return (
               <div
-                className="pool-item"
-                data-pool-id={pool.id}
+                key={pool.id}
+                className="contents"
               >
-                <ItemPool
-                  poolItem={pool}
-                  onClick={() => handleClickPoolItem(pool.id)}
-                  className={`${(index + 1) % 2 === 0
-                    ? 'bg-evenColor'
-                    : 'bg-oddColor'
+                <div
+                  className="pool-item"
+                  data-pool-id={pool.id}
+                >
+                  <ItemPool
+                    poolItem={pool}
+                    onClick={() => handleClickPoolItem(pool.id)}
+                    className={`${
+                      (index + 1) % 2 === 0 ? 'bg-evenColor' : 'bg-oddColor'
                     }  ${index === 0 ? 'animate-newMessage' : ''}  `}
-                  metadata={
-                    metadataShow && metadataShow?.[pool.id]
-                      ? metadataShow[pool.id]
-                      : undefined
-                  }
-                  analysisData={
-                    (analystData &&
-                      analystData[pool.id]?.analystData) ||
-                    undefined
-                  }
-                  priceNative={priceNative}
-                  rankPools={rankPools}
-                />
+                    metadata={
+                      metadataShow && metadataShow?.[pool.id]
+                        ? metadataShow[pool.id]
+                        : undefined
+                    }
+                    analysisData={
+                      (analystData && analystData[pool.id]?.analystData) ||
+                      undefined
+                    }
+                    priceNative={priceNative}
+                    rankPools={rankPools}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+      </div>
     </div>
-  </div>;
+  );
 };
 
 export default MyLaunchPool;

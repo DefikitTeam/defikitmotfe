@@ -118,7 +118,7 @@ const MessageReplyByAgent = ({ mode }: { mode: string }) => {
                   }
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
+                  // disabled={(data?.aiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>
@@ -221,7 +221,7 @@ const MessageReplyByAgent = ({ mode }: { mode: string }) => {
                   }
                   icon={<PlusOutlined />}
                   className="ml-[24px] !font-forza"
-                // disabled={(dataAiAgent?.style?.all ?? [])?.length >= 10}
+                  // disabled={(dataAiAgent?.style?.all ?? [])?.length >= 10}
                 >
                   {t('ADD_NEW')}
                 </Button>

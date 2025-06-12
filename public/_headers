@@ -1,0 +1,23 @@
+# Cloudflare Pages Headers Configuration
+
+# Handle worker files properly
+/_next/static/js/*worker*
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=31536000, immutable
+
+# Handle edge chunks
+/_next/static/chunks/edge-chunks/*
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=31536000, immutable
+
+# General static assets
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Font optimization
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Image optimization
+/images/*
+  Cache-Control: public, max-age=31536000, immutable 

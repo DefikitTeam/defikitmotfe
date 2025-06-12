@@ -84,8 +84,8 @@ const PoolInfoReward = () => {
           {formatCurrency(
             poolDetail && pool?.tokenForAirdrop
               ? new BigNumber(pool?.tokenForAirdrop)
-                .div(10 ** parseInt(poolDetail?.decimals))
-                .toFixed(0)
+                  .div(10 ** parseInt(poolDetail?.decimals))
+                  .toFixed(0)
               : '0'
           )}{' '}
           {poolDetail?.symbol}

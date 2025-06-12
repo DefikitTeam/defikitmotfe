@@ -5,6 +5,7 @@
         "dev": "next dev -H 0.0.0.0 -p 80",
         "build": "next build",
         "build:prod": "rm -rf .next && next build",
+        "build:cloudflare": "cross-env CF_PAGES=1 next build",
         "start": "next start -H 0.0.0.0 -p 80",
         "lint": "next lint",
         "server-local": "npx next start -p 4000",
@@ -90,6 +91,7 @@
         "axios": "^1.6.8",
         "classnames": "^2.5.1",
         "critters": "^0.0.22",
+        "cross-env": "^7.0.3",
         "eslint": "8.57.0",
         "eslint-config-next": "14.1.4",
         "eslint-plugin-json": "^3.1.0",
@@ -98,6 +100,7 @@
         "graphql": "^16.8.1",
         "graphql-tag": "^2.12.6",
         "husky": "^8.0.0",
+        "ignore-loader": "^0.1.2",
         "lint-staged": "^13.2.3",
         "next-themes": "^0.3.0",
         "postcss": "^8.4.38",
@@ -107,8 +110,10 @@
         "react-spring": "^9.7.3",
         "sass": "^1.72.0",
         "tailwindcss": "^3.4.1",
+        "terser-webpack-plugin": "^5.3.14",
         "typescript": "^5.4.3",
         "viem": "^2.22.23",
-        "wagmi": "^2.5.13"
+        "wagmi": "^2.5.13",
+        "worker-loader": "^3.0.8"
     }
 }

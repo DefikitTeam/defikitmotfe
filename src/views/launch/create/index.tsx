@@ -31,7 +31,7 @@ import { useSelector } from 'react-redux';
 import { useAccount, useDisconnect } from 'wagmi';
 import PoolInformation from './pool-information';
 import SaveCreatePoolButton from './save-button';
-export interface IPoolCreatForm { }
+export interface IPoolCreatForm {}
 const { Title } = Typography;
 // const currentHostName = useCurrentHostNameInformation();
 // const isProd =

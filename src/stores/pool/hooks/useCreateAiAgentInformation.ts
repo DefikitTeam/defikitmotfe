@@ -6,9 +6,7 @@ import {
   setOpenModalCreateAiAgent,
   updateCreateAiAgentInformation
 } from '../createAiAgent';
-import {
-  ICreateAiAgent
-} from '../type';
+import { ICreateAiAgent } from '../type';
 
 export function useCreateAiAgentInformation(): [
   ICreateAiAgent,
@@ -41,4 +39,4 @@ export function useCreateAiAgentInformation(): [
     resetDataAction,
     setOpenModalCreateAiAgentAction
   ];
-} 
+}
