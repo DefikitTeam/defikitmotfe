@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 require('dotenv').config();
 
+// Check if we're building on Cloudflare Pages
+const isCloudflare = process.env.CF_PAGES === '1' || process.env.CF_PAGES_BRANCH;
+
 const nextConfig = {
+  // Disable SWC minification to prevent conflicts with Terser
+  swcMinify: false,
   async headers() {
     return [
       {
@@ -40,6 +45,12 @@ const nextConfig = {
       loader: 'ignore-loader'
     });
 
+    // Ignore HeartbeatWorker files completely
+    config.module.rules.push({
+      test: /HeartbeatWorker/,
+      loader: 'ignore-loader'
+    });
+
     // Handle web workers properly
     config.module.rules.push({
       test: /\.worker\.(js|ts)$/,
@@ -54,25 +65,68 @@ const nextConfig = {
 
     // Configure Terser optimization to handle module syntax in workers
     if (config.optimization && config.optimization.minimizer) {
-      config.optimization.minimizer.forEach((minimizer) => {
-        if (minimizer.constructor.name === 'TerserPlugin') {
-          if (!minimizer.options.exclude) {
-            minimizer.options.exclude = [];
-          }
-          // Exclude worker files and files with HeartbeatWorker in the name
-          minimizer.options.exclude.push(/HeartbeatWorker/);
-          minimizer.options.exclude.push(/\.worker\./);
+      const TerserPlugin = require('terser-webpack-plugin');
 
-          // Update terser options to handle module syntax
-          if (!minimizer.options.terserOptions) {
-            minimizer.options.terserOptions = {};
-          }
-          if (!minimizer.options.terserOptions.parse) {
-            minimizer.options.terserOptions.parse = {};
-          }
-          minimizer.options.terserOptions.parse.ecma = 2020;
-          minimizer.options.terserOptions.module = true;
-        }
+      if (isCloudflare) {
+        // For Cloudflare Pages: Completely disable Terser to avoid worker issues
+        config.optimization.minimize = false;
+        config.optimization.minimizer = [];
+      } else {
+        // Remove existing terser plugins and add a new one with proper configuration
+        config.optimization.minimizer = config.optimization.minimizer.filter(
+          (minimizer) => minimizer.constructor.name !== 'TerserPlugin'
+        );
+
+        // Add new TerserPlugin with proper configuration
+        config.optimization.minimizer.push(
+          new TerserPlugin({
+            test: /\.m?js(\?.*)?$/i,
+            exclude: [
+              /HeartbeatWorker/,
+              /\.worker\./,
+              /edge-chunks.*HeartbeatWorker/,
+              /asset_HeartbeatWorker/,
+              /telegram-web-app/,
+            ],
+            terserOptions: {
+              parse: {
+                ecma: 2020,
+              },
+              compress: {
+                ecma: 2020,
+                warnings: false,
+                drop_console: false,
+                drop_debugger: true,
+                pure_funcs: ['console.log'],
+              },
+              mangle: {
+                safari10: true,
+              },
+              output: {
+                ecma: 2020,
+                comments: false,
+                ascii_only: true,
+              },
+              module: true,
+            },
+            parallel: true,
+            extractComments: false,
+          })
+        );
+      }
+    }
+
+    // Additional configuration for Cloudflare Pages compatibility
+    if (process.env.CF_PAGES) {
+      // Cloudflare Pages specific optimizations
+      console.log('🚀 Building for Cloudflare Pages - Terser disabled');
+    }
+
+    // Additional webpack configuration to handle external scripts
+    config.externals = config.externals || [];
+    if (Array.isArray(config.externals)) {
+      config.externals.push({
+        'telegram-web-app': 'Telegram.WebApp'
       });
     }
 
