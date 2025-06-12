@@ -661,6 +661,10 @@ const PoolPurchaseSummary = () => {
 
   useEffect(() => {
     const batchesReceivable = Number(estimatedBonds);
+    if (batchesReceivable === 0) {
+      setBatchReceivedMin('0');
+      return;
+    }
     const value = Math.floor(
       (batchesReceivable * (100 - slippageState.slippage)) / 100
     );
@@ -1035,9 +1039,9 @@ const PoolPurchaseSummary = () => {
                         key={percent}
                         type="button"
                         className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${beraAmountValue ===
-                            ((userNativeBalance * percent) / 100).toFixed(6)
-                            ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                            : ''
+                          ((userNativeBalance * percent) / 100).toFixed(6)
+                          ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                          : ''
                           }`}
                         onClick={() => {
                           const val = (
@@ -1054,12 +1058,12 @@ const PoolPurchaseSummary = () => {
                     <button
                       type="button"
                       className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${beraAmountValue ===
-                          Math.max(
-                            0,
-                            userNativeBalance - (reserveMin || 0)
-                          ).toFixed(6)
-                          ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                          : ''
+                        Math.max(
+                          0,
+                          userNativeBalance - (reserveMin || 0)
+                        ).toFixed(6)
+                        ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                        : ''
                         }
                                                 `}
                       onClick={() => {
@@ -1361,9 +1365,9 @@ const PoolPurchaseSummary = () => {
                         key={percent}
                         type="button"
                         className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue ===
-                            ((userNativeBalance * percent) / 100).toFixed(6)
-                            ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                            : ''
+                          ((userNativeBalance * percent) / 100).toFixed(6)
+                          ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                          : ''
                           }`}
                         onClick={() => {
                           const val = (
@@ -1383,12 +1387,12 @@ const PoolPurchaseSummary = () => {
                     <button
                       type="button"
                       className={`rounded-full border-2 border-orange-400 px-4 py-1 font-bold text-orange-400 transition-colors hover:bg-orange-100 ${depositAmountValue ===
-                          Math.max(
-                            0,
-                            userNativeBalance - (reserveMin || 0)
-                          ).toFixed(6)
-                          ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
-                          : ''
+                        Math.max(
+                          0,
+                          userNativeBalance - (reserveMin || 0)
+                        ).toFixed(6)
+                        ? 'border-0 bg-gradient-to-r from-pink-500 to-orange-400 text-white'
+                        : ''
                         }}
                                                `}
                       onClick={() => {
