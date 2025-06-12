@@ -34,7 +34,7 @@ import ModalCreateAiAgent from './modal-create-ai-agent';
 import { NEXT_PUBLIC_AI_CMS } from '@/src/common/web3/constants/env';
 
 // Simple interface that matches the expected structure from the create launch flow
-interface IPoolCreatForm { }
+interface IPoolCreatForm {}
 
 const { Title, Text } = Typography;
 interface Task {

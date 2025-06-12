@@ -62,7 +62,7 @@ const AdvanceConfiguration = ({ form }: PoolInforProps) => {
   } = useListTokenOwner();
   const [data, setData, resetData] = useCreatePoolLaunchInformation();
 
-  const onChange = (key: string | string[]) => { };
+  const onChange = (key: string | string[]) => {};
 
   useEffect(() => {
     if (!data.totalSupply || !data.symbol) return;

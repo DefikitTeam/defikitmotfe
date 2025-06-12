@@ -396,13 +396,13 @@ const ModalCreateAiAgent = () => {
   };
   const onUpload =
     (name: 'avatarAccount', fileType: AccountFileType) =>
-      async ({ file }: RcCustomRequestOptions) => {
-        setCheckFileData({
-          ...checkFileData,
-          errorNoValue: false
-        });
-        setAvatarAiAgentInfo({ file: file, flag: true });
-      };
+    async ({ file }: RcCustomRequestOptions) => {
+      setCheckFileData({
+        ...checkFileData,
+        errorNoValue: false
+      });
+      setAvatarAiAgentInfo({ file: file, flag: true });
+    };
   const handleCancelModal = () => {
     setIsModalOpen(false);
   };
@@ -772,7 +772,7 @@ const ModalCreateAiAgent = () => {
                             className="!font-forza text-base"
                             placeholder="Please enter the prompt for generating image"
                           />
-                          { }
+                          {}
                           {loadingPromptGenerateImage ? (
                             <Spin className="absolute bottom-2 right-2" />
                           ) : (

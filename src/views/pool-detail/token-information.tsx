@@ -103,8 +103,8 @@ const TokenInformation = () => {
             {formatCurrency(
               pool
                 ? new BigNumber(pool.totalSupplyToken)
-                  .div(10 ** parseInt(pool.decimals))
-                  .toFixed(0)
+                    .div(10 ** parseInt(pool.decimals))
+                    .toFixed(0)
                 : '0'
             )}
           </div>

@@ -5,9 +5,7 @@ import {
   resetBuyPoolInformation,
   updateBuyPoolInformation
 } from '../buyPoolSlice';
-import {
-  IBuyPool
-} from '../type';
+import { IBuyPool } from '../type';
 
 export function useBuyPoolInformation(): [
   IBuyPool,
@@ -28,4 +26,4 @@ export function useBuyPoolInformation(): [
   }, [dispatch]);
 
   return [data, setBuyPoolInformation, resetData];
-} 
+}
