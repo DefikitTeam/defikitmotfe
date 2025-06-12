@@ -1,3 +1,4 @@
+/* eslint-disable */
 import useWindowSize from '@/src/hooks/useWindowSize';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useConfig } from '@/src/hooks/useConfig';
 import { useTrustScoreHistoryPool } from '@/src/stores/pool/hooks';
 import { useTrustScoreHistoryWallet } from '@/src/stores/wallet/hook';

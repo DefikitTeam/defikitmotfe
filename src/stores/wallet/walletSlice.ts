@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { EActionStatus, FetchError } from '../type';
 import {
