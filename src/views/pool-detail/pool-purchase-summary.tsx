@@ -663,12 +663,16 @@ const PoolPurchaseSummary = () => {
     const batchesReceivable = Number(estimatedBonds);
     if (batchesReceivable === 0) {
       setBatchReceivedMin('0');
-      return;
     }
-    const value = Math.floor(
-      (batchesReceivable * (100 - slippageState.slippage)) / 100
-    );
-    setBatchReceivedMin(value.toString());
+    if (batchesReceivable === 1) {
+      setBatchReceivedMin('1');
+    }
+    if (batchesReceivable > 1) {
+      const value = Math.floor(
+        (batchesReceivable * (100 - slippageState.slippage)) / 100
+      );
+      setBatchReceivedMin(value.toString());
+    }
   }, [estimatedBonds, slippageState.slippage]);
 
   useEffect(() => {
