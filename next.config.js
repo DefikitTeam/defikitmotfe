@@ -5,8 +5,8 @@ require('dotenv').config();
 const isCloudflare = process.env.CF_PAGES === '1' || process.env.CF_PAGES_BRANCH;
 
 const nextConfig = {
-  // Disable SWC minification to prevent conflicts with Terser
-  swcMinify: false,
+  // Enable SWC minification for Cloudflare Pages to reduce bundle size
+  swcMinify: isCloudflare ? true : false,
   async headers() {
     return [
       {
@@ -68,9 +68,50 @@ const nextConfig = {
       const TerserPlugin = require('terser-webpack-plugin');
 
       if (isCloudflare) {
-        // For Cloudflare Pages: Completely disable Terser to avoid worker issues
-        config.optimization.minimize = false;
-        config.optimization.minimizer = [];
+        // For Cloudflare Pages: Use selective Terser exclusion to keep bundle size manageable
+        config.optimization.minimizer = config.optimization.minimizer.filter(
+          (minimizer) => minimizer.constructor.name !== 'TerserPlugin'
+        );
+
+        // Add TerserPlugin with more selective exclusions for Cloudflare
+        config.optimization.minimizer.push(
+          new TerserPlugin({
+            test: /\.m?js(\?.*)?$/i,
+            exclude: [
+              /HeartbeatWorker/,
+              /\.worker\./,
+              /edge-chunks.*HeartbeatWorker/,
+              /asset_HeartbeatWorker/,
+              /telegram-web-app/,
+              /node_modules\/@metamask\/sdk/,
+              /node_modules\/@coinbase\/wallet-sdk/,
+            ],
+            terserOptions: {
+              parse: {
+                ecma: 2020,
+              },
+              compress: {
+                ecma: 2020,
+                warnings: false,
+                drop_console: true, // Remove console.log in production
+                drop_debugger: true,
+                pure_funcs: ['console.log', 'console.info'],
+                passes: 2, // Multiple passes for better optimization
+              },
+              mangle: {
+                safari10: true,
+              },
+              output: {
+                ecma: 2020,
+                comments: false,
+                ascii_only: true,
+              },
+              module: true,
+            },
+            parallel: true,
+            extractComments: false,
+          })
+        );
       } else {
         // Remove existing terser plugins and add a new one with proper configuration
         config.optimization.minimizer = config.optimization.minimizer.filter(
@@ -119,7 +160,7 @@ const nextConfig = {
     // Additional configuration for Cloudflare Pages compatibility
     if (process.env.CF_PAGES) {
       // Cloudflare Pages specific optimizations
-      console.log('🚀 Building for Cloudflare Pages - Terser disabled');
+      console.log('🚀 Building for Cloudflare Pages - Selective Terser with SWC minification');
     }
 
     // Additional webpack configuration to handle external scripts
