@@ -1,0 +1,39 @@
+{
+  "rootHash": "0x269b32b19e2ada0a9cd2402db8105db6437fcf314a30875a8d3bbff77f85b62f",
+  "result": {
+    "0xa55de842dd45ddf55c8c3d42176847f9f9e8da92": {
+      "amount": "0.8475",
+      "amountRaw": "847500000000000000",
+      "proof": [
+        "0xbb0a7d60d9859390ff9a6013130f258011a5bef7e78c37d4d369fc9135586e2e",
+        "0xed2e404d83686879a15ceab6a0dbc7e708fd871b07af1888daae7d454fef12d9"
+      ],
+      "trustScore": "1.4139",
+      "volume": "0.2020",
+      "type": "wallet"
+    },
+    "0x19b7ab5777ff0efeeed69fb81c980d601f378e81": {
+      "amount": "0.3072",
+      "amountRaw": "307200000000000000",
+      "proof": [
+        "0x71ef0ab3d800c6dccba267367894ff35f208f692ffb121cffb3267f2bdd77f2f",
+        "0x6381a178b3a3daa2a2af9fe24aa04a60bbe5e59fb581934446ec7445346d7c11"
+      ],
+      "trustScore": "0.5118",
+      "volume": "0.5118",
+      "type": "wallet"
+    },
+    "0x54f7d66dbf3cd53f3faec10af5c5db186d177d73": {
+      "amount": "2.9163",
+      "amountRaw": "2916300000000000000",
+      "proof": [
+        "0x18548299a14bbed99199d5c22a1fe0e607d13de38814673f663da01f55fd4b0d",
+        "0x7aeddc8897cef8b2d7add22958b1b93dc4ef87f638d7b06a2f6653726098e8b0"
+      ],
+      "trustScore": "5.3927",
+      "volume": "0.2701",
+      "type": "token",
+      "owner": "0xac329c9272b6acb3ae3d3159476ec19db24049e7"
+    }
+  }
+}
