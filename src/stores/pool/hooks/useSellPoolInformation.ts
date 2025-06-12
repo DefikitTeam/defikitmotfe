@@ -5,9 +5,7 @@ import {
   resetSellPoolInformation,
   updateSellPoolInformation
 } from '../sellPoolSlice';
-import {
-  ISellPool
-} from '../type';
+import { ISellPool } from '../type';
 
 export function useSellPoolInformation(): [
   ISellPool,
@@ -29,4 +27,4 @@ export function useSellPoolInformation(): [
   }, [dispatch]);
 
   return [data, setSellPoolInformation, resetData];
-} 
+}

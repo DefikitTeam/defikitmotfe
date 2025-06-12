@@ -5,9 +5,7 @@ import {
   resetDepositLotteryInformation,
   updateDepositLotteryInformation
 } from '../depositLotterySlice';
-import {
-  IDepositLottery
-} from '../type';
+import { IDepositLottery } from '../type';
 
 export function useDepositLottery(): [
   IDepositLottery,
@@ -29,4 +27,4 @@ export function useDepositLottery(): [
   }, [dispatch]);
 
   return [dataDeposit, setDepositLotteryInformation, resetData];
-} 
+}

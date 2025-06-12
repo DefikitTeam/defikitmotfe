@@ -72,8 +72,8 @@ const TransactionList = () => {
         <div>
           {new BigNumber(record.eth).gt(0)
             ? `$${new BigNumber(new BigNumber(record.eth).div(1e18).toFixed(5))
-              .div(record.batch)
-              .toFixed(7)}`
+                .div(record.batch)
+                .toFixed(7)}`
             : 'N/A'}
         </div>
       )
@@ -117,14 +117,17 @@ const TransactionList = () => {
       align: 'center',
       render: (_, record) => (
         <span
-          className="cursor-pointer text-blue-400 flex items-center justify-between"
+          className="flex cursor-pointer items-center justify-between text-blue-400"
           onClick={() => handleClickAddress(record.sender || '')}
         >
-          <span className="flex items-center gap-2 w-full">
+          <span className="flex w-full items-center gap-2">
             {shortWalletAddress(record.sender || '')}
           </span>
           <TrustScore
-            rank={rankWallet.users.findIndex((user) => user.id === record.sender) + 1}
+            rank={
+              rankWallet.users.findIndex((user) => user.id === record.sender) +
+              1
+            }
             total={rankWallet.totalUser}
             isHeader={false}
             size={30}
@@ -196,7 +199,7 @@ const TransactionList = () => {
         rowKey="id"
         dataSource={transactions}
         columns={columns}
-        className="!font-forza !w-full"
+        className="!w-full !font-forza"
         // pagination={{ pageSize: 10 }}
         scroll={{ x: 300 }}
         bordered

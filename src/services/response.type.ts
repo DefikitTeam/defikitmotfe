@@ -81,7 +81,7 @@ export interface IGenerateDataAiAgentResponse {
   style?: any;
 }
 export interface IPool
-  extends Omit<IPoolList, 'tgeTimestamp' | 'buyTransactions'> { }
+  extends Omit<IPoolList, 'tgeTimestamp' | 'buyTransactions'> {}
 
 export interface IGetAllInviteListReferResponse {
   totalRecords: number;

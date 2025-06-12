@@ -6,10 +6,7 @@ import {
 } from '@/src/common/constant/constance';
 import { useCallback } from 'react';
 import { RootState, useAppDispatch, useAppSelector } from '../../';
-import {
-  getAllRankPools,
-  getAllRankWallet
-} from '../detailSlice';
+import { getAllRankPools, getAllRankWallet } from '../detailSlice';
 import {
   getAllPoolBackgroundByType,
   getAllPoolByType,
@@ -26,7 +23,7 @@ import {
   IGetAllRankWalletParams,
   IGetMetadataPoolParams,
   IPoolState,
-  IUpdateCalculatePoolParams,
+  IUpdateCalculatePoolParams
 } from '../type';
 
 type ListPooltype = {
@@ -127,4 +124,3 @@ export const useListPool = (): ListPooltype => {
     getAllRankWalletAction
   };
 };
-

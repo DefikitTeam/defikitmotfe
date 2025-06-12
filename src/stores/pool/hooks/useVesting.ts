@@ -2,9 +2,7 @@
 import { useCallback } from 'react';
 import { RootState, useAppDispatch, useAppSelector } from '../../';
 import { setIsOpenModalVesting } from '../vestingSlice';
-import {
-  IVestingState
-} from '../type';
+import { IVestingState } from '../type';
 
 type VestingType = {
   vestingState: IVestingState;
@@ -27,4 +25,3 @@ export const useVesting = (): VestingType => {
     setOpenModalVesting
   };
 };
-

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import useWindowSize from '@/src/hooks/useWindowSize';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
@@ -10,7 +11,12 @@ interface ITrustScore {
   size: number;
 }
 
-export const TrustScore = ({ rank, total, isHeader = false, size = 44 }: ITrustScore) => {
+export const TrustScore = ({
+  rank,
+  total,
+  isHeader = false,
+  size = 44
+}: ITrustScore) => {
   // Calculate percentage for the circular progress
   const percentage = useMemo(() => {
     if (rank && total) {

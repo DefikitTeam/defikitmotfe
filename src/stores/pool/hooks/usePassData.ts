@@ -1,7 +1,5 @@
 /* eslint-disable */
-import {
-  KeyValueObj
-} from '@/src/common/constant/constance';
+import { KeyValueObj } from '@/src/common/constant/constance';
 import { useCallback } from 'react';
 import { RootState, useAppDispatch, useAppSelector } from '../../';
 import {
@@ -13,10 +11,7 @@ import {
   setListKeyValueBonding,
   setListKeyValueFarming
 } from '../passDataSlice';
-import {
-  IPassDataState
-} from '../type';
-
+import { IPassDataState } from '../type';
 
 type passDataType = {
   passDataState: IPassDataState;
@@ -87,4 +82,3 @@ export const usePassData = (): passDataType => {
     resetPassData
   };
 };
-
