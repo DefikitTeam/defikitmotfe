@@ -2,12 +2,14 @@ import { ChainId, DexName } from '@/src/common/constant/constance';
 import {
   NEXT_PUBLIC_API_ENDPOINT,
   NEXT_PUBLIC_BERACHAIN_BEPOLIA_CONTRACT_ADDRESS,
-  NEXT_PUBLIC_BERACHAIN_BEPOLIA_CONTRACT_ADDRESS_TRUST_POINT
+  NEXT_PUBLIC_BERACHAIN_BEPOLIA_CONTRACT_ADDRESS_TRUST_POINT,
+  NEXT_PUBLIC_BERACHAIN_BEPOLIA_CONTRACT_ADDRESS_DISTRIBUTION
 } from '@/src/common/web3/constants/env';
 import { ROCKET_EVM_ABI } from '../abi/rocket-evm-abi';
 
 import { EnvironmentConfig } from '../type';
 import { ROCKET_EVM_ABI_MIN_NFT } from '../abi/rocket-evm-abi-min-nft';
+import { DISTRIBUTION_ABI } from '../abi/rocket-evm-abi-distribution';
 
 export const developmentConfig: EnvironmentConfig = {
   environment: 'staging',
@@ -34,6 +36,9 @@ export const developmentConfig: EnvironmentConfig = {
       trustPointAbis: ROCKET_EVM_ABI_MIN_NFT,
       trustPointAddress:
         NEXT_PUBLIC_BERACHAIN_BEPOLIA_CONTRACT_ADDRESS_TRUST_POINT as string,
+      distributionAbis: DISTRIBUTION_ABI,
+      distributionAddress:
+        NEXT_PUBLIC_BERACHAIN_BEPOLIA_CONTRACT_ADDRESS_DISTRIBUTION as string,
       dex: {
         name: DexName.KODIAK,
         linkSwap:

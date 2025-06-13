@@ -72,12 +72,12 @@ export const currencyFormatter = (labelValue: any, decimalPlaces = 6) => {
   return Math.abs(Number(labelValue)) >= 1.0e9
     ? `${format(new BigNumber(`${Math.abs(Number(labelValue)) / 1.0e9}`).dp(2, 1))}B`
     : // six zeros for millions
-      Math.abs(Number(labelValue)) >= 1.0e6
+    Math.abs(Number(labelValue)) >= 1.0e6
       ? `${format(
-          new BigNumber(`${Math.abs(Number(labelValue)) / 1.0e6}`).dp(2, 1)
-        )}M`
+        new BigNumber(`${Math.abs(Number(labelValue)) / 1.0e6}`).dp(2, 1)
+      )}M`
       : // three zeros for thousands
-        format(new BigNumber(labelValue).toFixed(decimalPlaces));
+      format(new BigNumber(labelValue).toFixed(decimalPlaces));
 };
 
 export const getDateTimeInFormat = (date: Date) => {
@@ -125,3 +125,60 @@ export const prevDayFrom = (currentDate: Date, dayMinus: number) => {
 export const isValidEtherInput = (value: string) => {
   return /^(\d+(\.\d{1,18})?)$/.test(value);
 };
+
+
+// Helper function to check if a year is a leap year
+export function isLeapYear(year: number): boolean {
+  return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+}
+
+// Helper function to get days in a month
+export function getDaysInMonth(year: number, month: number): number {
+  const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  if (month == 2 && isLeapYear(year)) {
+    return 29
+  }
+  return daysInMonth[month - 1]
+}
+
+// Calculate month start timestamp without Date object
+export function getMonthStartTimestamp(timestamp: number): number {
+  // Days since Unix epoch (Jan 1, 1970)
+  const daysSinceEpoch = timestamp / 86400
+
+  // Calculate year (approximate, then adjust)
+  let year = 1970 + (daysSinceEpoch / 365)
+
+  // Calculate exact year by counting days
+  let daysFromEpoch = 0
+  for (let y = 1970; y < year; y++) {
+    daysFromEpoch += isLeapYear(y) ? 366 : 365
+  }
+
+  // Adjust if we went too far
+  while (daysFromEpoch > daysSinceEpoch) {
+    year--
+    daysFromEpoch -= isLeapYear(year) ? 366 : 365
+  }
+
+  // Calculate which month we're in
+  let month = 1
+  let monthStartDays = daysFromEpoch
+
+  while (month <= 12) {
+    const daysInCurrentMonth = getDaysInMonth(year, month)
+    if (monthStartDays + daysInCurrentMonth > daysSinceEpoch) {
+      break
+    }
+    monthStartDays += daysInCurrentMonth
+    month++
+  }
+
+  // Return timestamp for first day of the month at 00:00:00 UTC
+  return monthStartDays * 86400
+}
+
+export function getWeekStartTimestamp(timestamp: number): number {
+  const weekKey = timestamp - (timestamp % 604800);
+  return weekKey
+}

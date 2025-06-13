@@ -36,6 +36,8 @@ export interface ChainConfig {
   onFaucet?: boolean;
   trustPointAbis?: any;
   trustPointAddress?: string;
+  distributionAbis?: any;
+  distributionAddress?: string;
 }
 
 export interface EnvironmentConfig {

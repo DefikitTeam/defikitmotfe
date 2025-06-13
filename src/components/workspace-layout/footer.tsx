@@ -30,11 +30,17 @@ const Footer = () => {
     );
   };
 
-  const handleClickCommunity = () => {};
+  const handleClickCommunity = () => { };
 
   const handleClickLeaderboard = () => {
     router.push(
       `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/leaderboard`
+    );
+  };
+
+  const handleClickClaim = () => {
+    router.push(
+      `/${chainConfig?.name.replace(/\s+/g, '').toLowerCase()}/claim`
     );
   };
 
@@ -55,7 +61,7 @@ const Footer = () => {
 
       <div className="fixed bottom-0 left-0 z-50 h-16 w-full border-t border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-700">
         <div
-          className={` mx-auto grid h-full max-w-lg cursor-pointer grid-cols-5 font-medium`}
+          className={` mx-auto h-full max-w-lg cursor-pointer grid-cols-6 font-medium flex`}
         >
           <div
             className="group inline-flex flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
@@ -182,6 +188,26 @@ const Footer = () => {
 
             <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
               Leaderboard
+            </span>
+          </div>
+          <div
+            className="group inline-flex cursor-pointer flex-col items-center justify-center border-x border-gray-200 px-5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+            onClick={handleClickClaim}
+          >
+            <svg
+              className="mb-2 h-5 w-5 text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M3.5 2A1.5 1.5 0 0 0 2 3.5v9A1.5 1.5 0 0 0 3.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 16.5 2h-13ZM5 4.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 5 5.5v-1Zm0 3a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 5 8.5v-1Zm0 3a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1Z" />
+              <path d="M7 16.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-2Z" />
+              <path d="M9 15a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
+            </svg>
+
+            <span className="text-sm text-gray-500 group-hover:text-blue-600 dark:text-gray-400 dark:group-hover:text-blue-500">
+              Claim
             </span>
           </div>
 
