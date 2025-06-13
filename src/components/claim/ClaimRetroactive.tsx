@@ -8,6 +8,8 @@ import { useTranslations } from 'next-intl';
 import { useAccount, useChainId } from 'wagmi';
 import { ClockCircleOutlined, GiftOutlined, HistoryOutlined, FilterOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import quarterOfYear from 'dayjs/plugin/quarterOfYear';
+dayjs.extend(quarterOfYear);
 
 import { useDistributionCaller } from '@/src/hooks/useDistributionCaller';
 import { useReaderDistribution } from '@/src/hooks/useReaderDistribution';
@@ -321,14 +323,6 @@ const ClaimRetroactive = () => {
     }));
   };
 
-  // Handle date change from DatePicker
-  const handleDateChange = (date: dayjs.Dayjs | null) => {
-    if (date) {
-      const timestamp = Math.floor(date.valueOf() / 1000);
-      handleFilterChange('timestamp', timestamp);
-    }
-  };
-
   // Get current date value for DatePicker
   const getCurrentDateValue = () => {
     return dayjs(filters.timestamp * 1000);
@@ -372,13 +366,74 @@ const ClaimRetroactive = () => {
 
                 <div className="flex flex-col gap-1">
                   <span className="!font-forza text-xs text-gray-600">{t('DATE')}</span>
-                  <DatePicker
-                    value={getCurrentDateValue()}
-                    onChange={handleDateChange}
-                    size="small"
-                    format="YYYY-MM-DD"
-                    allowClear={false}
-                  />
+                  {filters.type === 'week' && (
+
+                    <DatePicker
+                      picker="week"
+                      value={getCurrentDateValue()}
+                      className="!font-forza text-base"
+                      onChange={date => {
+                        if (date) {
+                          // Week start (Monday)
+                          const weekStart = date.startOf('week').add(2, 'day').valueOf();
+                          console.log('weekStart', weekStart);
+                          handleFilterChange('timestamp', Math.floor(weekStart.valueOf() / 1000));
+                        }
+                      }}
+                      allowClear={false}
+                    />
+                  )}
+                  {filters.type === 'month' && (
+                    <DatePicker
+                      picker="month"
+                      value={getCurrentDateValue()}
+                      onChange={date => {
+                        if (date) {
+                          const monthStart = date.startOf('month').add(2, 'day').valueOf();
+                          handleFilterChange('timestamp', Math.floor(monthStart.valueOf() / 1000));
+                        }
+                      }}
+                      size="small"
+                      format="YYYY-MM"
+                      allowClear={false}
+                      inputReadOnly
+                      placeholder="YYYY-MM"
+                    />
+                  )}
+                  {filters.type === 'quarter' && (
+                    <DatePicker
+                      picker="quarter"
+                      value={getCurrentDateValue()}
+                      onChange={date => {
+                        if (date) {
+                          const quarterStart = date.startOf('quarter').add(2, 'day').valueOf();
+                          handleFilterChange('timestamp', Math.floor(quarterStart.valueOf() / 1000));
+                        }
+                      }}
+                      size="small"
+                      format="[Q]Q YYYY"
+                      allowClear={false}
+                      inputReadOnly
+                      placeholder="QX YYYY"
+                    />
+                  )}
+                  {filters.type === 'year' && (
+                    <DatePicker
+                      picker="year"
+                      value={getCurrentDateValue()}
+                      onChange={date => {
+                        if (date) {
+                          const yearStart = date.startOf('year').add(2, 'day').valueOf();
+                          handleFilterChange('timestamp', Math.floor(yearStart.valueOf() / 1000));
+                        }
+                      }}
+                      size="small"
+                      format="YYYY"
+                      allowClear={false}
+                      inputReadOnly
+                      placeholder="YYYY"
+                    />
+                  )}
                 </div>
                 <Button
                   icon={<FilterOutlined />}
