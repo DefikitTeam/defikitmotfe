@@ -81,6 +81,14 @@ export class ConfigService {
     return this.getChainConfig(chainId)?.trustPointAbis;
   }
 
+  getDistributionAddress(chainId: number): string | undefined {
+    return this.getChainConfig(chainId)?.distributionAddress;
+  }
+
+  getDistributionAbi(chainId: number): any {
+    return this.getChainConfig(chainId)?.distributionAbis;
+  }
+
   getSubgraphUri(chainId: number): string | undefined {
     return this.getChainConfig(chainId)?.subgraph.uri;
   }

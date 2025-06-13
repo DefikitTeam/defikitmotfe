@@ -1,159 +1,122 @@
 /* eslint-disable */
 'use client';
 
-import { Card, Button, Tag, Tooltip, Spin } from 'antd';
-import { motion } from 'framer-motion';
+import { Card, Button, Tag, Space, Typography } from 'antd';
 import { useTranslations } from 'next-intl';
-import {
-  WalletOutlined,
-  GoldOutlined,
-  InfoCircleOutlined,
-  FireOutlined,
-  BarChartOutlined
-} from '@ant-design/icons';
+import { WalletOutlined, GoldOutlined } from '@ant-design/icons';
+import { motion } from 'framer-motion';
 
-interface RetroactiveClaimData {
-  address: string;
-  amount: string;
-  amountRaw: string;
-  proof: string[];
-  trustScore: string;
-  volume: string;
-  type: 'wallet' | 'token';
-  owner?: string;
-}
+const { Text } = Typography;
 
 interface ClaimCardProps {
-  claim: RetroactiveClaimData;
+  claim: {
+    type: 'wallet' | 'token';
+    amount: string;
+    trustScore: string;
+    volume: string;
+  };
+  hasClaimed: boolean;
   onClaim: () => void;
   onViewDetails: () => void;
   loading?: boolean;
 }
 
-const ClaimCard = ({ claim, onClaim, onViewDetails, loading = false }: ClaimCardProps) => {
+const ClaimCard = ({ claim, onClaim, onViewDetails, loading = false, hasClaimed }: ClaimCardProps) => {
   const t = useTranslations();
 
-  const formatAmount = (amount: string) => {
-    const num = parseFloat(amount);
-    return num.toFixed(4);
+  const typeConfig = {
+    wallet: {
+      icon: <WalletOutlined />,
+      title: t('WALLET_CLAIM'),
+      color: 'blue',
+      description: t('WALLET_CLAIM_DESCRIPTION')
+    },
+    token: {
+      icon: <GoldOutlined />,
+      title: t('TOKEN_CLAIM'),
+      color: 'gold',
+      description: t('TOKEN_CLAIM_DESCRIPTION')
+    }
   };
 
-  const formatAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
-
-  const getClaimTypeIcon = () => {
-    return claim.type === 'wallet' ? (
-      <WalletOutlined className="text-blue-500" />
-    ) : (
-      <GoldOutlined className="text-green-500" />
-    );
-  };
-
-  const getClaimTypeBadge = () => {
-    return (
-      <Tag
-        color={claim.type === 'wallet' ? 'blue' : 'green'}
-        className="!font-forza font-semibold"
-        icon={getClaimTypeIcon()}
-      >
-        {claim.type === 'wallet' ? t('WALLET_REWARD') : t('TOKEN_REWARD')}
-      </Tag>
-    );
-  };
+  const config = typeConfig[claim.type];
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ scale: 1.02 }}
     >
       <Card
-        className="h-full border-2 border-gray-200 shadow-lg transition-all duration-300 hover:border-blue-300 hover:shadow-xl"
-        bodyStyle={{ padding: '20px' }}
+        className="h-full !font-forza"
+        bodyStyle={{ padding: '1.5rem' }}
       >
-        {/* Header with claim type badge */}
-        <div className="mb-4 flex items-center justify-between">
-          {getClaimTypeBadge()}
-          <Tooltip title={t('VIEW_DETAILS')}>
-            <Button
-              type="text"
-              icon={<InfoCircleOutlined />}
-              onClick={onViewDetails}
-              className="text-gray-500 hover:text-blue-500"
-            />
-          </Tooltip>
-        </div>
+        <div className="flex flex-col gap-4">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <Tag
+              color={config.color}
+              icon={config.icon}
+              className="!font-forza text-base font-semibold px-4 py-1"
+            >
+              {config.title}
+            </Tag>
+            {hasClaimed && (
+              <Tag color="green" className="!font-forza">
+                {t('CLAIMED')}
+              </Tag>
+            )}
+          </div>
 
-        {/* Amount Information */}
-        <div className="mb-4">
+          {/* Amount */}
           <div className="text-center">
-            <h3 className="!font-forza text-2xl font-bold text-green-600">
-              {formatAmount(claim.amount)}
-            </h3>
-            <p className="!font-forza text-sm text-gray-500">
+            <Text className="!font-forza text-3xl font-bold text-green-600">
+              {parseFloat(claim.amount).toFixed(6)}
+            </Text>
+            <Text className="!font-forza block text-sm text-gray-500">
               {t('CLAIMABLE_AMOUNT')}
-            </p>
+            </Text>
           </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <Text className="!font-forza block text-sm text-gray-500">
+                {t('TRUST_SCORE')}
+              </Text>
+              <Text className="!font-forza text-lg font-semibold">
+                {claim.trustScore}
+              </Text>
+            </div>
+            <div className="text-center">
+              <Text className="!font-forza block text-sm text-gray-500">
+                {t('VOLUME')}
+              </Text>
+              <Text className="!font-forza text-lg font-semibold">
+                {claim.volume}
+              </Text>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <Space className="w-full justify-center">
+            <Button
+              type="primary"
+              onClick={onClaim}
+              loading={loading}
+              disabled={hasClaimed || loading}
+              className="!font-forza"
+            >
+              {hasClaimed ? t('CLAIMED') : t('CLAIM_REWARD')}
+            </Button>
+            <Button
+              onClick={onViewDetails}
+              className="!font-forza"
+            >
+              {t('VIEW_DETAILS')}
+            </Button>
+          </Space>
         </div>
-
-        {/* Performance Metrics */}
-        <div className="mb-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 !font-forza text-sm text-gray-600">
-              <FireOutlined className="text-orange-500" />
-              {t('TRUST_SCORE')}:
-            </span>
-            <span className="!font-forza font-semibold text-orange-600">
-              {parseFloat(claim.trustScore).toFixed(4)}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-2 !font-forza text-sm text-gray-600">
-              <BarChartOutlined className="text-purple-500" />
-              {t('VOLUME')}:
-            </span>
-            <span className="!font-forza font-semibold text-purple-600">
-              {parseFloat(claim.volume).toFixed(4)}
-            </span>
-          </div>
-        </div>
-
-        {/* Claim Details */}
-        <div className="mb-4 space-y-1">
-          <div className="!font-forza text-xs text-gray-500">
-            {claim.type === 'wallet' ? t('WALLET_ADDRESS') : t('TOKEN_ADDRESS')}:
-          </div>
-          <div className="!font-forza text-sm font-mono">
-            {formatAddress(claim.address)}
-          </div>
-
-          {claim.type === 'token' && claim.owner && (
-            <>
-              <div className="!font-forza text-xs text-gray-500">
-                {t('OWNER_ADDRESS')}:
-              </div>
-              <div className="!font-forza text-sm font-mono">
-                {formatAddress(claim.owner)}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Claim Button */}
-        <Button
-          type="primary"
-          size="large"
-          block
-          onClick={onClaim}
-          loading={loading}
-          className="!font-forza font-semibold"
-          disabled={loading}
-        >
-          {loading ? t('CLAIMING') : t('CLAIM_REWARD')}
-        </Button>
       </Card>
     </motion.div>
   );

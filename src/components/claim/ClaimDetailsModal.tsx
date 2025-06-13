@@ -30,6 +30,7 @@ interface ClaimDetailsModalProps {
   onClose: () => void;
   onClaim?: () => void;
   loading?: boolean;
+  hasClaimed?: boolean;
 }
 
 const ClaimDetailsModal = ({
@@ -37,7 +38,8 @@ const ClaimDetailsModal = ({
   visible,
   onClose,
   onClaim,
-  loading = false
+  loading = false,
+  hasClaimed = false
 }: ClaimDetailsModalProps) => {
   const t = useTranslations();
   const [proofExpanded, setProofExpanded] = useState(false);
@@ -91,7 +93,7 @@ const ClaimDetailsModal = ({
         <Button key="close" onClick={onClose} className="!font-forza">
           {t('CLOSE')}
         </Button>,
-        onClaim && (
+        onClaim && !hasClaimed && (
           <Button
             key="claim"
             type="primary"
@@ -126,12 +128,21 @@ const ClaimDetailsModal = ({
             </div>
           </div>
 
-          <Alert
-            message={typeConfig.description}
-            type="info"
-            showIcon
-            className="!font-forza text-left"
-          />
+          {hasClaimed ? (
+            <Alert
+              message={t('ALREADY_CLAIMED')}
+              type="warning"
+              showIcon
+              className="!font-forza text-left"
+            />
+          ) : (
+            <Alert
+              message={typeConfig.description}
+              type="info"
+              showIcon
+              className="!font-forza text-left"
+            />
+          )}
         </div>
 
         <Divider />

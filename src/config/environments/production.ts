@@ -3,10 +3,12 @@ import { ChainId, DexName } from '@/src/common/constant/constance';
 import {
   NEXT_PUBLIC_API_ENDPOINT_PROD,
   NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_PROD,
-  NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_TRUST_POINT
+  NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_TRUST_POINT,
+  NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_DISTRIBUTION
 } from '@/src/common/web3/constants/env';
 import { ROCKET_EVM_ABI } from '../abi/rocket-evm-abi';
 import { ROCKET_EVM_ABI_MIN_NFT } from '../abi/rocket-evm-abi-min-nft';
+import { DISTRIBUTION_ABI } from '../abi/rocket-evm-abi-distribution';
 import { EnvironmentConfig } from '../type';
 
 export const productionConfig: EnvironmentConfig = {
@@ -90,6 +92,9 @@ export const productionConfig: EnvironmentConfig = {
       trustPointAbis: ROCKET_EVM_ABI_MIN_NFT,
       trustPointAddress:
         NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_TRUST_POINT as string,
+      distributionAbis: DISTRIBUTION_ABI,
+      distributionAddress:
+        NEXT_PUBLIC_BERACHAIN_MAINNET_CONTRACT_ADDRESS_DISTRIBUTION as string,
       dex: {
         name: DexName.KODIAK,
         linkSwap: 'https://app.kodiak.finance/#/swap?outputCurrency='

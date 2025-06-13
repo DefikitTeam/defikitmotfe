@@ -304,5 +304,13 @@
   "YEAR": "Year",
   "DATE": "Date",
   "CHAIN_ID": "Chain ID",
-  "APPLY": "Apply"
+  "APPLY": "Apply",
+  "CLAIM_ERROR": "Claim Error",
+  "ALREADY_CLAIMED": "Already Claimed",
+  "ALREADY_CLAIMED_DESCRIPTION": "You have already claimed this reward",
+  "WALLET_CLAIM": "Wallet Claim",
+  "WALLET_CLAIM_DESCRIPTION": "This reward is claimable by the wallet address holder",
+  "TOKEN_CLAIM": "Token Claim",
+  "TOKEN_CLAIM_DESCRIPTION": "This reward is claimable by the token owner",
+  "TOKEN_OWNER_NOT_SUPPORTED": "Token owner claims are now handled by the operator"
 }

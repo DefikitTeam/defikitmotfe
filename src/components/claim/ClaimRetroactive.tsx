@@ -3,14 +3,16 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Card, Tabs, Spin, Alert, Empty, Select, DatePicker, Space, Button } from 'antd';
+import { Card, Tabs, Spin, Alert, Empty, Select, DatePicker, Space, Button, notification } from 'antd';
 import { useTranslations } from 'next-intl';
 import { useAccount, useChainId } from 'wagmi';
 import { ClockCircleOutlined, GiftOutlined, HistoryOutlined, FilterOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
-import { useClaimRetroActiveCaller } from '@/src/hooks/useClaimRetroActiveCaller';
+import { useDistributionCaller } from '@/src/hooks/useDistributionCaller';
+import { useReaderDistribution } from '@/src/hooks/useReaderDistribution';
 import { getWeekStartTimestamp, getMonthStartTimestamp } from '@/src/common/utils/utils';
+import serviceDistribution from '@/src/services/external-services/backend-server/distribution';
 import ClaimCard from './ClaimCard';
 import ClaimHistory from './ClaimHistory';
 import ClaimDetailsModal from './ClaimDetailsModal';
@@ -25,6 +27,11 @@ interface RetroactiveClaimData {
   volume: string;
   type: 'wallet' | 'token';
   owner?: string;
+  hasClaimed: boolean;
+}
+
+interface ClaimInfo {
+  hasClaimed: boolean;
 }
 
 interface MerkleTreeData {
@@ -45,18 +52,19 @@ const ClaimRetroactive = () => {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
 
-  // Hook for blockchain operations
+  // Get distribution contract using the new hook
+
+  // Distribution hooks
   const {
-    claimStatusLoading,
-    claimStatusError,
-    claimLoading,
-    claimError,
-    claimSuccess,
-    checkClaimStatus,
-    claimWalletReward,
-    claimTokenReward,
-    resetClaimState,
-  } = useClaimRetroActiveCaller();
+    useWeeklyClaimForWallet,
+    useWeeklyClaimForToken,
+    useMonthlyClaimForWallet,
+    useMonthlyClaimForToken,
+    useQuarterlyClaimForWallet,
+    useQuarterlyClaimForToken,
+    useYearlyClaimForWallet,
+    useYearlyClaimForToken
+  } = useDistributionCaller();
 
   // State management
   const [activeTab, setActiveTab] = useState('available');
@@ -64,13 +72,18 @@ const ClaimRetroactive = () => {
   const [merkleData, setMerkleData] = useState<MerkleTreeData | null>(null);
   const [selectedClaim, setSelectedClaim] = useState<RetroactiveClaimData | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [eligibleClaimsFiltered, setEligibleClaimsFiltered] = useState<RetroactiveClaimData[]>([]);
+  const [claimInfos, setClaimInfos] = useState<Record<string, ClaimInfo>>({});
 
   // Filter state
   const [filters, setFilters] = useState<ClaimFilters>({
     type: 'month',
-    timestamp: Math.floor(Date.now() / 1000), // Current timestamp
-    chainId: chainId || 80001 // Default to current chainId or fallback
+    timestamp: Math.floor(Date.now() / 1000),
+    chainId: chainId || 80069
   });
+
+  // Track claim success state
+  const [claimSuccess, setClaimSuccess] = useState(false);
 
   // Calculate normalized timestamp based on type
   const getNormalizedTimestamp = (type: ClaimType, timestamp: number): number => {
@@ -99,58 +112,94 @@ const ClaimRetroactive = () => {
     }
   };
 
-  // Load merkle tree data from JSON file
+  // Get claim status using useReaderDistribution
+  const { claimInfos: readerClaimInfos, isFetchingClaimInfo } = useReaderDistribution({
+    timestamp: getNormalizedTimestamp(filters.type, filters.timestamp),
+    address: eligibleClaimsFiltered.map(claim => claim.address),
+    type: filters.type,
+    chainId: filters.chainId
+  });
+  // Load merkle tree data using serviceDistribution.getReward
   const loadMerkleData = async () => {
     setLoading(true);
     try {
-      console.log('Loading merkle tree data with filters:', filters);
-
-      // Calculate normalized timestamp based on type
       const normalizedTimestamp = getNormalizedTimestamp(filters.type, filters.timestamp);
 
-      // Construct filename: reward-{type}-{timestamp}-{chainId}.json
-      const filename = `reward-${filters.type}-${normalizedTimestamp}-${filters.chainId}.json`;
-      const filePath = `/${filename}`;
-
-      console.log('Fetching file:', filePath);
-
-      const response = await fetch(filePath).catch(() => null);
+      const response = await serviceDistribution.getReward(
+        normalizedTimestamp.toString(),
+        filters.type
+      );
 
       let data: MerkleTreeData;
 
-      if (response && response.ok) {
-        // Load actual JSON file if available
-        const jsonData = await response.json();
+      if (response && response.data) {
         data = {
-          rootHash: jsonData.rootHash,
-          result: jsonData.result
+          rootHash: response.data.merkleRoot || '',
+          result: response.data.dataProofs || {}
         };
-        console.log('Successfully loaded data from:', filename);
       } else {
-        console.warn('File not found or failed to load:', filename);
         data = {
           rootHash: '',
           result: {}
         };
       }
 
-      console.log('Loaded merkle data:', data);
       setMerkleData(data);
       setLoading(false);
     } catch (error) {
-      console.error('Failed to load merkle data:', error);
+      console.error('Failed to load merkle data from API:', error);
+      setMerkleData({
+        rootHash: '',
+        result: {}
+      });
       setLoading(false);
     }
   };
 
-  // Filter eligible claims for connected wallet using useMemo for optimization
-  const eligibleClaimsFiltered = useMemo(() => {
-    if (!merkleData || !address) return [];
+  // Check if any claim is successful
+  const isAnyClaimSuccessful = useMemo(() => {
+    return Object.values({
+      useWeeklyClaimForWallet,
+      useWeeklyClaimForToken,
+      useMonthlyClaimForWallet,
+      useMonthlyClaimForToken,
+      useQuarterlyClaimForWallet,
+      useQuarterlyClaimForToken,
+      useYearlyClaimForWallet,
+      useYearlyClaimForToken
+    }).some(claim => claim.isConfirmed);
+  }, [
+    useWeeklyClaimForWallet.isConfirmed,
+    useWeeklyClaimForToken.isConfirmed,
+    useMonthlyClaimForWallet.isConfirmed,
+    useMonthlyClaimForToken.isConfirmed,
+    useQuarterlyClaimForWallet.isConfirmed,
+    useQuarterlyClaimForToken.isConfirmed,
+    useYearlyClaimForWallet.isConfirmed,
+    useYearlyClaimForToken.isConfirmed
+  ]);
+
+  // Reset claim success state and reload data when claim is successful
+  useEffect(() => {
+    if (isAnyClaimSuccessful) {
+      setClaimSuccess(true);
+      // Reload data to update claim status
+      loadMerkleData();
+      // Reset success state after 3 seconds
+      const timer = setTimeout(() => {
+        setClaimSuccess(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnyClaimSuccessful]);
+
+  useEffect(() => {
+    if (!merkleData || !address) return;
 
     const eligible: RetroactiveClaimData[] = [];
 
     Object.entries(merkleData.result).forEach(([claimAddress, claimData]) => {
-      // Check wallet claims: connected address matches claim address and type is wallet
+      // Check wallet claims
       if (claimData.type === 'wallet' && claimAddress.toLowerCase() === address.toLowerCase()) {
         eligible.push({
           ...claimData,
@@ -158,7 +207,7 @@ const ClaimRetroactive = () => {
         });
       }
 
-      // Check token claims: connected address matches owner field and type is token
+      // Check token claims
       if (claimData.type === 'token' && claimData.owner?.toLowerCase() === address.toLowerCase()) {
         eligible.push({
           ...claimData,
@@ -167,19 +216,67 @@ const ClaimRetroactive = () => {
       }
     });
 
-    console.log('Filtered eligible claims:', eligible);
-    return eligible;
+    setEligibleClaimsFiltered(eligible);
   }, [merkleData, address]);
 
   // Handle claim action
   const handleClaim = async (claim: RetroactiveClaimData) => {
     if (!merkleData) return;
+    if (claim.type === "token") {
+      notification.error({
+        message: t('CLAIM_ERROR'),
+        description: t('TOKEN_OWNER_NOT_SUPPORTED'),
+        placement: 'topRight'
+      });
+      return;
+    }
 
     try {
+      const normalizedTimestamp = getNormalizedTimestamp(filters.type, filters.timestamp).toString();
+
       if (claim.type === 'wallet') {
-        await claimWalletReward(claim.amountRaw, claim.proof, merkleData.rootHash);
+        const params = {
+          timestamp: normalizedTimestamp,
+          amount: claim.amountRaw,
+          proof: claim.proof
+        };
+
+        switch (filters.type) {
+          case 'week':
+            await useWeeklyClaimForWallet.actionAsync(params);
+            break;
+          case 'month':
+            await useMonthlyClaimForWallet.actionAsync(params);
+            break;
+          case 'quarter':
+            await useQuarterlyClaimForWallet.actionAsync(params);
+            break;
+          case 'year':
+            await useYearlyClaimForWallet.actionAsync(params);
+            break;
+        }
       } else {
-        await claimTokenReward(claim.address, claim.amountRaw, claim.proof, merkleData.rootHash);
+        const params = {
+          timestamp: normalizedTimestamp,
+          amount: claim.amountRaw,
+          proof: claim.proof,
+          token: claim.address
+        };
+
+        switch (filters.type) {
+          case 'week':
+            await useWeeklyClaimForToken.actionAsync(params);
+            break;
+          case 'month':
+            await useMonthlyClaimForToken.actionAsync(params);
+            break;
+          case 'quarter':
+            await useQuarterlyClaimForToken.actionAsync(params);
+            break;
+          case 'year':
+            await useYearlyClaimForToken.actionAsync(params);
+            break;
+        }
       }
     } catch (error) {
       console.error('Claim failed:', error);
@@ -215,17 +312,6 @@ const ClaimRetroactive = () => {
       loadMerkleData();
     }
   }, [filters]);
-
-
-
-  // Reset state on claim success
-  useEffect(() => {
-    if (claimSuccess) {
-      // Reload data to update claim status
-      loadMerkleData();
-      resetClaimState();
-    }
-  }, [claimSuccess]);
 
   // Handle filter changes
   const handleFilterChange = (key: keyof ClaimFilters, value: any) => {
@@ -320,7 +406,17 @@ const ClaimRetroactive = () => {
                   claim={claim}
                   onClaim={() => handleClaim(claim)}
                   onViewDetails={() => showClaimDetails(claim)}
-                  loading={claimLoading}
+                  hasClaimed={readerClaimInfos[claim.address]?.hasClaimed || false}
+                  loading={Object.values({
+                    useWeeklyClaimForWallet,
+                    useWeeklyClaimForToken,
+                    useMonthlyClaimForWallet,
+                    useMonthlyClaimForToken,
+                    useQuarterlyClaimForWallet,
+                    useQuarterlyClaimForToken,
+                    useYearlyClaimForWallet,
+                    useYearlyClaimForToken
+                  }).some(claim => claim.isLoadingInit || claim.isLoadingAgreed)}
                 />
               ))}
             </div>
@@ -373,19 +469,41 @@ const ClaimRetroactive = () => {
           </p>
         </div>
 
-        {/* Error Alert */}
-        {(claimError || claimStatusError) && (
+        {/* Success Alert */}
+        {claimSuccess && (
           <div className="px-6 pt-4">
             <Alert
-              message={claimError || claimStatusError}
-              type="error"
+              message={t('CLAIM_SUCCESS')}
+              type="success"
               showIcon
               closable
-              onClose={resetClaimState}
+              onClose={() => setClaimSuccess(false)}
               className="!font-forza"
             />
           </div>
         )}
+
+        {/* Error Alert */}
+        {Object.values({
+          useWeeklyClaimForWallet,
+          useWeeklyClaimForToken,
+          useMonthlyClaimForWallet,
+          useMonthlyClaimForToken,
+          useQuarterlyClaimForWallet,
+          useQuarterlyClaimForToken,
+          useYearlyClaimForWallet,
+          useYearlyClaimForToken
+        }).some(claim => claim.isError) && (
+            <div className="px-6 pt-4">
+              <Alert
+                message={t('CLAIM_ERROR')}
+                type="error"
+                showIcon
+                closable
+                className="!font-forza"
+              />
+            </div>
+          )}
 
         {/* Wallet Connection Check */}
         {!isConnected && (
@@ -394,6 +512,19 @@ const ClaimRetroactive = () => {
               message={t('WALLET_NOT_CONNECTED')}
               description={t('CONNECT_WALLET_TO_VIEW_CLAIMS')}
               type="warning"
+              showIcon
+              className="!font-forza"
+            />
+          </div>
+        )}
+
+        {/* Already Claimed Alert */}
+        {address && claimInfos[address]?.hasClaimed && (
+          <div className="px-6 pt-4">
+            <Alert
+              message={t('ALREADY_CLAIMED')}
+              description={t('ALREADY_CLAIMED_DESCRIPTION')}
+              type="info"
               showIcon
               className="!font-forza"
             />
@@ -417,8 +548,18 @@ const ClaimRetroactive = () => {
         claim={selectedClaim}
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onClaim={selectedClaim ? () => handleClaim(selectedClaim) : undefined}
-        loading={claimLoading}
+        onClaim={selectedClaim && !readerClaimInfos[selectedClaim.address]?.hasClaimed ? () => handleClaim(selectedClaim) : undefined}
+        loading={Object.values({
+          useWeeklyClaimForWallet,
+          useWeeklyClaimForToken,
+          useMonthlyClaimForWallet,
+          useMonthlyClaimForToken,
+          useQuarterlyClaimForWallet,
+          useQuarterlyClaimForToken,
+          useYearlyClaimForWallet,
+          useYearlyClaimForToken
+        }).some(claim => claim.isLoadingInit || claim.isLoadingAgreed)}
+        hasClaimed={readerClaimInfos[selectedClaim?.address || '']?.hasClaimed || false}
       />
     </motion.div>
   );

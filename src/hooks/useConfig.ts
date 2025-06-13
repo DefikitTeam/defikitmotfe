@@ -27,6 +27,9 @@ export const useConfig = () => {
       getTrustPointAbi: (chainId: number) => config.getTrustPointAbi(chainId),
       getTrustPointAddress: (chainId: number) =>
         config.getTrustPointAddress(chainId),
+      getDistributionAddress: (chainId: number) =>
+        config.getDistributionAddress(chainId),
+      getDistributionAbi: (chainId: number) => config.getDistributionAbi(chainId),
       // Network related getters
       getRpcUrl: (chainId: number) => config.getRpcUrl(chainId),
       getExplorer: (chainId: number) => config.getExplorer(chainId),
