@@ -179,6 +179,15 @@ export function getMonthStartTimestamp(timestamp: number): number {
 }
 
 export function getWeekStartTimestamp(timestamp: number): number {
-  const weekKey = timestamp - (timestamp % 604800);
-  return weekKey
+  // Days since Unix epoch (Jan 1, 1970)
+  const daysSinceEpoch = Math.floor(timestamp / 86400)
+
+  // Calculate which day of the week we're on (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const dayOfWeek = (daysSinceEpoch + 4) % 7 // +4 because Jan 1, 1970 was a Thursday
+
+  // Calculate days to subtract to get to the start of the week (Monday)
+  const daysToSubtract = (dayOfWeek + 6) % 7 // Convert to Monday-based (0 = Monday, 6 = Sunday)
+
+  // Return timestamp for start of the week (Monday) at 00:00:00 UTC
+  return (daysSinceEpoch - daysToSubtract) * 86400
 }

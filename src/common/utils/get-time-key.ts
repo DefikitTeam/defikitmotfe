@@ -18,6 +18,7 @@
 // getTimeKey()
 // npx ts-node src/common/utils/get-time-key.ts
 import dayjs from 'dayjs';
+import { getMonthStartTimestamp, getWeekStartTimestamp } from './utils';
 
 export const ONE_DAY_SECONDS = 86400;
 export const ONE_WEEK_SECONDS = 604800;
@@ -30,12 +31,15 @@ export const calculateDayStartUnixForDate = (date: dayjs.Dayjs): number => {
 
 export const calculateWeekStartUnixForDate = (date: dayjs.Dayjs): number => {
   const epochSeconds = date.utc().unix();
-  return epochSeconds - (epochSeconds % ONE_WEEK_SECONDS);
+  const weekStartTimestamp = getWeekStartTimestamp(epochSeconds);
+  return weekStartTimestamp;
 };
+
 
 export const calculateMonthStartUnixForDate_Inaccurate = (
   date: dayjs.Dayjs
 ): number => {
   const epochSeconds = date.utc().unix();
-  return epochSeconds - (epochSeconds % ONE_MONTH_SECONDS);
+  const monthStartTimestamp = getMonthStartTimestamp(epochSeconds);
+  return monthStartTimestamp;
 };
