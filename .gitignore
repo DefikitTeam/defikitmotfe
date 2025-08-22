@@ -47,3 +47,6 @@ pnpm-lock.yaml
 certificates
 
 package-lock.json
+
+# claude code session data
+claude/
