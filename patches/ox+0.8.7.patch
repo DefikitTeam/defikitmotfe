@@ -1,0 +1,23 @@
+diff --git a/node_modules/ox/core/Authorization.ts b/node_modules/ox/core/Authorization.ts
+index b5807b5..20f4d39 100644
+--- a/node_modules/ox/core/Authorization.ts
++++ b/node_modules/ox/core/Authorization.ts
+@@ -269,12 +269,14 @@ export function fromTuple<const tuple extends Tuple>(
+   const [chainId, address, nonce, yParity, r, s] = tuple
+   const signature =
+     yParity && r && s ? Signature.fromTuple([yParity, r, s]) : undefined
+-  return from({
++  
++  const baseAuth = {
+     address,
+     chainId: chainId === '0x' ? 0 : Number(chainId),
+-    nonce: nonce === '0x' ? 0n : BigInt(nonce),
+-    ...signature,
+-  }) as never
++    nonce: nonce === '0x' ? BigInt(0) : BigInt(nonce),
++  }
++  
++  return from(signature ? { ...baseAuth, ...signature } : baseAuth) as never
+ }
+ 
+ export declare namespace fromTuple {

@@ -12,7 +12,8 @@
         "trans": "node src/scripts/translate.js",
         "format": "prettier --write \"src/**/*.{ts,tsx}\"",
         "format:lint-staged": "lint-staged",
-        "prepare-husky": "husky install && npx win-chmod 755 .husky/*"
+        "prepare-husky": "husky install && npx win-chmod 755 .husky/*",
+        "postinstall": "patch-package"
     },
     "engines": {
         "node": "^18.18.0 || >=20.0.0"
@@ -103,7 +104,9 @@
         "ignore-loader": "^0.1.2",
         "lint-staged": "^13.2.3",
         "next-themes": "^0.3.0",
+        "patch-package": "^8.0.0",
         "postcss": "^8.4.38",
+        "postinstall-postinstall": "^2.1.0",
         "prettier": "3.2.5",
         "prettier-plugin-tailwindcss": "^0.5.13",
         "react-redux": "^9.1.0",
