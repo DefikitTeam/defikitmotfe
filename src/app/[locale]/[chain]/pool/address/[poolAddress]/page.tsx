@@ -97,6 +97,7 @@ export async function generateMetadata(
 
   if (
     !tokenAddress ||
+    tokenAddress === 'undefined' ||
     typeof tokenAddress !== 'string' ||
     tokenAddress.length < 10
   ) {
@@ -189,6 +190,28 @@ export async function generateMetadata(
 
 // export default PoolDetail;
 export default function Index({ params, searchParams }: Props) {
+  const { poolAddress } = params;
+
+  if (
+    !poolAddress ||
+    poolAddress === 'undefined' ||
+    typeof poolAddress !== 'string' ||
+    poolAddress.length < 10
+  ) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="mb-4 text-2xl font-bold text-red-500">
+            Invalid Pool Address
+          </h1>
+          <p className="text-gray-600">
+            The pool address provided is invalid or missing.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return <PoolDetail />;
 }
 

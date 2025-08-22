@@ -15,7 +15,7 @@ const BoxArea = ({ title, children, ...rest }: IBoxArea) => {
       className="bg-white"
     >
       {title && (
-        <div className="shadow-01 max-[470px]:px-3 py-4">
+        <div className="shadow-01 py-4 max-[470px]:px-3">
           <Title
             level={5}
             className="mb-0 font-medium"
