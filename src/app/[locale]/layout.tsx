@@ -42,8 +42,12 @@ export const metadata: Metadata = {
       }
     ]
   },
-  viewport: 'width=device-width, initial-scale=1.0',
   robots: 'index, follow'
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1.0
 };
 
 export function generateStaticParams() {

@@ -14,8 +14,27 @@ import {
   persistStore
 } from 'redux-persist';
 
-import storage from 'redux-persist/lib/storage';
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import rootReducer from './reducers';
+
+const createNoopStorage = () => {
+  return {
+    getItem(_key: string) {
+      return Promise.resolve(null);
+    },
+    setItem(_key: string, value: string) {
+      return Promise.resolve(value);
+    },
+    removeItem(_key: string) {
+      return Promise.resolve();
+    }
+  };
+};
+
+const storage =
+  typeof window !== 'undefined'
+    ? createWebStorage('local')
+    : createNoopStorage();
 
 const PERSIST_CONFIG_VERSION = 3;
 const PERSISTED_KEYS: string[] = [''];

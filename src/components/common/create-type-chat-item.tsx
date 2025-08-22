@@ -28,7 +28,7 @@ const CreateTypeChatItem = ({
 
   return (
     <div className="flex flex-row items-start gap-2">
-      <div className="max-[470px]:max-w-[100px] flex flex-none">
+      <div className="flex flex-none max-[470px]:max-w-[100px]">
         <Text className="!font-forza leading-10">
           {`${title}`} {index}:
         </Text>

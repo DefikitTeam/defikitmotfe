@@ -1,7 +1,10 @@
 {
-  "css.customData": [".vscode/tailwind.json"],
+  "css.customData": [
+    ".vscode/tailwind.json"
+  ],
   "i18next.i18nPaths": "/public/locales",
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
-  "html.validate.styles": true
+  "html.validate.styles": true,
+  "workbench.activityBar.orientation": "vertical"
 }

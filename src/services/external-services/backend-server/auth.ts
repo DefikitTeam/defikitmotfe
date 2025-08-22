@@ -10,9 +10,36 @@ import {
   ILoginWalletResponse
 } from '@/src/stores/auth/type';
 import { IRefCode } from '@/src/stores/pool/type';
-import { Cookies } from 'react-cookie';
 import { post } from '../fetcher';
-const cookies = new Cookies();
+
+const cookies = {
+  set: (name: string, value: string, options: { path: string }) => {
+    if (typeof document !== 'undefined') {
+      document.cookie = `${name}=${value}; path=${options.path}`;
+    }
+  },
+  get: (name: string) => {
+    if (typeof document !== 'undefined') {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        const cookieValue = parts.pop()?.split(';').shift();
+        try {
+          return cookieValue ? JSON.parse(cookieValue) : null;
+        } catch {
+          return cookieValue;
+        }
+      }
+    }
+    return null;
+  },
+  remove: (name: string, options: { path: string }) => {
+    if (typeof document !== 'undefined') {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${options.path}`;
+    }
+  }
+};
+
 const USER_INFO_STORAGE_KEY = 'usr_if';
 const USER_WALLET_STORAGE_KEY = 'usr_wallet_if';
 const USER_TELE_STORAGE_KEY = 'usr_tele_if';

@@ -247,17 +247,6 @@ const PoolDetail = () => {
     // }
   }, [status, showAlert, pool, metaDataInfo, t]);
 
-  useEffect(() => {
-    const forceReload = () => {
-      const script = document.createElement('script');
-      script.src = `/path/to/your/script.js?cacheBuster=${Date.now()}`;
-      script.async = true;
-      document.body.appendChild(script);
-    };
-
-    forceReload();
-  }, []);
-
   if (!pool || status === EActionStatus.Pending) {
     return <Loader />;
   }

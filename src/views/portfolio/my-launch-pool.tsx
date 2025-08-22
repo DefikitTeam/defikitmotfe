@@ -80,7 +80,7 @@ const MyLaunchPool = ({ walletAddress }: { walletAddress: string }) => {
       <div className="mt-3 !font-forza text-lg font-bold">
         {t('MY_LAUNCH_POOL')}
       </div>
-      <div className="grid gap-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 xs:grid-cols-1 xxl:grid-cols-3 ">
+      <div className="grid gap-1 xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 xxl:grid-cols-3 ">
         {allPool.length === 0 && (
           <div className="col-span-full">
             <EmptyPool />
